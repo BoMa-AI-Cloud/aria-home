@@ -128,6 +128,50 @@ def test_malformed_shape():
     assert result.error == "bad_response"
 
 
+def test_no_text_thinking_only():
+    transport, _ = counting_transport(
+        lambda request: httpx.Response(
+            200,
+            json={
+                "model": "muse-spark-1.3",
+                "content": [{"type": "thinking", "thinking": "planning silently"}],
+                "stop_reason": "max_tokens",
+                "usage": {"input_tokens": 5, "output_tokens": 1},
+            },
+        )
+    )
+    result = MetaProvider(make_config(), transport=transport).generate("x")
+    assert result.ok is False
+    assert result.error == "no_text"
+    assert result.content_block_types == ["thinking"]
+    assert result.stop_reason == "max_tokens"
+    assert result.input_tokens == 5
+    assert result.output_tokens == 1
+    assert result.text is None
+
+
+def test_thinking_plus_text_returns_text_only():
+    transport, _ = counting_transport(
+        lambda request: httpx.Response(
+            200,
+            json={
+                "model": "muse-spark-1.3",
+                "content": [
+                    {"type": "thinking", "thinking": "planning silently"},
+                    {"type": "text", "text": "final answer"},
+                ],
+                "stop_reason": "end_turn",
+                "usage": {"input_tokens": 5, "output_tokens": 2},
+            },
+        )
+    )
+    result = MetaProvider(make_config(), transport=transport).generate("x")
+    assert result.ok is True
+    assert result.text == "final answer"
+    assert result.content_block_types == ["thinking", "text"]
+    assert result.stop_reason == "end_turn"
+
+
 def test_model_mismatch():
     transport, _ = counting_transport(
         lambda request: httpx.Response(

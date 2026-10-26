@@ -30,6 +30,7 @@ ErrorCategory = Literal[
     "rate_limited",
     "server_error",
     "bad_response",
+    "no_text",
     "model_mismatch",
 ]
 
@@ -55,6 +56,8 @@ class ProviderResult(BaseModel):
     input_tokens: int | None = None
     output_tokens: int | None = None
     error: ErrorCategory | None = None
+    content_block_types: list[str] | None = None
+    stop_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -238,7 +241,7 @@ class MetaProvider:
         def elapsed():
             return (time.perf_counter() - start) * 1000.0
 
-        def fail(category, answered_model=None):
+        def fail(category, answered_model=None, content_block_types=None, stop_reason=None, input_tokens=None, output_tokens=None):
             return ProviderResult(
                 ok=False,
                 mode="live",
@@ -246,9 +249,11 @@ class MetaProvider:
                 answered_model=answered_model,
                 text=None,
                 latency_ms=elapsed(),
-                input_tokens=None,
-                output_tokens=None,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
                 error=category,
+                content_block_types=content_block_types,
+                stop_reason=stop_reason,
             )
 
         if not self.config.enabled:
@@ -305,26 +310,70 @@ class MetaProvider:
         if not isinstance(body, dict):
             return fail("bad_response")
 
+        raw_stop = body.get("stop_reason")
+        stop_reason = raw_stop if isinstance(raw_stop, str) else None
+
+        def block_types():
+            content = body.get("content")
+            if not isinstance(content, list):
+                return None
+            types = []
+            for block in content:
+                if isinstance(block, dict) and isinstance(block.get("type"), str):
+                    types.append(block["type"])
+            return types
+
+        def usage_tokens():
+            usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
+            raw_in = usage.get("input_tokens")
+            raw_out = usage.get("output_tokens")
+            return (
+                raw_in if isinstance(raw_in, int) else None,
+                raw_out if isinstance(raw_out, int) else None,
+            )
+
         answered_model = body.get("model")
         if not isinstance(answered_model, str) or not answered_model:
-            return fail("bad_response")
+            return fail("bad_response", content_block_types=block_types(), stop_reason=stop_reason)
         if answered_model != self.config.model_id:
-            return fail("model_mismatch", answered_model=answered_model)
+            input_tokens, output_tokens = usage_tokens()
+            return fail(
+                "model_mismatch",
+                answered_model=answered_model,
+                content_block_types=block_types(),
+                stop_reason=stop_reason,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
 
         content = body.get("content")
-        if not isinstance(content, list):
-            return fail("bad_response", answered_model=answered_model)
+        if not isinstance(content, list) or len(content) == 0:
+            input_tokens, output_tokens = usage_tokens()
+            return fail(
+                "bad_response",
+                answered_model=answered_model,
+                content_block_types=block_types(),
+                stop_reason=stop_reason,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
         parts = [
             block["text"]
             for block in content
             if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str)
         ]
         if not parts:
-            return fail("bad_response", answered_model=answered_model)
+            input_tokens, output_tokens = usage_tokens()
+            return fail(
+                "no_text",
+                answered_model=answered_model,
+                content_block_types=block_types(),
+                stop_reason=stop_reason,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
 
-        usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
-        input_tokens = usage.get("input_tokens")
-        output_tokens = usage.get("output_tokens")
+        input_tokens, output_tokens = usage_tokens()
         return ProviderResult(
             ok=True,
             mode="live",
@@ -332,9 +381,11 @@ class MetaProvider:
             answered_model=answered_model,
             text="".join(parts),
             latency_ms=elapsed(),
-            input_tokens=input_tokens if isinstance(input_tokens, int) else None,
-            output_tokens=output_tokens if isinstance(output_tokens, int) else None,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
             error=None,
+            content_block_types=block_types(),
+            stop_reason=stop_reason,
         )
 
     complete = generate
