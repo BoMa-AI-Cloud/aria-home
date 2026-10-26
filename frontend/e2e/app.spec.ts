@@ -55,6 +55,16 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
     "Forecast, not an on-property measurement",
   );
 
+  await expect(investigation.getByText(/Readiness:/)).toContainText(
+    /On track|At risk|Cannot tell yet/,
+  );
+  await expect(investigation.getByText(/Readiness:/)).toContainText(/Indoor .* target/);
+  await expect(investigation.locator(".observations .chip").first()).toBeVisible();
+  await expect(investigation.getByRole("heading", { name: "One question for you" })).toBeVisible();
+  await expect(investigation).toContainText("Who should respond first");
+  await expect(investigation).toContainText("weighs against complete property power loss");
+  await expect(investigation).toContainText("MOCK - example answer, not live inference");
+
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
   expect(failedRequests).toEqual([]);

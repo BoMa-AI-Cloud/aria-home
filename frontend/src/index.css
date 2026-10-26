@@ -124,3 +124,79 @@ section {
   color: #b3261e;
   font-weight: 700;
 }
+
+.mock-label {
+  background: #5c1a1a;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.readiness {
+  font-size: 1.1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #b9b3a6;
+}
+
+.readiness-on_track { border-left: 0.4rem solid #1e7b34; }
+.readiness-at_risk { border-left: 0.4rem solid #9a6a00; }
+.readiness-cannot_tell { border-left: 0.4rem solid #6a3fb5; }
+.readiness-unknown { border-left: 0.4rem solid #6b6b6b; }
+
+.chip {
+  display: inline-block;
+  font-size: 0.8rem;
+  background: #e8e2d4;
+  border: 1px solid #b9b3a6;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
+  margin: 0.1rem;
+  white-space: nowrap;
+}
+
+.power-context {
+  background: #ffffff;
+  border: 1px solid #b9b3a6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.power-context h3 {
+  margin: 0 0 0.5rem;
+}
+
+.power-context-label {
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.provenance {
+  color: #3d3d3d;
+  font-size: 0.9rem;
+}
+
+.unavailable {
+  font-weight: 700;
+}
+
+.reasons {
+  color: #b3261e;
+}
+
+.observations,
+.hypotheses {
+  padding-left: 1.25rem;
+}
+
+.hypotheses li {
+  margin-bottom: 0.75rem;
+}
+
+.hypothesis-label {
+  margin: 0 0 0.25rem;
+}

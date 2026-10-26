@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import {
+  fetchInvestigation,
   fetchSources,
   type Availability,
+  type InvestigationResponse,
+  type InvestigationSummary,
+  type Readiness,
   type SourceKind,
   type SourceStatus,
   type SourcesResponse,
+  type TargetGap,
 } from "./api";
 import "./index.css";
 
@@ -16,6 +21,12 @@ const AVAILABILITY_LABEL: Record<Availability, string> = {
   stale: "Stale",
   invalid: "Invalid",
   conflicting: "Conflicting",
+};
+
+const READINESS_LABEL: Record<Readiness, string> = {
+  on_track: "On track",
+  at_risk: "At risk",
+  cannot_tell: "Cannot tell yet",
 };
 
 function formatAge(age_s: number | null): string {
@@ -32,6 +43,167 @@ function formatTimestamp(value: string | null): string {
   if (!value) return "No reading";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
+function targetGapLine(summary: InvestigationSummary): string | null {
+  const gap = summary.metrics?.target_gap as TargetGap | null | undefined;
+  if (!gap || gap.latest_value === null || gap.latest_value === undefined) return null;
+  return `Indoor ${gap.latest_value} ${gap.unit}, target ${gap.target_temp} ${gap.target_unit}`;
+}
+
+function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {
+  const statement = summary.power_context_statement ?? summary.power_context?.statement;
+  const limitations = summary.power_context?.limitations ?? [];
+  if (!statement && limitations.length === 0) return null;
+  return (
+    <div className="power-context">
+      <h3>Power context</h3>
+      {statement && <p>{statement}</p>}
+      {limitations.length > 0 && (
+        <>
+          <p className="power-context-label">Limitations:</p>
+          <ul>
+            {limitations.map((limitation) => (
+              <li key={limitation}>{limitation}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+function InvestigationSection({
+  data,
+  error,
+}: {
+  data: InvestigationResponse | null;
+  error: string | null;
+}) {
+  if (!data && !error) return <p role="status">Loading investigation…</p>;
+  if (error) {
+    return (
+      <p role="alert" className="error">
+        Investigation not reachable
+      </p>
+    );
+  }
+  if (!data) return null;
+
+  const gapLine = targetGapLine(data.summary);
+
+  if (data.status === "rejected" || data.status === "unavailable" || !data.output) {
+    return (
+      <>
+        <p className="unavailable">ARIA&apos;s explanation is unavailable</p>
+        {data.reasons.length > 0 && (
+          <ul className="reasons">
+            {data.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
+        )}
+        {gapLine && <p className="readiness readiness-unknown">Readiness: unknown. {gapLine}.</p>}
+        <PowerContextBlock summary={data.summary} />
+        <p className="provenance">
+          Provider mode: {data.provider_mode ?? "unknown"}, model: {data.model_id ?? "unknown"},
+          prompt version: {data.prompt_version}
+        </p>
+      </>
+    );
+  }
+
+  const output = data.output;
+  return (
+    <>
+      {data.provider_mode === "mock" && (
+        <p className="mock-label" role="note">
+          MOCK - example answer, not live inference
+        </p>
+      )}
+      <p className={`readiness readiness-${output.readiness}`}>
+        Readiness: <strong>{READINESS_LABEL[output.readiness]}</strong>
+        {gapLine ? `. ${gapLine}.` : "."}
+      </p>
+
+      <h3>What ARIA observed</h3>
+      {output.observations.length === 0 ? (
+        <p>No observations reported.</p>
+      ) : (
+        <ul className="observations">
+          {output.observations.map((observation, index) => (
+            <li key={`${observation.text}-${index}`}>
+              <span>{observation.text}</span>{" "}
+              {observation.evidence_ids.map((id) => (
+                <span key={id} className="chip">
+                  {id}
+                </span>
+              ))}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3>Possible explanations (hypotheses, not findings)</h3>
+      {output.hypotheses.length === 0 ? (
+        <p>No hypotheses reported.</p>
+      ) : (
+        <ul className="hypotheses">
+          {output.hypotheses.map((hypothesis, index) => (
+            <li key={`${hypothesis.text}-${index}`}>
+              <p className="hypothesis-label">Hypothesis: {hypothesis.text}</p>
+              {hypothesis.supporting_ids.length > 0 && (
+                <p>
+                  Supporting:{" "}
+                  {hypothesis.supporting_ids.map((id) => (
+                    <span key={id} className="chip">
+                      {id}
+                    </span>
+                  ))}
+                </p>
+              )}
+              {hypothesis.conflicting_ids.length > 0 && (
+                <p>
+                  Conflicting:{" "}
+                  {hypothesis.conflicting_ids.map((id) => (
+                    <span key={id} className="chip">
+                      {id}
+                    </span>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3>What we don&apos;t know</h3>
+      {output.unknowns.length === 0 ? (
+        <p>Nothing listed.</p>
+      ) : (
+        <ul>
+          {output.unknowns.map((unknown) => (
+            <li key={unknown}>{unknown}</li>
+          ))}
+        </ul>
+      )}
+
+      <h3>One question for you</h3>
+      <p>{output.clarification}</p>
+
+      <h3>Next check</h3>
+      <p>
+        {output.follow_up.observation} ({formatTimestamp(output.follow_up.when)})
+      </p>
+
+      <PowerContextBlock summary={data.summary} />
+
+      <p className="provenance">
+        Provider mode: {data.provider_mode ?? "unknown"}, model: {data.model_id ?? "unknown"},
+        prompt version: {data.prompt_version}
+      </p>
+    </>
+  );
 }
 
 function SourceCard({ status }: { status: SourceStatus }) {
@@ -79,6 +251,8 @@ function SourceCard({ status }: { status: SourceStatus }) {
 export default function App() {
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [investigation, setInvestigation] = useState<InvestigationResponse | null>(null);
+  const [investigationError, setInvestigationError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +262,13 @@ export default function App() {
       })
       .catch(() => {
         if (!cancelled) setError("Backend not reachable");
+      });
+    fetchInvestigation()
+      .then((response) => {
+        if (!cancelled) setInvestigation(response);
+      })
+      .catch(() => {
+        if (!cancelled) setInvestigationError("Investigation not reachable");
       });
     return () => {
       cancelled = true;
@@ -114,7 +295,7 @@ export default function App() {
 
       <section aria-labelledby="investigation-heading">
         <h2 id="investigation-heading">Investigation</h2>
-        <p>Coming in Day 3: ARIA&apos;s explanation of the evidence.</p>
+        <InvestigationSection data={investigation} error={investigationError} />
       </section>
 
       <section aria-labelledby="evidence-heading">
