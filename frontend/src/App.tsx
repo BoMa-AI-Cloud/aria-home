@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   createInvestigation,
+  fetchEvents,
   fetchFollowUp,
   fetchInvestigation,
   fetchSources,
@@ -14,9 +15,12 @@ import {
   type OutcomeStatus,
   type Readiness,
   type ReadinessResult,
+  type ScenarioEvent,
   type SourceKind,
   type SourceStatus,
   type SourcesResponse,
+  type VerificationResult,
+  type VerificationStage,
 } from "./api";
 import "./index.css";
 
@@ -24,7 +28,11 @@ const SCENARIOS = [
   { id: "demo_v1", label: "No recovery" },
   { id: "demo_recovery_v1", label: "Manager report, late warming" },
   { id: "demo_no_followup_v1", label: "No follow-up readings" },
+  { id: "demo_video_v1", label: "Trip home, thermostat offline (video)" },
 ];
+
+const VIDEO_SCENARIO = "demo_video_v1";
+const VIDEO_START_AT = "2026-01-16T16:31:00-05:00";
 
 const REPLAY_START_AT = "2026-01-16T18:00:00-05:00";
 
@@ -34,6 +42,41 @@ const REPLAY_TIMES = [
   { label: "19:00", at: "2026-01-16T19:00:00-05:00" },
   { label: "20:31", at: "2026-01-16T20:31:00-05:00" },
 ];
+
+const VIDEO_REPLAY_TIMES = [
+  "09:20",
+  "14:06",
+  "16:31",
+  "18:21",
+  "18:51",
+  "19:51",
+  "20:21",
+  "20:46",
+  "21:01",
+].map((label) => ({ label, at: `2026-01-16T${label}:00-05:00` }));
+
+const VERIFICATION_LABEL: Record<VerificationStage, string> = {
+  telemetry_missing: "Thermostat telemetry missing",
+  reporting_restored: "Thermostat reporting restored",
+  warming_observed: "Warming observed",
+  goal_verified: "Temperature goal verified",
+  arrival_met: "Arrival expectation met",
+  unable_to_verify: "Unable to verify",
+};
+
+const VERIFICATION_PROGRESSION: VerificationStage[] = [
+  "reporting_restored",
+  "warming_observed",
+  "goal_verified",
+  "arrival_met",
+];
+
+const VERIFICATION_ORDER: Partial<Record<VerificationStage, number>> = {
+  reporting_restored: 0,
+  warming_observed: 1,
+  goal_verified: 2,
+  arrival_met: 3,
+};
 
 const OUTCOME_LABEL: Record<OutcomeStatus, string> = {
   awaiting_measurement: "Waiting for new readings",
@@ -336,6 +379,8 @@ function OutcomeSection({
   unit,
   error,
   loading,
+  verification,
+  events,
 }: {
   outcome: OutcomeResult | null;
   history: OutcomeHistoryEntry[];
@@ -343,6 +388,8 @@ function OutcomeSection({
   unit: string | null;
   error: string | null;
   loading: boolean;
+  verification: VerificationResult | null;
+  events: ScenarioEvent[];
 }) {
   if (!outcome && !error) return <p role="status">Loading outcome…</p>;
   if (!outcome) {
@@ -353,6 +400,8 @@ function OutcomeSection({
     );
   }
   const valueUnit = unit ? ` °${unit}` : "";
+  const latestEvent = events.length > 0 ? events[events.length - 1] : null;
+  const stageOrder = verification ? VERIFICATION_ORDER[verification.stage] : undefined;
   return (
     <div className={`outcome outcome-${outcome.status}`}>
       {loading && <p role="status">Loading outcome…</p>}
@@ -361,9 +410,56 @@ function OutcomeSection({
           Follow-up refresh failed
         </p>
       )}
-      <p className="outcome-status">
-        Status: <strong>{OUTCOME_LABEL[outcome.status]}</strong>
-      </p>
+      {verification ? (
+        <>
+          <p className="outcome-status verification-stage">
+            Status: <strong>{VERIFICATION_LABEL[verification.stage]}</strong>
+          </p>
+          <p className="follow-up-rule">Follow-up rule: {OUTCOME_LABEL[outcome.status]}</p>
+          <dl className="outcome-facts stage-times">
+            <div>
+              <dt>Event time</dt>
+              <dd>
+                {latestEvent ? (
+                  <time dateTime={latestEvent.event_time}>{formatTimestamp(latestEvent.event_time)}</time>
+                ) : (
+                  "No reading"
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>Received time</dt>
+              <dd>
+                {latestEvent ? (
+                  <time dateTime={latestEvent.available_at}>{formatTimestamp(latestEvent.available_at)}</time>
+                ) : (
+                  "No reading"
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>Evaluation (replay) time</dt>
+              <dd>
+                <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
+              </dd>
+            </div>
+          </dl>
+          <ol className="verification-progression">
+            {VERIFICATION_PROGRESSION.map((stage, index) => {
+              const reached = stageOrder !== undefined && index <= stageOrder;
+              return (
+                <li key={stage}>
+                  {VERIFICATION_LABEL[stage]} — {reached ? "Reached" : "Not reached"}
+                </li>
+              );
+            })}
+          </ol>
+        </>
+      ) : (
+        <p className="outcome-status">
+          Status: <strong>{OUTCOME_LABEL[outcome.status]}</strong>
+        </p>
+      )}
       {replayAt && (
         <p className="outcome-time">
           Replay time: <time dateTime={replayAt}>{formatTimestamp(replayAt)}</time>
@@ -444,6 +540,62 @@ function SourceCard({ status }: { status: SourceStatus }) {
   );
 }
 
+function formatPayloadValue(value: unknown): string {
+  if (Array.isArray(value)) return value.map((item) => String(item)).join(", ");
+  if (value !== null && typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; replayAt: string | null }) {
+  return (
+    <>
+      {replayAt && (
+        <p className="eval-time">
+          Evaluation (replay) time: <time dateTime={replayAt}>{formatTimestamp(replayAt)}</time>
+        </p>
+      )}
+      {events.length === 0 ? (
+        <p>No simulated events visible.</p>
+      ) : (
+        <div className="event-cards">
+          {events.map((event) => (
+            <article key={event.id} className="event-card" aria-label={`${event.kind} event`}>
+              <h3 className="card-title">{event.kind}</h3>
+              <p className="simulated-tag">SIMULATED</p>
+              <dl className="card-facts">
+                <div>
+                  <dt>Event time</dt>
+                  <dd>
+                    <time dateTime={event.event_time}>{formatTimestamp(event.event_time)}</time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Available time (received time)</dt>
+                  <dd>
+                    <time dateTime={event.available_at}>{formatTimestamp(event.available_at)}</time>
+                  </dd>
+                </div>
+              </dl>
+              {event.kind === "scene_acknowledged" && <p>Acknowledged, physical success unknown</p>}
+              {event.kind === "hvac_completion_report" && (
+                <p>Corroboration only, does not set the outcome</p>
+              )}
+              <dl className="card-facts">
+                {Object.entries(event.payload).map(([key, value]) => (
+                  <div key={key}>
+                    <dt>{key}</dt>
+                    <dd>{formatPayloadValue(value)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function App() {
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -459,6 +611,8 @@ export default function App() {
   const [replayAt, setReplayAt] = useState<string | null>(null);
   const [replayLoading, setReplayLoading] = useState(false);
   const [replayError, setReplayError] = useState<string | null>(null);
+  const [verification, setVerification] = useState<VerificationResult | null>(null);
+  const [events, setEvents] = useState<ScenarioEvent[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -483,9 +637,14 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
+    const startAt = scenario === VIDEO_SCENARIO ? VIDEO_START_AT : REPLAY_START_AT;
     setReplayLoading(true);
     setReplayError(null);
-    createInvestigation(scenario, REPLAY_START_AT)
+    setInvestigationId(null);
+    setVerification(null);
+    setEvents([]);
+    setReplayAt(null);
+    createInvestigation(scenario, startAt)
       .then((response) => {
         if (cancelled) return;
         setCreatedInvestigation(response);
@@ -497,8 +656,15 @@ export default function App() {
             ? response.follow_up.target_unit
             : null,
         );
-        setReplayAt(REPLAY_START_AT);
+        setReplayAt(startAt);
         setReplayLoading(false);
+        fetchFollowUp(response.investigation_id, startAt)
+          .then((followUp) => {
+            if (cancelled) return;
+            setOutcome(followUp.outcome);
+            setVerification(followUp.verification ?? null);
+          })
+          .catch(() => undefined);
       })
       .catch(() => {
         if (cancelled) return;
@@ -511,6 +677,21 @@ export default function App() {
     };
   }, [scenario]);
 
+  useEffect(() => {
+    if (!replayAt) return;
+    let cancelled = false;
+    fetchEvents(scenario, replayAt)
+      .then((response) => {
+        if (!cancelled) setEvents(response.events);
+      })
+      .catch(() => {
+        if (!cancelled) setEvents([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scenario, replayAt]);
+
   function handleReplayTime(at: string) {
     if (!investigationId) return;
     setReplayLoading(true);
@@ -519,6 +700,7 @@ export default function App() {
       .then((response) => {
         setOutcome(response.outcome);
         setHistory(response.history);
+        setVerification(response.verification ?? null);
         setReplayAt(at);
         setReplayLoading(false);
       })
@@ -547,7 +729,7 @@ export default function App() {
           </select>
         </label>
         <div className="demo-times" role="group" aria-label="Replay time">
-          {REPLAY_TIMES.map((time) => (
+          {(scenario === VIDEO_SCENARIO ? VIDEO_REPLAY_TIMES : REPLAY_TIMES).map((time) => (
             <button
               key={time.at}
               type="button"
@@ -590,7 +772,14 @@ export default function App() {
           unit={followUpUnit}
           error={replayError}
           loading={replayLoading}
+          verification={verification}
+          events={events}
         />
+      </section>
+
+      <section aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading">Simulated timeline</h2>
+        <SimulatedTimeline events={events} replayAt={replayAt} />
       </section>
 
       <section aria-labelledby="evidence-heading">

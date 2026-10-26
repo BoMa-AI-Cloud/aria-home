@@ -491,6 +491,39 @@ export interface CreateInvestigationResponse {
   error?: string;
 }
 
+export type VerificationStage =
+  | "telemetry_missing"
+  | "reporting_restored"
+  | "warming_observed"
+  | "goal_verified"
+  | "arrival_met"
+  | "unable_to_verify";
+
+export interface VerificationResult {
+  stage: VerificationStage;
+  reasons: string[];
+  supporting_ids: string[];
+  corroboration_ids: string[];
+  corroboration: string[];
+  evaluated_at: string;
+}
+
+export interface ScenarioEvent {
+  id: string;
+  kind: string;
+  event_time: string;
+  available_at: string;
+  simulated: boolean;
+  payload: Record<string, unknown>;
+}
+
+export interface EventsResponse {
+  data_mode: DataMode;
+  scenario: string;
+  at: string;
+  events: ScenarioEvent[];
+}
+
 export interface FollowUpResponse {
   data_mode: DataMode;
   investigation_id: string;
@@ -500,6 +533,7 @@ export interface FollowUpResponse {
   follow_up: FollowUpPayload | null;
   supporting_ids: string[];
   history: OutcomeHistoryEntry[];
+  verification?: VerificationResult | null;
 }
 
 export async function createInvestigation(
@@ -518,4 +552,9 @@ export function fetchFollowUp(investigationId: string, at: string): Promise<Foll
   return fetchJson<FollowUpResponse>(
     `/api/follow-ups/${encodeURIComponent(investigationId)}?at=${encodeURIComponent(at)}`,
   );
+}
+
+export function fetchEvents(scenario: string, at: string): Promise<EventsResponse> {
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
+  return fetchJson<EventsResponse>(`/api/events${query}`);
 }

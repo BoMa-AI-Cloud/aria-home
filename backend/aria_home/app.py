@@ -13,7 +13,7 @@ from aria_home.outcomes import evaluate_outcome, follow_up_for
 from aria_home.store import Store, investigation_id_for
 from aria_home.power_context import power_context
 from aria_home.provider import ProviderConfig, get_provider
-from aria_home.scenario import context_as_of, load_scenario, visible_records
+from aria_home.scenario import context_as_of, events_as_of, load_scenario, visible_records
 from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
 from aria_home.verification import verify_recovery
@@ -294,6 +294,23 @@ def create_app():
         except ValueError as exc:
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
         return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json")})
+
+    @app.get("/api/events")
+    def events_endpoint():
+        scn = _load_named_scenario(request.args.get("scenario"))
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic"}), 404
+        at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
+        if error:
+            return error
+        return jsonify(
+            {
+                "data_mode": "synthetic",
+                "scenario": scn.manifest.id,
+                "at": at.isoformat(),
+                "events": [event.model_dump(mode="json") for event in events_as_of(scn, at)],
+            }
+        )
 
     @app.get("/api/follow-ups/<investigation_id>")
     def get_follow_up_endpoint(investigation_id):

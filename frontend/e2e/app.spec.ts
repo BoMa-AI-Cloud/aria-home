@@ -120,3 +120,75 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
 
   expect(failedRequests).toEqual([]);
 });
+
+test("video scenario shows verification stages and simulated timeline", async ({ page }) => {
+  const failedRequests: string[] = [];
+  page.on("response", (response) => {
+    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+
+  await page.goto("http://127.0.0.1:5173/");
+
+  const demoControls = page.locator(".demo-controls");
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Outcome" }),
+  });
+  const timeline = page.locator("section", {
+    has: page.getByRole("heading", { name: "Simulated timeline" }),
+  });
+  const headline = outcome.locator(".outcome-status");
+
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+
+  const time1631 = demoControls.getByRole("button", { name: "16:31" });
+  await expect(time1631).toBeEnabled();
+  await time1631.click();
+  await expect(headline).toContainText("Thermostat telemetry missing");
+  await expect(outcome).toContainText("Follow-up rule:");
+  await expect(outcome).toContainText("Event time");
+  await expect(outcome).toContainText("Received time");
+  await expect(outcome).toContainText("Evaluation (replay) time");
+
+  const acknowledged = timeline.locator("article", { hasText: "scene_acknowledged" });
+  await expect(acknowledged).toContainText("Acknowledged, physical success unknown");
+  const hvacRequest = timeline.locator("article", { hasText: "hvac_request" });
+  await expect(hvacRequest).toHaveCount(0);
+
+  await demoControls.getByRole("button", { name: "18:21" }).click();
+  await expect(headline).toContainText("Thermostat reporting restored");
+  await expect(hvacRequest).toHaveCount(1);
+  await expect(hvacRequest).toContainText("property");
+  await expect(hvacRequest).toContainText("access_note");
+  await expect(hvacRequest).toContainText("manager_contact");
+  await expect(hvacRequest).toContainText("observations");
+  await expect(hvacRequest).not.toContainText("itinerary");
+  await expect(hvacRequest).not.toContainText("email");
+
+  await demoControls.getByRole("button", { name: "19:51" }).click();
+  await expect(headline).toContainText("Warming observed");
+  await expect(headline).not.toContainText("Temperature goal verified");
+
+  await demoControls.getByRole("button", { name: "20:21" }).click();
+  await expect(headline).toContainText("Temperature goal verified");
+  const report = timeline.locator("article", { hasText: "hvac_completion_report" });
+  await expect(report).toHaveCount(0);
+  await expect(timeline).not.toContainText("Corroboration only");
+
+  await demoControls.getByRole("button", { name: "20:46" }).click();
+  await expect(report).toHaveCount(1);
+  await expect(report).toContainText("Corroboration only, does not set the outcome");
+
+  await demoControls.getByRole("button", { name: "21:01" }).click();
+  await expect(headline).toContainText("Arrival expectation met");
+
+  const eventCards = timeline.locator(".event-card");
+  const count = await eventCards.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i += 1) {
+    await expect(eventCards.nth(i)).toContainText("SIMULATED");
+    await expect(eventCards.nth(i)).toContainText("Event time");
+    await expect(eventCards.nth(i)).toContainText("Available time");
+  }
+
+  expect(failedRequests).toEqual([]);
+});
