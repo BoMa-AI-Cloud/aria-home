@@ -7,7 +7,8 @@ from flask import Flask, jsonify, request
 
 from aria_home.contracts import SourceKind
 from aria_home.evidence import source_status
-from aria_home.metrics import circuit_activity, target_gap, temperature_trend
+from aria_home.metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
+from aria_home.power_context import power_context
 from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import load_scenario, visible_records
 
@@ -114,5 +115,31 @@ def create_app():
                 "circuits": {cid: _jsonable(circuit_activity(scenario.records, cid, start, at, at)) for cid in circuit_ids},
             }
         )
+
+    @app.get("/api/power-context")
+    def power_context_endpoint():
+        raw_at = request.args.get("at")
+        if raw_at:
+            try:
+                at = datetime.fromisoformat(raw_at.replace("Z", "+00:00"))
+            except ValueError:
+                return jsonify({"error": "at must be an ISO 8601 datetime"}), 400
+            if at.tzinfo is None or at.utcoffset() is None:
+                return jsonify({"error": "at must be timezone-aware"}), 400
+        else:
+            at = scenario.manifest.start + timedelta(hours=3)
+        start = at - timedelta(hours=3)
+        visible = visible_records(scenario.records, at)
+        result = power_context(visible, start, at, NOISE_FLOOR_W)
+        payload = result.model_dump(mode="json")
+        payload.update(
+            {
+                "data_mode": scenario.manifest.mode.value,
+                "computed_by": "deterministic code",
+                "at": at.isoformat(),
+                "window": {"start": start.isoformat(), "end": at.isoformat()},
+            }
+        )
+        return jsonify(payload)
 
     return app
