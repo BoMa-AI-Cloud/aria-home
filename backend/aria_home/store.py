@@ -101,6 +101,25 @@ class Store:
                     note TEXT,
                     UNIQUE(investigation_id, evaluated_at)
                 );
+                CREATE TABLE IF NOT EXISTS notifications (
+                    id TEXT PRIMARY KEY,
+                    investigation_id TEXT NOT NULL,
+                    audience TEXT NOT NULL,
+                    kind TEXT NOT NULL,
+                    idempotency_key TEXT NOT NULL UNIQUE,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    delivery TEXT NOT NULL DEFAULT 'simulated',
+                    state TEXT NOT NULL,
+                    refusal_reason TEXT
+                );
+                CREATE TABLE IF NOT EXISTS notification_acks (
+                    id TEXT PRIMARY KEY,
+                    notification_id TEXT NOT NULL,
+                    actor TEXT NOT NULL,
+                    acknowledged_at TEXT NOT NULL,
+                    UNIQUE(notification_id, actor, acknowledged_at)
+                );
                 """
             )
             cols = {r["name"] for r in conn.execute("PRAGMA table_info(follow_ups)").fetchall()}
@@ -347,6 +366,82 @@ class Store:
             }
             for r in rows
         ]
+
+    def save_notification(self, *, investigation_id, audience, kind, idempotency_key, payload, created_at, delivery="simulated", state="queued", refusal_reason=None):
+        notif_id = f"notif-{hashlib.sha256(idempotency_key.encode()).hexdigest()[:12]}"
+        with self._connection() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO notifications (id, investigation_id, audience, kind, idempotency_key, payload_json, created_at, delivery, state, refusal_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (notif_id, investigation_id, audience, kind, idempotency_key, json.dumps(_jsonable(payload)), _iso(_parse_dt(created_at)) or _iso(datetime.now(timezone.utc)), delivery, state, refusal_reason),
+            )
+            row = conn.execute("SELECT * FROM notifications WHERE idempotency_key = ?", (idempotency_key,)).fetchone()
+        return self._notification_from_row(row) if row else None
+
+    @staticmethod
+    def _notification_from_row(row):
+        return {
+            "id": row["id"],
+            "investigation_id": row["investigation_id"],
+            "audience": row["audience"],
+            "kind": row["kind"],
+            "idempotency_key": row["idempotency_key"],
+            "payload": json.loads(row["payload_json"]) if row["payload_json"] else {},
+            "payload_json": row["payload_json"],
+            "created_at": row["created_at"],
+            "delivery": row["delivery"],
+            "state": row["state"],
+            "refusal_reason": row["refusal_reason"] if "refusal_reason" in row.keys() else None,
+            "reason": row["refusal_reason"] if "refusal_reason" in row.keys() else None,
+        }
+
+    def update_notification_state(self, notification_id, state):
+        with self._connection() as conn:
+            conn.execute("UPDATE notifications SET state = ? WHERE id = ?", (state, notification_id))
+            row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
+        return self._notification_from_row(row) if row else None
+
+    def get_notification(self, notification_id):
+        with self._connection() as conn:
+            row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
+        if row is None:
+            return None
+        result = self._notification_from_row(row)
+        result["acks"] = self.list_acks(notification_id)
+        return result
+
+    def list_notifications(self, investigation_id=None):
+        with self._connection() as conn:
+            if investigation_id is None:
+                rows = conn.execute("SELECT * FROM notifications ORDER BY created_at, audience, id").fetchall()
+            else:
+                rows = conn.execute("SELECT * FROM notifications WHERE investigation_id = ? ORDER BY created_at, audience, id", (investigation_id,)).fetchall()
+        results = []
+        for row in rows:
+            item = self._notification_from_row(row)
+            item["acks"] = self.list_acks(item["id"])
+            results.append(item)
+        return results
+
+    def record_ack(self, notification_id, actor, acknowledged_at):
+        at = _parse_dt(acknowledged_at)
+        if at is None or at.tzinfo is None or at.utcoffset() is None:
+            raise ValueError("acknowledged_at must be timezone-aware")
+        ack_id = f"ack-{hashlib.sha256(f'{notification_id}|{actor}|{_iso(at)}'.encode()).hexdigest()[:12]}"
+        with self._connection() as conn:
+            exists = conn.execute("SELECT id FROM notifications WHERE id = ?", (notification_id,)).fetchone()
+            if exists is None:
+                return None
+            conn.execute(
+                "INSERT OR IGNORE INTO notification_acks (id, notification_id, actor, acknowledged_at) VALUES (?, ?, ?, ?)",
+                (ack_id, notification_id, str(actor), _iso(at)),
+            )
+            row = conn.execute("SELECT * FROM notification_acks WHERE notification_id = ? AND actor = ? AND acknowledged_at = ?", (notification_id, str(actor), _iso(at))).fetchone()
+        return {"id": row["id"], "notification_id": row["notification_id"], "actor": row["actor"], "acknowledged_at": row["acknowledged_at"], "by": row["actor"], "at": row["acknowledged_at"]}
+
+    def list_acks(self, notification_id):
+        with self._connection() as conn:
+            rows = conn.execute("SELECT * FROM notification_acks WHERE notification_id = ? ORDER BY acknowledged_at, actor", (notification_id,)).fetchall()
+        return [{"id": r["id"], "notification_id": r["notification_id"], "actor": r["actor"], "acknowledged_at": r["acknowledged_at"], "by": r["actor"], "at": r["acknowledged_at"]} for r in rows]
 
     def list_investigations(self):
         with self._connection() as conn:
