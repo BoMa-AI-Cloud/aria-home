@@ -9,6 +9,8 @@ from aria_home.contracts import SourceKind
 from aria_home.evidence import source_status
 from aria_home.metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
 from aria_home.investigator import investigate
+from aria_home.outcomes import evaluate_outcome, follow_up_for
+from aria_home.store import Store, investigation_id_for
 from aria_home.power_context import power_context
 from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import load_scenario, visible_records
@@ -166,5 +168,93 @@ def create_app():
         payload = result.model_dump(mode="json")
         payload["data_mode"] = "synthetic"
         return jsonify(payload)
+
+    _store = None
+    _scenarios = {}
+
+    def _get_store():
+        nonlocal _store
+        if _store is None:
+            _store = Store()
+        return _store
+
+    def _load_named_scenario(name):
+        import re
+
+        scenario_name = name or "demo_v1"
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", scenario_name):
+            return None
+        if scenario_name not in _scenarios:
+            if scenario_name == scenario.manifest.id:
+                _scenarios[scenario_name] = scenario
+            else:
+                path = SCENARIO_PATH.parent / scenario_name
+                if not (path / "manifest.json").is_file():
+                    return None
+                _scenarios[scenario_name] = load_scenario(path)
+        return _scenarios[scenario_name]
+
+    def _parse_at(raw_at, default):
+        if not raw_at:
+            return default, None
+        try:
+            at = datetime.fromisoformat(raw_at.replace("Z", "+00:00"))
+        except ValueError:
+            return None, (jsonify({"error": "at must be an ISO 8601 datetime", "data_mode": "synthetic"}), 400)
+        if at.tzinfo is None or at.utcoffset() is None:
+            return None, (jsonify({"error": "at must be timezone-aware", "data_mode": "synthetic"}), 400)
+        return at, None
+
+    def _follow_up_payload(store, investigation_id):
+        follow_up = store.get_follow_up(investigation_id)
+        row = store.get_follow_up_row(investigation_id)
+        if follow_up is None:
+            return None
+        payload = follow_up.model_dump(mode="json")
+        payload.update({"target": row["target"], "last_status": row["last_status"], "status": row["last_status"], "last_evaluated_at": row["last_evaluated_at"], "supporting_ids": row["supporting_ids"]})
+        return payload
+
+    @app.post("/api/investigations")
+    def create_investigation():
+        scn = _load_named_scenario(request.args.get("scenario"))
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic"}), 404
+        at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
+        if error:
+            return error
+        try:
+            provider = get_provider()
+        except ValueError as exc:
+            return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
+        result = investigate(scn, at, provider)
+        investigation_id = investigation_id_for(scn.manifest.id, at)
+        store = _get_store()
+        store.save_investigation(result, investigation_id=investigation_id, scenario=scn.manifest.id, evaluated_at=at)
+        try:
+            follow_up = follow_up_for(scn, investigation_id, at)
+        except ValueError as exc:
+            return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
+        outcome = evaluate_outcome(follow_up, scn.records, at)
+        store.save_follow_up(follow_up, outcome=outcome)
+        investigation_payload = result.model_dump(mode="json")
+        investigation_payload.update({"id": investigation_id, "investigation_id": investigation_id, "scenario": scn.manifest.id, "evaluated_at": at.isoformat()})
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "outcome": outcome.model_dump(mode="json")})
+
+    @app.get("/api/follow-ups/<investigation_id>")
+    def get_follow_up_endpoint(investigation_id):
+        store = _get_store()
+        follow_up = store.get_follow_up(investigation_id)
+        if follow_up is None:
+            return jsonify({"error": "follow-up not found", "data_mode": "synthetic"}), 404
+        at, error = _parse_at(request.args.get("at"), follow_up.deadline)
+        if error:
+            return error
+        investigation_row = store.get_investigation(investigation_id)
+        scenario_name = investigation_row["scenario"] if investigation_row else "demo_v1"
+        scn = _load_named_scenario(scenario_name) or scenario
+        outcome = evaluate_outcome(follow_up, scn.records, at)
+        store.record_outcome(investigation_id, outcome)
+        outcome_payload = outcome.model_dump(mode="json")
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id), "supporting_ids": outcome.supporting_ids})
 
     return app
