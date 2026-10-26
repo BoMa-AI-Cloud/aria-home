@@ -24,10 +24,10 @@ checks later measurements before it reports an outcome.
 - Follow-up outcomes checked against later measurements: deterministic outcome rules (warming observed / target reached / not observed by deadline / unable to verify), a SQLite store that survives restarts with per-evaluation outcome history, `POST /api/investigations` and `GET /api/follow-ups/<id>`, and scenario replay buttons with the outcome panel in the browser.
 - Recovery verification for the video scenario (thermostat reporting restored, warming observed, temperature goal verified, arrival expectation met), the `demo_video_v1` fixture with a committed deterministic stream generator, `GET /api/events`, and a labeled simulated timeline in the browser.
 - Scoped notifications to homeowner and property manager (Day 5, [handoff](docs/day5-handoff.md)): per-audience allowlists with recorded refusals, idempotent outbox with simulated delivery only, simulated acknowledgement that never changes readiness/outcome/verification, and the notifications panel with homeowner arrival update in the browser.
+- Evaluation of combined vs single-source evidence (Day 6, [handoff](docs/day6-handoff.md), [results](docs/evaluation.md)): 12 builder-labeled cases across 7 synthetic scenarios; combined matches every expected label while single-source conditions fall back to unsupported answers, and 24 operator-run live calls on muse-spark-1.3 and muse-wonder-1.0 passed the claim checks with 0 rejections.
 
 ### Planned
 
-- Day 3 onward: evaluation.
 - [Demo video plan and implementation gap map](docs/demo-script.md)
 
 ## Project status
@@ -39,6 +39,7 @@ checks later measurements before it reports an outcome.
 - [Day 3 handoff](docs/day3-handoff.md)
 - [Day 4 handoff](docs/day4-handoff.md)
 - [Day 5 handoff](docs/day5-handoff.md)
+- [Day 6 handoff](docs/day6-handoff.md)
 - [Build log](docs/build-log/README.md)
 
 ## What was pre-existing

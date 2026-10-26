@@ -13,6 +13,10 @@ Every file below was created during the event. No code, data, fixtures or assets
 | backend/aria_home/clock.py | yes | 20f67ec | none |
 | backend/aria_home/contracts.py | yes | 20f67ec | none |
 | backend/aria_home/evidence.py | yes | 20f67ec | none |
+| backend/aria_home/evaluation.py | yes | 53a06bd | none |
+| backend/eval/expected.json | yes | 53a06bd | none |
+| backend/eval/results-live.json | yes | 8b2f07d | none |
+| backend/eval/results-offline.json | yes | 53a06bd | none |
 | backend/aria_home/investigator.py | yes | 353415a | none |
 | backend/aria_home/metrics.py | yes | 24750c2 | none |
 | backend/aria_home/notifications.py | yes | 4723bba | none |
@@ -65,6 +69,7 @@ Every file below was created during the event. No code, data, fixtures or assets
 | backend/tests/test_clock.py | yes | 20f67ec | none |
 | backend/tests/test_demo_video_scenario.py | yes | b38c8b3 | none |
 | backend/tests/test_evidence.py | yes | 20f67ec | none |
+| backend/tests/test_evaluation.py | yes | 53a06bd | none |
 | backend/tests/test_health.py | yes | 79d2730 | none |
 | backend/tests/test_investigator.py | yes | 353415a | none |
 | backend/tests/test_metrics.py | yes | 24750c2 | none |
@@ -87,6 +92,8 @@ Every file below was created during the event. No code, data, fixtures or assets
 | docs/day3-handoff.md | yes | day3-05 | none |
 | docs/day4-handoff.md | yes | uncommitted | none |
 | docs/day5-handoff.md | yes | uncommitted | none |
+| docs/day6-handoff.md | yes | uncommitted | none |
+| docs/evaluation.md | yes | 53a06bd | none |
 | docs/demo-script.md | yes | day4-09 | none |
 | docs/existing-vs-new.md | yes | 37321b9 | none |
 | docs/readiness-rules.md | yes | day4-04 | none |
