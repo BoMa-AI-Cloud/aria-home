@@ -31,7 +31,7 @@
 
 ## Known gaps
 
-- No automated browser test yet (the browser check above was manual; `backend/tests/test_smoke_app.py` covers the API contract the page uses).
+- No automated browser test yet (closed on Day 2: see docs/day2-handoff.md) (the browser check above was manual; `backend/tests/test_smoke_app.py` covers the API contract the page uses).
 - The Investigation section is a placeholder until Day 3.
 - Open organizer questions, to be asked in Discord office hours: whether a hosted URL is expected for the live product; whether a clearly labeled simulated data feed is acceptable live; whether a submission can be edited before the deadline.
 

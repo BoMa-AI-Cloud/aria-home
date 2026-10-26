@@ -60,41 +60,50 @@ No license has been chosen yet. Until one is added, all rights are reserved by t
 
 ## Setup and run
 
-Backend (from `backend/`):
+Terminal 1: backend. From the repo root:
 
 ```
-# Windows PowerShell (run from backend/)
+# Windows PowerShell
+cd backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
 ```
-# macOS / Linux shells (run from backend/)
+# macOS / Linux shells
+cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-
-Then, from `backend/` with the virtual environment active:
 
 ```
 python -m pytest -q
 python -m flask --app aria_home.app:create_app run --port 5000
 ```
 
-Stop the server with Ctrl+C.
+Stop the backend server with Ctrl+C.
 
-Frontend (from the repo root or `frontend/`):
+Terminal 2: frontend. From the repo root:
 
 ```
+cd frontend
 npm ci
 npm run dev
-npm run build
-npm run typecheck
 ```
 
-`npm run dev` serves on port 5173 and proxies `/api` to port 5000. Stop the dev server with Ctrl+C.
+`npm run dev` stays running; stop with Ctrl+C. It serves on port 5173 and proxies `/api` to port 5000.
+
+In a third terminal, also from frontend/:
+
+```
+npm run build
+npm run typecheck
+npm run test:e2e
+```
+
+`npm run test:e2e` starts its own backend and frontend servers on ports 5000 and 5173, so stop the dev servers first. It runs the Playwright end-to-end test in the installed Google Chrome (no browser download).
 
 Mock mode needs no environment variables. Live mode uses four variables:
 

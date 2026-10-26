@@ -6,16 +6,20 @@ cards. It contains no API keys and no provider settings.
 
 ## Run the frontend
 
-From `C:\aria-home\frontend`:
+From `frontend/`:
 
 ```
-npm install
+npm ci
 npm run dev
 ```
 
 The dev server proxies `/api` to `http://127.0.0.1:5000`, so start the
-backend first (see root README "Run the backend").
+backend first (see root README "Setup and run").
+
+Also from `frontend/`:
 
 ```
 npm run build
+npm run typecheck
+npm run test:e2e
 ```
