@@ -60,7 +60,8 @@ def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime,
     ensure_aware(start, "start")
     ensure_aware(end, "end")
     ensure_aware(now, "now")
-    candidates = [r for r in records if r.source == SourceKind.thermostat and r.quantity == "indoor_temp" and r.subject == zone]
+    room_candidates = [r for r in records if r.source == SourceKind.room_sensor and r.quantity == "indoor_temp" and r.subject == zone]
+    candidates = room_candidates or [r for r in records if r.source == SourceKind.thermostat and r.quantity == "indoor_temp" and r.subject == zone]
     seen: set[str] = set()
     deduped: list[EvidenceRecord] = []
     for record in candidates:

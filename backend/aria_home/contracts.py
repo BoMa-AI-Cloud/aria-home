@@ -15,6 +15,7 @@ class SourceKind(str, Enum):
     thermostat = "thermostat"
     electrical = "electrical"
     weather = "weather"
+    room_sensor = "room_sensor"
 
 
 class EvidenceKind(str, Enum):

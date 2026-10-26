@@ -42,9 +42,11 @@ def create_app():
             at = scenario.manifest.start + timedelta(hours=3)
 
         visible = visible_records(scenario.records, at)
+        has_room_sensor = any(r.source is SourceKind.room_sensor for r in scenario.records)
         statuses = [
             source_status(source, visible, at, mode=scenario.manifest.mode)
             for source in SourceKind
+            if source is not SourceKind.room_sensor or has_room_sensor
         ]
         return jsonify(
             {

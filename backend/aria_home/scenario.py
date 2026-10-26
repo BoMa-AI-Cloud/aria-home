@@ -38,6 +38,28 @@ class ScenarioManifest(BaseModel):
         return value
 
 
+class ScenarioEvent(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(min_length=1)
+    kind: str = Field(min_length=1)
+    event_time: datetime
+    available_at: datetime
+    simulated: bool = True
+    payload: dict = Field(default_factory=dict)
+
+    @field_validator("event_time", "available_at")
+    @classmethod
+    def _aware(cls, value):
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("event datetimes must be timezone-aware")
+        return value
+
+
+SimulatedEvent = ScenarioEvent
+ActorEvent = ScenarioEvent
+
+
 @dataclass
 class Scenario:
     manifest: ScenarioManifest
@@ -46,6 +68,7 @@ class Scenario:
     confirmation: HomeownerConfirmation | None = None
     path: Path | None = field(default=None, repr=False)
     trips: list[Trip] = field(default_factory=list)
+    events: list["ScenarioEvent"] = field(default_factory=list)
 
     @property
     def trip_revisions(self):
@@ -252,7 +275,10 @@ def load_scenario(path) -> Scenario:
     trips: list[Trip] = []
     confirmation: HomeownerConfirmation | None = None
 
-    for filename in SOURCE_FILES:
+    source_files = list(SOURCE_FILES)
+    if (base / "room_sensor.json").is_file():
+        source_files.append("room_sensor.json")
+    for filename in source_files:
         payload = _read_json(base / filename)
         if isinstance(payload, list):
             rows = payload
@@ -298,9 +324,23 @@ def load_scenario(path) -> Scenario:
 
     trips = sorted(trips, key=_trip_sort_key)
     trip = trips[-1] if trips else None
-    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, path=base, trips=trips)
+    events: list[ScenarioEvent] = []
+    events_path = base / "events.json"
+    if events_path.is_file():
+        events_payload = _read_json(events_path)
+        if isinstance(events_payload, list):
+            event_rows = events_payload
+        else:
+            event_rows = events_payload.get("events", events_payload.get("records", []))
+        events = [ScenarioEvent.model_validate(row) for row in event_rows]
+    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, path=base, trips=trips, events=events)
 
 
 def visible_records(records: list[EvidenceRecord], now: datetime) -> list[EvidenceRecord]:
     ensure_aware(now, "now")
     return [r for r in records if r.received_at <= now]
+
+
+def events_as_of(scenario, now: datetime) -> list[ScenarioEvent]:
+    ensure_aware(now, "now")
+    return [event for event in (getattr(scenario, "events", None) or []) if event.available_at <= now]
