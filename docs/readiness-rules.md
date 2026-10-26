@@ -137,6 +137,70 @@ Follow-up outcomes are decided by deterministic code in
   after the follow-up was created, the note also carries "An observed change
   after a reported action does not prove what caused it."
 
+## Recovery verification
+
+Recovery verification is decided by deterministic code in
+`backend/aria_home/verification.py` (`verify_recovery(scenario, followup, now)`
+-> `{stage, reasons, supporting_ids, corroboration_ids, evaluated_at}`), not by
+the model. `GET /api/follow-ups/<id>` also returns it as `verification` for
+scenarios with room-sensor records. It uses only records with
+`received_at <= now` and events with `available_at <= now`.
+
+Named constants in `verification.py`:
+
+| Constant | Value | Meaning |
+|---|---|---|
+| `GOAL_HOLD_S` | 1800 s | Every room-sensor reading at/above target for at least this long is required for `goal_verified`. |
+| `MAX_GAP_CADENCE_MULTIPLIER` | 2 | A gap over 2x cadence breaks freshness/gap checks and the goal-hold window (freshness itself is stale after 2x cadence in `evidence.py`). |
+| `REPORT_EVENT_KIND` | `hvac_completion_report` | The only event kind listed as corroboration. |
+| `CORROBORATION_EVENT_KINDS` | `(hvac_completion_report,)` | Visible events listed in `corroboration_ids`, never in `supporting_ids`. |
+| `NON_CORROBORATING_EVENT_KINDS` | manager acknowledgement / HVAC authorization / `service_visit` kinds | Human/simulated events that never change the stage. |
+| `HEATING_REPORTED_STATES` / `NON_HEATING_REPORTED_STATES` | `heating` / `idle`, `off`, `cooling`, etc. | Reported thermostat states that support or contradict heating. |
+| `MAPPED_HEATING_EQUIPMENT` | `furnace`, `blower`, `heating`, `hvac`, `heat_pump`, `heater` | Circuit bindings treated as the mapped heating circuit. Its noise floor reuses `metrics.NOISE_FLOOR_W` (15 W). |
+| Warming thresholds | `FollowUp.min_samples` (3), `FollowUp.min_rise_f` (2.0 F) | Reused from `outcomes.py`, applied to room-sensor readings only. |
+
+Stages, in order (each requires the previous):
+
+1. `telemetry_missing`: no fresh thermostat `indoor_temp` telemetry; freshness
+   is `evidence.freshness` (missing value, or age over 2x expected cadence).
+2. `reporting_restored`: fresh thermostat telemetry after a gap over 2x
+   cadence. It never closes anything alone.
+3. `warming_observed`: at least `min_samples` room-sensor (not thermostat)
+   `indoor_temp` readings after the follow-up's `created_at`, first-to-last
+   rise at least `min_rise_f`, and neither the latest reported thermostat
+   state nor the latest fresh mapped-circuit activity contradicts heating
+   (a non-heating reported state, or no active mapped circuit when one is
+   freshly checked, contradicts). Electrical activity is supporting only:
+   its ids may appear in `supporting_ids`, but watts alone never advance
+   the stage, and it is never proof of useful heat.
+4. `goal_verified`: a contiguous set of room-sensor readings, all observed
+   at or before the follow-up deadline, where every reading is at/above the
+   target for at least `GOAL_HOLD_S`, with no gap longer than 2x cadence.
+   Any dip below target or over-cadence gap restarts the window.
+5. `arrival_met`: `goal_verified`, evaluated at or after the confirmed
+   planned arrival (`context_as_of` trip), with every room-sensor reading
+   from the verification time through that arrival at/above target and no
+   gap over 2x cadence in that span.
+
+If room-sensor readings are missing or stale (per `evidence.freshness`) at a
+stage that needs them — after reporting is restored, including before
+`goal_verified`/`arrival_met` can be claimed — the stage is
+`unable_to_verify`, never a success stage. Missing room readings after the
+follow-up was created also give `unable_to_verify`.
+
+Human statements and events (manager acknowledgement, `service_visit`,
+`hvac_completion_report`, and all other events) never change the stage. A
+visible `hvac_completion_report` is listed only in `corroboration_ids`
+(also mirrored as `corroboration`), never in `supporting_ids`, with the
+reason that it is corroboration only. In `demo_video_v1` the report is
+available at 20:45, after `goal_verified` at 20:21, so it cannot create or
+advance that verification.
+
+For `demo_video_v1` with a follow-up created by `POST /api/investigations`
+at 16:31: 16:31 `telemetry_missing`, 18:21 `reporting_restored`, 18:51
+`warming_observed`, 19:51 still `warming_observed` (target first reached at
+19:50, hold not yet complete), 20:21 `goal_verified`, 21:01 `arrival_met`.
+
 ## Limitations
 
 - Projection is a linear extrapolation of the observed trend; it assumes the

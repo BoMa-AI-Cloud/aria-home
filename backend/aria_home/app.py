@@ -16,6 +16,7 @@ from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import context_as_of, load_scenario, visible_records
 from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
+from aria_home.verification import verify_recovery
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
 
@@ -309,6 +310,10 @@ def create_app():
         outcome = evaluate_outcome(follow_up, scn.records, at)
         store.record_outcome(investigation_id, outcome)
         outcome_payload = outcome.model_dump(mode="json")
-        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id), "supporting_ids": outcome.supporting_ids, "history": store.list_outcomes(investigation_id)})
+        payload = {"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id), "supporting_ids": outcome.supporting_ids, "history": store.list_outcomes(investigation_id)}
+        if any(r.source is SourceKind.room_sensor for r in scn.records):
+            verification = verify_recovery(scn, follow_up, at)
+            payload["verification"] = {**verification, "evaluated_at": verification["evaluated_at"].isoformat()}
+        return jsonify(payload)
 
     return app
