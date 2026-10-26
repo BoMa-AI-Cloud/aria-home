@@ -1,0 +1,10 @@
+{
+  "id": "demo_no_followup_v1",
+  "version": "1",
+  "mode": "synthetic",
+  "description": "Synthetic demo-cabin: no thermostat readings after 18:00.",
+  "author": "ARIA Home (synthetic)",
+  "created": "2026-10-26",
+  "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created.",
+  "start": "2026-01-16T15:00:00-05:00"
+}
