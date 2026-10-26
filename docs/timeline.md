@@ -30,6 +30,7 @@ Times for commits come from `git log`. EDT = UTC-4.
 - Open: organizer questions (build-start time, hosted URL, labeled simulated data live, editing a submission) to be asked in Discord office hours. Investigation output persistence and follow-up outcomes are not built yet.
 - Next (Day 4): persistent follow-through: store each investigation and its expected follow-up, ingest later measurements, and decide warming observed / target reached / not observed by the deadline / unable to verify, surviving restarts.
 - 2026-10-26: Verification repair of four audit findings (see docs/day3-handoff.md).
+- 2026-10-26: Demo video plan and implementation gap map written (docs/demo-script.md).
 
 ## How the code was written
 

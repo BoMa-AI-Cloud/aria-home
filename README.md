@@ -27,6 +27,7 @@ checks later measurements before it reports an outcome.
 - Day 3 onward: follow-up outcomes checked against later measurements.
 - Day 3 onward: scoped notifications to homeowner and property manager.
 - Day 3 onward: evaluation.
+- [Demo video plan and implementation gap map](docs/demo-script.md)
 
 ## Project status
 
