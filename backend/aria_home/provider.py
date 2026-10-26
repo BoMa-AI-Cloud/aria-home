@@ -215,6 +215,50 @@ class MockProvider:
         self.mode = "mock"
 
     def generate(self, prompt=None, *, messages=None, max_tokens=None):
+        text_in = ""
+        if isinstance(prompt, str):
+            text_in = prompt
+        elif messages:
+            text_in = " ".join(str(m.get("content", "")) if isinstance(m, dict) else str(m) for m in messages)
+        elif prompt is not None:
+            text_in = str(prompt)
+        if "inv-v1" in text_in:
+            import json as _json
+            from datetime import datetime as _dt, timedelta as _td
+
+            pack, when = {}, "2026-01-16T18:30:00+00:00"
+            marker = "Evidence pack (JSON):\n"
+            if marker in text_in:
+                try:
+                    pack = _json.loads(text_in.split(marker, 1)[1])
+                except Exception:
+                    pack = {}
+            elif "{" in text_in:
+                try:
+                    pack = _json.loads(text_in[text_in.index("{"):])
+                except Exception:
+                    pack = {}
+            ids = pack.get("evidence_ids") or [e.get("id") for e in pack.get("evidence", []) if isinstance(e, dict) and e.get("id")]
+            trend_id = "metric:indoor_trend" if "metric:indoor_trend" in ids else (ids[0] if ids else "metric:indoor_trend")
+            power_id = "power:continuity" if "power:continuity" in ids else trend_id
+            if pack.get("at"):
+                try:
+                    when = (_dt.fromisoformat(str(pack["at"]).replace("Z", "+00:00")) + _td(minutes=30)).isoformat()
+                except Exception:
+                    pass
+            payload = {
+                "observations": [
+                    {"text": "[MOCK] Indoor temperature trend evidence is available for review.", "evidence_ids": [trend_id]},
+                    {"text": "[MOCK] Broader power continuity evidence is available for review.", "evidence_ids": [power_id]},
+                ],
+                "hypotheses": [{"text": "[MOCK] The property may not yet be ready on arrival based on the cited trend.", "supporting_ids": [trend_id], "conflicting_ids": []}],
+                "unknowns": ["Whether heating equipment is receiving power is not established by the cited evidence."],
+                "clarification": "Who should respond first if the indoor temperature has not improved by the next check?",
+                "follow_up": {"observation": "Take another indoor temperature reading and review the trend.", "when": when},
+                "readiness": "cannot_tell",
+                "limitations": ["Mock example only; not live inference."],
+            }
+            return ProviderResult(ok=True, mode="mock", requested_model=self.model_id, answered_model=self.model_id, text=_json.dumps(payload), latency_ms=0.0, input_tokens=None, output_tokens=None, error=None)
         return ProviderResult(
             ok=True,
             mode="mock",

@@ -8,6 +8,7 @@ from flask import Flask, jsonify, request
 from aria_home.contracts import SourceKind
 from aria_home.evidence import source_status
 from aria_home.metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
+from aria_home.investigator import investigate
 from aria_home.power_context import power_context
 from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import load_scenario, visible_records
@@ -143,6 +144,27 @@ def create_app():
                 "window": {"start": start.isoformat(), "end": at.isoformat()},
             }
         )
+        return jsonify(payload)
+
+    @app.get("/api/investigation")
+    def investigation():
+        raw_at = request.args.get("at")
+        if raw_at:
+            try:
+                at = datetime.fromisoformat(raw_at.replace("Z", "+00:00"))
+            except ValueError:
+                return jsonify({"error": "at must be an ISO 8601 datetime"}), 400
+            if at.tzinfo is None or at.utcoffset() is None:
+                return jsonify({"error": "at must be timezone-aware"}), 400
+        else:
+            at = scenario.manifest.start + timedelta(hours=3)
+        try:
+            provider = get_provider()
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        result = investigate(scenario, at, provider)
+        payload = result.model_dump(mode="json")
+        payload["data_mode"] = "synthetic"
         return jsonify(payload)
 
     return app
