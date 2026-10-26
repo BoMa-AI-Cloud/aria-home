@@ -237,3 +237,23 @@ def test_rounded_numbers_validate():
     assert validate(data, pack) == []
     data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Gap is -15.899999999999999 degrees."
     assert any("number not present" in r for r in validate(data, pack))
+
+def test_signed_gap_absolute_value_passes():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Indoor is 15.9 F below the 68 F target."
+    assert validate(data, pack) == []
+
+def test_signed_gap_negative_value_passes():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "The gap is -15.9 F."
+    assert validate(data, pack) == []
+
+def test_unrelated_gap_value_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "17.3 F below target."
+    assert any("number not present" in r for r in validate(data, pack))
+
+def test_unrounded_gap_value_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "The gap is -15.899999999999999 F."
+    assert any("number not present" in r for r in validate(data, pack))
