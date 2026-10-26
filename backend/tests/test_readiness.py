@@ -66,8 +66,64 @@ def test_demo_v1_at_1800_is_at_risk():
     assert result.status == "at_risk"
     assert any("not a guaranteed prediction" in r for r in result["reasons"])
     assert result["inputs"]["gap"] == -15.9
+    assert result["target_at_arrival"] is None
+    assert result.target_at_arrival is None
     assert pack["readiness"]["status"] == "at_risk"
     assert pack["computed_readiness"] == "at_risk"
+
+
+def test_demo_recovery_at_1900_is_arrival_passed_not_met_at_arrival():
+    from datetime import datetime
+
+    scenario = load_scenario(SCENARIO_DIR.parent / "demo_recovery_v1")
+    at = datetime.fromisoformat("2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    result = compute_readiness(pack, at)
+    assert result["status"] == "arrival_passed"
+    assert result["target_at_arrival"] == "not_met"
+    assert result.target_at_arrival == "not_met"
+    assert pack["computed_readiness"] == "arrival_passed"
+    assert any("not met at arrival" in r for r in result["reasons"])
+
+
+def test_demo_recovery_at_2031_is_arrival_passed_not_met_at_arrival():
+    from datetime import datetime
+
+    scenario = load_scenario(SCENARIO_DIR.parent / "demo_recovery_v1")
+    at = datetime.fromisoformat("2026-01-16T20:31:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    result = compute_readiness(pack, at)
+    assert result["status"] == "arrival_passed"
+    assert result["target_at_arrival"] == "not_met"
+    assert pack["computed_readiness"] == "arrival_passed"
+    assert any("not met at arrival" in r for r in result["reasons"])
+
+
+def test_demo_video_at_2101_is_arrival_passed_met_at_arrival():
+    from datetime import datetime
+
+    scenario = load_scenario(SCENARIO_DIR.parent / "demo_video_v1")
+    at = datetime.fromisoformat("2026-01-16T21:01:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    result = compute_readiness(pack, at)
+    assert result["status"] == "arrival_passed"
+    assert result["target_at_arrival"] == "met"
+    assert pack["computed_readiness"] == "arrival_passed"
+    assert any("target was met at arrival" in r and "not met" not in r for r in result["reasons"])
+
+
+def test_before_arrival_nothing_changes():
+    from datetime import datetime
+
+    scenario = load_scenario(SCENARIO_DIR.parent / "demo_video_v1")
+    at = datetime.fromisoformat("2026-01-16T20:21:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    assert compute_readiness(pack, at)["status"] == "on_track"
+    scenario = load_scenario(SCENARIO_DIR.parent / "demo_recovery_v1")
+    at = datetime.fromisoformat("2026-01-16T17:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    assert compute_readiness(pack, at)["status"] in ("at_risk", "cannot_tell")
+    assert compute_readiness(pack, at)["status"] != "arrival_passed"
 
 
 def test_demo_v1_model_on_track_rejected():
@@ -84,6 +140,7 @@ def test_demo_v1_model_on_track_rejected():
 
 def test_slightly_positive_slope_alone_never_on_track():
     _, at, pack = _pack()
+    pack["trip"]["planned_arrival"] = (at + timedelta(hours=2)).isoformat()
     assert compute_readiness(pack, at)["status"] == "at_risk"
     small = copy.deepcopy(pack)
     small["metrics"]["target_gap"].update({"gap": -1.0, "latest_value": 67.0})
@@ -96,6 +153,7 @@ def test_slightly_positive_slope_alone_never_on_track():
 
 def test_missing_stale_conflicting_too_few_and_low_coverage_cannot_tell():
     _, at, pack = _pack()
+    pack["trip"]["planned_arrival"] = (at + timedelta(hours=2)).isoformat()
 
     missing = copy.deepcopy(pack)
     missing["metrics"]["indoor_trend"]["last_value"] = None
@@ -124,6 +182,7 @@ def test_missing_stale_conflicting_too_few_and_low_coverage_cannot_tell():
 
 def test_reading_at_target_on_track():
     _, at, pack = _pack()
+    pack["trip"]["planned_arrival"] = (at + timedelta(hours=2)).isoformat()
     at_target = copy.deepcopy(pack)
     at_target["metrics"]["target_gap"].update({"gap": 0.0, "latest_value": 68.0})
     at_target["metrics"]["indoor_trend"]["last_value"] = 68.0

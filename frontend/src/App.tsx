@@ -105,6 +105,7 @@ const READINESS_LABEL: Record<Readiness, string> = {
   on_track: "On track",
   at_risk: "At risk",
   cannot_tell: "Cannot tell",
+  arrival_passed: "Arrival passed",
 };
 
 function formatAge(age_s: number | null): string {

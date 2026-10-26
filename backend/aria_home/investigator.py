@@ -69,7 +69,7 @@ Reply with JSON only, matching this schema exactly (no extra fields):
  "unknowns": [str],
  "clarification": str,
  "follow_up": {"observation": str, "when": ISO-8601 datetime str},
- "readiness": "on_track" | "at_risk" | "cannot_tell",
+ "readiness": "on_track" | "at_risk" | "cannot_tell" | "arrival_passed",
  "limitations": [str]}
 """
 
@@ -120,7 +120,7 @@ class InvestigationOutput(_Strict):
     unknowns: list[str] = Field(default_factory=list)
     clarification: str
     follow_up: FollowUp
-    readiness: Literal["on_track", "at_risk", "cannot_tell"]
+    readiness: Literal["on_track", "at_risk", "cannot_tell", "arrival_passed"]
     limitations: list[str] = Field(default_factory=list)
 
 ModelOutput = InvestigationOutput

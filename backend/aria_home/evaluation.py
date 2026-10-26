@@ -135,18 +135,30 @@ def evaluate_cases(cases=None, scenario_cache=None):
             filtered = _filtered(scenario, condition)
             pack = build_evidence_pack(filtered, at)
             got = pack["computed_readiness"]
+            readiness_obj = pack.get("readiness") if isinstance(pack.get("readiness"), dict) else {}
+            got_target = readiness_obj.get("target_at_arrival")
+            if got_target is None and isinstance(readiness_obj.get("inputs"), dict):
+                got_target = readiness_obj["inputs"].get("target_at_arrival") or readiness_obj["inputs"].get("arrival_outcome")
+            if got == "arrival_passed" and got_target is None:
+                got_target = "unknown"
             stage = None
             if followups[name] is not None:
                 stage = verify_recovery(filtered, followups[name], at)["stage"]
             expected_stage = case.get("expected_verification")
+            expected_target = case.get("expected_target_at_arrival")
             readiness_correct = got == case["expected_readiness"]
+            target_correct = None if expected_target is None else got_target == expected_target
             verification_correct = None if expected_stage is None else stage == expected_stage
-            correct = readiness_correct and verification_correct is not False
+            correct = readiness_correct and verification_correct is not False and target_correct is not False
             if correct:
                 classification = "correct"
             elif not readiness_correct and got == "cannot_tell":
                 classification = "unsupported"
             elif not readiness_correct:
+                classification = "wrong"
+            elif target_correct is False and got_target in (None, "unknown"):
+                classification = "unsupported"
+            elif target_correct is False:
                 classification = "wrong"
             else:
                 classification = "unsupported"
@@ -159,6 +171,10 @@ def evaluate_cases(cases=None, scenario_cache=None):
                 "expected_readiness": case["expected_readiness"],
                 "got_readiness": got,
                 "readiness_correct": readiness_correct,
+                "expected_target_at_arrival": expected_target,
+                "target_at_arrival": got_target,
+                "got_target_at_arrival": got_target,
+                "target_at_arrival_correct": target_correct,
                 "expected_verification": expected_stage,
                 "got_verification": stage,
                 "verification_correct": verification_correct,
@@ -174,11 +190,14 @@ def _totals(rows):
     for condition in CONDITIONS:
         group = [r for r in rows if r["condition"] == condition]
         scored = [r for r in group if r["verification_correct"] is not None]
+        target_scored = [r for r in group if r.get("target_at_arrival_correct") is not None]
         totals[condition] = {
             "cases": len(group),
             "readiness_correct": sum(r["readiness_correct"] for r in group),
             "readiness_wrong": sum(r["classification"] == "wrong" for r in group),
             "readiness_unsupported": sum(r["classification"] == "unsupported" for r in group),
+            "target_at_arrival_scored": len(target_scored),
+            "target_at_arrival_correct": sum(bool(r["target_at_arrival_correct"]) for r in target_scored),
             "verification_scored": len(scored),
             "verification_correct": sum(bool(r["verification_correct"]) for r in scored),
             "fully_correct": sum(r["correct"] for r in group),
@@ -292,11 +311,17 @@ def check_live_allowed(live, max_calls, env=None):
 
 
 def _expected_label(row):
-    return row["expected_readiness"] if row["expected_verification"] is None else f"{row['expected_readiness']} / {row['expected_verification']}"
+    label = row["expected_readiness"] if row["expected_verification"] is None else f"{row['expected_readiness']} / {row['expected_verification']}"
+    if row.get("expected_target_at_arrival") is not None:
+        label += f" (target at arrival: {row['expected_target_at_arrival']})"
+    return label
 
 
 def _got_label(row):
-    return row["got_readiness"] if row["got_verification"] is None else f"{row['got_readiness']} / {row['got_verification']}"
+    label = row["got_readiness"] if row["got_verification"] is None else f"{row['got_readiness']} / {row['got_verification']}"
+    if row.get("expected_target_at_arrival") is not None or row.get("target_at_arrival") is not None:
+        label += f" (target at arrival: {row.get('target_at_arrival')})"
+    return label
 
 
 def render_markdown(results):
@@ -306,16 +331,16 @@ def render_markdown(results):
         "",
         "Synthetic scenarios, expected labels written by the builder, small sample, not a benchmark of real homes.",
         "",
-        "The 12 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat.",
+        "The 12 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat.",
         "",
         "## Totals",
         "",
-        "| Condition | Cases | Readiness correct | Wrong | Unsupported | Verification correct (scored) | Fully correct |",
-        "|---|---|---|---|---|---|---|",
+        "| Condition | Cases | Readiness correct | Wrong | Unsupported | Target at arrival correct (scored) | Verification correct (scored) | Fully correct |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for condition in CONDITIONS:
         t = totals[condition]
-        lines.append(f"| {condition} | {t['cases']} | {t['readiness_correct']} | {t['readiness_wrong']} | {t['readiness_unsupported']} | {t['verification_correct']} ({t['verification_scored']}) | {t['fully_correct']} |")
+        lines.append(f"| {condition} | {t['cases']} | {t['readiness_correct']} | {t['readiness_wrong']} | {t['readiness_unsupported']} | {t.get('target_at_arrival_correct', 0)} ({t.get('target_at_arrival_scored', 0)}) | {t['verification_correct']} ({t['verification_scored']}) | {t['fully_correct']} |")
     lines += [
         "",
         "## Cases",
@@ -350,7 +375,18 @@ def write_offline(results, results_path=RESULTS_PATH, docs_path=DOCS_PATH):
     results_path.parent.mkdir(parents=True, exist_ok=True)
     docs_path.parent.mkdir(parents=True, exist_ok=True)
     results_path.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
-    docs_path.write_text(render_markdown(results), encoding="utf-8")
+    rendered = render_markdown(results)
+    if docs_path.exists():
+        existing = docs_path.read_text(encoding="utf-8")
+        marker = "## Live model condition"
+        if marker in existing:
+            live = existing[existing.index(marker):].strip()
+            if "live run used the earlier labels" not in live:
+                heading, _, rest = live.partition("\n")
+                note = "Note: the live run used the earlier labels (before the strictly-after-arrival correction and target-at-arrival scoring), so its computed-readiness column reflects those earlier labels."
+                live = heading + "\n\n" + note + ("\n" + rest if rest else "")
+            rendered = rendered + ("" if rendered.endswith("\n\n") else "\n" if rendered.endswith("\n") else "\n\n") + live + "\n"
+    docs_path.write_text(rendered, encoding="utf-8")
     return results_path, docs_path
 
 

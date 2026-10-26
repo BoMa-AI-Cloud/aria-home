@@ -145,6 +145,7 @@ section {
 .readiness-on_track { border-left: 0.4rem solid #1e7b34; }
 .readiness-at_risk { border-left: 0.4rem solid #9a6a00; }
 .readiness-cannot_tell { border-left: 0.4rem solid #6a3fb5; }
+.readiness-arrival_passed { border-left: 0.4rem solid #345f7a; }
 .readiness-unknown { border-left: 0.4rem solid #6b6b6b; }
 
 .chip {

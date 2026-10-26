@@ -2,17 +2,17 @@
 
 Synthetic scenarios, expected labels written by the builder, small sample, not a benchmark of real homes.
 
-The 12 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat.
+The 12 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat.
 
 ## Totals
 
-| Condition | Cases | Readiness correct | Wrong | Unsupported | Verification correct (scored) | Fully correct |
-|---|---|---|---|---|---|---|
-| combined | 12 | 12 | 0 | 0 | 5 (5) | 12 |
-| thermostat_only | 12 | 10 | 0 | 4 | 1 (5) | 8 |
-| room_sensor_only | 12 | 4 | 0 | 8 | 1 (5) | 4 |
-| electrical_only | 12 | 4 | 0 | 8 | 1 (5) | 4 |
-| calendar_only | 12 | 4 | 0 | 8 | 1 (5) | 4 |
+| Condition | Cases | Readiness correct | Wrong | Unsupported | Target at arrival correct (scored) | Verification correct (scored) | Fully correct |
+|---|---|---|---|---|---|---|---|
+| combined | 12 | 12 | 0 | 0 | 4 (4) | 5 (5) | 12 |
+| thermostat_only | 12 | 10 | 0 | 4 | 4 (4) | 1 (5) | 8 |
+| room_sensor_only | 12 | 7 | 0 | 9 | 1 (4) | 1 (5) | 3 |
+| electrical_only | 12 | 7 | 0 | 9 | 0 (4) | 1 (5) | 3 |
+| calendar_only | 12 | 7 | 0 | 9 | 0 (4) | 1 (5) | 3 |
 
 ## Cases
 
@@ -28,21 +28,21 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 | demo_recovery_v1@18:00 | room_sensor_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_recovery_v1@18:00 | electrical_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_recovery_v1@18:00 | calendar_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@19:00 | combined | at_risk | at_risk / unable_to_verify | yes |
-| demo_recovery_v1@19:00 | thermostat_only | at_risk | at_risk / unable_to_verify | yes |
-| demo_recovery_v1@19:00 | room_sensor_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@19:00 | electrical_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@19:00 | calendar_only | at_risk | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@20:31 | combined | on_track | on_track / unable_to_verify | yes |
-| demo_recovery_v1@20:31 | thermostat_only | on_track | on_track / unable_to_verify | yes |
-| demo_recovery_v1@20:31 | room_sensor_only | on_track | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@20:31 | electrical_only | on_track | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_recovery_v1@20:31 | calendar_only | on_track | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_no_followup_v1@20:31 | combined | cannot_tell | cannot_tell / telemetry_missing | yes |
-| demo_no_followup_v1@20:31 | thermostat_only | cannot_tell | cannot_tell / telemetry_missing | yes |
-| demo_no_followup_v1@20:31 | room_sensor_only | cannot_tell | cannot_tell / telemetry_missing | yes |
-| demo_no_followup_v1@20:31 | electrical_only | cannot_tell | cannot_tell / telemetry_missing | yes |
-| demo_no_followup_v1@20:31 | calendar_only | cannot_tell | cannot_tell / telemetry_missing | yes |
+| demo_recovery_v1@19:00 | combined | arrival_passed (target at arrival: not_met) | arrival_passed / unable_to_verify (target at arrival: not_met) | yes |
+| demo_recovery_v1@19:00 | thermostat_only | arrival_passed (target at arrival: not_met) | arrival_passed / unable_to_verify (target at arrival: not_met) | yes |
+| demo_recovery_v1@19:00 | room_sensor_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_recovery_v1@19:00 | electrical_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_recovery_v1@19:00 | calendar_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_recovery_v1@20:31 | combined | arrival_passed (target at arrival: not_met) | arrival_passed / unable_to_verify (target at arrival: not_met) | yes |
+| demo_recovery_v1@20:31 | thermostat_only | arrival_passed (target at arrival: not_met) | arrival_passed / unable_to_verify (target at arrival: not_met) | yes |
+| demo_recovery_v1@20:31 | room_sensor_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_recovery_v1@20:31 | electrical_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_recovery_v1@20:31 | calendar_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_no_followup_v1@20:31 | combined | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: not_met) | yes |
+| demo_no_followup_v1@20:31 | thermostat_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: not_met) | yes |
+| demo_no_followup_v1@20:31 | room_sensor_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_no_followup_v1@20:31 | electrical_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_no_followup_v1@20:31 | calendar_only | arrival_passed (target at arrival: not_met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
 | demo_revised_v1@18:00 | combined | cannot_tell | cannot_tell | yes |
 | demo_revised_v1@18:00 | thermostat_only | cannot_tell | cannot_tell | yes |
 | demo_revised_v1@18:00 | room_sensor_only | cannot_tell | cannot_tell | yes |
@@ -73,11 +73,11 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 | demo_video_v1@20:21 | room_sensor_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@20:21 | electrical_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@20:21 | calendar_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_video_v1@21:01 | combined | on_track / arrival_met | on_track / arrival_met | yes |
-| demo_video_v1@21:01 | thermostat_only | on_track / arrival_met | on_track / unable_to_verify | no (unsupported) |
-| demo_video_v1@21:01 | room_sensor_only | on_track / arrival_met | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_video_v1@21:01 | electrical_only | on_track / arrival_met | cannot_tell / telemetry_missing | no (unsupported) |
-| demo_video_v1@21:01 | calendar_only | on_track / arrival_met | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@21:01 | combined | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / arrival_met (target at arrival: met) | yes |
+| demo_video_v1@21:01 | thermostat_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / unable_to_verify (target at arrival: met) | no (unsupported) |
+| demo_video_v1@21:01 | room_sensor_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: met) | no (unsupported) |
+| demo_video_v1@21:01 | electrical_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| demo_video_v1@21:01 | calendar_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
 
 ## Where a single source falls short
 
@@ -87,12 +87,15 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
-- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
-- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/None.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/None.
-- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/None.
-- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/None.
+- room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
+- calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/None.
 - room_sensor_only cannot support the current_temperature claim that combined supports at demo_revised_v1@18:00.
 - electrical_only cannot support the current_temperature claim that combined supports at demo_revised_v1@18:00.
 - calendar_only cannot support the current_temperature claim that combined supports at demo_revised_v1@18:00.
@@ -117,10 +120,10 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
-- thermostat_only gives unsupported answer (on_track/unable_to_verify) where combined gives the expected on_track/arrival_met.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/arrival_met.
-- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/arrival_met.
-- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/arrival_met.
+- thermostat_only gives unsupported answer (arrival_passed/unable_to_verify) where combined gives the expected arrival_passed/arrival_met.
+- room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
+- electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
+- calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
 - electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.
 
 ## Reading this
@@ -131,6 +134,8 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
 
 ## Live model condition (2026-10-26)
+
+Note: the live run used the earlier labels (before the strictly-after-arrival correction and target-at-arrival scoring), so its computed-readiness column reflects those earlier labels.
 
 Run by the operator: 24 calls (the 12 cases on muse-spark-1.3, then on muse-wonder-1.0), committed snapshot 53a06bd, 90 s timeout, 12000 output tokens, no retries, approved by Brad. Source: `backend/eval/results-live.json`.
 

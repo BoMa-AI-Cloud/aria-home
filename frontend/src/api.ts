@@ -21,7 +21,7 @@ export interface SourceStatus {
   stale_count: number;
 }
 
-export type ReadinessStatus = "on_track" | "at_risk" | "cannot_tell";
+export type ReadinessStatus = "on_track" | "at_risk" | "cannot_tell" | "arrival_passed";
 
 export type Readiness = ReadinessStatus;
 

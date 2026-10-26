@@ -27,8 +27,13 @@ def test_expected_covers_every_case():
     assert [(c["scenario"], c["at"]) for c in expected] == list(CASES)
     assert len({c["id"] for c in expected}) == len(expected)
     for case in expected:
-        assert case["expected_readiness"] in ("on_track", "at_risk", "cannot_tell")
+        assert case["expected_readiness"] in ("on_track", "at_risk", "cannot_tell", "arrival_passed")
         assert case["reason"].strip()
+        if case["expected_readiness"] == "arrival_passed":
+            assert case["expected_target_at_arrival"] in ("met", "not_met", "unknown")
+            assert case["reason"].strip()
+        else:
+            assert case["expected_target_at_arrival"] is None
     video = [c for c in expected if c["scenario"] == "demo_video_v1"]
     assert all(c["expected_verification"] for c in video)
 
@@ -38,11 +43,40 @@ def test_combined_matches_every_expected_label(offline):
     assert len(combined) == len(CASES)
     for row in combined:
         assert row["readiness_correct"], row
+        assert row["target_at_arrival_correct"] is not False, row
         assert row["verification_correct"] is not False, row
         assert row["correct"], row
     assert offline["totals"]["combined"]["fully_correct"] == len(CASES)
     for condition in CONDITIONS[1:]:
         assert offline["totals"][condition]["fully_correct"] < len(CASES)
+
+
+def test_at_or_before_arrival_labels_restored(offline):
+    combined = {r["case_id"]: r for r in offline["rows"] if r["condition"] == "combined"}
+    assert combined["demo_v1@18:00"]["got_readiness"] == "at_risk"
+    assert combined["demo_recovery_v1@18:00"]["got_readiness"] == "at_risk"
+    assert combined["demo_revised_v1@18:00"]["got_readiness"] == "cannot_tell"
+    assert combined["demo_cancelled_v1@18:00"]["got_readiness"] == "cannot_tell"
+    assert combined["demo_recovery_v1@19:00"]["got_readiness"] == "arrival_passed"
+    assert combined["demo_recovery_v1@19:00"]["target_at_arrival"] == "not_met"
+    assert combined["demo_recovery_v1@20:31"]["got_readiness"] == "arrival_passed"
+    assert combined["demo_recovery_v1@20:31"]["target_at_arrival"] == "not_met"
+    assert combined["demo_video_v1@21:01"]["got_readiness"] == "arrival_passed"
+    assert combined["demo_video_v1@21:01"]["target_at_arrival"] == "met"
+
+
+def test_source_without_indoor_temperatures_target_unknown_unsupported(offline):
+    for condition in ("electrical_only", "calendar_only"):
+        row = next(
+            r
+            for r in offline["rows"]
+            if r["case_id"] == "demo_recovery_v1@19:00" and r["condition"] == condition
+        )
+        assert row["got_readiness"] == "arrival_passed", row
+        assert row["target_at_arrival"] == "unknown", row
+        assert row["target_at_arrival_correct"] is False, row
+        assert row["correct"] is False, row
+        assert row["classification"] == "unsupported", row
 
 
 def test_thermostat_only_during_video_outage_cannot_support_warming(offline):
@@ -106,6 +140,20 @@ def test_model_condition_with_mock_provider():
     assert "input_tokens" in record and "output_tokens" in record
     if record["status"] == "ok":
         assert record["readiness_agreement"] is True
+
+
+def test_committed_offline_results_match_run_offline(offline):
+    committed = json.loads((BACKEND / "eval" / "results-offline.json").read_text(encoding="utf-8"))
+    assert committed == offline
+
+
+def test_committed_evaluation_docs_start_with_rendered_offline(offline):
+    from aria_home.evaluation import render_markdown
+
+    docs = (BACKEND.parent / "docs" / "evaluation.md").read_text(encoding="utf-8")
+    assert docs.startswith(render_markdown(offline))
+    assert "## Live model condition" in docs
+    assert "live run used the earlier labels" in docs
 
 
 def test_cli_offline_writes_both_files(tmp_path):

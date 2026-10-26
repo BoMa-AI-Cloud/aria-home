@@ -53,6 +53,10 @@ class ReadinessResult(dict):
     def inputs(self):
         return self["inputs"]
 
+    @property
+    def target_at_arrival(self):
+        return self.get("target_at_arrival")
+
 
 def _parse_time(value):
     if isinstance(value, datetime):
@@ -240,16 +244,90 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     elif last_value is not None:
         cannot.append("latest indoor reading time is unavailable")
 
+    context_invalid = (
+        flag_map.get("trip_cancelled")
+        or flag_map.get("trip_unconfirmed")
+        or flag_map.get("trip_mismatched")
+        or flag_map.get("confirmation_outdated")
+        or trip is None
+        or (trip is not None and trip.get("cancelled"))
+        or arrival is None
+        or target_temp is None
+        or (
+            trip is not None
+            and confirmation is not None
+            and (
+                (confirmation.get("trip_id") and trip.get("id") and confirmation.get("trip_id") != trip.get("id"))
+                or (confirmation.get("property_id") and trip.get("property_id") and confirmation.get("property_id") != trip.get("property_id"))
+            )
+        )
+    )
+    if not context_invalid and now_dt is not None and arrival is not None and now_dt > arrival:
+        target_unit = (gap_info.get("target_unit") if gap_info else None) or (confirmation.get("target_unit") if confirmation else None) or unit
+
+        def _to_target(value, value_unit):
+            if value is None:
+                return None
+            if value_unit is None or target_unit is None or value_unit == target_unit:
+                return float(value)
+            if value_unit == "C" and target_unit == "F":
+                return float(value) * 9.0 / 5.0 + 32.0
+            if value_unit == "F" and target_unit == "C":
+                return (float(value) - 32.0) * 5.0 / 9.0
+            return float(value)
+
+        candidates = []
+        for item in data.get("evidence", []) if isinstance(data.get("evidence"), list) else []:
+            if not isinstance(item, dict) or item.get("quantity") != "indoor_temp":
+                continue
+            value = _num(item.get("value"))
+            observed = _parse_time(item.get("observed_at"))
+            received = _parse_time(item.get("received_at"))
+            if value is None or observed is None or received is None:
+                continue
+            if received <= arrival and observed <= arrival:
+                candidates.append((item.get("source"), observed, received, value, item.get("unit")))
+        arrival_value = None
+        arrival_unit = None
+        arrival_observed = None
+        if candidates:
+            for preferred in ("room_sensor", "thermostat"):
+                group = [c for c in candidates if c[0] == preferred]
+                if group:
+                    candidates = group
+                    break
+            _, arrival_observed, _, arrival_value, arrival_unit = max(candidates, key=lambda c: (c[1], c[2]))
+        elif last_value is not None and last_at is not None and last_at <= arrival:
+            arrival_value, arrival_unit, arrival_observed = last_value, unit, last_at
+
+        outcome = "unknown"
+        if arrival_value is not None and arrival_observed is not None and 0 <= (arrival - arrival_observed).total_seconds() <= STALE_READING_AGE_S:
+            converted = _to_target(arrival_value, arrival_unit)
+            if converted is not None:
+                outcome = "met" if converted >= float(target_temp) else "not_met"
+        inputs["evaluated_at_arrival"] = True
+        inputs["arrival_outcome"] = outcome
+        inputs["target_at_arrival"] = outcome
+        inputs["arrival_last_value"] = arrival_value
+        inputs["arrival_last_observed_at"] = arrival_observed.isoformat() if arrival_observed else None
+        if outcome == "met":
+            reason = f"Arrival has passed: the target was met at arrival time (latest reading received by arrival was {arrival_value} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {target_temp} {target_unit} target)."
+        elif outcome == "not_met":
+            reason = f"Arrival has passed: the target was not met at arrival time (latest reading received by arrival was {arrival_value} {arrival_unit} at {arrival_observed.isoformat()}, below the {target_temp} {target_unit} target)."
+        else:
+            reason = "Arrival has passed: whether the target was met at arrival time is unknown (no fresh indoor reading was received by arrival)."
+        return ReadinessResult(status="arrival_passed", reasons=[reason], inputs=inputs, target_at_arrival=outcome)
+
     deduped = []
     for reason in cannot:
         if reason not in deduped:
             deduped.append(reason)
     if deduped:
-        return ReadinessResult(status="cannot_tell", reasons=deduped, inputs=inputs)
+        return ReadinessResult(status="cannot_tell", reasons=deduped, inputs=inputs, target_at_arrival=None)
 
     if gap_f is not None and gap_f >= 0:
         reasons.append("latest fresh indoor reading already meets the target")
-        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs)
+        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
 
     projected_f = None
     closes_in_h = None
@@ -280,7 +358,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         )
     if small_gap and sustained and with_margin:
         reasons.append("gap is small and sustained warming over the trend window would close it before arrival with margin")
-        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs)
+        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
 
     reasons.append("At current readings the target may not be reached by arrival; this is not a guaranteed prediction.")
     if gap_f is not None:
@@ -293,4 +371,4 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         reasons.append("warming is not sustained over the minimum window and rise thresholds")
     elif not with_margin:
         reasons.append("projected warming does not close the gap before arrival with margin")
-    return ReadinessResult(status="at_risk", reasons=reasons, inputs=inputs)
+    return ReadinessResult(status="at_risk", reasons=reasons, inputs=inputs, target_at_arrival=None)

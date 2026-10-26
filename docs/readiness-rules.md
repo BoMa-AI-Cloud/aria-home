@@ -6,7 +6,10 @@ puts the result in the evidence pack (`readiness` and `computed_readiness`),
 states it in the prompt, and rejects any model answer whose `readiness` differs
 from the computed status. The model only explains the computed status.
 
-Statuses: `on_track`, `at_risk`, `cannot_tell`.
+Statuses: `on_track`, `at_risk`, `cannot_tell`, `arrival_passed`. The
+investigator contract stays `inv-v2`; its schema/prompt status list now also
+includes `arrival_passed`, and the model must return exactly the computed
+status as before.
 
 ## Thresholds
 
@@ -28,6 +31,25 @@ Temperature gaps, rises, and rates in Celsius are converted to Fahrenheit
 equivalents before comparison with the `*_F` thresholds.
 
 ## Rules
+
+### arrival_passed
+
+When `now` is strictly after the confirmed arrival (`now >` arrival; at or
+before arrival this rule does not apply and the earlier rules below apply
+unchanged) and the trip/confirmation context is valid: not cancelled,
+unconfirmed, mismatched, or outdated, with a confirmed target, readiness is
+decided at arrival, not at `now`. The status is `arrival_passed` — never
+`on_track` (or any before-arrival status) after arrival — and its single
+reason states whether the target was met at arrival time, using only
+readings received by arrival (latest such indoor reading, room-sensor
+readings preferred over thermostat, fresh within `STALE_READING_AGE_S` of
+arrival): the target was met at arrival time, was not met at arrival time,
+or whether it was met at arrival time is unknown (no fresh indoor reading
+received by arrival). The readiness result also carries this outcome as
+`target_at_arrival` (`met` / `not_met` / `unknown`); it is `null` for
+non-`arrival_passed` statuses. Readings received after arrival never change
+this. Cases with no confirmed arrival (for example cancelled or outdated
+trips) keep the `cannot_tell` rules below instead.
 
 ### cannot_tell
 
@@ -51,7 +73,7 @@ Returned when any of these holds; all applicable reasons are listed:
 
 ### on_track
 
-Returned only when no `cannot_tell` condition holds and either:
+Returned only before arrival, when no `cannot_tell` condition holds and either:
 
 - The latest fresh reading already meets or exceeds the target (gap >= 0), or
 - The gap is small (at most `SMALL_GAP_F`), warming is sustained (window at
@@ -65,12 +87,14 @@ a window shorter than `MIN_TREND_WINDOW_S` or a rise below `MIN_RISE_F`.
 
 ### at_risk
 
-Returned otherwise. Its reasons state that it is not a guaranteed prediction,
+Returned otherwise (before arrival). Its reasons state that it is not a guaranteed prediction,
 for example: "At current readings the target may not be reached by arrival;
 this is not a guaranteed prediction."
 
 The demo scenario `demo_v1` at 18:00 is `at_risk`: gap -15.9 F with a trend of
 about +0.034 F/hour fails the small-gap and sustained-warming thresholds.
+Only strictly after its 18:00 arrival is it `arrival_passed` (target not met
+at arrival), per the rule above.
 
 ## Follow-up scheduling
 
