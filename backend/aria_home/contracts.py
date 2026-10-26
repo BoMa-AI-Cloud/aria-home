@@ -106,6 +106,7 @@ class EvidenceRecord(_Strict):
     mode: DataMode
     provenance: Provenance
     binding: CircuitBinding | None = None
+    meter_id: str | None = None
 
     @field_validator("observed_at", "received_at")
     @classmethod

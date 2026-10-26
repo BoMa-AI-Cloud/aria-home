@@ -16,7 +16,7 @@ EXACT = (
 )
 
 
-def _rec(id, circuit, value, observed, binding_status="unknown", equipment=None, cadence=1800, fixture="meter-1", received=None, quantity="circuit_power", kind="measurement", unit="W"):
+def _rec(id, circuit, value, observed, binding_status="unknown", equipment=None, cadence=1800, fixture="meter-1", received=None, quantity="circuit_power", kind="measurement", unit="W", meter_id="meter-1"):
     binding = {"circuit_id": circuit, "equipment": equipment, "status": binding_status, "confirmed_by": "homeowner" if binding_status == "confirmed" else None}
     return EvidenceRecord(
         id=id,
@@ -32,6 +32,7 @@ def _rec(id, circuit, value, observed, binding_status="unknown", equipment=None,
         mode="synthetic",
         provenance={"fixture_id": fixture, "version": "1"},
         binding=binding,
+        meter_id=meter_id,
     )
 
 
@@ -58,6 +59,7 @@ def test_p1_demo():
     assert result.statement == EXACT
     assert result.mains.value == "not_available"
     assert result.lineage.lineage_count == 1
+    assert result.lineage.meter_ids == ["demo-cabin-meter-1"]
     assert "Cannot exclude a lost service leg." in result.limitations
     assert "Breaker or equipment supply problems are not observable from branch readings." in result.limitations
     assert "Interruptions outside this window are not covered." in result.limitations
@@ -146,6 +148,18 @@ def test_p9_eight_channels_one_meter_one_lineage():
     assert result.lineage.counts_by_status == {"fresh_active": 8}
     assert "8 confirmations" not in result.statement
     assert "confirmation" not in result.statement.lower()
+    _assert_no_banned(result)
+
+
+def test_unknown_meter_lineage():
+    records = [
+        _rec("u1", "circuit-kitchen", 450, NOW - timedelta(minutes=5), meter_id=None),
+        _rec("u2", "circuit-living", 120, NOW - timedelta(minutes=5), meter_id=None),
+    ]
+    result = power_context(records, T0, NOW, 15.0)
+    assert result.lineage.meter_ids == ["unknown-meter"]
+    assert result.lineage.lineage_count == 1
+    assert "Meter identity unknown for some circuits; they are treated as one source." in result.limitations
     _assert_no_banned(result)
 
 

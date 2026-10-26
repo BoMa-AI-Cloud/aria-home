@@ -264,7 +264,7 @@ def power_context(records, window_start, now, noise_floor_w=NOISE_FLOOR_W, backu
     else:
         heating_binding = HeatingBinding.unknown
 
-    meter_ids = sorted({r.provenance.fixture_id for r in circuit_records if r.provenance and r.provenance.fixture_id})
+    meter_ids = sorted({r.meter_id if r.meter_id else "unknown-meter" for r in circuit_records})
     counts_by_status = dict(Counter(c.status.value for c in per_circuit))
     window_times = sorted(
         r.observed_at
@@ -355,6 +355,8 @@ def power_context(records, window_start, now, noise_floor_w=NOISE_FLOOR_W, backu
     limitations.append("Interruptions outside this window are not covered.")
     if backup_status is BackupStatus.unknown:
         limitations.append("Backup-power configuration unknown.")
+    if any(not r.meter_id for r in circuit_records):
+        limitations.append("Meter identity unknown for some circuits; they are treated as one source.")
 
     return PowerContext(
         per_circuit=per_circuit,
