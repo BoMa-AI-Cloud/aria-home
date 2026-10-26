@@ -14,6 +14,9 @@ Times for commits come from `git log`. EDT = UTC-4.
 - 16:54Z: Commit 817fb25: the adapter reports reply block types, stop reason and usage; new `no_text` error.
 - 16:54Z: Live smoke test 002 through the app's adapter, approved by Brad: max_tokens 256. OK, text "ready", 2.4 s, 15 input / 152 output tokens, blocks [redacted_thinking, text], stop_reason end_turn.
 - 17:00Z: Commit 09b1dbd: missing-reading counts on source cards, key read only from MODEL_API_KEY, app smoke test.
+- 17:09Z: Commit 24750c2, D2-1 metrics: indoor trend, target gap, circuit activity, cadence-based coverage, `/api/metrics`. Three Muse runs: the operator's review found coverage overstating a 2-hour gap (0.97); the first fix broke 13 tests (a tuple-unpacking bug) because Muse could not run tests; with test permission widened, Muse repaired it. Demo at 18:00 local: indoor flat ~52 F, 15.9 F below the 68 F target; furnace circuit quiet, coverage 0.50, one gap over cadence.
+- 17:12Z: Commit 8c171ca, D2-2 Property Power Context: per-circuit status, one meter lineage, mains not_available, heating binding confirmed, backup unknown, continuity activity_weighs_against_total_loss, the limited statement and four limitations, banned-phrase guard, `/api/power-context`. Written by muse-wonder-1.0.
+- 17:14Z: Commit 8002671: meter lineage from a synthetic meter_id ("demo-cabin-meter-1"), unknown-meter limitation. Written by muse-spark-1.3.
 
 ## How the code was written
 
