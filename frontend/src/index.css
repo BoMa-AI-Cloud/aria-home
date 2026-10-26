@@ -193,6 +193,100 @@ section {
   padding-left: 1.25rem;
 }
 
+.demo-controls {
+  border: 2px dashed #6a3fb5;
+  background: #efe9f7;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.demo-controls-title {
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.demo-scenario select {
+  font: inherit;
+  padding: 0.25rem 0.5rem;
+}
+
+.demo-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.demo-times button {
+  font: inherit;
+  border: 1px solid #6a3fb5;
+  border-radius: 0.25rem;
+  background: #ffffff;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+
+.demo-times button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.demo-times button[aria-pressed="true"] {
+  background: #6a3fb5;
+  color: #ffffff;
+}
+
+.outcome {
+  background: #ffffff;
+  border: 1px solid #b9b3a6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.outcome-status {
+  font-size: 1.1rem;
+}
+
+.outcome-awaiting_measurement .outcome-status strong { color: #5f5f00; }
+.outcome-warming_observed .outcome-status strong { color: #9a6a00; }
+.outcome-target_reached .outcome-status strong { color: #1e7b34; }
+.outcome-not_observed_by_deadline .outcome-status strong { color: #b3261e; }
+.outcome-unable_to_verify .outcome-status strong { color: #6a3fb5; }
+
+.outcome-time {
+  color: #3d3d3d;
+}
+
+.outcome-facts {
+  margin: 0 0 0.5rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.outcome-facts div {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 0.5rem;
+}
+
+.outcome-facts dt {
+  font-weight: 600;
+}
+
+.outcome-facts dd {
+  margin: 0;
+}
+
+.outcome-note {
+  font-style: italic;
+}
+
+.outcome-history {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 0;
+}
+
 .hypotheses li {
   margin-bottom: 0.75rem;
 }

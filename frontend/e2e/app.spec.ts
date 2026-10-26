@@ -69,3 +69,45 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   expect(consoleErrors).toEqual([]);
   expect(failedRequests).toEqual([]);
 });
+
+test("demo replay controls drive the outcome panel", async ({ page }) => {
+  const failedRequests: string[] = [];
+  page.on("response", (response) => {
+    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+
+  await page.goto("http://127.0.0.1:5173/");
+
+  const demoControls = page.locator(".demo-controls");
+  await expect(demoControls).toContainText("Demo controls");
+
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Outcome" }),
+  });
+  await expect(outcome).toBeVisible();
+
+  await page.getByLabel("Scenario").selectOption({ label: "Manager visit, heat restored" });
+  const time1900 = demoControls.getByRole("button", { name: "19:00" });
+  await expect(time1900).toBeEnabled();
+  await time1900.click();
+  await expect(outcome.getByText("Warming observed").first()).toBeVisible();
+
+  await demoControls.getByRole("button", { name: "20:31" }).click();
+  await expect(outcome.getByText("Target reached").first()).toBeVisible();
+  await expect(outcome).toContainText(
+    "An observed change after a reported action does not prove what caused it.",
+  );
+  const historyItems = outcome.locator(".outcome-history li");
+  await expect(historyItems.first()).toBeVisible();
+  expect(await historyItems.count()).toBeGreaterThanOrEqual(2);
+  await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
+  await expect(outcome.locator(".outcome-history")).toContainText("Target reached");
+
+  await page.getByLabel("Scenario").selectOption({ label: "No follow-up readings" });
+  const noFollowup2031 = demoControls.getByRole("button", { name: "20:31" });
+  await expect(noFollowup2031).toBeEnabled();
+  await noFollowup2031.click();
+  await expect(outcome.getByText("Unable to verify").first()).toBeVisible();
+
+  expect(failedRequests).toEqual([]);
+});
