@@ -36,3 +36,14 @@ Claude Code, including sessions configured to run Meta's Muse models.
 ## License
 
 No license has been chosen yet. Until one is added, all rights are reserved by the author.
+
+## Run the backend
+
+From `backend/`, with no environment variables set:
+
+```
+python -m pytest -q
+python -m flask --app aria_home.app:create_app run
+```
+
+`GET /api/health` returns `{"status": "ok", "service": "aria-home-backend", "data_mode": "synthetic"}`.
