@@ -20,10 +20,10 @@ checks later measurements before it reports an outcome.
 - Property Power Context: per-circuit status, meter lineage, continuity check, limitations, `GET /api/power-context`.
 - Frontend: Vite React TypeScript shell with four synthetic source cards and missing-reading counts.
 - App smoke test covering the API contract the page uses.
+- Meta investigation over the evidence (Day 3): evidence-pack investigation engine with validated output, `GET /api/investigation`, and the Investigation section in the browser.
 
 ### Planned
 
-- Day 3 onward: Meta investigation over the evidence.
 - Day 3 onward: follow-up outcomes checked against later measurements.
 - Day 3 onward: scoped notifications to homeowner and property manager.
 - Day 3 onward: evaluation.
@@ -34,6 +34,7 @@ checks later measurements before it reports an outcome.
 - [Existing vs new](docs/existing-vs-new.md)
 - [Day 1 handoff](docs/day1-handoff.md)
 - [Day 2 handoff](docs/day2-handoff.md)
+- [Day 3 handoff](docs/day3-handoff.md)
 - [Build log](docs/build-log/README.md)
 
 ## What was pre-existing
