@@ -171,6 +171,8 @@ class SourceStatus(_Strict):
     age_s: float | None = None
     mode: DataMode
     notes: list[str] = Field(default_factory=list)
+    missing_count: int = Field(default=0, ge=0)
+    stale_count: int = Field(default=0, ge=0)
 
     @field_validator("newest_observed_at")
     @classmethod

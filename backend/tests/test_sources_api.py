@@ -46,3 +46,12 @@ def test_health_unchanged():
         "service": "aria-home-backend",
         "data_mode": "synthetic",
     }
+
+
+def test_demo_thermostat_reports_missing_count():
+    client = create_app().test_client()
+    body = client.get("/api/sources").get_json()
+    thermostat = next(s for s in body["sources"] if s["source"] == "thermostat")
+    assert thermostat["missing_count"] == 1
+    assert thermostat["stale_count"] >= 0
+    assert any("1 reading missing (no value received)" in n for n in thermostat["notes"])

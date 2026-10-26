@@ -112,7 +112,7 @@ class ProviderConfig:
             )
         provider_url = get("ARIA_HOME_PROVIDER_URL") or get("provider_url") or get("base_url") or get("ARIA_HOME_BASE_URL")
         model_id = get("ARIA_HOME_MODEL_ID") or get("model_id") or get("model")
-        api_key = get("MODEL_API_KEY") or get("api_key")
+        api_key = get("MODEL_API_KEY")
         raw_enabled = get("ARIA_HOME_MODEL_ENABLED", get("enabled", False))
         enabled = raw_enabled == "1" or raw_enabled is True
         timeout_raw = get("timeout_s") or get("timeout") or DEFAULT_TIMEOUT_S
@@ -153,7 +153,7 @@ def _coerce_config(config=None, env=None):
         return ProviderConfig(
             provider_url=config.get("provider_url") or config.get("base_url") or config.get("url"),
             model_id=config.get("model_id") or config.get("model") or config.get("requested_model"),
-            api_key=config.get("api_key") or config.get("key"),
+            api_key=config.get("api_key"),
             enabled=config.get("enabled", False) in (True, "1", 1),
             timeout_s=float(config.get("timeout_s") or config.get("timeout") or DEFAULT_TIMEOUT_S),
             max_tokens=int(config.get("max_tokens") or config.get("max_output_tokens") or DEFAULT_MAX_TOKENS),

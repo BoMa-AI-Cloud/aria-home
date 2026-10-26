@@ -59,6 +59,9 @@ function SourceCard({ status }: { status: SourceStatus }) {
           <dd>{formatAge(status.age_s)}</dd>
         </div>
       </dl>
+      {(status.missing_count ?? 0) > 0 && (
+        <p className="missing-readings">Missing readings: {status.missing_count}</p>
+      )}
       {status.source === "weather" && !missing && (
         <p className="forecast-note">Forecast, not an on-property measurement.</p>
       )}

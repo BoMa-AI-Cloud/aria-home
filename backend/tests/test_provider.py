@@ -255,6 +255,13 @@ def test_api_provider_mock_by_default(monkeypatch):
     assert body["key_present"] is True
 
 
+def test_lowercase_api_key_env_is_not_configured():
+    config = ProviderConfig.from_env({"api_key": FAKE_KEY})
+    assert config.api_key is None
+    assert config.is_configured() is False
+    assert isinstance(get_provider(config), MockProvider)
+
+
 def test_app_config_never_reads_forbidden_key():
     package = pathlib.Path(__file__).resolve().parent.parent / "aria_home"
     source = "\n".join(p.read_text(encoding="utf-8") for p in sorted(package.glob("*.py")))

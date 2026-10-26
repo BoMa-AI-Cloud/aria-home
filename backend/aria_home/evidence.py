@@ -55,6 +55,8 @@ def source_status(
             age_s=None,
             mode=resolved_mode,
             notes=notes,
+            missing_count=0,
+            stale_count=0,
         )
 
     groups: dict[tuple, set] = defaultdict(set)
@@ -69,6 +71,12 @@ def source_status(
 
     newest_observed_at = max(r.observed_at for r in deduped)
     age_s = (now - newest_observed_at).total_seconds()
+
+    missing_count = sum(1 for r in deduped if r.value is None)
+    stale_count = sum(1 for r in deduped if freshness(r, now) is Availability.stale)
+    if missing_count > 0:
+        noun = "reading" if missing_count == 1 else "readings"
+        notes.append(f"{missing_count} {noun} missing (no value received)")
 
     if conflicting_keys:
         availability = Availability.conflicting
@@ -95,4 +103,6 @@ def source_status(
         age_s=age_s,
         mode=resolved_mode,
         notes=notes,
+        missing_count=missing_count,
+        stale_count=stale_count,
     )

@@ -17,6 +17,8 @@ export interface SourceStatus {
   age_s: number | null;
   mode: DataMode;
   notes: string[];
+  missing_count: number;
+  stale_count: number;
 }
 
 export interface HealthResponse {
