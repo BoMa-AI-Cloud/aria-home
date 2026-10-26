@@ -75,6 +75,32 @@ def test_store_path_from_env(tmp_path, monkeypatch):
     assert db.is_file()
 
 
+def test_outcome_history_grows_idempotent_and_survives_restart(tmp_path, monkeypatch):
+    db = tmp_path / "history.db"
+    monkeypatch.setenv("ARIA_HOME_DB_PATH", str(db))
+    client = create_app().test_client()
+
+    resp = client.post("/api/investigations?scenario=demo_recovery_v1&at=2026-01-16T18:00:00-05:00")
+    assert resp.status_code == 200
+    inv_id = resp.get_json()["investigation_id"]
+
+    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T19:00:00-05:00")
+    assert resp.status_code == 200
+    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed"]
+
+    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T20:31:00-05:00")
+    assert resp.status_code == 200
+    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "target_reached"]
+
+    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T20:31:00-05:00")
+    assert resp.status_code == 200
+    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "target_reached"]
+
+    reopened = Store(db)
+    assert [e["status"] for e in reopened.list_outcomes(inv_id)] == ["warming_observed", "target_reached"]
+    reopened.close()
+
+
 def test_post_then_get_follow_up(tmp_path, monkeypatch):
     monkeypatch.setenv("ARIA_HOME_DB_PATH", str(tmp_path / "api.db"))
     client = create_app().test_client()

@@ -80,6 +80,14 @@ class Store:
                 last_evaluated_at TEXT,
                 supporting_ids TEXT NOT NULL DEFAULT '[]'
             );
+            CREATE TABLE IF NOT EXISTS outcome_events (
+                investigation_id TEXT NOT NULL,
+                evaluated_at TEXT NOT NULL,
+                status TEXT,
+                sample_count INTEGER,
+                note TEXT,
+                UNIQUE(investigation_id, evaluated_at)
+            );
             """
         )
         self._conn.commit()
@@ -230,16 +238,20 @@ class Store:
             "supporting_ids": json.loads(row["supporting_ids"] or "[]"),
         }
 
-    def record_outcome(self, investigation_id, outcome=None, *, status=None, evaluated_at=None, supporting_ids=None):
+    def record_outcome(self, investigation_id, outcome=None, *, status=None, evaluated_at=None, supporting_ids=None, sample_count=None, note=None):
         if outcome is not None:
             if isinstance(outcome, dict):
                 status = outcome.get("status", status)
                 evaluated_at = outcome.get("evaluated_at", evaluated_at)
                 supporting_ids = outcome.get("supporting_ids", supporting_ids)
+                sample_count = outcome.get("sample_count", sample_count)
+                note = outcome.get("note", note)
             else:
                 status = getattr(outcome, "status", status)
                 evaluated_at = getattr(outcome, "evaluated_at", evaluated_at)
                 supporting_ids = getattr(outcome, "supporting_ids", supporting_ids)
+                sample_count = getattr(outcome, "sample_count", sample_count)
+                note = getattr(outcome, "note", note)
         if hasattr(status, "value"):
             status = status.value
         at_iso = _iso(_parse_dt(evaluated_at)) if evaluated_at else None
@@ -252,11 +264,32 @@ class Store:
             "UPDATE follow_ups SET last_status = ?, last_evaluated_at = ?, supporting_ids = ? WHERE investigation_id = ?",
             (status, at_iso, json.dumps(list(supporting_ids or [])), investigation_id),
         )
+        if at_iso is not None:
+            self._conn.execute(
+                "INSERT OR IGNORE INTO outcome_events (investigation_id, evaluated_at, status, sample_count, note) VALUES (?, ?, ?, ?, ?)",
+                (investigation_id, at_iso, status, sample_count, note),
+            )
         self._conn.commit()
         return self.get_follow_up_row(investigation_id)
 
     update_follow_up = record_outcome
     save_outcome = record_outcome
+
+    def list_outcomes(self, investigation_id):
+        rows = self._conn.execute(
+            "SELECT investigation_id, evaluated_at, status, sample_count, note FROM outcome_events WHERE investigation_id = ? ORDER BY evaluated_at",
+            (investigation_id,),
+        ).fetchall()
+        return [
+            {
+                "investigation_id": r["investigation_id"],
+                "evaluated_at": r["evaluated_at"],
+                "status": r["status"],
+                "sample_count": r["sample_count"],
+                "note": r["note"],
+            }
+            for r in rows
+        ]
 
     def list_investigations(self):
         rows = self._conn.execute("SELECT id FROM investigations ORDER BY created_at, id").fetchall()

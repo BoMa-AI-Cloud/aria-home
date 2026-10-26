@@ -255,6 +255,6 @@ def create_app():
         outcome = evaluate_outcome(follow_up, scn.records, at)
         store.record_outcome(investigation_id, outcome)
         outcome_payload = outcome.model_dump(mode="json")
-        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id), "supporting_ids": outcome.supporting_ids})
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id), "supporting_ids": outcome.supporting_ids, "history": store.list_outcomes(investigation_id)})
 
     return app
