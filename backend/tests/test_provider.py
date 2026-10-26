@@ -223,7 +223,7 @@ def test_mock_text_label_present():
 def test_get_provider_defaults_to_mock():
     assert isinstance(get_provider({}), MockProvider)
     assert isinstance(get_provider({**BASE_ENV, "ARIA_HOME_MODEL_ENABLED": "0"}), MockProvider)
-    assert isinstance(get_provider({k: v for k, v in BASE_ENV.items() if k != "MODEL_API_KEY"}), MockProvider)
+    assert isinstance(get_provider({k: v for k, v in BASE_ENV.items() if k != "MODEL_API_KEY"}), MetaProvider)
     assert isinstance(get_provider(BASE_ENV), MetaProvider)
 
 
@@ -268,3 +268,77 @@ def test_app_config_never_reads_forbidden_key():
     forbidden = "META_" + "CLAUDE_CODE_KEY"
     assert forbidden not in source
     assert "ANTHROPIC_" not in source
+
+
+def test_enabled_missing_key_returns_not_configured_with_zero_calls():
+    env = {k: v for k, v in BASE_ENV.items() if k != "MODEL_API_KEY"}
+    provider = get_provider(env)
+    assert isinstance(provider, MetaProvider)
+    transport, calls = counting_transport(lambda request: httpx.Response(200, json={}))
+    provider.transport = transport
+    result = provider.generate("x")
+    assert calls["count"] == 0
+    assert result.ok is False
+    assert result.error == "not_configured"
+
+
+def test_enabled_missing_url_returns_not_configured_with_zero_calls():
+    env = {k: v for k, v in BASE_ENV.items() if k != "ARIA_HOME_PROVIDER_URL"}
+    provider = get_provider(env)
+    assert isinstance(provider, MetaProvider)
+    transport, calls = counting_transport(lambda request: httpx.Response(200, json={}))
+    provider.transport = transport
+    result = provider.generate("x")
+    assert calls["count"] == 0
+    assert result.ok is False
+    assert result.error == "not_configured"
+
+
+def test_disabled_returns_mock():
+    provider = get_provider({**BASE_ENV, "ARIA_HOME_MODEL_ENABLED": "0"})
+    assert isinstance(provider, MockProvider)
+    result = provider.generate("x")
+    assert result.ok is True
+    assert result.mode == "mock"
+
+
+def test_api_provider_mock_config_error_null(monkeypatch):
+    for var in BASE_ENV:
+        monkeypatch.delenv(var, raising=False)
+    client = create_app().test_client()
+    resp = client.get("/api/provider")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["mode"] == "mock"
+    assert body["config_error"] is None
+
+
+def test_api_provider_config_error_lists_missing_names(monkeypatch):
+    for key, value in BASE_ENV.items():
+        if key != "MODEL_API_KEY":
+            monkeypatch.setenv(key, value)
+    monkeypatch.delenv("MODEL_API_KEY", raising=False)
+    client = create_app().test_client()
+    resp = client.get("/api/provider")
+    assert resp.status_code == 200
+    body_text = resp.get_data(as_text=True)
+    assert FAKE_KEY not in body_text
+    body = resp.get_json()
+    assert body["mode"] == "live"
+    assert body["configured"] is False
+    assert body["config_error"] == ["MODEL_API_KEY"]
+
+
+def test_api_provider_config_error_missing_url(monkeypatch):
+    for key, value in BASE_ENV.items():
+        if key != "ARIA_HOME_PROVIDER_URL":
+            monkeypatch.setenv(key, value)
+    monkeypatch.delenv("ARIA_HOME_PROVIDER_URL", raising=False)
+    client = create_app().test_client()
+    resp = client.get("/api/provider")
+    assert resp.status_code == 200
+    assert FAKE_KEY not in resp.get_data(as_text=True)
+    body = resp.get_json()
+    assert body["mode"] == "live"
+    assert body["configured"] is False
+    assert body["config_error"] == ["ARIA_HOME_PROVIDER_URL"]

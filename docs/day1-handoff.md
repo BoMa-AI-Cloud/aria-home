@@ -17,6 +17,13 @@
 - The operator reviewed each change against the evidence rules and ran the tests and `npm run build` (both pass).
 - The operator ran the backend and frontend together in a browser once: the SYNTHETIC banner, the central question and four source cards rendered with no console errors.
 
+## Checks actually performed
+
+- `pytest`: 54 passed at 37321b9.
+- `npm run build` and `npm run typecheck`: passed.
+- One manual browser check of the four cards, with no console errors.
+- The live-call results below are historical operator runs from 2026-10-26 (approved by Brad) and were not repeated.
+
 ## What is mock vs live
 
 - Mock: MockProvider, synthetic demo scenario data (thermostat, electrical, weather, calendar), four synthetic source cards in the frontend.

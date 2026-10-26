@@ -1,6 +1,11 @@
 """Model-provider adapter for ARIA Home.
 
-UNVERIFIED: confirm against Meta's official docs before the first live call
+Status verified against https://dev.meta.ai/docs/coding-agents on 2026-10-26:
+endpoint base host (https://api.meta.ai, no /v1 suffix), Messages path
+(/v1/messages), auth ("Authorization: Bearer <key>"), and model IDs
+(muse-wonder-1.0, muse-spark-1.3). One live call succeeded on 2026-10-26
+16:54Z. The request body fields (model, max_tokens, messages) are NOT
+verified against the API reference, which was not checked.
 
 The live request below is implemented for a Messages-compatible API
 (POST {base}/v1/messages, header "Authorization: Bearer <key>", JSON body
@@ -94,6 +99,16 @@ class ProviderConfig:
 
     def is_configured(self):
         return self.configured
+
+    def missing_settings(self):
+        missing = []
+        if not self.provider_url:
+            missing.append("ARIA_HOME_PROVIDER_URL")
+        if not self.model_id:
+            missing.append("ARIA_HOME_MODEL_ID")
+        if not self.api_key:
+            missing.append("MODEL_API_KEY")
+        return missing
 
     @classmethod
     def from_env(cls, env=None):
@@ -403,6 +418,6 @@ def get_provider(env=None):
     elif env is not None and not isinstance(env, dict):
         config = _coerce_config(env)
     _validate_model_id(config.model_id)
-    if not config.enabled or not config.configured:
+    if not config.enabled:
         return MockProvider(model_id=config.model_id or DEFAULT_MODEL_ID)
     return MetaProvider(config)

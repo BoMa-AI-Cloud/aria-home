@@ -56,12 +56,15 @@ def create_app():
             selected = get_provider(config)
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
+        missing = config.missing_settings() if config.enabled else None
         return jsonify(
             {
                 "mode": selected.mode,
                 "model_id": config.model_id,
                 "enabled": config.enabled,
                 "key_present": bool(config.api_key),
+                "configured": config.configured,
+                "config_error": missing or None,
             }
         )
 

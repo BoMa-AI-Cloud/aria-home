@@ -10,15 +10,30 @@ checks later measurements before it reports an outcome.
 
 ## Status
 
-**Nothing is built yet.** This repository was created on 2026-10-26 after the kickoff session
-ended. Every file in it is work done during the hackathon; `docs/timeline.md` will record when
-each feature landed.
+### Working now
+
+- Backend health endpoint (`GET /api/health`).
+- Evidence foundation: contracts, scenario clock, freshness, synthetic demo scenario, `GET /api/sources`.
+- Provider adapter: mock provider and gated live Meta provider, `GET /api/provider`.
+- Provider reply reporting: reply block types, stop reason, usage, `no_text` error.
+- Metrics: indoor trend, target gap, circuit activity, cadence-based coverage, `GET /api/metrics`.
+- Property Power Context: per-circuit status, meter lineage, continuity check, limitations, `GET /api/power-context`.
+- Frontend: Vite React TypeScript shell with four synthetic source cards and missing-reading counts.
+- App smoke test covering the API contract the page uses.
+
+### Planned
+
+- Day 3 onward: Meta investigation over the evidence.
+- Day 3 onward: follow-up outcomes checked against later measurements.
+- Day 3 onward: scoped notifications to homeowner and property manager.
+- Day 3 onward: evaluation.
 
 ## Project status
 
 - [Timeline](docs/timeline.md)
 - [Existing vs new](docs/existing-vs-new.md)
 - [Day 1 handoff](docs/day1-handoff.md)
+- [Day 2 handoff](docs/day2-handoff.md)
 
 ## What was pre-existing
 
@@ -43,13 +58,47 @@ Claude Code, including sessions configured to run Meta's Muse models.
 
 No license has been chosen yet. Until one is added, all rights are reserved by the author.
 
-## Run the backend
+## Setup and run
 
-From `backend/`, with no environment variables set:
+Backend (from `backend/`):
+
+```
+# Windows PowerShell (run from backend/)
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+```
+# macOS / Linux shells (run from backend/)
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Then, from `backend/` with the virtual environment active:
 
 ```
 python -m pytest -q
-python -m flask --app aria_home.app:create_app run
+python -m flask --app aria_home.app:create_app run --port 5000
 ```
 
-`GET /api/health` returns `{"status": "ok", "service": "aria-home-backend", "data_mode": "synthetic"}`.
+Stop the server with Ctrl+C.
+
+Frontend (from the repo root or `frontend/`):
+
+```
+npm ci
+npm run dev
+npm run build
+npm run typecheck
+```
+
+`npm run dev` serves on port 5173 and proxies `/api` to port 5000. Stop the dev server with Ctrl+C.
+
+Mock mode needs no environment variables. Live mode uses four variables:
+
+- `ARIA_HOME_MODEL_ENABLED`: set to `1` to enable live model calls (anything else stays in mock mode).
+- `ARIA_HOME_PROVIDER_URL`: the model API base host.
+- `ARIA_HOME_MODEL_ID`: which model to call.
+- `MODEL_API_KEY`: the API key, sent as `Authorization: Bearer <key>`.
