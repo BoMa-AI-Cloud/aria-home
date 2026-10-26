@@ -24,3 +24,7 @@ Variants:
   17:00, after the 14:30 confirmation, so that confirmation becomes outdated.
 - `demo_cancelled_v1`: synthetic variant where the trip is cancelled at
   17:00, after the 14:30 confirmation.
+- `demo_video_v1`: synthetic video scenario with a thermostat outage
+  (15:30-18:20), a continuing `room_sensor.json` stream, and
+  `thermostat.json`/`electrical.json` streams generated deterministically by
+  `demo_video_v1/generate_streams.py`.

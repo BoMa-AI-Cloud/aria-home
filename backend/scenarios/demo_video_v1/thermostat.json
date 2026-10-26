@@ -1,0 +1,5240 @@
+{
+  "records": [
+    {
+      "id": "tstat-video-temp-0600",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:00:00-05:00",
+      "received_at": "2026-01-16T06:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0600",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:00:00-05:00",
+      "received_at": "2026-01-16T06:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0605",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:05:00-05:00",
+      "received_at": "2026-01-16T06:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0605",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:05:00-05:00",
+      "received_at": "2026-01-16T06:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0610",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:10:00-05:00",
+      "received_at": "2026-01-16T06:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0610",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:10:00-05:00",
+      "received_at": "2026-01-16T06:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0615",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:15:00-05:00",
+      "received_at": "2026-01-16T06:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0615",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:15:00-05:00",
+      "received_at": "2026-01-16T06:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0620",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:20:00-05:00",
+      "received_at": "2026-01-16T06:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0620",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:20:00-05:00",
+      "received_at": "2026-01-16T06:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0625",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:25:00-05:00",
+      "received_at": "2026-01-16T06:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0625",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:25:00-05:00",
+      "received_at": "2026-01-16T06:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0630",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:30:00-05:00",
+      "received_at": "2026-01-16T06:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0630",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:30:00-05:00",
+      "received_at": "2026-01-16T06:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0635",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:35:00-05:00",
+      "received_at": "2026-01-16T06:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0635",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:35:00-05:00",
+      "received_at": "2026-01-16T06:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0640",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:40:00-05:00",
+      "received_at": "2026-01-16T06:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0640",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:40:00-05:00",
+      "received_at": "2026-01-16T06:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0645",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:45:00-05:00",
+      "received_at": "2026-01-16T06:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0645",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:45:00-05:00",
+      "received_at": "2026-01-16T06:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0650",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:50:00-05:00",
+      "received_at": "2026-01-16T06:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0650",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:50:00-05:00",
+      "received_at": "2026-01-16T06:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0655",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T06:55:00-05:00",
+      "received_at": "2026-01-16T06:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0655",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T06:55:00-05:00",
+      "received_at": "2026-01-16T06:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0700",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:00:00-05:00",
+      "received_at": "2026-01-16T07:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0700",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:00:00-05:00",
+      "received_at": "2026-01-16T07:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0705",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:05:00-05:00",
+      "received_at": "2026-01-16T07:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0705",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:05:00-05:00",
+      "received_at": "2026-01-16T07:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0710",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:10:00-05:00",
+      "received_at": "2026-01-16T07:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0710",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:10:00-05:00",
+      "received_at": "2026-01-16T07:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0715",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:15:00-05:00",
+      "received_at": "2026-01-16T07:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0715",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:15:00-05:00",
+      "received_at": "2026-01-16T07:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0720",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:20:00-05:00",
+      "received_at": "2026-01-16T07:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0720",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:20:00-05:00",
+      "received_at": "2026-01-16T07:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0725",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:25:00-05:00",
+      "received_at": "2026-01-16T07:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0725",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:25:00-05:00",
+      "received_at": "2026-01-16T07:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0730",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:30:00-05:00",
+      "received_at": "2026-01-16T07:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0730",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:30:00-05:00",
+      "received_at": "2026-01-16T07:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0735",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:35:00-05:00",
+      "received_at": "2026-01-16T07:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0735",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:35:00-05:00",
+      "received_at": "2026-01-16T07:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0740",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:40:00-05:00",
+      "received_at": "2026-01-16T07:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0740",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:40:00-05:00",
+      "received_at": "2026-01-16T07:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0745",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:45:00-05:00",
+      "received_at": "2026-01-16T07:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0745",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:45:00-05:00",
+      "received_at": "2026-01-16T07:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0750",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:50:00-05:00",
+      "received_at": "2026-01-16T07:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0750",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:50:00-05:00",
+      "received_at": "2026-01-16T07:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0755",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T07:55:00-05:00",
+      "received_at": "2026-01-16T07:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0755",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T07:55:00-05:00",
+      "received_at": "2026-01-16T07:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0800",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:00:00-05:00",
+      "received_at": "2026-01-16T08:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0800",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:00:00-05:00",
+      "received_at": "2026-01-16T08:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0805",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:05:00-05:00",
+      "received_at": "2026-01-16T08:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0805",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:05:00-05:00",
+      "received_at": "2026-01-16T08:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0810",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:10:00-05:00",
+      "received_at": "2026-01-16T08:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0810",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:10:00-05:00",
+      "received_at": "2026-01-16T08:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0815",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:15:00-05:00",
+      "received_at": "2026-01-16T08:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0815",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:15:00-05:00",
+      "received_at": "2026-01-16T08:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0820",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:20:00-05:00",
+      "received_at": "2026-01-16T08:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0820",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:20:00-05:00",
+      "received_at": "2026-01-16T08:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0825",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:25:00-05:00",
+      "received_at": "2026-01-16T08:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0825",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:25:00-05:00",
+      "received_at": "2026-01-16T08:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0830",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:30:00-05:00",
+      "received_at": "2026-01-16T08:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0830",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:30:00-05:00",
+      "received_at": "2026-01-16T08:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0835",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:35:00-05:00",
+      "received_at": "2026-01-16T08:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0835",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:35:00-05:00",
+      "received_at": "2026-01-16T08:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0840",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:40:00-05:00",
+      "received_at": "2026-01-16T08:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0840",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:40:00-05:00",
+      "received_at": "2026-01-16T08:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0845",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:45:00-05:00",
+      "received_at": "2026-01-16T08:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0845",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:45:00-05:00",
+      "received_at": "2026-01-16T08:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0850",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:50:00-05:00",
+      "received_at": "2026-01-16T08:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0850",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:50:00-05:00",
+      "received_at": "2026-01-16T08:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0855",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T08:55:00-05:00",
+      "received_at": "2026-01-16T08:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0855",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T08:55:00-05:00",
+      "received_at": "2026-01-16T08:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0900",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:00:00-05:00",
+      "received_at": "2026-01-16T09:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0900",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:00:00-05:00",
+      "received_at": "2026-01-16T09:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0905",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:05:00-05:00",
+      "received_at": "2026-01-16T09:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0905",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:05:00-05:00",
+      "received_at": "2026-01-16T09:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0910",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:10:00-05:00",
+      "received_at": "2026-01-16T09:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0910",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:10:00-05:00",
+      "received_at": "2026-01-16T09:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0915",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:15:00-05:00",
+      "received_at": "2026-01-16T09:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0915",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:15:00-05:00",
+      "received_at": "2026-01-16T09:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0920",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:20:00-05:00",
+      "received_at": "2026-01-16T09:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0920",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:20:00-05:00",
+      "received_at": "2026-01-16T09:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0925",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:25:00-05:00",
+      "received_at": "2026-01-16T09:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0925",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:25:00-05:00",
+      "received_at": "2026-01-16T09:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0930",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:30:00-05:00",
+      "received_at": "2026-01-16T09:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0930",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:30:00-05:00",
+      "received_at": "2026-01-16T09:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0935",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:35:00-05:00",
+      "received_at": "2026-01-16T09:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0935",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:35:00-05:00",
+      "received_at": "2026-01-16T09:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0940",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:40:00-05:00",
+      "received_at": "2026-01-16T09:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0940",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:40:00-05:00",
+      "received_at": "2026-01-16T09:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0945",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:45:00-05:00",
+      "received_at": "2026-01-16T09:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0945",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:45:00-05:00",
+      "received_at": "2026-01-16T09:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0950",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:50:00-05:00",
+      "received_at": "2026-01-16T09:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0950",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:50:00-05:00",
+      "received_at": "2026-01-16T09:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-0955",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T09:55:00-05:00",
+      "received_at": "2026-01-16T09:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-0955",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T09:55:00-05:00",
+      "received_at": "2026-01-16T09:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1000",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:00:00-05:00",
+      "received_at": "2026-01-16T10:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1000",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:00:00-05:00",
+      "received_at": "2026-01-16T10:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1005",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:05:00-05:00",
+      "received_at": "2026-01-16T10:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1005",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:05:00-05:00",
+      "received_at": "2026-01-16T10:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1010",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:10:00-05:00",
+      "received_at": "2026-01-16T10:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1010",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:10:00-05:00",
+      "received_at": "2026-01-16T10:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1015",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:15:00-05:00",
+      "received_at": "2026-01-16T10:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1015",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:15:00-05:00",
+      "received_at": "2026-01-16T10:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1020",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:20:00-05:00",
+      "received_at": "2026-01-16T10:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1020",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:20:00-05:00",
+      "received_at": "2026-01-16T10:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1025",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:25:00-05:00",
+      "received_at": "2026-01-16T10:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1025",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:25:00-05:00",
+      "received_at": "2026-01-16T10:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1030",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:30:00-05:00",
+      "received_at": "2026-01-16T10:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1030",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:30:00-05:00",
+      "received_at": "2026-01-16T10:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1035",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:35:00-05:00",
+      "received_at": "2026-01-16T10:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1035",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:35:00-05:00",
+      "received_at": "2026-01-16T10:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1040",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:40:00-05:00",
+      "received_at": "2026-01-16T10:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1040",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:40:00-05:00",
+      "received_at": "2026-01-16T10:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1045",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:45:00-05:00",
+      "received_at": "2026-01-16T10:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1045",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:45:00-05:00",
+      "received_at": "2026-01-16T10:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1050",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:50:00-05:00",
+      "received_at": "2026-01-16T10:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1050",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:50:00-05:00",
+      "received_at": "2026-01-16T10:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1055",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T10:55:00-05:00",
+      "received_at": "2026-01-16T10:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1055",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T10:55:00-05:00",
+      "received_at": "2026-01-16T10:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1100",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:00:00-05:00",
+      "received_at": "2026-01-16T11:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1100",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:00:00-05:00",
+      "received_at": "2026-01-16T11:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1105",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:05:00-05:00",
+      "received_at": "2026-01-16T11:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1105",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:05:00-05:00",
+      "received_at": "2026-01-16T11:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1110",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:10:00-05:00",
+      "received_at": "2026-01-16T11:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1110",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:10:00-05:00",
+      "received_at": "2026-01-16T11:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1115",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:15:00-05:00",
+      "received_at": "2026-01-16T11:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1115",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:15:00-05:00",
+      "received_at": "2026-01-16T11:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1120",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:20:00-05:00",
+      "received_at": "2026-01-16T11:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1120",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:20:00-05:00",
+      "received_at": "2026-01-16T11:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1125",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:25:00-05:00",
+      "received_at": "2026-01-16T11:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1125",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:25:00-05:00",
+      "received_at": "2026-01-16T11:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1130",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:30:00-05:00",
+      "received_at": "2026-01-16T11:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1130",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:30:00-05:00",
+      "received_at": "2026-01-16T11:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1135",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:35:00-05:00",
+      "received_at": "2026-01-16T11:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1135",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:35:00-05:00",
+      "received_at": "2026-01-16T11:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1140",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:40:00-05:00",
+      "received_at": "2026-01-16T11:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1140",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:40:00-05:00",
+      "received_at": "2026-01-16T11:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1145",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:45:00-05:00",
+      "received_at": "2026-01-16T11:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1145",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:45:00-05:00",
+      "received_at": "2026-01-16T11:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1150",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:50:00-05:00",
+      "received_at": "2026-01-16T11:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1150",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:50:00-05:00",
+      "received_at": "2026-01-16T11:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1155",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T11:55:00-05:00",
+      "received_at": "2026-01-16T11:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1155",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T11:55:00-05:00",
+      "received_at": "2026-01-16T11:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1200",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:00:00-05:00",
+      "received_at": "2026-01-16T12:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1200",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:00:00-05:00",
+      "received_at": "2026-01-16T12:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1205",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:05:00-05:00",
+      "received_at": "2026-01-16T12:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1205",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:05:00-05:00",
+      "received_at": "2026-01-16T12:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1210",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:10:00-05:00",
+      "received_at": "2026-01-16T12:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1210",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:10:00-05:00",
+      "received_at": "2026-01-16T12:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1215",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:15:00-05:00",
+      "received_at": "2026-01-16T12:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1215",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:15:00-05:00",
+      "received_at": "2026-01-16T12:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1220",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:20:00-05:00",
+      "received_at": "2026-01-16T12:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1220",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:20:00-05:00",
+      "received_at": "2026-01-16T12:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1225",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:25:00-05:00",
+      "received_at": "2026-01-16T12:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1225",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:25:00-05:00",
+      "received_at": "2026-01-16T12:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1230",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:30:00-05:00",
+      "received_at": "2026-01-16T12:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1230",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:30:00-05:00",
+      "received_at": "2026-01-16T12:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1235",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:35:00-05:00",
+      "received_at": "2026-01-16T12:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1235",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:35:00-05:00",
+      "received_at": "2026-01-16T12:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1240",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:40:00-05:00",
+      "received_at": "2026-01-16T12:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1240",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:40:00-05:00",
+      "received_at": "2026-01-16T12:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1245",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:45:00-05:00",
+      "received_at": "2026-01-16T12:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1245",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:45:00-05:00",
+      "received_at": "2026-01-16T12:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1250",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:50:00-05:00",
+      "received_at": "2026-01-16T12:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1250",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:50:00-05:00",
+      "received_at": "2026-01-16T12:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1255",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T12:55:00-05:00",
+      "received_at": "2026-01-16T12:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1255",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T12:55:00-05:00",
+      "received_at": "2026-01-16T12:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1300",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:00:00-05:00",
+      "received_at": "2026-01-16T13:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1300",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:00:00-05:00",
+      "received_at": "2026-01-16T13:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1305",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:05:00-05:00",
+      "received_at": "2026-01-16T13:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1305",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:05:00-05:00",
+      "received_at": "2026-01-16T13:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1310",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:10:00-05:00",
+      "received_at": "2026-01-16T13:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1310",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:10:00-05:00",
+      "received_at": "2026-01-16T13:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1315",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:15:00-05:00",
+      "received_at": "2026-01-16T13:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1315",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:15:00-05:00",
+      "received_at": "2026-01-16T13:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1320",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:20:00-05:00",
+      "received_at": "2026-01-16T13:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1320",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:20:00-05:00",
+      "received_at": "2026-01-16T13:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1325",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:25:00-05:00",
+      "received_at": "2026-01-16T13:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1325",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:25:00-05:00",
+      "received_at": "2026-01-16T13:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1330",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:30:00-05:00",
+      "received_at": "2026-01-16T13:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1330",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:30:00-05:00",
+      "received_at": "2026-01-16T13:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1335",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:35:00-05:00",
+      "received_at": "2026-01-16T13:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1335",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:35:00-05:00",
+      "received_at": "2026-01-16T13:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1340",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:40:00-05:00",
+      "received_at": "2026-01-16T13:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1340",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:40:00-05:00",
+      "received_at": "2026-01-16T13:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1345",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:45:00-05:00",
+      "received_at": "2026-01-16T13:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1345",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:45:00-05:00",
+      "received_at": "2026-01-16T13:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1350",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:50:00-05:00",
+      "received_at": "2026-01-16T13:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1350",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:50:00-05:00",
+      "received_at": "2026-01-16T13:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1355",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T13:55:00-05:00",
+      "received_at": "2026-01-16T13:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1355",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T13:55:00-05:00",
+      "received_at": "2026-01-16T13:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1400",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:00:00-05:00",
+      "received_at": "2026-01-16T14:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1400",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "idle",
+      "unit": null,
+      "observed_at": "2026-01-16T14:00:00-05:00",
+      "received_at": "2026-01-16T14:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1405",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:05:00-05:00",
+      "received_at": "2026-01-16T14:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1405",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:05:00-05:00",
+      "received_at": "2026-01-16T14:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1410",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:10:00-05:00",
+      "received_at": "2026-01-16T14:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1410",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:10:00-05:00",
+      "received_at": "2026-01-16T14:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1415",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:15:00-05:00",
+      "received_at": "2026-01-16T14:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1415",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:15:00-05:00",
+      "received_at": "2026-01-16T14:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1420",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:20:00-05:00",
+      "received_at": "2026-01-16T14:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1420",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:20:00-05:00",
+      "received_at": "2026-01-16T14:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1425",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:25:00-05:00",
+      "received_at": "2026-01-16T14:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1425",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:25:00-05:00",
+      "received_at": "2026-01-16T14:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1430",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:30:00-05:00",
+      "received_at": "2026-01-16T14:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1430",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:30:00-05:00",
+      "received_at": "2026-01-16T14:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1435",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:35:00-05:00",
+      "received_at": "2026-01-16T14:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1435",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:35:00-05:00",
+      "received_at": "2026-01-16T14:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1440",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:40:00-05:00",
+      "received_at": "2026-01-16T14:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1440",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:40:00-05:00",
+      "received_at": "2026-01-16T14:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1445",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:45:00-05:00",
+      "received_at": "2026-01-16T14:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1445",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:45:00-05:00",
+      "received_at": "2026-01-16T14:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1450",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:50:00-05:00",
+      "received_at": "2026-01-16T14:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1450",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:50:00-05:00",
+      "received_at": "2026-01-16T14:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1455",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T14:55:00-05:00",
+      "received_at": "2026-01-16T14:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1455",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T14:55:00-05:00",
+      "received_at": "2026-01-16T14:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1500",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:00:00-05:00",
+      "received_at": "2026-01-16T15:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1500",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:00:00-05:00",
+      "received_at": "2026-01-16T15:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1505",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:05:00-05:00",
+      "received_at": "2026-01-16T15:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1505",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:05:00-05:00",
+      "received_at": "2026-01-16T15:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1510",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:10:00-05:00",
+      "received_at": "2026-01-16T15:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1510",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:10:00-05:00",
+      "received_at": "2026-01-16T15:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1515",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:15:00-05:00",
+      "received_at": "2026-01-16T15:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1515",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:15:00-05:00",
+      "received_at": "2026-01-16T15:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1520",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:20:00-05:00",
+      "received_at": "2026-01-16T15:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1520",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:20:00-05:00",
+      "received_at": "2026-01-16T15:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1525",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:25:00-05:00",
+      "received_at": "2026-01-16T15:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1525",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:25:00-05:00",
+      "received_at": "2026-01-16T15:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1530",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T15:30:00-05:00",
+      "received_at": "2026-01-16T15:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1530",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T15:30:00-05:00",
+      "received_at": "2026-01-16T15:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1820",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1820",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1825",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1825",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1830",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1830",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1835",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1835",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1840",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1840",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1845",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1845",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1850",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1850",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1855",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 55.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1855",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1900",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 57.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1900",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1905",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 58.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1905",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1910",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 59.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1910",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1915",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 60.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1915",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1920",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 61.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1920",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1925",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 62.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1925",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1930",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 63.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1930",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1935",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 64.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1935",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1940",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 66.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1940",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1945",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 67.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1945",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1950",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1950",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-1955",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-1955",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2000",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2000",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2005",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2005",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2010",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2010",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2015",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2015",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2020",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2020",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2025",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2025",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2030",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2030",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2035",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2035",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2040",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2040",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2045",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2045",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2050",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2050",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2055",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2055",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2100",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2100",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2105",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2105",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2110",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2110",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2115",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2115",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2120",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2120",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2125",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2125",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-temp-2130",
+      "source": "thermostat",
+      "kind": "measurement",
+      "subject": "demo-cabin/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "tstat-video-state-2130",
+      "source": "thermostat",
+      "kind": "device_report",
+      "subject": "demo-cabin/main",
+      "quantity": "hvac_reported_state",
+      "value": "heating",
+      "unit": null,
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      }
+    }
+  ]
+}

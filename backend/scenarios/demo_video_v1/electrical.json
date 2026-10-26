@@ -1,0 +1,2308 @@
+{
+  "records": [
+    {
+      "id": "elec-video-blower-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:00:00-05:00",
+      "received_at": "2026-01-16T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:00:00-05:00",
+      "received_at": "2026-01-16T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:00:00-05:00",
+      "received_at": "2026-01-16T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:30:00-05:00",
+      "received_at": "2026-01-16T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:30:00-05:00",
+      "received_at": "2026-01-16T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T06:30:00-05:00",
+      "received_at": "2026-01-16T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:00:00-05:00",
+      "received_at": "2026-01-16T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:00:00-05:00",
+      "received_at": "2026-01-16T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:00:00-05:00",
+      "received_at": "2026-01-16T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:30:00-05:00",
+      "received_at": "2026-01-16T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:30:00-05:00",
+      "received_at": "2026-01-16T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T07:30:00-05:00",
+      "received_at": "2026-01-16T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:00:00-05:00",
+      "received_at": "2026-01-16T08:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:00:00-05:00",
+      "received_at": "2026-01-16T08:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:00:00-05:00",
+      "received_at": "2026-01-16T08:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:30:00-05:00",
+      "received_at": "2026-01-16T08:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:30:00-05:00",
+      "received_at": "2026-01-16T08:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T08:30:00-05:00",
+      "received_at": "2026-01-16T08:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:00:00-05:00",
+      "received_at": "2026-01-16T09:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:00:00-05:00",
+      "received_at": "2026-01-16T09:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:00:00-05:00",
+      "received_at": "2026-01-16T09:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:30:00-05:00",
+      "received_at": "2026-01-16T09:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:30:00-05:00",
+      "received_at": "2026-01-16T09:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T09:30:00-05:00",
+      "received_at": "2026-01-16T09:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:00:00-05:00",
+      "received_at": "2026-01-16T10:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:00:00-05:00",
+      "received_at": "2026-01-16T10:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:00:00-05:00",
+      "received_at": "2026-01-16T10:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:30:00-05:00",
+      "received_at": "2026-01-16T10:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:30:00-05:00",
+      "received_at": "2026-01-16T10:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T10:30:00-05:00",
+      "received_at": "2026-01-16T10:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:00:00-05:00",
+      "received_at": "2026-01-16T11:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:00:00-05:00",
+      "received_at": "2026-01-16T11:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:00:00-05:00",
+      "received_at": "2026-01-16T11:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:30:00-05:00",
+      "received_at": "2026-01-16T11:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:30:00-05:00",
+      "received_at": "2026-01-16T11:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T11:30:00-05:00",
+      "received_at": "2026-01-16T11:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:00:00-05:00",
+      "received_at": "2026-01-16T12:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:00:00-05:00",
+      "received_at": "2026-01-16T12:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:00:00-05:00",
+      "received_at": "2026-01-16T12:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:30:00-05:00",
+      "received_at": "2026-01-16T12:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:30:00-05:00",
+      "received_at": "2026-01-16T12:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T12:30:00-05:00",
+      "received_at": "2026-01-16T12:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:00:00-05:00",
+      "received_at": "2026-01-16T13:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:00:00-05:00",
+      "received_at": "2026-01-16T13:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:00:00-05:00",
+      "received_at": "2026-01-16T13:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:30:00-05:00",
+      "received_at": "2026-01-16T13:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:30:00-05:00",
+      "received_at": "2026-01-16T13:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T13:30:00-05:00",
+      "received_at": "2026-01-16T13:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:00:00-05:00",
+      "received_at": "2026-01-16T14:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:00:00-05:00",
+      "received_at": "2026-01-16T14:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:00:00-05:00",
+      "received_at": "2026-01-16T14:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:30:00-05:00",
+      "received_at": "2026-01-16T14:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:30:00-05:00",
+      "received_at": "2026-01-16T14:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T14:30:00-05:00",
+      "received_at": "2026-01-16T14:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:00:00-05:00",
+      "received_at": "2026-01-16T15:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:00:00-05:00",
+      "received_at": "2026-01-16T15:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:00:00-05:00",
+      "received_at": "2026-01-16T15:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 500,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:30:00-05:00",
+      "received_at": "2026-01-16T15:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:30:00-05:00",
+      "received_at": "2026-01-16T15:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T15:30:00-05:00",
+      "received_at": "2026-01-16T15:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 550,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 480,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 520,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 580,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 920,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 880,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 910,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 895,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 915,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 900,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-blower-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 920,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-kitchen-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-video-living-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "demo_video_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-cabin-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    }
+  ]
+}
