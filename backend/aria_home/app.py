@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 
 from aria_home.contracts import SourceKind
 from aria_home.evidence import source_status
+from aria_home.metrics import circuit_activity, target_gap, temperature_trend
 from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import load_scenario, visible_records
 
@@ -60,6 +61,57 @@ def create_app():
                 "model_id": config.model_id,
                 "enabled": config.enabled,
                 "key_present": bool(config.api_key),
+            }
+        )
+
+    @app.get("/api/metrics")
+    def metrics():
+        from datetime import datetime as _datetime
+
+        def _jsonable(value):
+            if isinstance(value, _datetime):
+                return value.isoformat()
+            if isinstance(value, dict):
+                return {k: _jsonable(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [_jsonable(v) for v in value]
+            return value
+
+        raw_at = request.args.get("at")
+        if raw_at:
+            try:
+                at = datetime.fromisoformat(raw_at.replace("Z", "+00:00"))
+            except ValueError:
+                return jsonify({"error": "at must be an ISO 8601 datetime"}), 400
+            if at.tzinfo is None or at.utcoffset() is None:
+                return jsonify({"error": "at must be timezone-aware"}), 400
+        else:
+            at = scenario.manifest.start + timedelta(hours=3)
+
+        start = at - timedelta(hours=3)
+        zones = sorted({r.subject for r in scenario.records if r.quantity == "indoor_temp"})
+        zone = zones[0] if zones else "demo-cabin/main"
+        trend = temperature_trend(scenario.records, zone, start, at, at)
+        gap = None
+        if scenario.confirmation is not None:
+            gap = target_gap(trend, scenario.confirmation.target_temp, scenario.confirmation.target_unit)
+        circuit_ids = sorted(
+            {
+                (r.binding.circuit_id if r.binding else None) or r.subject
+                for r in scenario.records
+                if r.quantity == "circuit_power"
+            }
+        )
+        return jsonify(
+            {
+                "data_mode": scenario.manifest.mode.value,
+                "computed_by": "deterministic code",
+                "at": at.isoformat(),
+                "zone": zone,
+                "window": {"start": start.isoformat(), "end": at.isoformat()},
+                "indoor_trend": _jsonable(trend),
+                "target_gap": _jsonable(gap),
+                "circuits": {cid: _jsonable(circuit_activity(scenario.records, cid, start, at, at)) for cid in circuit_ids},
             }
         )
 
