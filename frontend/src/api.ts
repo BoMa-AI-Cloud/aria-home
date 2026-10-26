@@ -21,34 +21,81 @@ export interface SourceStatus {
   stale_count: number;
 }
 
-export type Readiness = "on_track" | "at_risk" | "cannot_tell";
+export type ReadinessStatus = "on_track" | "at_risk" | "cannot_tell";
+
+export type Readiness = ReadinessStatus;
 
 export type InvestigationStatus = "ok" | "rejected" | "unavailable";
 
-export interface InvestigationObservation {
-  text: string;
-  evidence_ids: string[];
+export interface ContextFlags {
+  trip_cancelled: boolean;
+  trip_unconfirmed: boolean;
+  trip_mismatched: boolean;
+  confirmation_outdated: boolean;
 }
 
-export interface InvestigationHypothesis {
-  text: string;
-  supporting_ids: string[];
-  conflicting_ids: string[];
+export interface ReadinessThresholds {
+  MIN_SAMPLES: number;
+  MIN_COVERAGE: number;
+  STALE_READING_AGE_S: number;
+  SMALL_GAP_F: number;
+  MIN_TREND_WINDOW_S: number;
+  MIN_RISE_F: number;
+  MIN_RATE_PER_HOUR_F: number;
+  PROJECTION_MARGIN_F: number;
+  ARRIVAL_TIME_MARGIN_S: number;
 }
 
-export interface InvestigationFollowUp {
-  observation: string;
-  when: string;
+export interface ReadinessInputs {
+  gap: number | null;
+  gap_f: number | null;
+  unit: string | null;
+  last_value: number | null;
+  target_temp: number | null;
+  rate_per_hour: number | null;
+  rate_per_hour_f: number | null;
+  change: number | null;
+  change_f: number | null;
+  sample_count: number;
+  coverage: number | null;
+  first_observed_at: string | null;
+  last_observed_at: string | null;
+  trend_window_s: number | null;
+  planned_arrival: string | null;
+  now: string | null;
+  hours_to_arrival: number | null;
+  thermostat_availability: Availability | null;
+  flags: ContextFlags;
+  thresholds: ReadinessThresholds;
+  reading_age_s?: number;
+  projected_value_at_arrival_f?: number;
+  target_temp_f?: number;
+  hours_to_close_gap?: number | null;
 }
 
-export interface InvestigationOutput {
-  observations: InvestigationObservation[];
-  hypotheses: InvestigationHypothesis[];
-  unknowns: string[];
-  clarification: string;
-  follow_up: InvestigationFollowUp;
-  readiness: Readiness;
-  limitations: string[];
+export interface ReadinessResult {
+  status: ReadinessStatus;
+  reasons: string[];
+  inputs: ReadinessInputs;
+}
+
+export interface IndoorTrend {
+  zone: string;
+  sample_count: number;
+  missing_count: number;
+  coverage: number;
+  coverage_basis: string;
+  gaps_over_cadence: number;
+  largest_gap_s: number | null;
+  first_value: number | null;
+  first_observed_at: string | null;
+  last_value: number | null;
+  last_observed_at: string | null;
+  change: number | null;
+  rate_per_hour: number | null;
+  unit: string;
+  unit_converted: boolean;
+  sufficient: boolean;
 }
 
 export interface TargetGap {
@@ -60,30 +107,267 @@ export interface TargetGap {
   target_unit: string;
 }
 
-export interface InvestigationSummary {
-  power_context_statement: string | null;
-  continuity: string | null;
-  metrics: {
-    target_gap?: TargetGap | null;
-    [key: string]: unknown;
-  };
-  power_context: {
-    statement?: string;
-    limitations?: string[];
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
+export interface CircuitActivity {
+  circuit_id: string;
+  sample_count: number;
+  missing_count: number;
+  coverage: number;
+  coverage_basis: string;
+  gaps_over_cadence: number;
+  largest_gap_s: number | null;
+  max_w: number | null;
+  mean_w: number | null;
+  active: boolean;
+  binding: string;
+  noise_floor_w: number;
+  unit: string;
+  first_observed_at: string | null;
+  last_observed_at: string | null;
+  meaning: string;
 }
 
-export interface InvestigationResponse {
+export interface Trip {
+  id: string;
+  property_id: string;
+  title: string;
+  planned_arrival: string;
+  revision: number;
+  cancelled: boolean;
+  known_at: string | null;
+  revision_id: string | null;
+  target_temp: number | null;
+  target_unit: string | null;
+}
+
+export interface HomeownerConfirmation {
+  trip_id: string;
+  property_id: string;
+  target_temp: number;
+  target_unit: string;
+  notify_homeowner: boolean;
+  manager_authorized: boolean;
+  confirmed_at: string;
+  revision_id: string | null;
+  trip_revision: number | null;
+  trip_revision_id: string | null;
+}
+
+export interface MetricsResponse {
+  data_mode: DataMode;
+  computed_by: string;
+  at: string;
+  zone: string;
+  window: { start: string; end: string };
+  indoor_trend: IndoorTrend;
+  target_gap: TargetGap | null;
+  circuits: Record<string, CircuitActivity>;
+  trip: Trip | null;
+  confirmation: HomeownerConfirmation | null;
+  readiness_flags: ContextFlags;
+  flags: ContextFlags;
+  context_flags: ContextFlags;
+  readiness: ReadinessResult;
+  computed_readiness: ReadinessStatus;
+}
+
+export interface CircuitContext {
+  circuit_id: string;
+  binding: "confirmed" | "candidate" | "unknown";
+  status: "fresh_active" | "fresh_quiet" | "stale" | "missing" | "invalid" | "conflicting";
+  age_s: number | null;
+  last_value: number | null;
+  last_observed_at: string | null;
+}
+
+export interface PowerLineage {
+  meter_ids: string[];
+  lineage_count: number;
+  counts_by_status: Record<string, number>;
+  coverage: number;
+  largest_gap_s: number | null;
+}
+
+export interface PowerContext {
+  per_circuit: CircuitContext[];
+  lineage: PowerLineage;
+  mains: "not_available" | "measured_fresh" | "measured_stale" | "calculated_only";
+  heating_binding: "confirmed" | "candidate_only" | "unknown";
+  backup: "known_none" | "known_present" | "unknown";
+  continuity:
+    | "activity_weighs_against_total_loss"
+    | "visibility_lost"
+    | "insufficient_evidence"
+    | "conflicting_evidence";
+  statement: string;
+  limitations: string[];
+  window_start: string;
+  now: string;
+}
+
+export interface InvestigationMetrics {
+  zone: string;
+  indoor_trend: IndoorTrend;
+  target_gap: TargetGap | null;
+  circuits: Record<string, CircuitActivity>;
+}
+
+export interface InvestigationSummary {
+  source_statuses: SourceStatus[];
+  metrics: InvestigationMetrics;
+  power_context: PowerContext;
+  power_context_statement: string | null;
+  continuity: string | null;
+  readiness: ReadinessResult;
+  computed_readiness: ReadinessStatus | null;
+}
+
+export type ClaimType =
+  | "current_temperature"
+  | "target_temperature"
+  | "target_gap"
+  | "electrical_activity"
+  | "equipment_function";
+
+export interface InvestigationFact {
+  claim_type: ClaimType;
+  evidence_id: string;
+  field: string;
+  value: number | string | boolean;
+  unit: string | null;
+  at: string | null;
+}
+
+export interface InvestigationHypothesis {
+  text: string;
+  supporting_ids: string[];
+  conflicting_ids: string[];
+}
+
+export interface InvestigationFollowUp {
+  observation: string;
+  when: string | null;
+  next_check_at: string | null;
+  schedule_status: string;
+  deadline_passed: boolean;
+}
+
+export interface InvestigationOutput {
+  facts: InvestigationFact[];
+  verified_facts: string[];
+  interpretation: string;
+  hypotheses: InvestigationHypothesis[];
+  unknowns: string[];
+  clarification: string;
+  follow_up: InvestigationFollowUp;
+  readiness: ReadinessStatus;
+  limitations: string[];
+}
+
+export interface EvidencePackTrip {
+  id: string;
+  property_id: string;
+  planned_arrival: string;
+  revision: number;
+  revision_id: string | null;
+  known_at: string | null;
+  cancelled: boolean;
+  title: { untrusted_text: string; quoted: string };
+}
+
+export interface EvidenceItem {
+  id: string;
+  source?: SourceKind;
+  kind?: string;
+  subject?: string;
+  quantity?: string;
+  value?: number | string | null;
+  unit?: string | null;
+  observed_at?: string;
+  received_at?: string;
+  type?: string;
+  name?: string;
+  circuit_id?: string;
+  data?: Record<string, unknown>;
+}
+
+export interface EvidencePack {
+  prompt_version: string;
+  at: string;
+  window: { start: string; end: string };
+  data_mode: DataMode;
+  trip: EvidencePackTrip | null;
+  confirmation: HomeownerConfirmation | null;
+  readiness_flags: ContextFlags;
+  flags: ContextFlags;
+  context_flags: ContextFlags;
+  as_of: {
+    at: string;
+    flags: ContextFlags;
+    trip_revision_id: string | null;
+    confirmation_visible: boolean;
+  };
+  source_statuses: SourceStatus[];
+  metrics: InvestigationMetrics;
+  power_context: PowerContext;
+  evidence: EvidenceItem[];
+  evidence_ids: string[];
+  readiness: ReadinessResult;
+  computed_readiness: ReadinessStatus;
+}
+
+export interface Investigation {
   status: InvestigationStatus;
   output: InvestigationOutput | null;
   reasons: string[];
   model_id: string | null;
   prompt_version: string;
   provider_mode: string | null;
+  latency_ms: number | null;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  token_usage: { input_tokens: number | null; output_tokens: number | null };
+  max_tokens_used: number | null;
   summary: InvestigationSummary;
+  evidence_pack: EvidencePack;
 }
+
+export interface InvestigationResponse extends Investigation {
+  data_mode: DataMode;
+  readiness: ReadinessResult | null;
+  computed_readiness: ReadinessStatus | null;
+}
+
+export interface CreatedInvestigation extends Investigation {
+  id: string;
+  investigation_id: string;
+  scenario: string;
+  evaluated_at: string;
+  readiness: ReadinessResult | null;
+  computed_readiness: ReadinessStatus | null;
+}
+
+export interface FollowUpSchedule {
+  status: string;
+  schedule_status: string;
+  flag: string | null;
+  flags: string[];
+  deadline_passed: boolean;
+  evaluated_at: string;
+  deadline: string | null;
+  arrival: string | null;
+  earliest: string;
+  latest: string;
+  cadence_s: number;
+  next_check_at: string | null;
+  scheduled_at: string | null;
+  when: string | null;
+  computed_next_check_at: string | null;
+  model_when: string | null;
+  model_time_valid: boolean;
+  model_time_rejected: boolean;
+  model_time_reasons: string[];
+}
+
 export interface HealthResponse {
   status: string;
   service: string;
@@ -111,6 +395,11 @@ export function fetchHealth(): Promise<HealthResponse> {
 export function fetchSources(at?: string): Promise<SourcesResponse> {
   const query = at ? `?at=${encodeURIComponent(at)}` : "";
   return fetchJson<SourcesResponse>(`/api/sources${query}`);
+}
+
+export function fetchMetrics(at?: string): Promise<MetricsResponse> {
+  const query = at ? `?at=${encodeURIComponent(at)}` : "";
+  return fetchJson<MetricsResponse>(`/api/metrics${query}`);
 }
 
 export function fetchInvestigation(at?: string): Promise<InvestigationResponse> {
@@ -143,23 +432,63 @@ export interface OutcomeHistoryEntry {
   note: string | null;
 }
 
+export interface FollowUpTarget {
+  target_temp: number;
+  target_unit: string;
+  min_samples: number;
+  min_rise_f: number;
+  zone: string;
+  cadence_s: number | null;
+}
+
 export interface FollowUpPayload {
   investigation_id: string;
   created_at: string;
-  deadline: string;
   target_temp: number;
   target_unit: string;
-  [key: string]: unknown;
+  deadline: string;
+  min_samples: number;
+  min_rise_f: number;
+  zone: string;
+  next_check_at: string | null;
+  schedule_status: string;
+  deadline_passed: boolean;
+  cadence_s: number | null;
+  target: FollowUpTarget | null;
+  last_status: OutcomeStatus | null;
+  status: OutcomeStatus | null;
+  last_evaluated_at: string | null;
+  supporting_ids: string[];
+  when: string | null;
 }
+
+export type CreateInvestigationStatus =
+  | InvestigationStatus
+  | "deadline_passed"
+  | "cannot_tell";
 
 export interface CreateInvestigationResponse {
   data_mode: DataMode;
   investigation_id: string;
+  id: string;
   scenario: string;
-  status: InvestigationStatus;
-  investigation: Record<string, unknown> | null;
+  status: CreateInvestigationStatus;
+  investigation_status?: InvestigationStatus;
+  readiness: ReadinessResult | null;
+  computed_readiness: ReadinessStatus | null;
+  investigation: CreatedInvestigation;
   follow_up: FollowUpPayload | null;
-  outcome: OutcomeResult;
+  follow_up_schedule: FollowUpSchedule;
+  schedule: FollowUpSchedule;
+  schedule_status: string;
+  flag?: string | null;
+  flags?: ContextFlags;
+  readiness_flags?: ContextFlags;
+  context_flags?: ContextFlags;
+  deadline_passed: boolean;
+  next_check_at: string | null;
+  outcome: OutcomeResult | null;
+  error?: string;
 }
 
 export interface FollowUpResponse {

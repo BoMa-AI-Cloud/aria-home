@@ -135,11 +135,22 @@ class Trip(_Strict):
     planned_arrival: datetime
     revision: int = Field(default=1, ge=0)
     cancelled: bool = False
+    known_at: datetime | None = None
+    revision_id: str | None = None
+    target_temp: float | None = None
+    target_unit: str | None = None
 
-    @field_validator("planned_arrival")
+    @field_validator("planned_arrival", "known_at")
     @classmethod
     def _aware(cls, value):
         return _require_aware(value)
+
+    @field_validator("target_unit")
+    @classmethod
+    def _unit(cls, value):
+        if value is not None and value not in {"F", "C"}:
+            raise ValueError("target_unit must be 'F' or 'C'")
+        return value
 
 
 class HomeownerConfirmation(_Strict):
@@ -150,6 +161,13 @@ class HomeownerConfirmation(_Strict):
     notify_homeowner: bool
     manager_authorized: bool
     confirmed_at: datetime
+    revision_id: str | None = None
+    trip_revision: int | None = Field(default=None, ge=0)
+    trip_revision_id: str | None = None
+
+    @property
+    def confirmed_revision_id(self):
+        return self.revision_id or self.trip_revision_id
 
     @field_validator("target_unit")
     @classmethod

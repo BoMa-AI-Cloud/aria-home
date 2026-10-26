@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .outcomes import FollowUp
+from .scheduling import validate_follow_up_time
 
 ENV_VAR = "ARIA_HOME_DB_PATH"
 DEFAULT_PATH = Path(__file__).resolve().parent.parent / "instance" / "aria_home.db"
@@ -102,6 +103,13 @@ class Store:
                 );
                 """
             )
+            cols = {r["name"] for r in conn.execute("PRAGMA table_info(follow_ups)").fetchall()}
+            if "next_check_at" not in cols:
+                conn.execute("ALTER TABLE follow_ups ADD COLUMN next_check_at TEXT")
+            if "schedule_status" not in cols:
+                conn.execute("ALTER TABLE follow_ups ADD COLUMN schedule_status TEXT")
+            if "deadline_passed" not in cols:
+                conn.execute("ALTER TABLE follow_ups ADD COLUMN deadline_passed INTEGER NOT NULL DEFAULT 0")
 
     def close(self):
         pass
@@ -176,10 +184,33 @@ class Store:
 
     def save_follow_up(self, follow_up=None, *, investigation_id=None, outcome=None, status=None, evaluated_at=None, supporting_ids=None, **fields):
         if follow_up is None:
+            fields = dict(fields)
+            for alias in ("when", "next_check", "scheduled_at"):
+                if alias in fields and "next_check_at" not in fields:
+                    fields["next_check_at"] = fields.pop(alias)
+                else:
+                    fields.pop(alias, None)
             data = {"investigation_id": investigation_id, **fields}
             follow_up = FollowUp.model_validate(data)
         elif isinstance(follow_up, dict):
+            follow_up = dict(follow_up)
+            for alias in ("when", "next_check", "scheduled_at"):
+                if alias in follow_up and "next_check_at" not in follow_up:
+                    follow_up["next_check_at"] = follow_up.pop(alias)
+                else:
+                    follow_up.pop(alias, None)
             follow_up = FollowUp.model_validate(follow_up)
+        else:
+            follow_up = FollowUp.model_validate(follow_up.model_dump(mode="python") if hasattr(follow_up, "model_dump") else follow_up)
+        for name, value in (("created_at", follow_up.created_at), ("deadline", follow_up.deadline)):
+            if value.tzinfo is None or value.utcoffset() is None:
+                raise ValueError(f"{name} must be timezone-aware")
+        if follow_up.deadline <= follow_up.created_at:
+            raise ValueError("deadline_passed: deadline must be after created_at")
+        if follow_up.next_check_at is not None:
+            reasons = validate_follow_up_time(follow_up.next_check_at, follow_up.created_at, follow_up.deadline)
+            if reasons:
+                raise ValueError("; ".join(reasons))
         inv_id = investigation_id or follow_up.investigation_id
         target = json.dumps({
             "target_temp": follow_up.target_temp,
@@ -187,6 +218,7 @@ class Store:
             "min_samples": follow_up.min_samples,
             "min_rise_f": follow_up.min_rise_f,
             "zone": follow_up.zone,
+            "cadence_s": follow_up.cadence_s,
         })
         last_status = status
         last_at = evaluated_at
@@ -198,11 +230,11 @@ class Store:
         with self._connection() as conn:
             conn.execute(
                 """
-                INSERT INTO follow_ups (investigation_id, created_at, deadline, target, last_status, last_evaluated_at, supporting_ids)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO follow_ups (investigation_id, created_at, deadline, target, last_status, last_evaluated_at, supporting_ids, next_check_at, schedule_status, deadline_passed)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(investigation_id) DO NOTHING
                 """,
-                (inv_id, _iso(follow_up.created_at), _iso(follow_up.deadline), target, last_status, _iso(_parse_dt(last_at)) if last_at else None, json.dumps(list(ids or []))),
+                (inv_id, _iso(follow_up.created_at), _iso(follow_up.deadline), target, last_status, _iso(_parse_dt(last_at)) if last_at else None, json.dumps(list(ids or [])), _iso(follow_up.next_check_at), follow_up.schedule_status, 1 if follow_up.deadline_passed else 0),
             )
         if outcome is not None:
             self.record_outcome(inv_id, outcome)
@@ -225,6 +257,10 @@ class Store:
             min_samples=target.get("min_samples", 3),
             min_rise_f=target.get("min_rise_f", 2.0),
             zone=target.get("zone", "demo-cabin/main"),
+            next_check_at=_parse_dt(row["next_check_at"]) if "next_check_at" in row.keys() else None,
+            schedule_status=row["schedule_status"] if "schedule_status" in row.keys() and row["schedule_status"] else "scheduled",
+            deadline_passed=bool(row["deadline_passed"]) if "deadline_passed" in row.keys() else False,
+            cadence_s=target.get("cadence_s"),
         )
 
     def get_follow_up(self, investigation_id):
@@ -253,6 +289,9 @@ class Store:
             "status": row["last_status"],
             "last_evaluated_at": row["last_evaluated_at"],
             "supporting_ids": json.loads(row["supporting_ids"] or "[]"),
+            "next_check_at": row["next_check_at"] if "next_check_at" in row.keys() else None,
+            "schedule_status": row["schedule_status"] if "schedule_status" in row.keys() else None,
+            "deadline_passed": bool(row["deadline_passed"]) if "deadline_passed" in row.keys() else False,
         }
 
     def record_outcome(self, investigation_id, outcome=None, *, status=None, evaluated_at=None, supporting_ids=None, sample_count=None, note=None):

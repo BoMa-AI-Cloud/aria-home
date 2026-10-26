@@ -13,7 +13,9 @@ from aria_home.outcomes import evaluate_outcome, follow_up_for
 from aria_home.store import Store, investigation_id_for
 from aria_home.power_context import power_context
 from aria_home.provider import ProviderConfig, get_provider
-from aria_home.scenario import load_scenario, visible_records
+from aria_home.scenario import context_as_of, load_scenario, visible_records
+from aria_home.readiness import compute_readiness
+from aria_home.scheduling import compute_follow_up_schedule
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
 
@@ -96,19 +98,37 @@ def create_app():
             at = scenario.manifest.start + timedelta(hours=3)
 
         start = at - timedelta(hours=3)
-        zones = sorted({r.subject for r in scenario.records if r.quantity == "indoor_temp"})
+        ctx = context_as_of(scenario, at)
+        visible = visible_records(scenario.records, at)
+        zones = sorted({r.subject for r in visible if r.quantity == "indoor_temp"})
         zone = zones[0] if zones else "demo-cabin/main"
-        trend = temperature_trend(scenario.records, zone, start, at, at)
+        trend = temperature_trend(visible, zone, start, at, at)
         gap = None
-        if scenario.confirmation is not None:
-            gap = target_gap(trend, scenario.confirmation.target_temp, scenario.confirmation.target_unit)
+        if ctx.confirmation is not None:
+            gap = target_gap(trend, ctx.confirmation.target_temp, ctx.confirmation.target_unit)
         circuit_ids = sorted(
             {
                 (r.binding.circuit_id if r.binding else None) or r.subject
-                for r in scenario.records
+                for r in visible
                 if r.quantity == "circuit_power"
             }
         )
+        circuits = {cid: _jsonable(circuit_activity(visible, cid, start, at, at)) for cid in circuit_ids}
+        statuses = [
+            source_status(source, visible, at, mode=scenario.manifest.mode)
+            for source in SourceKind
+        ]
+        trip_payload = ctx.trip.model_dump(mode="json") if ctx.trip is not None else None
+        confirmation_payload = ctx.confirmation.model_dump(mode="json") if ctx.confirmation is not None else None
+        readiness_pack = {
+            "at": at.isoformat(),
+            "trip": trip_payload,
+            "confirmation": confirmation_payload,
+            "source_statuses": _jsonable(statuses),
+            "metrics": {"indoor_trend": _jsonable(trend), "target_gap": _jsonable(gap)},
+            "readiness_flags": dict(ctx.flags),
+        }
+        readiness = compute_readiness(readiness_pack, at, flags=dict(ctx.flags))
         return jsonify(
             {
                 "data_mode": scenario.manifest.mode.value,
@@ -118,7 +138,14 @@ def create_app():
                 "window": {"start": start.isoformat(), "end": at.isoformat()},
                 "indoor_trend": _jsonable(trend),
                 "target_gap": _jsonable(gap),
-                "circuits": {cid: _jsonable(circuit_activity(scenario.records, cid, start, at, at)) for cid in circuit_ids},
+                "circuits": circuits,
+                "trip": trip_payload,
+                "confirmation": confirmation_payload,
+                "readiness_flags": dict(ctx.flags),
+                "flags": dict(ctx.flags),
+                "context_flags": dict(ctx.flags),
+                "readiness": _jsonable(dict(readiness)),
+                "computed_readiness": readiness["status"],
             }
         )
 
@@ -167,6 +194,8 @@ def create_app():
         result = investigate(scenario, at, provider)
         payload = result.model_dump(mode="json")
         payload["data_mode"] = "synthetic"
+        payload["readiness"] = result.evidence_pack.get("readiness") if result.evidence_pack else None
+        payload["computed_readiness"] = payload["readiness"].get("status") if isinstance(payload.get("readiness"), dict) else None
         return jsonify(payload)
 
     _store = None
@@ -211,7 +240,7 @@ def create_app():
         if follow_up is None:
             return None
         payload = follow_up.model_dump(mode="json")
-        payload.update({"target": row["target"], "last_status": row["last_status"], "status": row["last_status"], "last_evaluated_at": row["last_evaluated_at"], "supporting_ids": row["supporting_ids"]})
+        payload.update({"target": row["target"], "last_status": row["last_status"], "status": row["last_status"], "last_evaluated_at": row["last_evaluated_at"], "supporting_ids": row["supporting_ids"], "next_check_at": row.get("next_check_at") or payload.get("next_check_at"), "when": row.get("next_check_at") or payload.get("next_check_at"), "schedule_status": row.get("schedule_status") or payload.get("schedule_status"), "deadline_passed": row.get("deadline_passed", payload.get("deadline_passed"))})
         return payload
 
     @app.post("/api/investigations")
@@ -230,15 +259,38 @@ def create_app():
         investigation_id = investigation_id_for(scn.manifest.id, at)
         store = _get_store()
         store.save_investigation(result, investigation_id=investigation_id, scenario=scn.manifest.id, evaluated_at=at)
+        ctx = context_as_of(scn, at)
+        arrival = ctx.trip.planned_arrival if ctx.trip else None
+        cadence_s = next((r.expected_cadence_s for r in scn.records if r.quantity == "indoor_temp" and r.expected_cadence_s is not None), None)
+        model_when = None
+        if result.output and result.output.follow_up:
+            model_when = result.output.follow_up.next_check_at or result.output.follow_up.when
+        schedule = compute_follow_up_schedule(at, arrival=arrival, cadence_s=cadence_s, model_when=model_when)
+        schedule_payload = {k: (v.isoformat() if isinstance(v, datetime) else v) for k, v in schedule.items()}
+        investigation_payload = result.model_dump(mode="json")
+        readiness = result.evidence_pack.get("readiness") if result.evidence_pack else None
+        computed_readiness = readiness.get("status") if isinstance(readiness, dict) else None
+        investigation_payload.update({"id": investigation_id, "investigation_id": investigation_id, "scenario": scn.manifest.id, "evaluated_at": at.isoformat(), "readiness": readiness, "computed_readiness": computed_readiness})
+        if schedule["deadline_passed"]:
+            return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None})
         try:
-            follow_up = follow_up_for(scn, investigation_id, at)
+            follow_up = follow_up_for(scn, investigation_id, at, cadence_s=cadence_s)
+        except ValueError as exc:
+            if "deadline_passed" in str(exc):
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None})
+            if any(token in str(exc) for token in ("trip_cancelled", "trip_unconfirmed", "trip_mismatched", "confirmation_outdated", "no homeowner confirmation", "no trip visible")):
+                primary = next((name for name in ("trip_cancelled", "confirmation_outdated", "trip_mismatched", "trip_unconfirmed") if ctx.flags.get(name)), "trip_unconfirmed")
+                not_scheduled = {**schedule_payload, "status": "not_scheduled", "schedule_status": "not_scheduled", "next_check_at": None, "when": None}
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "cannot_tell", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": not_scheduled, "schedule": not_scheduled, "schedule_status": "not_scheduled", "flag": primary, "flags": dict(ctx.flags), "readiness_flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "deadline_passed": False, "next_check_at": None, "outcome": None, "error": str(exc)})
+            return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
+        if follow_up.next_check_at is None or follow_up.next_check_at.tzinfo is None or follow_up.next_check_at <= follow_up.created_at:
+            return jsonify({"error": "invalid follow-up schedule", "data_mode": "synthetic"}), 400
+        try:
+            outcome = evaluate_outcome(follow_up, scn.records, at)
+            store.save_follow_up(follow_up, outcome=outcome)
         except ValueError as exc:
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
-        outcome = evaluate_outcome(follow_up, scn.records, at)
-        store.save_follow_up(follow_up, outcome=outcome)
-        investigation_payload = result.model_dump(mode="json")
-        investigation_payload.update({"id": investigation_id, "investigation_id": investigation_id, "scenario": scn.manifest.id, "evaluated_at": at.isoformat()})
-        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "outcome": outcome.model_dump(mode="json")})
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json")})
 
     @app.get("/api/follow-ups/<investigation_id>")
     def get_follow_up_endpoint(investigation_id):

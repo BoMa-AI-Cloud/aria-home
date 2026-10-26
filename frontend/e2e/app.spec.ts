@@ -19,6 +19,7 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
 
   const banner = page.locator(".banner");
   await expect(banner).toContainText("SYNTHETIC DATA");
+  await expect(banner).toContainText(/synthetic/i);
   await expect(banner).not.toContainText(/live/i);
 
   await expect(
@@ -56,10 +57,16 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   );
 
   await expect(investigation.getByText(/Readiness:/)).toContainText(
-    /On track|At risk|Cannot tell yet/,
+    /On track|At risk|Cannot tell/,
   );
   await expect(investigation.getByText(/Readiness:/)).toContainText(/Indoor .* target/);
-  await expect(investigation.locator(".observations .chip").first()).toBeVisible();
+  await expect(investigation.locator(".verified-facts")).toContainText("below target");
+  await expect(investigation.locator(".readiness-block")).toContainText("At risk");
+  await expect(
+    investigation.getByRole("heading", { name: "Interpretation (model-written, not verified)" }),
+  ).toBeVisible();
+  await expect(investigation.locator(".interpretation")).toContainText("not verified");
+  await expect(investigation.locator(".mock-label")).toContainText(/mock/i);
   await expect(investigation.getByRole("heading", { name: "One question for you" })).toBeVisible();
   await expect(investigation).toContainText("Who should respond first");
   await expect(investigation).toContainText("weighs against complete property power loss");

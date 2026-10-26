@@ -19,7 +19,14 @@ def _at(scenario):
 
 def _valid_json(at):
     return json.dumps({
-        "observations": [{"text": "Indoor temperature trend evidence is available.", "evidence_ids": ["metric:indoor_trend"]}],
+        "facts": [
+            {"claim_type": "current_temperature", "evidence_id": "metric:indoor_trend", "field": "last_value", "value": 52.1, "unit": "F", "at": "2026-01-16T17:55:00-05:00"},
+            {"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": 68.0, "unit": "F", "at": "2026-01-16T17:55:00-05:00"},
+            {"claim_type": "target_gap", "evidence_id": "metric:target_gap", "field": "gap", "value": -15.9, "unit": "F", "at": "2026-01-16T17:55:00-05:00"},
+            {"claim_type": "electrical_activity", "evidence_id": "metric:circuit_activity:circuit-furnace", "field": "max_w", "value": 5.0, "unit": "W", "at": "2026-01-16T17:55:00-05:00"},
+            {"claim_type": "equipment_function", "evidence_id": "metric:circuit_activity:circuit-furnace", "field": "active", "value": "not_observed", "unit": None, "at": "2026-01-16T17:55:00-05:00"},
+        ],
+        "interpretation": "Indoor temperature is 52.1 F and 15.9 F below target.",
         "hypotheses": [{"text": "The property may not be ready on arrival.", "supporting_ids": ["metric:indoor_trend"], "conflicting_ids": []}],
         "unknowns": ["Whether heating equipment is receiving power is not established."],
         "clarification": "Who should respond first if the temperature has not improved?",
@@ -55,29 +62,29 @@ def test_valid_output_passes():
     assert result.status == "ok"
     assert result.output is not None
     assert result.provider_mode == "mock"
-    assert result.prompt_version == "inv-v1"
+    assert result.prompt_version == "inv-v2"
     assert fake.calls[0][2] == 12000
 
 def test_unknown_evidence_id_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["evidence_ids"] = ["nope:missing"]
+    data = json.loads(_valid_json(at)); data["facts"][0]["evidence_id"] = "nope:missing"
     reasons = validate(data, pack)
     assert any("unknown evidence id" in r for r in reasons)
     assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
 
 def test_uncited_observation_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["evidence_ids"] = []
+    data = json.loads(_valid_json(at)); data["hypotheses"][0]["supporting_ids"] = []
     assert any("cites no evidence" in r for r in validate(data, pack))
 
 def test_invented_number_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "The indoor temperature is 999.9 degrees."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "The indoor temperature is 999.9 degrees."
     assert any("number not present" in r for r in validate(data, pack))
 
 def test_banned_phrase_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "There was no outage."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "There was no outage."
     assert any("banned phrase" in r for r in validate(data, pack))
 
 def test_on_track_negative_gap_flat_trend_rejected():
@@ -141,8 +148,10 @@ def test_mock_investigation_labeled():
     result = investigate(scenario, at, MockProvider())
     assert result.status == "ok", result.reasons
     assert result.provider_mode == "mock"
-    assert result.output.observations
-    assert all(o.text.startswith("[MOCK]") for o in result.output.observations)
+    assert result.output.verified_facts
+    assert "Indoor temperature 52.1 F (at 17:55)" in result.output.verified_facts
+    assert "15.9 F below target" in result.output.verified_facts
+    assert result.output.hypotheses[0].text.startswith("Possible: [MOCK]")
 
 class NoTextMaxTokensProvider:
     mode = "live"
@@ -206,7 +215,8 @@ def test_api_investigation_mock_200():
     assert payload["data_mode"] == "synthetic"
     assert payload["provider_mode"] == "mock"
     assert payload["status"] == "ok"
-    assert payload["output"]["observations"][0]["text"].startswith("[MOCK]")
+    assert payload["output"]["verified_facts"]
+    assert payload["output"]["hypotheses"][0]["text"].startswith("Possible: [MOCK]")
 
 def _walk_floats(value):
     if isinstance(value, bool):
@@ -233,27 +243,85 @@ def test_pack_floats_rounded_for_display():
 
 def test_rounded_numbers_validate():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Gap is -15.9 degrees."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "Gap is -15.9 degrees."
     assert validate(data, pack) == []
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Gap is -15.899999999999999 degrees."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "Gap is -15.899999999999999 degrees."
     assert any("number not present" in r for r in validate(data, pack))
 
 def test_signed_gap_absolute_value_passes():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Indoor is 15.9 F below the 68 F target."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "Indoor is 15.9 F below target."
     assert validate(data, pack) == []
 
 def test_signed_gap_negative_value_passes():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "The gap is -15.9 F."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "The gap is -15.9 F."
     assert validate(data, pack) == []
 
 def test_unrelated_gap_value_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "17.3 F below target."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "17.3 F below target."
     assert any("number not present" in r for r in validate(data, pack))
 
 def test_unrounded_gap_value_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
-    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "The gap is -15.899999999999999 F."
+    data = json.loads(_valid_json(at)); data["interpretation"] = "The gap is -15.899999999999999 F."
     assert any("number not present" in r for r in validate(data, pack))
+
+def test_finding_a_current_temperature_from_target_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at))
+    data["facts"][0] = {"claim_type": "current_temperature", "evidence_id": "metric:indoor_trend", "field": "last_value", "value": 68.0, "unit": "F", "at": "2026-01-16T17:55:00-05:00"}
+    data["interpretation"] = "Indoor temperature is below target."
+    assert any("does not match evidence" in r for r in validate(data, pack))
+    result = investigate(scenario, at, FakeProvider(json.dumps(data)))
+    assert result.status == "rejected"
+    assert result.output is None
+    assert result.summary["power_context_statement"]
+    assert result.summary["metrics"]
+
+def test_finding_b_equipment_function_confirmed_failure_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at))
+    data["facts"][-1] = {"claim_type": "equipment_function", "evidence_id": "metric:circuit_activity:circuit-furnace", "field": "active", "value": "confirmed mechanical failure", "unit": None, "at": "2026-01-16T17:55:00-05:00"}
+    assert any("equipment_function" in r for r in validate(data, pack))
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_below_target_accepted_above_target_rejected_for_negative_gap():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["interpretation"] = "15.9 F below target."
+    assert validate(data, pack) == []
+    data = json.loads(_valid_json(at)); data["interpretation"] = "15.9 F above target."
+    assert any("above target" in r for r in validate(data, pack))
+
+def test_fact_value_from_different_evidence_item_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at))
+    data["facts"][3] = {"claim_type": "electrical_activity", "evidence_id": "metric:circuit_activity:circuit-kitchen", "field": "max_w", "value": 5.0, "unit": "W", "at": "2026-01-16T17:50:00-05:00"}
+    assert any("does not match evidence" in r for r in validate(data, pack))
+
+def test_prose_number_from_uncited_evidence_item_rejected():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at))
+    data["hypotheses"][0] = {"text": "The target of 68.0 F may matter.", "supporting_ids": ["metric:indoor_trend"], "conflicting_ids": []}
+    assert any("number not present" in r for r in validate(data, pack))
+
+def test_hypothesis_confirmed_wording_rejected_tentative_renders_possible():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at))
+    data["hypotheses"][0]["text"] = "The heating failure is confirmed."
+    assert any("certainty phrase" in r for r in validate(data, pack))
+    result = investigate(scenario, at, FakeProvider(_valid_json(at)))
+    assert result.status == "ok", result.reasons
+    assert result.output.hypotheses[0].text.startswith("Possible: ")
+    assert result.output.verified_facts[0] == "Indoor temperature 52.1 F (at 17:55)"
+    assert "Target 68.0 F" in result.output.verified_facts
+    assert "15.9 F below target" in result.output.verified_facts
+
+def test_mock_provider_output_validates():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    from aria_home.investigator import SYSTEM_PROMPT
+    prompt = SYSTEM_PROMPT + "\nEvidence pack (JSON):\n" + json.dumps(pack)
+    result = MockProvider().generate(prompt)
+    assert result.ok
+    assert validate(result.text, pack) == []

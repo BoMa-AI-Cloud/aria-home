@@ -5,6 +5,8 @@
     "title": "Owner return (synthetic)",
     "planned_arrival": "2026-01-16T18:00:00-05:00",
     "revision": 1,
+    "revision_id": "trip-demo-001-rev1",
+    "known_at": "2026-01-16T14:00:00-05:00",
     "cancelled": false
   },
   "confirmation": {
@@ -14,7 +16,10 @@
     "target_unit": "F",
     "notify_homeowner": true,
     "manager_authorized": true,
-    "confirmed_at": "2026-01-16T14:30:00-05:00"
+    "confirmed_at": "2026-01-16T14:30:00-05:00",
+    "revision_id": "trip-demo-001-rev1",
+    "trip_revision": 1,
+    "trip_revision_id": "trip-demo-001-rev1"
   },
   "records": [
     {

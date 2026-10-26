@@ -29,6 +29,7 @@ Times for commits come from `git log`. EDT = UTC-4.
 - 17:54Z: Commit 603773e: the missing regression tests. Tests now: 109 passed (backend); browser test 1 passed.
 - Open: organizer questions (build-start time, hosted URL, labeled simulated data live, editing a submission) to be asked in Discord office hours. Investigation output persistence and follow-up outcomes are not built yet.
 - Next (Day 4): persistent follow-through: store each investigation and its expected follow-up, ingest later measurements, and decide warming observed / target reached / not observed by the deadline / unable to verify, surviving restarts.
+- 2026-10-26: Verification repair of four audit findings (see docs/day3-handoff.md).
 
 ## How the code was written
 

@@ -30,3 +30,25 @@
 ## Next
 
 - Day 4: persistent follow-through: store each investigation and its expected follow-up, ingest later measurements, and decide warming observed / target reached / not observed by the deadline / unable to verify, surviving restarts.
+
+## Verification repair (2026-10-26)
+
+An external audit of commit 4f4ed93 reported four validation gaps found by offline probes.
+
+1. Claims bound to evidence: model observations replaced by `facts[]` with a per-claim-type evidence field allowlist, values checked against pack rounding, and code-rendered `verified_facts`; contract inv-v1 to inv-v2. Covered by `backend/tests/test_investigator.py`.
+2. Readiness computed in code (`backend/aria_home/readiness.py`), documented in docs/readiness-rules.md. Covered by `backend/tests/test_readiness.py`.
+3. Follow-up scheduling computed in code (`backend/aria_home/scheduling.py`). Covered by `backend/tests/test_scheduling.py`.
+4. As-of visibility for trip and confirmation context (`context_as_of` in `backend/aria_home/scenario.py`), documented in backend/scenarios/README.md; the availability timestamps were added to synthetic fixtures on 2026-10-26, and two synthetic variants demo_revised_v1 and demo_cancelled_v1 were added. Covered by `backend/tests/test_as_of_context.py`.
+
+Checks run by the operator on 2026-10-26:
+
+- Base revision 5229d04 plus uncommitted repair changes (working tree not yet committed).
+- Fresh virtual environment with only backend/requirements.txt: `python -m pytest -q` -> 166 passed.
+- `cd frontend && npm run typecheck` -> passed; `npm run build` -> passed.
+- `cd frontend && npx playwright test` (installed Chrome, backend forced to ARIA_HOME_MODEL_ENABLED=0 by playwright.config.ts): first run 1 failed / 1 passed (an unexpected browser console error in the overview test, not reproduced); next three runs 2 passed each. Treat this as a possible flaky cold start, not a clean pass.
+
+Not re-run: no live model calls were made for this repair; the Day 3 live results (D3-3, D3-3b) were produced under the inv-v1 contract and have not been repeated under inv-v2.
+
+Limitations: the claim check is bounded (structured facts and a phrase/number filter), not a semantic verifier of arbitrary prose; readiness thresholds are hand-set for the synthetic scenarios and not calibrated on real homes; at_risk is a qualified judgement, not a forecast; the browser test flake above is unexplained.
+
+Process note: the repair ran as five Muse tasks on the uncommitted local tree (not from a clean GitHub checkout); each build-log entry is in docs/build-log/. In one task (day4-04) the operator's header naming the local tree was garbled by an escaping bug, since fixed.

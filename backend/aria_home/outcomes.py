@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .contracts import EvidenceKind
+from .scheduling import compute_follow_up_schedule, validate_follow_up_time
+
+__all__ = ["OutcomeStatus", "FollowUp", "OutcomeResult", "follow_up_for", "evaluate_outcome", "compute_follow_up_schedule", "validate_follow_up_time"]
 
 
 class OutcomeStatus(str, Enum):
@@ -31,11 +34,40 @@ class FollowUp(BaseModel):
     min_samples: int = Field(default=3, ge=1)
     min_rise_f: float = 2.0
     zone: str = "demo-cabin/main"
+    next_check_at: datetime | None = None
+    schedule_status: str = "scheduled"
+    deadline_passed: bool = False
+    cadence_s: float | None = None
 
-    @field_validator("created_at", "deadline")
+    @property
+    def when(self):
+        return self.next_check_at
+
+    @property
+    def scheduled_at(self):
+        return self.next_check_at
+
+    @field_validator("created_at", "deadline", "next_check_at")
     @classmethod
     def _aware(cls, value):
         return _require_aware(value)
+
+    @model_validator(mode="after")
+    def _schedule(self):
+        if self.deadline <= self.created_at:
+            raise ValueError("deadline_passed: deadline must be after created_at")
+        if self.next_check_at is not None:
+            reasons = validate_follow_up_time(self.next_check_at, self.created_at, self.deadline)
+            if reasons:
+                raise ValueError("; ".join(reasons))
+            self.schedule_status = "scheduled"
+            self.deadline_passed = False
+        else:
+            schedule = compute_follow_up_schedule(self.created_at, deadline=self.deadline, cadence_s=self.cadence_s)
+            self.next_check_at = schedule["next_check_at"]
+            self.schedule_status = schedule["status"]
+            self.deadline_passed = schedule["deadline_passed"]
+        return self
 
     @field_validator("target_unit")
     @classmethod
@@ -62,18 +94,36 @@ class OutcomeResult(BaseModel):
         return _require_aware(value)
 
 
-def follow_up_for(scenario, investigation_id, created_at) -> FollowUp:
+def follow_up_for(scenario, investigation_id, created_at, cadence_s=None) -> FollowUp:
     _require_aware(created_at)
-    if scenario.confirmation is None:
-        raise ValueError("scenario has no homeowner confirmation")
-    if scenario.trip is None:
-        raise ValueError("scenario has no trip")
+    from .scenario import context_as_of
+
+    ctx = context_as_of(scenario, created_at)
+    if ctx.trip is None:
+        raise ValueError("trip_unconfirmed: scenario has no trip visible at created_at")
+    if ctx.flags.get("trip_cancelled"):
+        raise ValueError("trip_cancelled: scenario trip is cancelled")
+    if ctx.flags.get("confirmation_outdated"):
+        raise ValueError("confirmation_outdated: scenario confirmation is outdated for the current trip revision")
+    if ctx.flags.get("trip_mismatched"):
+        raise ValueError("trip_mismatched: scenario confirmation does not match the trip visible at created_at")
+    if ctx.confirmation is None:
+        raise ValueError("trip_unconfirmed: scenario has no homeowner confirmation visible at created_at")
+    deadline = ctx.trip.planned_arrival + timedelta(hours=2)
+    if deadline <= created_at:
+        raise ValueError("deadline_passed: follow-up deadline has passed")
+    if cadence_s is None:
+        for record in getattr(scenario, "records", []) or []:
+            if record.quantity == "indoor_temp" and record.expected_cadence_s is not None:
+                cadence_s = record.expected_cadence_s
+                break
     return FollowUp(
         investigation_id=investigation_id,
         created_at=created_at,
-        target_temp=scenario.confirmation.target_temp,
-        target_unit=scenario.confirmation.target_unit,
-        deadline=scenario.trip.planned_arrival + timedelta(hours=2),
+        target_temp=ctx.confirmation.target_temp,
+        target_unit=ctx.confirmation.target_unit,
+        deadline=deadline,
+        cadence_s=cadence_s,
     )
 
 

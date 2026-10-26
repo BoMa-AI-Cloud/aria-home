@@ -188,6 +188,34 @@ section {
   color: #b3261e;
 }
 
+.investigation-block {
+  background: #ffffff;
+  border: 1px solid #b9b3a6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.investigation-block h3 {
+  margin: 0 0 0.5rem;
+}
+
+.context-notes {
+  border: 1px solid #b9b3a6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin: 0 0 1rem;
+  background: #fff8e6;
+}
+
+.context-notes p {
+  margin: 0.25rem 0;
+}
+
+.model-not-used {
+  font-weight: 700;
+}
+
 .observations,
 .hypotheses {
   padding-left: 1.25rem;

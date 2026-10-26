@@ -5,16 +5,18 @@ import {
   fetchInvestigation,
   fetchSources,
   type Availability,
+  type ContextFlags,
+  type CreateInvestigationResponse,
   type InvestigationResponse,
   type InvestigationSummary,
   type OutcomeHistoryEntry,
   type OutcomeResult,
   type OutcomeStatus,
   type Readiness,
+  type ReadinessResult,
   type SourceKind,
   type SourceStatus,
   type SourcesResponse,
-  type TargetGap,
 } from "./api";
 import "./index.css";
 
@@ -54,7 +56,7 @@ const AVAILABILITY_LABEL: Record<Availability, string> = {
 const READINESS_LABEL: Record<Readiness, string> = {
   on_track: "On track",
   at_risk: "At risk",
-  cannot_tell: "Cannot tell yet",
+  cannot_tell: "Cannot tell",
 };
 
 function formatAge(age_s: number | null): string {
@@ -74,9 +76,63 @@ function formatTimestamp(value: string | null): string {
 }
 
 function targetGapLine(summary: InvestigationSummary): string | null {
-  const gap = summary.metrics?.target_gap as TargetGap | null | undefined;
-  if (!gap || gap.latest_value === null || gap.latest_value === undefined) return null;
+  const gap = summary.metrics?.target_gap;
+  if (!gap) return null;
   return `Indoor ${gap.latest_value} ${gap.unit}, target ${gap.target_temp} ${gap.target_unit}`;
+}
+
+function ContextNotes({
+  flags,
+  deadlinePassed,
+  scheduleStatus,
+}: {
+  flags: ContextFlags | null;
+  deadlinePassed: boolean;
+  scheduleStatus: string | null;
+}) {
+  const notes: string[] = [];
+  if (flags?.trip_cancelled) notes.push("Context note: Trip cancelled.");
+  if (flags?.trip_unconfirmed) notes.push("Context note: Trip or confirmation unconfirmed.");
+  if (flags?.confirmation_outdated)
+    notes.push("Context note: Outdated confirmation — confirmation is outdated for the current trip.");
+  if (flags?.trip_mismatched)
+    notes.push("Context note: Trip and confirmation mismatch — they do not match.");
+  if (deadlinePassed) notes.push("Context note: Follow-up deadline passed (deadline_passed).");
+  if (scheduleStatus) notes.push(`Follow-up schedule status: ${scheduleStatus}.`);
+  if (notes.length === 0) return null;
+  return (
+    <div className="context-notes">
+      {notes.map((note) => (
+        <p key={note}>{note}</p>
+      ))}
+    </div>
+  );
+}
+
+function ReadinessBlock({
+  readiness,
+  gapLine,
+}: {
+  readiness: ReadinessResult | null;
+  gapLine: string | null;
+}) {
+  if (!readiness) return null;
+  return (
+    <div className="investigation-block readiness-block">
+      <h3>Readiness</h3>
+      <p className={`readiness readiness-${readiness.status}`}>
+        Readiness: <strong>{READINESS_LABEL[readiness.status]}</strong>
+        {gapLine ? `. ${gapLine}.` : "."}
+      </p>
+      {readiness.reasons.length > 0 && (
+        <ul>
+          {readiness.reasons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {
@@ -104,9 +160,11 @@ function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {
 function InvestigationSection({
   data,
   error,
+  created,
 }: {
   data: InvestigationResponse | null;
   error: string | null;
+  created: CreateInvestigationResponse | null;
 }) {
   if (!data && !error) return <p role="status">Loading investigation…</p>;
   if (error) {
@@ -119,11 +177,31 @@ function InvestigationSection({
   if (!data) return null;
 
   const gapLine = targetGapLine(data.summary);
+  const computedReadiness = data.readiness ?? data.summary.readiness;
+  const flags: ContextFlags =
+    created?.context_flags ??
+    created?.flags ??
+    data.evidence_pack?.context_flags ??
+    data.evidence_pack?.flags ??
+    data.summary.readiness.inputs.flags;
+  const deadlinePassed =
+    created?.deadline_passed ??
+    created?.follow_up_schedule?.deadline_passed ??
+    data.output?.follow_up.deadline_passed ??
+    false;
+  const scheduleStatus =
+    created?.schedule_status ??
+    created?.follow_up_schedule?.status ??
+    data.output?.follow_up.schedule_status ??
+    null;
 
   if (data.status === "rejected" || data.status === "unavailable" || !data.output) {
     return (
       <>
         <p className="unavailable">ARIA&apos;s explanation is unavailable</p>
+        {data.status === "rejected" && (
+          <p className="model-not-used">The model answer was not used.</p>
+        )}
         {data.reasons.length > 0 && (
           <ul className="reasons">
             {data.reasons.map((reason) => (
@@ -131,8 +209,12 @@ function InvestigationSection({
             ))}
           </ul>
         )}
-        {gapLine && <p className="readiness readiness-unknown">Readiness: unknown. {gapLine}.</p>}
-        <PowerContextBlock summary={data.summary} />
+        <div className="investigation-block deterministic-summary">
+          <h3>Deterministic summary (computed by code)</h3>
+          <ReadinessBlock readiness={data.summary.readiness} gapLine={gapLine} />
+          <PowerContextBlock summary={data.summary} />
+        </div>
+        <ContextNotes flags={flags} deadlinePassed={deadlinePassed} scheduleStatus={scheduleStatus} />
         <p className="provenance">
           Provider mode: {data.provider_mode ?? "unknown"}, model: {data.model_id ?? "unknown"},
           prompt version: {data.prompt_version}
@@ -149,61 +231,73 @@ function InvestigationSection({
           MOCK - example answer, not live inference
         </p>
       )}
-      <p className={`readiness readiness-${output.readiness}`}>
-        Readiness: <strong>{READINESS_LABEL[output.readiness]}</strong>
-        {gapLine ? `. ${gapLine}.` : "."}
-      </p>
 
-      <h3>What ARIA observed</h3>
-      {output.observations.length === 0 ? (
-        <p>No observations reported.</p>
-      ) : (
-        <ul className="observations">
-          {output.observations.map((observation, index) => (
-            <li key={`${observation.text}-${index}`}>
-              <span>{observation.text}</span>{" "}
-              {observation.evidence_ids.map((id) => (
-                <span key={id} className="chip">
-                  {id}
-                </span>
+      <div className="investigation-block verified-facts">
+        <h3>Verified facts (checked against the evidence)</h3>
+        {output.verified_facts.length === 0 ? (
+          <p>No verified facts reported.</p>
+        ) : (
+          <ul>
+            {output.verified_facts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <ReadinessBlock readiness={computedReadiness} gapLine={gapLine} />
+
+      <div className="investigation-block interpretation">
+        <h3>Interpretation (model-written, not verified)</h3>
+        <p>{output.interpretation}</p>
+        {output.limitations.length > 0 && (
+          <>
+            <p className="power-context-label">Limitations:</p>
+            <ul>
+              {output.limitations.map((limitation) => (
+                <li key={limitation}>{limitation}</li>
               ))}
-            </li>
-          ))}
-        </ul>
-      )}
+            </ul>
+          </>
+        )}
+      </div>
 
-      <h3>Possible explanations (hypotheses, not findings)</h3>
-      {output.hypotheses.length === 0 ? (
-        <p>No hypotheses reported.</p>
-      ) : (
-        <ul className="hypotheses">
-          {output.hypotheses.map((hypothesis, index) => (
-            <li key={`${hypothesis.text}-${index}`}>
-              <p className="hypothesis-label">Hypothesis: {hypothesis.text}</p>
-              {hypothesis.supporting_ids.length > 0 && (
-                <p>
-                  Supporting:{" "}
-                  {hypothesis.supporting_ids.map((id) => (
-                    <span key={id} className="chip">
-                      {id}
-                    </span>
-                  ))}
-                </p>
-              )}
-              {hypothesis.conflicting_ids.length > 0 && (
-                <p>
-                  Conflicting:{" "}
-                  {hypothesis.conflicting_ids.map((id) => (
-                    <span key={id} className="chip">
-                      {id}
-                    </span>
-                  ))}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="investigation-block possible-explanations">
+        <h3>Possible explanations (not confirmed)</h3>
+        {output.hypotheses.length === 0 ? (
+          <p>No hypotheses reported.</p>
+        ) : (
+          <ul className="hypotheses">
+            {output.hypotheses.map((hypothesis, index) => (
+              <li key={`${hypothesis.text}-${index}`}>
+                <p className="hypothesis-label">{hypothesis.text}</p>
+                {hypothesis.supporting_ids.length > 0 && (
+                  <p>
+                    Supporting:{" "}
+                    {hypothesis.supporting_ids.map((id) => (
+                      <span key={id} className="chip">
+                        {id}
+                      </span>
+                    ))}
+                  </p>
+                )}
+                {hypothesis.conflicting_ids.length > 0 && (
+                  <p>
+                    Conflicting:{" "}
+                    {hypothesis.conflicting_ids.map((id) => (
+                      <span key={id} className="chip">
+                        {id}
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <ContextNotes flags={flags} deadlinePassed={deadlinePassed} scheduleStatus={scheduleStatus} />
 
       <h3>What we don&apos;t know</h3>
       {output.unknowns.length === 0 ? (
@@ -221,7 +315,8 @@ function InvestigationSection({
 
       <h3>Next check</h3>
       <p>
-        {output.follow_up.observation} ({formatTimestamp(output.follow_up.when)})
+        {output.follow_up.observation}
+        {output.follow_up.when ? ` (${formatTimestamp(output.follow_up.when)})` : ""}
       </p>
 
       <PowerContextBlock summary={data.summary} />
@@ -353,6 +448,8 @@ export default function App() {
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [investigation, setInvestigation] = useState<InvestigationResponse | null>(null);
+  const [createdInvestigation, setCreatedInvestigation] =
+    useState<CreateInvestigationResponse | null>(null);
   const [investigationError, setInvestigationError] = useState<string | null>(null);
   const [scenario, setScenario] = useState<string>(SCENARIOS[0].id);
   const [investigationId, setInvestigationId] = useState<string | null>(null);
@@ -391,6 +488,7 @@ export default function App() {
     createInvestigation(scenario, REPLAY_START_AT)
       .then((response) => {
         if (cancelled) return;
+        setCreatedInvestigation(response);
         setInvestigationId(response.investigation_id);
         setOutcome(response.outcome);
         setHistory([]);
@@ -480,7 +578,7 @@ export default function App() {
 
       <section aria-labelledby="investigation-heading">
         <h2 id="investigation-heading">Investigation</h2>
-        <InvestigationSection data={investigation} error={investigationError} />
+        <InvestigationSection data={investigation} error={investigationError} created={createdInvestigation} />
       </section>
 
       <section aria-labelledby="outcome-heading">

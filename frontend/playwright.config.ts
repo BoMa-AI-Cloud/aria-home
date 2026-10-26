@@ -16,6 +16,7 @@ export default defineConfig({
       url: "http://127.0.0.1:5000/api/health",
       reuseExistingServer: false,
       timeout: 60 * 1000,
+      env: { ARIA_HOME_MODEL_ENABLED: "0" },
     },
     {
       command: "npm run dev -- --host 127.0.0.1 --port 5173 --strictPort",
