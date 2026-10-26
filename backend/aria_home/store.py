@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -53,47 +54,57 @@ class Store:
     def __init__(self, path=None):
         self.path = Path(path).expanduser() if path is not None else default_db_path()
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self.path), check_same_thread=False)
-        self._conn.row_factory = sqlite3.Row
         self._init_schema()
 
+    @contextmanager
+    def _connection(self, immediate=False):
+        conn = sqlite3.connect(str(self.path), timeout=5)
+        conn.row_factory = sqlite3.Row
+        try:
+            if immediate:
+                conn.execute("BEGIN IMMEDIATE")
+            with conn:
+                yield conn
+        finally:
+            conn.close()
+
     def _init_schema(self):
-        self._conn.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS investigations (
-                id TEXT PRIMARY KEY,
-                scenario TEXT NOT NULL,
-                evaluated_at TEXT NOT NULL,
-                status TEXT,
-                output TEXT,
-                model_id TEXT,
-                provider_mode TEXT,
-                prompt_version TEXT,
-                created_at TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS follow_ups (
-                investigation_id TEXT PRIMARY KEY,
-                created_at TEXT NOT NULL,
-                deadline TEXT NOT NULL,
-                target TEXT,
-                last_status TEXT,
-                last_evaluated_at TEXT,
-                supporting_ids TEXT NOT NULL DEFAULT '[]'
-            );
-            CREATE TABLE IF NOT EXISTS outcome_events (
-                investigation_id TEXT NOT NULL,
-                evaluated_at TEXT NOT NULL,
-                status TEXT,
-                sample_count INTEGER,
-                note TEXT,
-                UNIQUE(investigation_id, evaluated_at)
-            );
-            """
-        )
-        self._conn.commit()
+        with self._connection() as conn:
+            conn.executescript(
+                """
+                CREATE TABLE IF NOT EXISTS investigations (
+                    id TEXT PRIMARY KEY,
+                    scenario TEXT NOT NULL,
+                    evaluated_at TEXT NOT NULL,
+                    status TEXT,
+                    output TEXT,
+                    model_id TEXT,
+                    provider_mode TEXT,
+                    prompt_version TEXT,
+                    created_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS follow_ups (
+                    investigation_id TEXT PRIMARY KEY,
+                    created_at TEXT NOT NULL,
+                    deadline TEXT NOT NULL,
+                    target TEXT,
+                    last_status TEXT,
+                    last_evaluated_at TEXT,
+                    supporting_ids TEXT NOT NULL DEFAULT '[]'
+                );
+                CREATE TABLE IF NOT EXISTS outcome_events (
+                    investigation_id TEXT NOT NULL,
+                    evaluated_at TEXT NOT NULL,
+                    status TEXT,
+                    sample_count INTEGER,
+                    note TEXT,
+                    UNIQUE(investigation_id, evaluated_at)
+                );
+                """
+            )
 
     def close(self):
-        self._conn.close()
+        pass
 
     def __enter__(self):
         return self
@@ -135,19 +146,20 @@ class Store:
             inv_id = investigation_id_for(scenario or "demo_v1", evaluated_at)
         created = _parse_dt(created_at) or evaluated_at or datetime.now(timezone.utc)
         output_json = json.dumps(_jsonable(out)) if out is not None else None
-        self._conn.execute(
-            """
-            INSERT INTO investigations (id, scenario, evaluated_at, status, output, model_id, provider_mode, prompt_version, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO NOTHING
-            """,
-            (inv_id, scenario or "", _iso(evaluated_at) or _iso(created), status, output_json, model_id, provider_mode, prompt_version, _iso(created)),
-        )
-        self._conn.commit()
+        with self._connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO investigations (id, scenario, evaluated_at, status, output, model_id, provider_mode, prompt_version, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO NOTHING
+                """,
+                (inv_id, scenario or "", _iso(evaluated_at) or _iso(created), status, output_json, model_id, provider_mode, prompt_version, _iso(created)),
+            )
         return inv_id
 
     def get_investigation(self, investigation_id):
-        row = self._conn.execute("SELECT * FROM investigations WHERE id = ?", (investigation_id,)).fetchone()
+        with self._connection() as conn:
+            row = conn.execute("SELECT * FROM investigations WHERE id = ?", (investigation_id,)).fetchone()
         if row is None:
             return None
         return {
@@ -183,15 +195,15 @@ class Store:
             last_status = outcome.status.value if hasattr(outcome, "status") and hasattr(outcome.status, "value") else (outcome.get("status") if isinstance(outcome, dict) else last_status)
             last_at = outcome.evaluated_at if hasattr(outcome, "evaluated_at") else (outcome.get("evaluated_at") if isinstance(outcome, dict) else last_at)
             ids = outcome.supporting_ids if hasattr(outcome, "supporting_ids") else (outcome.get("supporting_ids") if isinstance(outcome, dict) else ids)
-        self._conn.execute(
-            """
-            INSERT INTO follow_ups (investigation_id, created_at, deadline, target, last_status, last_evaluated_at, supporting_ids)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(investigation_id) DO NOTHING
-            """,
-            (inv_id, _iso(follow_up.created_at), _iso(follow_up.deadline), target, last_status, _iso(_parse_dt(last_at)) if last_at else None, json.dumps(list(ids or []))),
-        )
-        self._conn.commit()
+        with self._connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO follow_ups (investigation_id, created_at, deadline, target, last_status, last_evaluated_at, supporting_ids)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(investigation_id) DO NOTHING
+                """,
+                (inv_id, _iso(follow_up.created_at), _iso(follow_up.deadline), target, last_status, _iso(_parse_dt(last_at)) if last_at else None, json.dumps(list(ids or []))),
+            )
         if outcome is not None:
             self.record_outcome(inv_id, outcome)
         return inv_id
@@ -224,7 +236,12 @@ class Store:
     get_followup = get_follow_up
 
     def get_follow_up_row(self, investigation_id):
-        row = self._conn.execute("SELECT * FROM follow_ups WHERE investigation_id = ?", (investigation_id,)).fetchone()
+        with self._connection() as conn:
+            return self._follow_up_row_from_conn(conn, investigation_id)
+
+    @staticmethod
+    def _follow_up_row_from_conn(conn, investigation_id):
+        row = conn.execute("SELECT * FROM follow_ups WHERE investigation_id = ?", (investigation_id,)).fetchone()
         if row is None:
             return None
         return {
@@ -255,31 +272,32 @@ class Store:
         if hasattr(status, "value"):
             status = status.value
         at_iso = _iso(_parse_dt(evaluated_at)) if evaluated_at else None
-        row = self.get_follow_up_row(investigation_id)
-        if row is None:
-            return None
-        if at_iso is not None and row["last_evaluated_at"] == at_iso:
-            return row
-        self._conn.execute(
-            "UPDATE follow_ups SET last_status = ?, last_evaluated_at = ?, supporting_ids = ? WHERE investigation_id = ?",
-            (status, at_iso, json.dumps(list(supporting_ids or [])), investigation_id),
-        )
-        if at_iso is not None:
-            self._conn.execute(
-                "INSERT OR IGNORE INTO outcome_events (investigation_id, evaluated_at, status, sample_count, note) VALUES (?, ?, ?, ?, ?)",
-                (investigation_id, at_iso, status, sample_count, note),
+        with self._connection(immediate=True) as conn:
+            row = self._follow_up_row_from_conn(conn, investigation_id)
+            if row is None:
+                return None
+            if at_iso is not None and row["last_evaluated_at"] == at_iso:
+                return row
+            conn.execute(
+                "UPDATE follow_ups SET last_status = ?, last_evaluated_at = ?, supporting_ids = ? WHERE investigation_id = ?",
+                (status, at_iso, json.dumps(list(supporting_ids or [])), investigation_id),
             )
-        self._conn.commit()
-        return self.get_follow_up_row(investigation_id)
+            if at_iso is not None:
+                conn.execute(
+                    "INSERT OR IGNORE INTO outcome_events (investigation_id, evaluated_at, status, sample_count, note) VALUES (?, ?, ?, ?, ?)",
+                    (investigation_id, at_iso, status, sample_count, note),
+                )
+            return self._follow_up_row_from_conn(conn, investigation_id)
 
     update_follow_up = record_outcome
     save_outcome = record_outcome
 
     def list_outcomes(self, investigation_id):
-        rows = self._conn.execute(
-            "SELECT investigation_id, evaluated_at, status, sample_count, note FROM outcome_events WHERE investigation_id = ? ORDER BY evaluated_at",
-            (investigation_id,),
-        ).fetchall()
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT investigation_id, evaluated_at, status, sample_count, note FROM outcome_events WHERE investigation_id = ? ORDER BY evaluated_at",
+                (investigation_id,),
+            ).fetchall()
         return [
             {
                 "investigation_id": r["investigation_id"],
@@ -292,7 +310,8 @@ class Store:
         ]
 
     def list_investigations(self):
-        rows = self._conn.execute("SELECT id FROM investigations ORDER BY created_at, id").fetchall()
+        with self._connection() as conn:
+            rows = conn.execute("SELECT id FROM investigations ORDER BY created_at, id").fetchall()
         return [self.get_investigation(r["id"]) for r in rows]
 
 

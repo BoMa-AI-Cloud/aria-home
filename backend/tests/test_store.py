@@ -1,4 +1,6 @@
 import sqlite3
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -120,3 +122,44 @@ def test_post_then_get_follow_up(tmp_path, monkeypatch):
     assert payload["status"] == "target_reached"
     assert payload["outcome"]["status"] == "target_reached"
     assert payload["follow_up"]["last_status"] == "target_reached"
+
+
+def test_concurrent_saves_and_records_are_thread_safe(tmp_path):
+    db = tmp_path / "concurrent.db"
+    store = Store(db)
+    scenario = load_scenario(SCENARIOS / "demo_v1")
+    result = investigate(scenario, AT, get_provider())
+    ids = ["inv-conc-1", "inv-conc-2"]
+    follow_ups = {}
+    outcomes = {}
+    now = datetime(2026, 1, 16, 20, 30, tzinfo=TZ)
+    for inv_id in ids:
+        store.save_investigation(result, investigation_id=inv_id, scenario=scenario.manifest.id, evaluated_at=AT)
+        follow_ups[inv_id] = follow_up_for(scenario, inv_id, AT)
+        store.save_follow_up(follow_ups[inv_id])
+        outcomes[inv_id] = evaluate_outcome(follow_ups[inv_id], scenario.records, now)
+
+    barrier = threading.Barrier(8)
+
+    def work(i):
+        barrier.wait()
+        inv_id = ids[i % len(ids)]
+        store.save_investigation(result, investigation_id=inv_id, scenario=scenario.manifest.id, evaluated_at=AT)
+        store.save_follow_up(follow_ups[inv_id], outcome=outcomes[inv_id])
+        store.record_outcome(inv_id, outcomes[inv_id])
+        return inv_id
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(work, range(8)))
+
+    assert sorted(results) == sorted(ids * 4)
+    conn = sqlite3.connect(db)
+    assert conn.execute("SELECT COUNT(*) FROM investigations").fetchone()[0] == len(ids)
+    assert conn.execute("SELECT COUNT(*) FROM investigations GROUP BY id HAVING COUNT(*) != 1").fetchall() == []
+    assert conn.execute("SELECT COUNT(*) FROM follow_ups").fetchone()[0] == len(ids)
+    assert conn.execute("SELECT investigation_id, evaluated_at, COUNT(*) FROM outcome_events GROUP BY investigation_id, evaluated_at HAVING COUNT(*) != 1").fetchall() == []
+    assert conn.execute("SELECT COUNT(*) FROM outcome_events").fetchone()[0] == len(ids)
+    conn.close()
+    for inv_id in ids:
+        assert len(store.list_outcomes(inv_id)) == 1
+    store.close()
