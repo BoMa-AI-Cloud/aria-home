@@ -22,7 +22,7 @@ import "./index.css";
 
 const SCENARIOS = [
   { id: "demo_v1", label: "No recovery" },
-  { id: "demo_recovery_v1", label: "Manager visit, heat restored" },
+  { id: "demo_recovery_v1", label: "Manager report, late warming" },
   { id: "demo_no_followup_v1", label: "No follow-up readings" },
 ];
 

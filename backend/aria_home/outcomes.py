@@ -145,18 +145,33 @@ def _in_target_unit(record, target_unit: str) -> float:
     return value
 
 
+AFTER_DEADLINE_NOTE = "Readings after the deadline are not counted toward this follow-up."
+
+
 def evaluate_outcome(followup: FollowUp, records, now: datetime) -> OutcomeResult:
     _require_aware(now)
-    readings = [
+    candidates = [
         r
         for r in records
         if r.quantity == "indoor_temp"
         and r.subject == followup.zone
         and r.value is not None
+        and getattr(r, "kind", EvidenceKind.measurement) == EvidenceKind.measurement
         and r.received_at <= now
         and r.observed_at > followup.created_at
     ]
-    readings.sort(key=lambda r: (r.observed_at, r.received_at, r.id))
+    candidates.sort(key=lambda r: (r.observed_at, r.received_at, r.id))
+    has_after_deadline = any(r.observed_at > followup.deadline for r in candidates)
+    readings = []
+    seen = set()
+    for record in candidates:
+        if record.observed_at > followup.deadline:
+            continue
+        key = (getattr(record, "source", None), record.observed_at)
+        if key in seen:
+            continue
+        seen.add(key)
+        readings.append(record)
 
     sample_count = len(readings)
     first_value = float(readings[0].value) if readings else None
@@ -181,7 +196,7 @@ def evaluate_outcome(followup: FollowUp, records, now: datetime) -> OutcomeResul
     else:
         status = OutcomeStatus.unable_to_verify
 
-    note = None
+    notes = []
     if status in (OutcomeStatus.warming_observed, OutcomeStatus.target_reached):
         has_statement = any(
             r.kind == EvidenceKind.human_statement
@@ -190,7 +205,10 @@ def evaluate_outcome(followup: FollowUp, records, now: datetime) -> OutcomeResul
             for r in records
         )
         if has_statement:
-            note = "An observed change after a reported action does not prove what caused it."
+            notes.append("An observed change after a reported action does not prove what caused it.")
+    if has_after_deadline:
+        notes.append(AFTER_DEADLINE_NOTE)
+    note = " ".join(notes) if notes else None
 
     return OutcomeResult(
         status=status,

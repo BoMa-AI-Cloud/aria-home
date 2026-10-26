@@ -110,6 +110,33 @@ Rules:
   after `created_at`, and a `next_check_at` inside the window above;
   otherwise it is rejected and not persisted.
 
+## Follow-up outcomes
+
+Follow-up outcomes are decided by deterministic code in
+`backend/aria_home/outcomes.py` (`evaluate_outcome`), not by the model.
+
+- Only `indoor_temp` measurement records for the follow-up zone count, and
+  only when the value is non-null, `received_at <= now`, and
+  `created_at < observed_at <= deadline`. Records are deduplicated by
+  `(source, observed_at)`, so a duplicated reading never counts twice.
+  Readings observed after the deadline never contribute to any status,
+  including `target_reached`.
+- Statuses are decided in this order: `target_reached` (the last two counted
+  readings are at or above the target), `warming_observed` (at least
+  `min_samples` counted readings with a first-to-last rise of at least
+  `min_rise_f`), `awaiting_measurement` (before the deadline), then after the
+  deadline `not_observed_by_deadline` (at least `min_samples` counted
+  readings) or `unable_to_verify` (fewer counted readings).
+- When otherwise-countable readings were observed after the deadline, the
+  outcome note includes "Readings after the deadline are not counted toward
+  this follow-up." For example, `demo_recovery_v1` reaches 68 F only at
+  20:15/20:30, after its 20:00 deadline, so at 20:31 it is
+  `warming_observed`, not `target_reached`.
+- A human statement never sets a status. When the status is
+  `warming_observed` or `target_reached` and a human statement was received
+  after the follow-up was created, the note also carries "An observed change
+  after a reported action does not prove what caused it."
+
 ## Limitations
 
 - Projection is a linear extrapolation of the observed trend; it assumes the

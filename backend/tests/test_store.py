@@ -92,14 +92,14 @@ def test_outcome_history_grows_idempotent_and_survives_restart(tmp_path, monkeyp
 
     resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T20:31:00-05:00")
     assert resp.status_code == 200
-    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "target_reached"]
+    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "warming_observed"]
 
     resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T20:31:00-05:00")
     assert resp.status_code == 200
-    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "target_reached"]
+    assert [e["status"] for e in resp.get_json()["history"]] == ["warming_observed", "warming_observed"]
 
     reopened = Store(db)
-    assert [e["status"] for e in reopened.list_outcomes(inv_id)] == ["warming_observed", "target_reached"]
+    assert [e["status"] for e in reopened.list_outcomes(inv_id)] == ["warming_observed", "warming_observed"]
     reopened.close()
 
 
@@ -119,9 +119,9 @@ def test_post_then_get_follow_up(tmp_path, monkeypatch):
     assert resp.status_code == 200
     payload = resp.get_json()
     assert payload["data_mode"] == "synthetic"
-    assert payload["status"] == "target_reached"
-    assert payload["outcome"]["status"] == "target_reached"
-    assert payload["follow_up"]["last_status"] == "target_reached"
+    assert payload["status"] == "warming_observed"
+    assert payload["outcome"]["status"] == "warming_observed"
+    assert payload["follow_up"]["last_status"] == "warming_observed"
 
 
 def test_concurrent_saves_and_records_are_thread_safe(tmp_path):

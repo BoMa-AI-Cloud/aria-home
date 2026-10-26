@@ -93,22 +93,24 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
   });
   await expect(outcome).toBeVisible();
 
-  await page.getByLabel("Scenario").selectOption({ label: "Manager visit, heat restored" });
+  await page.getByLabel("Scenario").selectOption({ label: "Manager report, late warming" });
   const time1900 = demoControls.getByRole("button", { name: "19:00" });
   await expect(time1900).toBeEnabled();
   await time1900.click();
   await expect(outcome.getByText("Warming observed").first()).toBeVisible();
 
   await demoControls.getByRole("button", { name: "20:31" }).click();
-  await expect(outcome.getByText("Target reached").first()).toBeVisible();
+  await expect(outcome.getByText("Warming observed").first()).toBeVisible();
   await expect(outcome).toContainText(
     "An observed change after a reported action does not prove what caused it.",
+  );
+  await expect(outcome).toContainText(
+    "Readings after the deadline are not counted toward this follow-up.",
   );
   const historyItems = outcome.locator(".outcome-history li");
   await expect(historyItems.first()).toBeVisible();
   expect(await historyItems.count()).toBeGreaterThanOrEqual(2);
   await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
-  await expect(outcome.locator(".outcome-history")).toContainText("Target reached");
 
   await page.getByLabel("Scenario").selectOption({ label: "No follow-up readings" });
   const noFollowup2031 = demoControls.getByRole("button", { name: "20:31" });
