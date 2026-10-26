@@ -340,7 +340,25 @@ def create_app():
         verification = None
         if any(r.source is SourceKind.room_sensor for r in scn.records):
             verification = verify_recovery(scn, follow_up, at)
-            payload["verification"] = {**verification, "evaluated_at": verification["evaluated_at"].isoformat()}
+            latest = verification.get("latest_reading_used")
+            latest_payload = None
+            if isinstance(latest, dict):
+                latest_payload = {
+                    "id": latest.get("id"),
+                    "observed_at": latest["observed_at"].isoformat() if hasattr(latest.get("observed_at"), "isoformat") else latest.get("observed_at"),
+                    "received_at": latest["received_at"].isoformat() if hasattr(latest.get("received_at"), "isoformat") else latest.get("received_at"),
+                }
+            payload["verification"] = {**verification, "evaluated_at": verification["evaluated_at"].isoformat(), "latest_reading_used": latest_payload}
+            history_rows = payload["history"]
+            verification_history = []
+            for entry in history_rows:
+                try:
+                    entry_at = datetime.fromisoformat(str(entry["evaluated_at"]).replace("Z", "+00:00"))
+                except ValueError:
+                    continue
+                entry_verification = verify_recovery(scn, follow_up, entry_at)
+                verification_history.append({"evaluated_at": entry["evaluated_at"], "stage": entry_verification["stage"], "sample_count": entry.get("sample_count")})
+            payload["verification_history"] = verification_history
         if scn.manifest.id == "demo_video_v1":
             stored_output = investigation_row["output"] if investigation_row else None
             pseudo = {"output": stored_output} if stored_output else None

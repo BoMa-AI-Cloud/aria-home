@@ -126,6 +126,23 @@ def test_before_arrival_nothing_changes():
     assert compute_readiness(pack, at)["status"] != "arrival_passed"
 
 
+def test_readiness_trend_reason_uses_rounded_rate_and_human_duration():
+    _, at, pack = _pack()
+    pack["trip"]["planned_arrival"] = (at + timedelta(hours=2)).isoformat()
+    trend = pack["metrics"]["indoor_trend"]
+    trend["rate_per_hour"] = 0.03428571428571477
+    trend["first_observed_at"] = "2026-01-16T15:00:00-05:00"
+    trend["last_observed_at"] = "2026-01-16T17:55:00-05:00"
+    if pack["metrics"].get("target_gap"):
+        pack["metrics"]["target_gap"]["latest_observed_at"] = "2026-01-16T17:55:00-05:00"
+    result = compute_readiness(pack, at)
+    assert result["status"] == "at_risk"
+    joined = " ".join(result["reasons"])
+    assert "+0.03 F per hour over 2 h 55 min" in joined
+    assert "0.0342857" not in joined
+    assert "10500s" not in joined
+
+
 def test_demo_v1_model_on_track_rejected():
     scenario, at, pack = _pack()
     data = _valid_json(at, readiness="on_track")

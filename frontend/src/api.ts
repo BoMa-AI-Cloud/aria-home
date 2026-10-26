@@ -335,6 +335,7 @@ export interface InvestigationResponse extends Investigation {
   data_mode: DataMode;
   readiness: ReadinessResult | null;
   computed_readiness: ReadinessStatus | null;
+  evaluated_at?: string;
 }
 
 export interface CreatedInvestigation extends Investigation {
@@ -550,6 +551,13 @@ export interface VerificationResult {
   corroboration_ids: string[];
   corroboration: string[];
   evaluated_at: string;
+  latest_reading_used?: { id?: string | null; observed_at: string; received_at: string } | null;
+}
+
+export interface VerificationHistoryEntry {
+  evaluated_at: string;
+  stage: VerificationStage;
+  sample_count: number | null;
 }
 
 export interface ScenarioEvent {
@@ -578,6 +586,7 @@ export interface FollowUpResponse {
   supporting_ids: string[];
   history: OutcomeHistoryEntry[];
   verification?: VerificationResult | null;
+  verification_history?: VerificationHistoryEntry[];
   notifications?: Notification[];
 }
 

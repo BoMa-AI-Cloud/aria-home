@@ -4,7 +4,6 @@ import {
   createInvestigation,
   fetchEvents,
   fetchFollowUp,
-  fetchInvestigation,
   fetchNotifications,
   fetchSources,
   type Availability,
@@ -23,6 +22,7 @@ import {
   type SourceKind,
   type SourceStatus,
   type SourcesResponse,
+  type VerificationHistoryEntry,
   type VerificationResult,
   type VerificationStage,
 } from "./api";
@@ -121,7 +121,99 @@ function formatAge(age_s: number | null): string {
 function formatTimestamp(value: string | null): string {
   if (!value) return "No reading";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleString(undefined, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+}
+
+const PAYLOAD_LABELS: Record<string, string> = {
+  audience: "Audience",
+  kind: "Type",
+  readiness: "Readiness",
+  readiness_in_words: "Readiness summary",
+  stage: "Stage",
+  stage_in_words: "Stage summary",
+  verified_facts: "Verified facts",
+  what_was_done: "What was done",
+  evaluated_at: "Evaluated at",
+  planned_arrival: "Planned arrival",
+  property_label: "Property",
+  property: "Property",
+  requested_action: "Requested action",
+  access_note: "Access note",
+  manager_contact_label: "Manager contact",
+  manager_contact: "Manager contact",
+  relevant_observations: "Relevant observations",
+  observations: "Observations",
+  label: "Label",
+  landing: "Landing",
+  consented: "Consented",
+  asks: "Asks",
+  acknowledgement: "Acknowledgement",
+  physical_success: "Physical success",
+  location: "Location",
+  visit_end: "Visit end",
+  reported_to_manager_at: "Reported to manager at",
+};
+
+const EVENT_KIND_LABELS: Record<string, string> = {
+  email_flight_confirmation: "Flight confirmation email",
+  location_airport: "Airport location",
+  confirmation_request: "Confirmation request",
+  preparation_authorized: "Preparation authorized",
+  scene_command: "Scene command",
+  scene_acknowledged: "Scene acknowledged",
+  location_unavailable: "Location unavailable",
+  manager_alert: "Manager alert",
+  manager_hvac_authorized: "Manager HVAC authorized",
+  hvac_request: "HVAC request",
+  service_visit: "Service visit",
+  hvac_completion_report: "HVAC completion report",
+};
+
+const VALUE_LABELS: Record<string, string> = {
+  homeowner: "Homeowner",
+  property_manager: "Property manager",
+  hvac_company: "HVAC company",
+  investigation_update: "Investigation update",
+  manager_alert: "Manager alert",
+  hvac_request: "HVAC request",
+  on_track: "On track",
+  at_risk: "At risk",
+  cannot_tell: "Cannot tell",
+  arrival_passed: "Arrival passed",
+  telemetry_missing: "Thermostat telemetry missing",
+  reporting_restored: "Thermostat reporting restored",
+  warming_observed: "Warming observed",
+  goal_verified: "Temperature goal verified",
+  arrival_met: "Arrival expectation met",
+  unable_to_verify: "Unable to verify",
+};
+
+function humanLabel(key: string): string {
+  if (PAYLOAD_LABELS[key]) return PAYLOAD_LABELS[key];
+  const spaced = key.replace(/_/g, " ");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function eventKindLabel(kind: string): string {
+  if (EVENT_KIND_LABELS[kind]) return EVENT_KIND_LABELS[kind];
+  const spaced = kind.replace(/_/g, " ");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function isEmptyValue(value: unknown): boolean {
+  return value === null || value === undefined || value === "" || (Array.isArray(value) && value.length === 0);
+}
+
+function isIsoString(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value) && !Number.isNaN(Date.parse(value));
 }
 
 function targetGapLine(summary: InvestigationSummary): string | null {
@@ -243,10 +335,21 @@ function InvestigationSection({
     created?.follow_up_schedule?.status ??
     data.output?.follow_up.schedule_status ??
     null;
+  const evaluatedAt =
+    (data as { evaluated_at?: string }).evaluated_at ??
+    created?.investigation?.evaluated_at ??
+    data.evidence_pack?.at ??
+    null;
+  const evaluationLine = evaluatedAt ? (
+    <p className="investigation-evaluation-time">
+      Evaluation time: <time dateTime={evaluatedAt}>{formatTimestamp(evaluatedAt)}</time>
+    </p>
+  ) : null;
 
   if (data.status === "rejected" || data.status === "unavailable" || !data.output) {
     return (
       <>
+        {evaluationLine}
         <p className="unavailable">ARIA&apos;s explanation is unavailable</p>
         {data.status === "rejected" && (
           <p className="model-not-used">The model answer was not used.</p>
@@ -275,6 +378,7 @@ function InvestigationSection({
   const output = data.output;
   return (
     <>
+      {evaluationLine}
       {data.provider_mode === "mock" && (
         <p className="mock-label" role="note">
           MOCK - example answer, not live inference
@@ -381,21 +485,21 @@ function InvestigationSection({
 function OutcomeSection({
   outcome,
   history,
+  verificationHistory,
   replayAt,
   unit,
   error,
   loading,
   verification,
-  events,
 }: {
   outcome: OutcomeResult | null;
   history: OutcomeHistoryEntry[];
+  verificationHistory: VerificationHistoryEntry[];
   replayAt: string | null;
   unit: string | null;
   error: string | null;
   loading: boolean;
   verification: VerificationResult | null;
-  events: ScenarioEvent[];
 }) {
   if (!outcome && !error) return <p role="status">Loading outcome…</p>;
   if (!outcome) {
@@ -406,8 +510,8 @@ function OutcomeSection({
     );
   }
   const valueUnit = unit ? ` °${unit}` : "";
-  const latestEvent = events.length > 0 ? events[events.length - 1] : null;
   const stageOrder = verification ? VERIFICATION_ORDER[verification.stage] : undefined;
+  const latestReading = verification?.latest_reading_used ?? null;
   return (
     <div className={`outcome outcome-${outcome.status}`}>
       {loading && <p role="status">Loading outcome…</p>}
@@ -422,27 +526,17 @@ function OutcomeSection({
             Status: <strong>{VERIFICATION_LABEL[verification.stage]}</strong>
           </p>
           <p className="follow-up-rule">Follow-up rule: {OUTCOME_LABEL[outcome.status]}</p>
+          {latestReading ? (
+            <p className="latest-reading-used">
+              Latest reading used: observed{" "}
+              <time dateTime={latestReading.observed_at}>{formatTimestamp(latestReading.observed_at)}</time>{" "}
+              received{" "}
+              <time dateTime={latestReading.received_at}>{formatTimestamp(latestReading.received_at)}</time>
+            </p>
+          ) : (
+            <p className="latest-reading-used">Latest reading used: No reading</p>
+          )}
           <dl className="outcome-facts stage-times">
-            <div>
-              <dt>Event time</dt>
-              <dd>
-                {latestEvent ? (
-                  <time dateTime={latestEvent.event_time}>{formatTimestamp(latestEvent.event_time)}</time>
-                ) : (
-                  "No reading"
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt>Received time</dt>
-              <dd>
-                {latestEvent ? (
-                  <time dateTime={latestEvent.available_at}>{formatTimestamp(latestEvent.available_at)}</time>
-                ) : (
-                  "No reading"
-                )}
-              </dd>
-            </div>
             <div>
               <dt>Evaluation (replay) time</dt>
               <dd>
@@ -487,7 +581,22 @@ function OutcomeSection({
       </dl>
       {outcome.note && <p className="outcome-note">{outcome.note}</p>}
       <h3>History</h3>
-      {history.length === 0 ? (
+      {verification ? (
+        verificationHistory.length === 0 ? (
+          <p>No replay steps yet.</p>
+        ) : (
+          <ul className="outcome-history">
+            {verificationHistory.map((entry) => (
+              <li key={entry.evaluated_at}>
+                <time dateTime={entry.evaluated_at}>{formatTimestamp(entry.evaluated_at)}</time>
+                {" — "}
+                {VERIFICATION_LABEL[entry.stage]}
+                {entry.sample_count !== null ? ` (${entry.sample_count} readings)` : ""}
+              </li>
+            ))}
+          </ul>
+        )
+      ) : history.length === 0 ? (
         <p>No replay steps yet.</p>
       ) : (
         <ul className="outcome-history">
@@ -547,9 +656,43 @@ function SourceCard({ status }: { status: SourceStatus }) {
 }
 
 function formatPayloadValue(value: unknown): string {
-  if (Array.isArray(value)) return value.map((item) => String(item)).join(", ");
-  if (value !== null && typeof value === "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return value.map((item) => formatPayloadValue(item)).join("; ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "number") return String(value);
+  if (value !== null && typeof value === "object") {
+    return Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => !isEmptyValue(v))
+      .map(([k, v]) => `${humanLabel(k)}: ${formatPayloadValue(v)}`)
+      .join("; ");
+  }
+  if (typeof value === "string") {
+    if (isIsoString(value)) return formatTimestamp(value);
+    if (VALUE_LABELS[value]) return VALUE_LABELS[value];
+    if (/^[a-z][a-z0-9]*(_[a-z0-9]+)+$/.test(value)) {
+      const spaced = value.replace(/_/g, " ");
+      return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+    }
+    return value;
+  }
   return String(value);
+}
+
+function PayloadFacts({ payload }: { payload: Record<string, unknown> }) {
+  const entries = Object.entries(payload).filter(([, value]) => !isEmptyValue(value));
+  const keys = Object.keys(payload);
+  return (
+    <>
+      <dl className="card-facts">
+        {entries.map(([key, value]) => (
+          <div key={key}>
+            <dt>{humanLabel(key)}</dt>
+            <dd>{formatPayloadValue(value)}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="fields-sent">fields sent: {keys.join(", ")}</p>
+    </>
+  );
 }
 
 function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; replayAt: string | null }) {
@@ -565,8 +708,8 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
       ) : (
         <div className="event-cards">
           {events.map((event) => (
-            <article key={event.id} className="event-card" aria-label={`${event.kind} event`}>
-              <h3 className="card-title">{event.kind}</h3>
+            <article key={event.id} className="event-card" aria-label={`${eventKindLabel(event.kind)} event`}>
+              <h3 className="card-title">{eventKindLabel(event.kind)}</h3>
               <p className="simulated-tag">SIMULATED</p>
               <dl className="card-facts">
                 <div>
@@ -586,14 +729,7 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
               {event.kind === "hvac_completion_report" && (
                 <p>Corroboration only, does not set the outcome</p>
               )}
-              <dl className="card-facts">
-                {Object.entries(event.payload).map(([key, value]) => (
-                  <div key={key}>
-                    <dt>{key}</dt>
-                    <dd>{formatPayloadValue(value)}</dd>
-                  </div>
-                ))}
-              </dl>
+              <PayloadFacts payload={event.payload} />
             </article>
           ))}
         </div>
@@ -666,14 +802,7 @@ function NotificationsSection({
               </time>
             </p>
             <p>Simulated, no message was sent</p>
-            <dl className="card-facts">
-              {Object.entries(notification.payload).map(([key, value]) => (
-                <div key={key}>
-                  <dt>{key}</dt>
-                  <dd>{value === null ? "None" : formatPayloadValue(value)}</dd>
-                </div>
-              ))}
-            </dl>
+            <PayloadFacts payload={notification.payload} />
             {ack ? (
               <p className="notification-ack">
                 Acknowledged, not resolved —{" "}
@@ -734,10 +863,9 @@ function HomeownerUpdateCard({
 export default function App() {
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [investigation, setInvestigation] = useState<InvestigationResponse | null>(null);
   const [createdInvestigation, setCreatedInvestigation] =
     useState<CreateInvestigationResponse | null>(null);
-  const [investigationError, setInvestigationError] = useState<string | null>(null);
+  const [investigationError] = useState<string | null>(null);
   const [scenario, setScenario] = useState<string>(SCENARIOS[0].id);
   const [investigationId, setInvestigationId] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<OutcomeResult | null>(null);
@@ -747,6 +875,7 @@ export default function App() {
   const [replayLoading, setReplayLoading] = useState(false);
   const [replayError, setReplayError] = useState<string | null>(null);
   const [verification, setVerification] = useState<VerificationResult | null>(null);
+  const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryEntry[]>([]);
   const [events, setEvents] = useState<ScenarioEvent[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationsError, setNotificationsError] = useState<string | null>(null);
@@ -762,13 +891,6 @@ export default function App() {
       .catch(() => {
         if (!cancelled) setError("Backend not reachable");
       });
-    fetchInvestigation()
-      .then((response) => {
-        if (!cancelled) setInvestigation(response);
-      })
-      .catch(() => {
-        if (!cancelled) setInvestigationError("Investigation not reachable");
-      });
     return () => {
       cancelled = true;
     };
@@ -779,6 +901,10 @@ export default function App() {
     const startAt = scenario === VIDEO_SCENARIO ? VIDEO_START_AT : REPLAY_START_AT;
     setReplayLoading(true);
     setReplayError(null);
+    setCreatedInvestigation(null);
+    setOutcome(null);
+    setHistory([]);
+    setVerificationHistory([]);
     setInvestigationId(null);
     setVerification(null);
     setEvents([]);
@@ -815,7 +941,9 @@ export default function App() {
           .then((followUp) => {
             if (cancelled) return;
             setOutcome(followUp.outcome);
+            setHistory(followUp.history);
             setVerification(followUp.verification ?? null);
+            setVerificationHistory(followUp.verification_history ?? []);
             if (followUp.notifications) {
               setNotifications(followUp.notifications);
             } else {
@@ -863,6 +991,7 @@ export default function App() {
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
+        setVerificationHistory(response.verification_history ?? []);
         if (response.notifications) {
           setNotifications(response.notifications);
           setNotificationsError(null);
@@ -897,10 +1026,15 @@ export default function App() {
       });
   }
 
-  const verifiedFacts =
-    createdInvestigation?.investigation?.output?.verified_facts ??
-    investigation?.output?.verified_facts ??
-    [];
+  const verifiedFacts = createdInvestigation?.investigation?.output?.verified_facts ?? [];
+
+  const displayInvestigation = createdInvestigation
+    ? ({
+        ...createdInvestigation.investigation,
+        data_mode: "synthetic",
+        evaluated_at: createdInvestigation.investigation.evaluated_at,
+      } as unknown as InvestigationResponse)
+    : null;
 
   const visibleNotifications = notifications.filter((notification) => {
     if (!replayAt) return true;
@@ -964,7 +1098,7 @@ export default function App() {
 
       <section aria-labelledby="investigation-heading">
         <h2 id="investigation-heading">Investigation</h2>
-        <InvestigationSection data={investigation} error={investigationError} created={createdInvestigation} />
+        <InvestigationSection data={displayInvestigation} error={investigationError} created={createdInvestigation} />
       </section>
 
       <section aria-labelledby="outcome-heading">
@@ -972,12 +1106,12 @@ export default function App() {
         <OutcomeSection
           outcome={outcome}
           history={history}
+          verificationHistory={verificationHistory}
           replayAt={replayAt}
           unit={followUpUnit}
           error={replayError}
           loading={replayLoading}
           verification={verification}
-          events={events}
         />
       </section>
 

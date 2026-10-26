@@ -55,7 +55,7 @@ def _dedup(records):
     return out
 
 
-def _result(stage, reasons, supporting_ids, now, corroboration_ids):
+def _result(stage, reasons, supporting_ids, now, corroboration_ids, latest_reading_used=None):
     return {
         "stage": stage,
         "reasons": list(reasons),
@@ -63,7 +63,37 @@ def _result(stage, reasons, supporting_ids, now, corroboration_ids):
         "corroboration_ids": list(corroboration_ids),
         "corroboration": list(corroboration_ids),
         "evaluated_at": now,
+        "latest_reading_used": latest_reading_used,
     }
+
+
+def _reading_payload(record):
+    if record is None:
+        return None
+    return {"id": record.id, "observed_at": record.observed_at, "received_at": record.received_at}
+
+
+def _room_records(records, zone):
+    room_all = sorted(
+        [
+            r
+            for r in records
+            if r.source is SourceKind.room_sensor
+            and r.quantity == "indoor_temp"
+            and r.subject == zone
+            and r.kind is EvidenceKind.measurement
+            and _is_number(r.value)
+        ],
+        key=lambda r: (r.observed_at, r.received_at, r.id),
+    )
+    seen_room = set()
+    deduped = []
+    for record in room_all:
+        if record.observed_at in seen_room:
+            continue
+        seen_room.add(record.observed_at)
+        deduped.append(record)
+    return deduped
 
 
 def _arrival(scenario, followup, now):
@@ -140,7 +170,9 @@ def verify_recovery(scenario, followup, now):
         if thermostat:
             reasons.append(f"newest thermostat telemetry is {freshness(thermostat[-1], now).value}")
         reasons.extend(corroboration_reasons)
-        return _result("telemetry_missing", reasons, [r.id for r in thermostat[-1:]] if thermostat else [], now, corroboration_ids)
+        early_room = _room_records(records, zone)
+        latest_early = _reading_payload(early_room[-1]) if early_room else None
+        return _result("telemetry_missing", reasons, [r.id for r in thermostat[-1:]] if thermostat else [], now, corroboration_ids, latest_early)
 
     gap_s = None
     post_gap = thermostat
@@ -153,38 +185,21 @@ def verify_recovery(scenario, followup, now):
     restored_ids = [r.id for r in post_gap]
     restored_reasons = ["fresh thermostat telemetry after a gap"] if gap_s is not None else ["fresh thermostat telemetry is available"]
 
-    room_all = sorted(
-        [
-            r
-            for r in records
-            if r.source is SourceKind.room_sensor
-            and r.quantity == "indoor_temp"
-            and r.subject == zone
-            and r.kind is EvidenceKind.measurement
-            and _is_number(r.value)
-        ],
-        key=lambda r: (r.observed_at, r.received_at, r.id),
-    )
-    seen_room = set()
-    room_deduped = []
-    for record in room_all:
-        if record.observed_at in seen_room:
-            continue
-        seen_room.add(record.observed_at)
-        room_deduped.append(record)
-    room_all = room_deduped
+    room_all = _room_records(records, zone)
+    latest_room = _reading_payload(room_all[-1]) if room_all else None
 
     if not room_all:
         reasons = restored_reasons + ["room-sensor readings are missing"] + corroboration_reasons
-        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids)
+        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room)
     if freshness(room_all[-1], now) is not Availability.available:
         reasons = restored_reasons + [f"room-sensor readings are {freshness(room_all[-1], now).value}"] + corroboration_reasons
-        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids)
+        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room)
 
     room_after = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
     if not room_after:
         reasons = restored_reasons + ["no room-sensor readings after the follow-up was created"] + corroboration_reasons
-        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids)
+        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room)
+    latest_used = _reading_payload(room_after[-1])
 
     states = sorted(
         [r for r in records if r.source is SourceKind.thermostat and r.quantity == "hvac_reported_state"],
@@ -237,7 +252,7 @@ def verify_recovery(scenario, followup, now):
         warming_reasons.append("mapped circuit activity contradicts heating")
     warming_reasons.extend(corroboration_reasons)
     if len(room_after) < min_samples or rise_f is None or rise_f < min_rise_f or state_contradicts or circuit_contradicts:
-        return _result("reporting_restored", warming_reasons, restored_ids, now, corroboration_ids)
+        return _result("reporting_restored", warming_reasons, restored_ids, now, corroboration_ids, latest_used)
 
     warming_ids = [r.id for r in room_after]
     if state_supports and state_record is not None:
@@ -252,23 +267,24 @@ def verify_recovery(scenario, followup, now):
     segment, verified_at = _goal_segment(room_after, followup)
     if segment is None:
         reasons = warming_reasons + [f"temperature goal has not been held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s without a gap over {MAX_GAP_CADENCE_MULTIPLIER}x cadence before the deadline"]
-        return _result("warming_observed", reasons, warming_ids, now, corroboration_ids)
+        return _result("warming_observed", reasons, warming_ids, now, corroboration_ids, latest_used)
 
     goal_ids = [r.id for r in segment]
     goal_reasons = warming_reasons + [f"every room-sensor reading held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s before the deadline"]
     arrival = _arrival(scenario, followup, now)
     if arrival is None or now < arrival:
-        return _result("goal_verified", goal_reasons + corroboration_reasons, goal_ids, now, corroboration_ids)
+        return _result("goal_verified", goal_reasons + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used)
 
     through_arrival = [r for r in room_all if verified_at <= r.observed_at <= arrival]
+    arrival_latest = _reading_payload(through_arrival[-1]) if through_arrival else latest_used
     if not through_arrival:
-        return _result("goal_verified", goal_reasons + ["no room-sensor readings from verification through the confirmed arrival"] + corroboration_reasons, goal_ids, now, corroboration_ids)
+        return _result("goal_verified", goal_reasons + ["no room-sensor readings from verification through the confirmed arrival"] + corroboration_reasons, goal_ids, now, corroboration_ids, arrival_latest)
     if any(_in_target_unit(r.value, r.unit, target_unit) < target_temp for r in through_arrival):
-        return _result("goal_verified", goal_reasons + ["a room-sensor reading from verification through the confirmed arrival is below the target"] + corroboration_reasons, goal_ids, now, corroboration_ids)
+        return _result("goal_verified", goal_reasons + ["a room-sensor reading from verification through the confirmed arrival is below the target"] + corroboration_reasons, goal_ids, now, corroboration_ids, arrival_latest)
     cadence_s = next((r.expected_cadence_s for r in through_arrival if r.expected_cadence_s is not None), None)
     if cadence_s is not None and len(through_arrival) >= 2:
         gaps = [(b.observed_at - a.observed_at).total_seconds() for a, b in zip(through_arrival, through_arrival[1:])]
         if gaps and max(gaps) > MAX_GAP_CADENCE_MULTIPLIER * cadence_s:
-            return _result("goal_verified", goal_reasons + ["a gap in room-sensor readings from verification through the confirmed arrival exceeds 2x cadence"] + corroboration_reasons, goal_ids, now, corroboration_ids)
+            return _result("goal_verified", goal_reasons + ["a gap in room-sensor readings from verification through the confirmed arrival exceeds 2x cadence"] + corroboration_reasons, goal_ids, now, corroboration_ids, arrival_latest)
     arrival_ids = list(dict.fromkeys(goal_ids + [r.id for r in through_arrival]))
-    return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the confirmed arrival is at or above the target"] + corroboration_reasons, arrival_ids, now, corroboration_ids)
+    return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the confirmed arrival is at or above the target"] + corroboration_reasons, arrival_ids, now, corroboration_ids, arrival_latest)

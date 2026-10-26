@@ -71,6 +71,7 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   await expect(investigation).toContainText("Who should respond first");
   await expect(investigation).toContainText("weighs against complete property power loss");
   await expect(investigation).toContainText("MOCK - example answer, not live inference");
+  await expect(page.locator("body")).not.toContainText("0.0342857");
 
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
@@ -145,13 +146,24 @@ test("video scenario shows verification stages and simulated timeline", async ({
   await time1631.click();
   await expect(headline).toContainText("Thermostat telemetry missing");
   await expect(outcome).toContainText("Follow-up rule:");
-  await expect(outcome).toContainText("Event time");
-  await expect(outcome).toContainText("Received time");
+  await expect(outcome).toContainText("Latest reading used: observed");
+  await expect(outcome).toContainText("received");
   await expect(outcome).toContainText("Evaluation (replay) time");
+  const investigation = page.locator("section", {
+    has: page.getByRole("heading", { name: "Investigation" }),
+  });
+  await expect(investigation).toContainText("Evaluation time:");
+  await expect(investigation).toContainText("4:31 PM");
+  await expect(investigation).not.toContainText("52.1 F at 17:55");
+  await expect(page.locator("body")).not.toContainText("0.0342857");
+  await expect(page.locator("body")).not.toContainText("None");
+  await expect(page.locator("body")).not.toContainText("Email_flight_confirmation");
+  await expect(page.locator("body")).toContainText("Flight confirmation email");
+  await expect(page.locator("body")).toContainText("fields sent:");
 
-  const acknowledged = timeline.locator("article", { hasText: "scene_acknowledged" });
+  const acknowledged = timeline.locator("article", { hasText: "Scene acknowledged" });
   await expect(acknowledged).toContainText("Acknowledged, physical success unknown");
-  const hvacRequest = timeline.locator("article", { hasText: "hvac_request" });
+  const hvacRequest = timeline.locator("article", { hasText: "HVAC request" });
   await expect(hvacRequest).toHaveCount(0);
 
   await demoControls.getByRole("button", { name: "18:21" }).click();
@@ -167,10 +179,13 @@ test("video scenario shows verification stages and simulated timeline", async ({
   await demoControls.getByRole("button", { name: "19:51" }).click();
   await expect(headline).toContainText("Warming observed");
   await expect(headline).not.toContainText("Temperature goal verified");
+  await expect(outcome.locator(".outcome-history")).not.toContainText("Target reached");
+  await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
+  await expect(outcome.locator(".outcome-history")).toContainText("7:51 PM");
 
   await demoControls.getByRole("button", { name: "20:21" }).click();
   await expect(headline).toContainText("Temperature goal verified");
-  const report = timeline.locator("article", { hasText: "hvac_completion_report" });
+  const report = timeline.locator("article", { hasText: "HVAC completion report" });
   await expect(report).toHaveCount(0);
   await expect(timeline).not.toContainText("Corroboration only");
 
@@ -180,6 +195,13 @@ test("video scenario shows verification stages and simulated timeline", async ({
 
   await demoControls.getByRole("button", { name: "21:01" }).click();
   await expect(headline).toContainText("Arrival expectation met");
+  await expect(outcome).toContainText("Latest reading used: observed");
+  await expect(outcome.locator(".stage-times")).not.toContainText("8:40 PM");
+  await expect(outcome).not.toContainText("8:40 PM");
+  await expect(outcome).toContainText("9:00 PM");
+  await expect(page.locator("body")).not.toContainText("0.0342857");
+  await expect(page.locator("body")).not.toContainText("None");
+  await expect(page.locator("body")).not.toContainText("Email_flight_confirmation");
 
   const eventCards = timeline.locator(".event-card");
   const count = await eventCards.count();
@@ -247,6 +269,17 @@ test("video scenario shows scoped simulated notifications and homeowner update",
   await expect(deliveredHvac).not.toContainText("itinerary");
   await expect(deliveredHvac).not.toContainText("email");
   await expect(deliveredHvac).toContainText("Simulated, no message was sent");
+  await expect(deliveredHvac).toContainText("fields sent:");
+  await expect(deliveredHvac).toContainText("Property");
+  await expect(page.locator("body")).not.toContainText("None");
+  await expect(page.locator("body")).not.toContainText("Email_flight_confirmation");
+  const homeownerCard = notifications.locator('article[aria-label="Homeowner notification"]');
+  if ((await homeownerCard.count()) > 0) {
+    await expect(homeownerCard.first()).toContainText("Readiness");
+    await expect(homeownerCard.first()).toContainText("Planned arrival");
+    await expect(homeownerCard.first()).toContainText("fields sent:");
+    await expect(homeownerCard.first()).not.toContainText("stage None");
+  }
 
   const headlineBefore = await outcome.locator(".outcome-status").innerText();
   const ackButton = managerCard.getByRole("button", { name: "Acknowledge (simulated)" });

@@ -101,6 +101,33 @@ def test_demo_video_recovery_stages_through_api(tmp_path, monkeypatch):
     assert REPORT_ID not in v["supporting_ids"]
 
 
+def test_verification_reports_latest_room_reading_used(tmp_path, monkeypatch):
+    client = _client(tmp_path, monkeypatch)
+    inv_id = _post_and_get(client)
+    v = _verification(client, inv_id, "2026-01-16T16:31:00-05:00")
+    assert v["latest_reading_used"]["observed_at"].startswith("2026-01-16T16:30")
+    assert v["latest_reading_used"]["received_at"].startswith("2026-01-16T16:30:20")
+    v = _verification(client, inv_id, "2026-01-16T21:01:00-05:00")
+    assert v["stage"] == "arrival_met"
+    assert v["latest_reading_used"]["observed_at"].startswith("2026-01-16T21:00")
+    assert v["latest_reading_used"]["received_at"].startswith("2026-01-16T21:00:20")
+    assert "20:40" not in v["latest_reading_used"]["observed_at"]
+    assert v["evaluated_at"].startswith("2026-01-16T21:01")
+
+
+def test_verification_history_uses_verification_stages(tmp_path, monkeypatch):
+    client = _client(tmp_path, monkeypatch)
+    inv_id = _post_and_get(client)
+    _verification(client, inv_id, "2026-01-16T18:21:00-05:00")
+    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T19:51:00-05:00")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    stages = [entry["stage"] for entry in body["verification_history"]]
+    assert "reporting_restored" in stages
+    assert stages[-1] == "warming_observed"
+    assert "target_reached" not in stages
+
+
 def test_flat_room_readings_never_pass_reporting_restored(tmp_path):
     target = _copy_scenario(tmp_path, "flat")
 

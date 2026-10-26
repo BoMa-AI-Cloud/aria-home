@@ -69,6 +69,39 @@ def _parse_time(value):
     return None
 
 
+def _fmt_num(value):
+    if value is None:
+        return "unknown"
+    text = f"{float(value):.2f}"
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    return text or "0"
+
+
+def _fmt_signed(value):
+    if value is None:
+        return "unknown"
+    return f"{float(value):+.2f}"
+
+
+def _fmt_duration(seconds):
+    if seconds is None:
+        return "unknown duration"
+    total = int(round(float(seconds)))
+    if total < 60:
+        return f"{total} s"
+    hours, remainder = divmod(total, 3600)
+    minutes = int(round(remainder / 60))
+    if minutes == 60:
+        hours += 1
+        minutes = 0
+    if hours and minutes:
+        return f"{hours} h {minutes} min"
+    if hours:
+        return f"{hours} h"
+    return f"{minutes} min"
+
+
 def _num(value):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
@@ -233,14 +266,14 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if sample_count < MIN_SAMPLES:
         cannot.append(f"too few indoor samples: {sample_count} < {MIN_SAMPLES}")
     if coverage is not None and coverage < MIN_COVERAGE:
-        cannot.append(f"indoor coverage {coverage} is below {MIN_COVERAGE}")
+        cannot.append(f"indoor coverage {_fmt_num(coverage)} is below {_fmt_num(MIN_COVERAGE)}")
     if coverage is None:
         cannot.append("indoor coverage is unavailable")
     if now_dt is not None and last_at is not None:
         age_s = (now_dt - last_at).total_seconds()
         inputs["reading_age_s"] = age_s
         if age_s > STALE_READING_AGE_S:
-            cannot.append(f"latest indoor reading is stale ({age_s:.0f}s old)")
+            cannot.append(f"latest indoor reading is stale ({_fmt_duration(age_s)} old)")
     elif last_value is not None:
         cannot.append("latest indoor reading time is unavailable")
 
@@ -311,9 +344,9 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         inputs["arrival_last_value"] = arrival_value
         inputs["arrival_last_observed_at"] = arrival_observed.isoformat() if arrival_observed else None
         if outcome == "met":
-            reason = f"Arrival has passed: the target was met at arrival time (latest reading received by arrival was {arrival_value} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {target_temp} {target_unit} target)."
+            reason = f"Arrival has passed: the target was met at arrival time (latest reading received by arrival was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {_fmt_num(target_temp)} {target_unit} target)."
         elif outcome == "not_met":
-            reason = f"Arrival has passed: the target was not met at arrival time (latest reading received by arrival was {arrival_value} {arrival_unit} at {arrival_observed.isoformat()}, below the {target_temp} {target_unit} target)."
+            reason = f"Arrival has passed: the target was not met at arrival time (latest reading received by arrival was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, below the {_fmt_num(target_temp)} {target_unit} target)."
         else:
             reason = "Arrival has passed: whether the target was met at arrival time is unknown (no fresh indoor reading was received by arrival)."
         return ReadinessResult(status="arrival_passed", reasons=[reason], inputs=inputs, target_at_arrival=outcome)
@@ -364,9 +397,13 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if gap_f is not None:
         reasons.append(f"latest reading is {abs(gap_f):.1f} F below target")
     if rate_raw is not None:
-        reasons.append(f"observed trend is {rate_raw} per hour over {window_s:.0f}s" if window_s is not None else f"observed trend is {rate_raw} per hour")
+        rate_value = rate_f if rate_f is not None else rate_raw
+        if window_s is not None:
+            reasons.append(f"observed trend is {_fmt_signed(rate_value)} F per hour over {_fmt_duration(window_s)}")
+        else:
+            reasons.append(f"observed trend is {_fmt_signed(rate_value)} F per hour")
     if not small_gap:
-        reasons.append(f"gap exceeds the small-gap threshold of {SMALL_GAP_F} F")
+        reasons.append(f"gap exceeds the small-gap threshold of {_fmt_num(SMALL_GAP_F)} F")
     elif not sustained:
         reasons.append("warming is not sustained over the minimum window and rise thresholds")
     elif not with_margin:
