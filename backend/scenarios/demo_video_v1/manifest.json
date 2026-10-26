@@ -1,0 +1,10 @@
+{
+  "id": "demo_video_v1",
+  "version": "1",
+  "mode": "synthetic",
+  "description": "Synthetic demo_video_v1 scenario (all synthetic, 2026-01-16, America/New_York -05:00): homeowner return with property arrival 21:00, thermostat telemetry outage 15:30-18:20, independent room sensor, candidate blower circuit, warming and maintained 68 F goal verified before arrival, HVAC completion report available only after verification. Sources: calendar, thermostat, room_sensor, electrical, weather, simulated events. Cadences: thermostat 300 s, room_sensor 300 s, electrical 1800 s, weather 21600 s.",
+  "author": "ARIA Home (synthetic)",
+  "created": "2026-10-26",
+  "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created. All data is synthetic; all actor and communication events are simulated. Sources: calendar, thermostat, room_sensor (its own source), electrical, weather. Cadences: thermostat 300 s, room_sensor 300 s, electrical 1800 s, weather 21600 s.",
+  "start": "2026-01-16T06:00:00-05:00"
+}
