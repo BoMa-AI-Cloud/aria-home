@@ -31,6 +31,7 @@ Times for commits come from `git log`. EDT = UTC-4.
 - Next (Day 4): persistent follow-through: store each investigation and its expected follow-up, ingest later measurements, and decide warming observed / target reached / not observed by the deadline / unable to verify, surviving restarts.
 - 2026-10-26: Verification repair of four audit findings (see docs/day3-handoff.md).
 - 2026-10-26: Day 4: follow-up outcomes with SQLite store, outcome history and replay UI; store thread-safety fix; inv-v2 verification repair (claim binding, code-computed readiness and scheduling, as-of context with revised/cancelled variants); demo video plan (docs/demo-script.md); outcome deadline fix; room-sensor source, simulated events and demo_video_v1 with a committed deterministic stream generator; recovery verification stages; video screen with simulated timeline. Checks at 734605b: backend 188 passed, typecheck and build passed, browser 3 passed. Live smoke (operator run): 3 inv-v2 muse-spark-1.3 calls on demo_v1, all valid, readiness at_risk, 19.8/30.9/17.8 s.
+- 2026-10-26: Day 5: scoped notifications with per-audience allowlists and recorded refusals (D5-1, 4723bba); notifications panel, simulated acknowledgement and homeowner arrival update (D5-2, e512a55). Checks at e512a55: backend 198 passed, typecheck and build passed, browser 4 passed. No live model calls.
 
 ## How the code was written
 
