@@ -40,6 +40,7 @@ checks later measurements before it reports an outcome.
 - [Day 4 handoff](docs/day4-handoff.md)
 - [Day 5 handoff](docs/day5-handoff.md)
 - [Day 6 handoff](docs/day6-handoff.md)
+- [User-test kit](docs/usability.md) and [feature freeze](docs/freeze.md)
 - [Build log](docs/build-log/README.md)
 
 ## What was pre-existing
