@@ -1,4 +1,5 @@
 """Flask application factory for the ARIA Home backend."""
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -6,6 +7,7 @@ from flask import Flask, jsonify, request
 
 from aria_home.contracts import SourceKind
 from aria_home.evidence import source_status
+from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import load_scenario, visible_records
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
@@ -42,6 +44,22 @@ def create_app():
                 "data_mode": scenario.manifest.mode.value,
                 "at": at.isoformat(),
                 "sources": [s.model_dump(mode="json") for s in statuses],
+            }
+        )
+
+    @app.get("/api/provider")
+    def provider():
+        try:
+            config = ProviderConfig.from_env(os.environ)
+            selected = get_provider(config)
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        return jsonify(
+            {
+                "mode": selected.mode,
+                "model_id": config.model_id,
+                "enabled": config.enabled,
+                "key_present": bool(config.api_key),
             }
         )
 
