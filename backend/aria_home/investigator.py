@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import re
 import time
@@ -18,7 +19,7 @@ from .scenario import visible_records
 PROMPT_VERSION = "inv-v1"
 
 INVESTIGATION_MAX_TOKENS_VAR = "ARIA_HOME_INVESTIGATION_MAX_TOKENS"
-INVESTIGATION_MAX_TOKENS_DEFAULT = 8000
+INVESTIGATION_MAX_TOKENS_DEFAULT = 12000
 INVESTIGATION_MAX_TOKENS_MIN = 256
 INVESTIGATION_MAX_TOKENS_MAX = 32000
 
@@ -116,6 +117,34 @@ def _jsonable(value):
         return [_jsonable(v) for v in value]
     return value
 
+def _round_2sig(value):
+    if value == 0:
+        return 0.0
+    decimals = 1 - math.floor(math.log10(abs(value)))
+    return round(value, max(decimals, 0))
+
+
+def _round_float(value, key):
+    if key and ("rate" in key.lower() or "coverage" in key.lower()):
+        if value != 0 and round(value, 1) == 0.0:
+            return _round_2sig(value)
+    return round(value, 1)
+
+
+def _round_pack(value, key=None):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return _round_float(value, key)
+    if isinstance(value, dict):
+        return {k: _round_pack(v, k) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_round_pack(v, key) for v in value]
+    if isinstance(value, tuple):
+        return tuple(_round_pack(v, key) for v in value)
+    return value
+
+
 def build_evidence_pack(scenario, at) -> dict:
     ensure_aware(at, "at")
     start = at - timedelta(hours=3)
@@ -153,7 +182,7 @@ def build_evidence_pack(scenario, at) -> dict:
         c = scenario.confirmation
         confirmation = {"trip_id": c.trip_id, "property_id": c.property_id, "target_temp": c.target_temp, "target_unit": c.target_unit, "notify_homeowner": c.notify_homeowner, "manager_authorized": c.manager_authorized, "confirmed_at": c.confirmed_at.isoformat()}
         evidence.append({"id": "confirmation:current", "type": "confirmation", "data": confirmation})
-    return {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence]}
+    return _round_pack({"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence]})
 
 def _deterministic_summary(pack):
     pc = pack.get("power_context") or {}
@@ -230,7 +259,7 @@ def validate(output, pack) -> list[str]:
             val = float(m)
         except ValueError:
             continue
-        if not any(round(a, 1) == round(val, 1) for a in allowed):
+        if not any(val == a for a in allowed):
             reasons.append(f"number not present in evidence pack: {m}")
     if parsed.readiness == "on_track":
         metrics = pack.get("metrics") or {}

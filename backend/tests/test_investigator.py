@@ -56,7 +56,7 @@ def test_valid_output_passes():
     assert result.output is not None
     assert result.provider_mode == "mock"
     assert result.prompt_version == "inv-v1"
-    assert fake.calls[0][2] == 8000
+    assert fake.calls[0][2] == 12000
 
 def test_unknown_evidence_id_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
@@ -158,8 +158,8 @@ def test_investigation_max_tokens_default_and_recorded():
     scenario = _scenario(); at = _at(scenario)
     fake = FakeProvider(_valid_json(at))
     result = investigate(scenario, at, fake)
-    assert fake.calls[0][2] == 8000
-    assert result.max_tokens_used == 8000
+    assert fake.calls[0][2] == 12000
+    assert result.max_tokens_used == 12000
     assert result.status == "ok"
 
 def test_investigation_max_tokens_env_override(monkeypatch):
@@ -186,8 +186,8 @@ def test_investigation_max_tokens_invalid_falls_back_with_note(monkeypatch):
         scenario = _scenario(); at = _at(scenario)
         fake = FakeProvider(_valid_json(at))
         result = investigate(scenario, at, fake)
-        assert fake.calls[0][2] == 8000
-        assert result.max_tokens_used == 8000
+        assert fake.calls[0][2] == 12000
+        assert result.max_tokens_used == 12000
         assert any("config note" in r and "ARIA_HOME_INVESTIGATION_MAX_TOKENS" in r for r in result.reasons)
 
 def test_no_text_max_tokens_explicit_reason():
@@ -196,7 +196,7 @@ def test_no_text_max_tokens_explicit_reason():
     result = investigate(scenario, at, provider)
     assert result.status == "unavailable"
     assert result.reasons == [f"provider error: no_text (output limit of {result.max_tokens_used} tokens reached before any answer text)"]
-    assert result.max_tokens_used == 8000
+    assert result.max_tokens_used == 12000
 
 def test_api_investigation_mock_200():
     client = create_app().test_client()
@@ -207,3 +207,33 @@ def test_api_investigation_mock_200():
     assert payload["provider_mode"] == "mock"
     assert payload["status"] == "ok"
     assert payload["output"]["observations"][0]["text"].startswith("[MOCK]")
+
+def _walk_floats(value):
+    if isinstance(value, bool):
+        return
+    if isinstance(value, float):
+        yield value
+    elif isinstance(value, dict):
+        for v in value.values():
+            yield from _walk_floats(v)
+    elif isinstance(value, (list, tuple)):
+        for v in value:
+            yield from _walk_floats(v)
+
+def test_pack_floats_rounded_for_display():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    assert pack["metrics"]["target_gap"]["gap"] == -15.9
+    assert pack["metrics"]["indoor_trend"]["rate_per_hour"] == 0.034
+    for f in _walk_floats(pack):
+        decimals = len(repr(f).split(".")[1]) if "." in repr(f) else 0
+        if abs(f) < 0.05 and f != 0:
+            assert decimals <= 3
+        else:
+            assert f == round(f, 1)
+
+def test_rounded_numbers_validate():
+    scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Gap is -15.9 degrees."
+    assert validate(data, pack) == []
+    data = json.loads(_valid_json(at)); data["observations"][0]["text"] = "Gap is -15.899999999999999 degrees."
+    assert any("number not present" in r for r in validate(data, pack))
