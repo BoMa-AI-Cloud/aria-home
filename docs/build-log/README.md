@@ -1,0 +1,36 @@
+# Build log
+
+Every task in this project was given to a Claude Code session running a Meta model (muse-wonder-1.0 or muse-spark-1.3). Each pair of files here is the exact prompt that session received and its final answer, copied with private paths, account names, key names and email addresses replaced by placeholders such as <private-notes>. Files are named <UTC time>-<task>.
+
+## Operator
+
+The operator is Claude Code running Anthropic's Claude model, directed by Brad Wentzel. The operator wrote these prompts, reviewed each change against the project's rules, ran tests, builds and the approved live smoke tests, ran `npm install` and `npm install -D @playwright/test` after Brad approved them, made the commits, and corrected docs/timeline.md to exact git commit times on Day 1. All application code was written by the Meta-model sessions listed below.
+
+## Tasks
+
+| UTC time | task | model | turns | result | files |
+|---|---|---|---|---|---|
+| 20261026T163146Z | day1-00-inspect-and-plan | muse-wonder-1.0 | 9 | Day One plan only, no implementation; workspace inspection plus versions to confirm | [prompt](20261026T163146Z-day1-00-inspect-and-plan.prompt.md) [answer](20261026T163146Z-day1-00-inspect-and-plan.answer.md) |
+| 20261026T163558Z | day1-01-backend-health | muse-spark-1.3 | 13 | Backend health scaffold (`GET /api/health`); tests not run, verification command given | [prompt](20261026T163558Z-day1-01-backend-health.prompt.md) [answer](20261026T163558Z-day1-01-backend-health.answer.md) |
+| 20261026T163830Z | day1-02-evidence-foundation | muse-wonder-1.0 | 30 | Evidence foundation: clock, contracts, evidence, scenario loader, demo data, tests | [prompt](20261026T163830Z-day1-02-evidence-foundation.prompt.md) [answer](20261026T163830Z-day1-02-evidence-foundation.answer.md) |
+| 20261026T164340Z | day1-02b-manifest-date | unknown (no saved answer file) | unknown | Prompt saved but no answer file was saved | [prompt](20261026T164340Z-day1-02b-manifest-date.prompt.md) no answer file |
+| 20261026T164458Z | day1-04-provider-mock | muse-wonder-1.0 | 30 | Mock/gated-live Meta provider plus `GET /api/provider`; 49 passed | [prompt](20261026T164458Z-day1-04-provider-mock.prompt.md) [answer](20261026T164458Z-day1-04-provider-mock.answer.md) |
+| 20261026T164640Z | day1-03-frontend | muse-spark-1.3 | 21 | Frontend scaffold written; `npm install` awaited operator approval | [prompt](20261026T164640Z-day1-03-frontend.prompt.md) [answer](20261026T164640Z-day1-03-frontend.answer.md) |
+| 20261026T165332Z | day1-04b-reply-reporting | muse-spark-1.3 | 9 | Provider reply reporting: block types, stop reason, `no_text` error, usage on failures | [prompt](20261026T165332Z-day1-04b-reply-reporting.prompt.md) [answer](20261026T165332Z-day1-04b-reply-reporting.answer.md) |
+| 20261026T165709Z | day1-05-loose-ends | muse-spark-1.3 | 35 | Missing/stale counts, provider key hardening, frontend typecheck, smoke test | [prompt](20261026T165709Z-day1-05-loose-ends.prompt.md) [answer](20261026T165709Z-day1-05-loose-ends.answer.md) |
+| 20261026T165825Z | day1-06-handoff-docs | muse-spark-1.3 | 45 | Failed run: ended before writing the three docs; repaired by the 06b follow-up | [prompt](20261026T165825Z-day1-06-handoff-docs.prompt.md) [answer](20261026T165825Z-day1-06-handoff-docs.answer.md) |
+| 20261026T170035Z | day1-06b-handoff-docs | muse-spark-1.3 | 8 | Follow-up fix: wrote timeline, existing-vs-new, day1-handoff, README links; 54 passed | [prompt](20261026T170035Z-day1-06b-handoff-docs.prompt.md) [answer](20261026T170035Z-day1-06b-handoff-docs.answer.md) |
+| 20261026T170418Z | day2-01-metrics | muse-spark-1.3 | 19 | Deterministic metrics plus `GET /api/metrics`; 67 passed | [prompt](20261026T170418Z-day2-01-metrics.prompt.md) [answer](20261026T170418Z-day2-01-metrics.answer.md) |
+| 20261026T170619Z | day2-01b-coverage-gaps | muse-spark-1.3 | 13 | Coverage-gap change written but tests blocked on approval; flat-trend assertion flagged | [prompt](20261026T170619Z-day2-01b-coverage-gaps.prompt.md) [answer](20261026T170619Z-day2-01b-coverage-gaps.answer.md) |
+| 20261026T170753Z | day2-01c-fix-coverage | muse-spark-1.3 | 14 | Repaired: 4-tuple unpack fix for the 13 coverage-test failures; 71 passed, endpoint 200 | [prompt](20261026T170753Z-day2-01c-fix-coverage.prompt.md) [answer](20261026T170753Z-day2-01c-fix-coverage.answer.md) |
+| 20261026T170926Z | day2-02-power-context | muse-wonder-1.0 | 20 | Deterministic Power Context plus `GET /api/power-context`; 79 passed | [prompt](20261026T170926Z-day2-02-power-context.prompt.md) [answer](20261026T170926Z-day2-02-power-context.answer.md) |
+| 20261026T171250Z | day2-02b-meter-label | muse-spark-1.3 | 19 | Meter lineage from `meter_id` with unknown-meter limitation; 80 passed | [prompt](20261026T171250Z-day2-02b-meter-label.prompt.md) [answer](20261026T171250Z-day2-02b-meter-label.answer.md) |
+| 20261026T171436Z | day2-03-handoff-docs | muse-spark-1.3 | 9 | Day 2 handoff docs: timeline, existing-vs-new, day2-handoff, README | [prompt](20261026T171436Z-day2-03-handoff-docs.prompt.md) [answer](20261026T171436Z-day2-03-handoff-docs.answer.md) |
+| 20261026T171517Z | day1-closeout | muse-spark-1.3 | 33 | Day One closeout: pydantic/httpx declared, README working-vs-planned, provider config errors | [prompt](20261026T171517Z-day1-closeout.prompt.md) [answer](20261026T171517Z-day1-closeout.answer.md) |
+| 20261026T171846Z | day1-closeout-b | muse-spark-1.3 | 11 | Provider `config_error` null fix; 86 passed | [prompt](20261026T171846Z-day1-closeout-b.prompt.md) [answer](20261026T171846Z-day1-closeout-b.answer.md) |
+| 20261026T172319Z | day2-05-browser-test | muse-spark-1.3 | 30 | Failed run: Playwright installed in the wrong folder, frontend server could not start | [prompt](20261026T172319Z-day2-05-browser-test.prompt.md) [answer](20261026T172319Z-day2-05-browser-test.answer.md) |
+| 20261026T172655Z | day2-05b-browser-test-fix | muse-spark-1.3 | 7 | Playwright config fix (dev host/port, baseURL); `test:e2e` run still blocked on approval | [prompt](20261026T172655Z-day2-05b-browser-test-fix.prompt.md) [answer](20261026T172655Z-day2-05b-browser-test-fix.answer.md) |
+| 20261026T172830Z | day2-05c-404 | muse-spark-1.3 | 6 | Browser test caught a favicon 404; fixed with inline icon plus failed-request assertion | [prompt](20261026T172830Z-day2-05c-404.prompt.md) [answer](20261026T172830Z-day2-05c-404.answer.md) |
+| 20261026T173041Z | day2-06-doc-fixes | muse-spark-1.3 | 14 | Doc fixes: day2-handoff verification, README terminals, frontend README, day1 gap pointer | [prompt](20261026T173041Z-day2-06-doc-fixes.prompt.md) [answer](20261026T173041Z-day2-06-doc-fixes.answer.md) |
+| 20261026T173130Z | day2-06b-backend-cd | muse-spark-1.3 | 3 | Setup docs: single Terminal 1 backend section with `cd backend` first | [prompt](20261026T173130Z-day2-06b-backend-cd.prompt.md) [answer](20261026T173130Z-day2-06b-backend-cd.answer.md) |
+| 20261026T173335Z | day3-01-investigation | muse-wonder-1.0 | 31 | Investigation engine: evidence pack, versioned prompt, strict validation, `/api/investigation`; 98 passed | [prompt](20261026T173335Z-day3-01-investigation.prompt.md) [answer](20261026T173335Z-day3-01-investigation.answer.md) |

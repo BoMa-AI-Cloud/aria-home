@@ -34,6 +34,7 @@ checks later measurements before it reports an outcome.
 - [Existing vs new](docs/existing-vs-new.md)
 - [Day 1 handoff](docs/day1-handoff.md)
 - [Day 2 handoff](docs/day2-handoff.md)
+- [Build log](docs/build-log/README.md)
 
 ## What was pre-existing
 
@@ -52,7 +53,11 @@ checks later measurements before it reports an outcome.
 
 ## Tools used to build it
 
-Claude Code, including sessions configured to run Meta's Muse models.
+Application code was written by Claude Code sessions running Meta's Muse models
+(muse-wonder-1.0 and muse-spark-1.3). An operator, Claude Code running Anthropic's Claude model and
+directed by Brad Wentzel, wrote the prompts, reviewed and tested each change, ran approved
+installs and live smoke tests, and made the commits. Every prompt and answer is in
+[docs/build-log](docs/build-log/README.md). At runtime the app calls only Meta models.
 
 ## License
 
