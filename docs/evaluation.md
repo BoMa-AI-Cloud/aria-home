@@ -129,3 +129,29 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - Thermostat-only during the `demo_video_v1` outage (16:31) cannot support a warming or even a current-temperature claim: its last reading is 15:30, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.
 - Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
+
+## Live model condition (2026-10-26)
+
+Run by the operator: 24 calls (the 12 cases on muse-spark-1.3, then on muse-wonder-1.0), committed snapshot 53a06bd, 90 s timeout, 12000 output tokens, no retries, approved by Brad. Source: `backend/eval/results-live.json`.
+
+| Model | Valid answers | Readiness agreement | Rejected answers | Median latency (s) | Min-max latency (s) | Median output tokens |
+|---|---|---|---|---|---|---|
+| muse-spark-1.3 | 12/12 | 12/12 | 0 | 40.9 | 20.7-53.0 | 6490 |
+| muse-wonder-1.0 | 12/12 | 12/12 | 0 | 37.3 | 19.1-41.0 | 5584 |
+
+| Case | Computed readiness | muse-spark-1.3 | muse-wonder-1.0 |
+|---|---|---|---|
+| demo_v1@18:00 | at_risk | at_risk | at_risk |
+| demo_recovery_v1@18:00 | at_risk | at_risk | at_risk |
+| demo_recovery_v1@19:00 | at_risk | at_risk | at_risk |
+| demo_recovery_v1@20:31 | on_track | on_track | on_track |
+| demo_no_followup_v1@20:31 | cannot_tell | cannot_tell | cannot_tell |
+| demo_revised_v1@18:00 | cannot_tell | cannot_tell | cannot_tell |
+| demo_cancelled_v1@18:00 | cannot_tell | cannot_tell | cannot_tell |
+| demo_video_v1@16:31 | cannot_tell | cannot_tell | cannot_tell |
+| demo_video_v1@18:21 | at_risk | at_risk | at_risk |
+| demo_video_v1@18:51 | at_risk | at_risk | at_risk |
+| demo_video_v1@20:21 | on_track | on_track | on_track |
+| demo_video_v1@21:01 | on_track | on_track | on_track |
+
+Readiness agreement is enforced (the prompt tells the model the computed status and the validator rejects a mismatch), so 24/24 agreement shows the models followed the contract, not that they judged readiness independently. The meaningful result is that 0 of 24 answers were rejected by the claim checks. One run per case, synthetic data, small sample; input-token counts are unreliable (likely prompt caching the adapter does not record). No winner is declared on quality; wonder was faster in this sample.
