@@ -354,3 +354,39 @@ section {
 .hypothesis-label {
   margin: 0 0 0.25rem;
 }
+
+.notification-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+.notification-card,
+.homeowner-update-card {
+  background: #ffffff;
+  border: 1px solid #b9b3a6;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.notification-state {
+  font-weight: 700;
+}
+
+.notification-card button {
+  font: inherit;
+  border: 1px solid #6a3fb5;
+  border-radius: 0.25rem;
+  background: #ffffff;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+
+.notification-ack {
+  font-weight: 700;
+}
+
+.homeowner-update {
+  font-size: 1.1rem;
+  font-weight: 700;
+}

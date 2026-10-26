@@ -192,3 +192,82 @@ test("video scenario shows verification stages and simulated timeline", async ({
 
   expect(failedRequests).toEqual([]);
 });
+
+test("video scenario shows scoped simulated notifications and homeowner update", async ({ page }) => {
+  const failedRequests: string[] = [];
+  page.on("response", (response) => {
+    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+
+  await page.goto("http://127.0.0.1:5173/");
+
+  const demoControls = page.locator(".demo-controls");
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Outcome" }),
+  });
+  const notifications = page.locator("section", {
+    has: page.getByRole("heading", { name: "Notifications (simulated delivery)" }),
+  });
+  await expect(notifications).toBeVisible();
+
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+
+  const time1631 = demoControls.getByRole("button", { name: "16:31" });
+  await expect(time1631).toBeEnabled();
+  await time1631.click();
+  await expect(outcome.locator(".outcome-status")).toContainText("Thermostat telemetry missing");
+
+  const managerCard = notifications.locator('article[aria-label="Property manager notification"]');
+  await expect(managerCard).toHaveCount(1);
+  await expect(managerCard).toContainText("Property manager");
+  await expect(managerCard).toContainText("Simulated delivery");
+  await expect(managerCard).toContainText("Simulated, no message was sent");
+  await expect(managerCard).toContainText("Created:");
+
+  const hvacCards1631 = notifications.locator('article[aria-label="HVAC company notification"]');
+  const hvacCount1631 = await hvacCards1631.count();
+  if (hvacCount1631 > 0) {
+    for (let i = 0; i < hvacCount1631; i += 1) {
+      const text = await hvacCards1631.nth(i).innerText();
+      if (!text.includes("Refused:")) throw new Error("HVAC card at 16:31 must be absent or refused");
+    }
+    await expect(hvacCards1631.first()).toContainText("Refused:");
+  }
+
+  await demoControls.getByRole("button", { name: "16:52" }).click();
+  const deliveredHvac = notifications.locator('article[aria-label="HVAC company notification"]', {
+    hasText: "Simulated delivery",
+  });
+  await expect(deliveredHvac).toHaveCount(1);
+  await expect(deliveredHvac).toContainText("HVAC company");
+  await expect(deliveredHvac).toContainText("property_label");
+  await expect(deliveredHvac).toContainText("access_note");
+  await expect(deliveredHvac).toContainText("manager_contact_label");
+  await expect(deliveredHvac).toContainText("relevant_observations");
+  await expect(deliveredHvac).not.toContainText("itinerary");
+  await expect(deliveredHvac).not.toContainText("email");
+  await expect(deliveredHvac).toContainText("Simulated, no message was sent");
+
+  const headlineBefore = await outcome.locator(".outcome-status").innerText();
+  const ackButton = managerCard.getByRole("button", { name: "Acknowledge (simulated)" });
+  if ((await ackButton.count()) > 0) {
+    await ackButton.click();
+  }
+  await expect(managerCard).toContainText("Acknowledged, not resolved");
+  await expect(outcome.locator(".outcome-status")).toContainText(headlineBefore);
+
+  await demoControls.getByRole("button", { name: "21:01" }).click();
+  await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met");
+  const homeownerUpdate = page.locator('article[aria-label="Homeowner update"]');
+  await expect(homeownerUpdate).toContainText("Your home reached and held 68 F before you arrived");
+  await expect(homeownerUpdate).toContainText("Evaluation time:");
+
+  const cards = notifications.locator(".notification-card");
+  const cardCount = await cards.count();
+  expect(cardCount).toBeGreaterThan(0);
+  for (let i = 0; i < cardCount; i += 1) {
+    await expect(cards.nth(i)).toContainText("Simulated");
+  }
+
+  expect(failedRequests).toEqual([]);
+});

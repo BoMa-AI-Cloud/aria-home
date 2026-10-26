@@ -368,6 +368,49 @@ export interface FollowUpSchedule {
   model_time_reasons: string[];
 }
 
+export type NotificationAudience = "homeowner" | "property_manager" | "hvac_company";
+
+export type NotificationState = "queued" | "simulated_delivered" | "refused" | string;
+
+export interface NotificationAck {
+  id: string;
+  notification_id: string;
+  actor: string;
+  acknowledged_at: string;
+  by: string;
+  at: string;
+}
+
+export interface Notification {
+  id: string;
+  investigation_id: string;
+  audience: NotificationAudience;
+  kind: string;
+  idempotency_key: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+  delivery: string;
+  state: NotificationState;
+  refusal_reason: string | null;
+  reason: string | null;
+  acks: NotificationAck[];
+}
+
+export interface NotificationsResponse {
+  data_mode: DataMode;
+  investigation_id: string | null;
+  notifications: Notification[];
+}
+
+export interface AckNotificationResponse {
+  data_mode: DataMode;
+  message: string;
+  acknowledgement: string;
+  notification: Notification;
+  ack: NotificationAck;
+  acks: NotificationAck[];
+}
+
 export interface HealthResponse {
   status: string;
   service: string;
@@ -488,6 +531,7 @@ export interface CreateInvestigationResponse {
   deadline_passed: boolean;
   next_check_at: string | null;
   outcome: OutcomeResult | null;
+  notifications?: Notification[];
   error?: string;
 }
 
@@ -534,6 +578,7 @@ export interface FollowUpResponse {
   supporting_ids: string[];
   history: OutcomeHistoryEntry[];
   verification?: VerificationResult | null;
+  notifications?: Notification[];
 }
 
 export async function createInvestigation(
@@ -557,4 +602,25 @@ export function fetchFollowUp(investigationId: string, at: string): Promise<Foll
 export function fetchEvents(scenario: string, at: string): Promise<EventsResponse> {
   const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
   return fetchJson<EventsResponse>(`/api/events${query}`);
+}
+
+export function fetchNotifications(investigationId?: string | null): Promise<NotificationsResponse> {
+  const query = investigationId ? `?investigation_id=${encodeURIComponent(investigationId)}` : "";
+  return fetchJson<NotificationsResponse>(`/api/notifications${query}`);
+}
+
+export async function ackNotification(
+  notificationId: string,
+  actor: string,
+  at?: string,
+): Promise<AckNotificationResponse> {
+  const response = await fetch(`/api/notifications/${encodeURIComponent(notificationId)}/ack`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(at ? { actor, at } : { actor }),
+  });
+  if (!response.ok) {
+    throw new Error(`POST /api/notifications/${notificationId}/ack failed with status ${response.status}`);
+  }
+  return (await response.json()) as AckNotificationResponse;
 }

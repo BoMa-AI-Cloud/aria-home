@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import {
+  ackNotification,
   createInvestigation,
   fetchEvents,
   fetchFollowUp,
   fetchInvestigation,
+  fetchNotifications,
   fetchSources,
   type Availability,
   type ContextFlags,
   type CreateInvestigationResponse,
   type InvestigationResponse,
   type InvestigationSummary,
+  type Notification,
+  type NotificationAudience,
   type OutcomeHistoryEntry,
   type OutcomeResult,
   type OutcomeStatus,
@@ -47,6 +51,7 @@ const VIDEO_REPLAY_TIMES = [
   "09:20",
   "14:06",
   "16:31",
+  "16:52",
   "18:21",
   "18:51",
   "19:51",
@@ -596,6 +601,135 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
   );
 }
 
+const NOTIFICATION_AUDIENCE_LABEL: Record<NotificationAudience, string> = {
+  homeowner: "Homeowner",
+  property_manager: "Property manager",
+  hvac_company: "HVAC company",
+};
+
+const REFUSAL_REASON_LABEL: Record<string, string> = {
+  manager_not_authorized: "property manager not authorized",
+  manager_hvac_not_authorized: "manager has not authorized HVAC contact",
+};
+
+function refusalReasonInWords(notification: Notification): string {
+  const reason = notification.refusal_reason ?? notification.reason ?? "not authorized";
+  return REFUSAL_REASON_LABEL[reason] ?? reason.replace(/_/g, " ");
+}
+
+function notificationStateInWords(notification: Notification): string {
+  if (notification.state === "refused") return `Refused: ${refusalReasonInWords(notification)}`;
+  if (notification.state === "simulated_delivered") return "Simulated delivery";
+  if (notification.state === "queued") return "Simulated delivery";
+  return notification.state.replace(/_/g, " ");
+}
+
+function NotificationsSection({
+  notifications,
+  error,
+  onAck,
+  ackingId,
+}: {
+  notifications: Notification[];
+  error: string | null;
+  onAck: (notification: Notification) => void;
+  ackingId: string | null;
+}) {
+  if (error) {
+    return (
+      <p role="alert" className="error">
+        Notifications not reachable
+      </p>
+    );
+  }
+  if (notifications.length === 0) return <p>No notifications yet.</p>;
+  return (
+    <div className="notification-cards">
+      {notifications.map((notification) => {
+        const audienceLabel =
+          NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience;
+        const acks = notification.acks ?? [];
+        const ack = acks.length > 0 ? acks[acks.length - 1] : null;
+        return (
+          <article
+            key={notification.id}
+            className="notification-card"
+            aria-label={`${audienceLabel} notification`}
+          >
+            <h3 className="card-title">{audienceLabel}</h3>
+            <p className="notification-state">{notificationStateInWords(notification)}</p>
+            <p>
+              Created:{" "}
+              <time dateTime={notification.created_at}>
+                {formatTimestamp(notification.created_at)}
+              </time>
+            </p>
+            <p>Simulated, no message was sent</p>
+            <dl className="card-facts">
+              {Object.entries(notification.payload).map(([key, value]) => (
+                <div key={key}>
+                  <dt>{key}</dt>
+                  <dd>{value === null ? "None" : formatPayloadValue(value)}</dd>
+                </div>
+              ))}
+            </dl>
+            {ack ? (
+              <p className="notification-ack">
+                Acknowledged, not resolved —{" "}
+                <time dateTime={ack.acknowledged_at}>{formatTimestamp(ack.acknowledged_at)}</time>
+              </p>
+            ) : notification.audience === "property_manager" &&
+              notification.state === "simulated_delivered" ? (
+              <button
+                type="button"
+                onClick={() => onAck(notification)}
+                disabled={ackingId === notification.id}
+              >
+                Acknowledge (simulated)
+              </button>
+            ) : null}
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+function formatTargetTemp(value: number): string {
+  return Number.isInteger(value) ? String(value) : String(value);
+}
+
+function HomeownerUpdateCard({
+  verification,
+  targetTemp,
+  targetUnit,
+  verifiedFacts,
+}: {
+  verification: VerificationResult | null;
+  targetTemp: number | null;
+  targetUnit: string | null;
+  verifiedFacts: string[];
+}) {
+  if (!verification || verification.stage !== "arrival_met" || targetTemp === null) return null;
+  const unit = targetUnit ?? "F";
+  const tempLabel = `${formatTargetTemp(targetTemp)} ${unit}`;
+  const factsSupport =
+    verifiedFacts.length > 0 ||
+    verification.reasons.some((reason) => reason.includes(tempLabel) || reason.includes(String(targetTemp)));
+  if (!factsSupport && verification.supporting_ids.length === 0) return null;
+  return (
+    <article className="homeowner-update-card" aria-label="Homeowner update">
+      <p className="homeowner-update">
+        Your home reached and held {tempLabel} before you arrived
+      </p>
+      <p>
+        Evaluation time:{" "}
+        <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
+      </p>
+    </article>
+  );
+}
+
 export default function App() {
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -613,6 +747,10 @@ export default function App() {
   const [replayError, setReplayError] = useState<string | null>(null);
   const [verification, setVerification] = useState<VerificationResult | null>(null);
   const [events, setEvents] = useState<ScenarioEvent[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
+  const [ackingId, setAckingId] = useState<string | null>(null);
+  const [followUpTargetTemp, setFollowUpTargetTemp] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -643,6 +781,9 @@ export default function App() {
     setInvestigationId(null);
     setVerification(null);
     setEvents([]);
+    setNotifications([]);
+    setNotificationsError(null);
+    setFollowUpTargetTemp(null);
     setReplayAt(null);
     createInvestigation(scenario, startAt)
       .then((response) => {
@@ -651,11 +792,22 @@ export default function App() {
         setInvestigationId(response.investigation_id);
         setOutcome(response.outcome);
         setHistory([]);
+        if (response.notifications) setNotifications(response.notifications);
         setFollowUpUnit(
           typeof response.follow_up?.target_unit === "string"
             ? response.follow_up.target_unit
             : null,
         );
+        setFollowUpTargetTemp(
+          typeof response.follow_up?.target_temp === "number"
+            ? response.follow_up.target_temp
+            : typeof response.follow_up?.target?.target_temp === "number"
+              ? response.follow_up.target.target_temp
+              : null,
+        );
+        if (typeof response.follow_up?.target?.target_unit === "string") {
+          setFollowUpUnit(response.follow_up.target.target_unit);
+        }
         setReplayAt(startAt);
         setReplayLoading(false);
         fetchFollowUp(response.investigation_id, startAt)
@@ -663,6 +815,15 @@ export default function App() {
             if (cancelled) return;
             setOutcome(followUp.outcome);
             setVerification(followUp.verification ?? null);
+            if (followUp.notifications) {
+              setNotifications(followUp.notifications);
+            } else {
+              fetchNotifications(response.investigation_id)
+                .then((notifs) => {
+                  if (!cancelled) setNotifications(notifs.notifications);
+                })
+                .catch(() => undefined);
+            }
           })
           .catch(() => undefined);
       })
@@ -701,6 +862,14 @@ export default function App() {
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
+        if (response.notifications) {
+          setNotifications(response.notifications);
+          setNotificationsError(null);
+        } else {
+          fetchNotifications(investigationId)
+            .then((notifs) => setNotifications(notifs.notifications))
+            .catch(() => setNotificationsError("Notifications not reachable"));
+        }
         setReplayAt(at);
         setReplayLoading(false);
       })
@@ -709,6 +878,40 @@ export default function App() {
         setReplayLoading(false);
       });
   }
+
+  function handleAck(notification: Notification) {
+    setAckingId(notification.id);
+    ackNotification(notification.id, "property_manager", replayAt ?? undefined)
+      .then((response) => {
+        const updated = response.notification;
+        const withAcks = updated.acks?.length ? updated : { ...updated, acks: response.acks };
+        setNotifications((current) =>
+          current.map((item) => (item.id === withAcks.id ? withAcks : item)),
+        );
+        setAckingId(null);
+      })
+      .catch(() => {
+        setNotificationsError("Notifications not reachable");
+        setAckingId(null);
+      });
+  }
+
+  const verifiedFacts =
+    createdInvestigation?.investigation?.output?.verified_facts ??
+    investigation?.output?.verified_facts ??
+    [];
+
+  const visibleNotifications = notifications.filter((notification) => {
+    if (!replayAt) return true;
+    const createdMs = Date.parse(notification.created_at);
+    const replayMs = Date.parse(replayAt);
+    if (Number.isNaN(createdMs) || Number.isNaN(replayMs) || createdMs <= replayMs) return true;
+    return (
+      notification.audience === "hvac_company" &&
+      notification.state === "simulated_delivered" &&
+      events.some((event) => event.kind === "hvac_request")
+    );
+  });
 
   return (
     <main className="page">
@@ -774,6 +977,26 @@ export default function App() {
           loading={replayLoading}
           verification={verification}
           events={events}
+        />
+      </section>
+
+      <section aria-labelledby="notifications-heading">
+        <h2 id="notifications-heading">Notifications (simulated delivery)</h2>
+        <NotificationsSection
+          notifications={visibleNotifications}
+          error={notificationsError}
+          onAck={handleAck}
+          ackingId={ackingId}
+        />
+      </section>
+
+      <section aria-labelledby="homeowner-update-heading">
+        <h2 id="homeowner-update-heading">Homeowner update</h2>
+        <HomeownerUpdateCard
+          verification={verification}
+          targetTemp={followUpTargetTemp}
+          targetUnit={followUpUnit}
+          verifiedFacts={verifiedFacts}
         />
       </section>
 
