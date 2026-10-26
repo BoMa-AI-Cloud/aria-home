@@ -14,6 +14,12 @@ checks later measurements before it reports an outcome.
 ended. Every file in it is work done during the hackathon; `docs/timeline.md` will record when
 each feature landed.
 
+## Project status
+
+- [Timeline](docs/timeline.md)
+- [Existing vs new](docs/existing-vs-new.md)
+- [Day 1 handoff](docs/day1-handoff.md)
+
 ## What was pre-existing
 
 - No code. This repository contains no code from any earlier project.
