@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import time
 from datetime import datetime, timedelta
@@ -15,6 +16,27 @@ from .provider import get_provider
 from .scenario import visible_records
 
 PROMPT_VERSION = "inv-v1"
+
+INVESTIGATION_MAX_TOKENS_VAR = "ARIA_HOME_INVESTIGATION_MAX_TOKENS"
+INVESTIGATION_MAX_TOKENS_DEFAULT = 8000
+INVESTIGATION_MAX_TOKENS_MIN = 256
+INVESTIGATION_MAX_TOKENS_MAX = 32000
+
+
+def investigation_max_tokens(explicit=None):
+    raw = explicit if explicit is not None else os.environ.get(INVESTIGATION_MAX_TOKENS_VAR)
+    if raw is None or (isinstance(raw, str) and not raw.strip()):
+        return INVESTIGATION_MAX_TOKENS_DEFAULT, None
+    try:
+        value = int(raw.strip()) if isinstance(raw, str) else int(raw)
+    except (TypeError, ValueError):
+        value = None
+    if value is None or not (INVESTIGATION_MAX_TOKENS_MIN <= value <= INVESTIGATION_MAX_TOKENS_MAX):
+        return INVESTIGATION_MAX_TOKENS_DEFAULT, (
+            f"config note: invalid {INVESTIGATION_MAX_TOKENS_VAR} value {raw!r}; "
+            f"using default {INVESTIGATION_MAX_TOKENS_DEFAULT}"
+        )
+    return value, None
 
 SYSTEM_PROMPT = """You are the ARIA Home investigation synthesizer (prompt version inv-v1).
 Answer: will the property be ready when the homeowner arrives, and if something looks wrong, who should respond?
@@ -75,6 +97,7 @@ class Investigation(_Strict):
     input_tokens: int | None = None
     output_tokens: int | None = None
     token_usage: dict = Field(default_factory=dict)
+    max_tokens_used: int | None = None
     summary: dict = Field(default_factory=dict)
     evidence_pack: dict = Field(default_factory=dict)
 
@@ -220,38 +243,47 @@ def validate(output, pack) -> list[str]:
             reasons.append("readiness on_track conflicts with negative target gap and non-rising trend")
     return reasons
 
-def investigate(scenario, at, provider=None) -> Investigation:
+def investigate(scenario, at, provider=None, max_tokens=None) -> Investigation:
     pack = build_evidence_pack(scenario, at)
     summary = _deterministic_summary(pack)
+    limit, config_note = investigation_max_tokens(max_tokens)
+    notes = [config_note] if config_note else []
     if provider is None:
         try:
             provider = get_provider()
         except Exception as exc:
-            return Investigation(status="unavailable", reasons=[f"provider error: {exc}"], prompt_version=PROMPT_VERSION, summary=summary, evidence_pack=pack)
+            return Investigation(status="unavailable", reasons=[f"provider error: {exc}", *notes], prompt_version=PROMPT_VERSION, max_tokens_used=limit, summary=summary, evidence_pack=pack)
     provider_mode = getattr(provider, "mode", None)
     model_id = getattr(provider, "model_id", None)
     prompt = SYSTEM_PROMPT + "\nEvidence pack (JSON):\n" + json.dumps(pack)
     started = time.perf_counter()
     try:
-        result = provider.generate(prompt, max_tokens=1500)
+        result = provider.generate(prompt, max_tokens=limit)
     except Exception as exc:
-        return Investigation(status="unavailable", reasons=[f"provider error: {exc}"], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, summary=summary, evidence_pack=pack)
+        return Investigation(status="unavailable", reasons=[f"provider error: {exc}", *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, summary=summary, evidence_pack=pack, max_tokens_used=limit)
     latency_fallback = (time.perf_counter() - started) * 1000.0
     if isinstance(result, dict):
         ok, text, mode, answered, requested = result.get("ok", True), result.get("text"), result.get("mode"), result.get("answered_model"), result.get("requested_model")
         latency, itok, otok, error = result.get("latency_ms", latency_fallback), result.get("input_tokens"), result.get("output_tokens"), result.get("error")
+        stop_reason = result.get("stop_reason")
     else:
         ok, text = getattr(result, "ok", True), getattr(result, "text", None)
         mode, answered, requested = getattr(result, "mode", None), getattr(result, "answered_model", None), getattr(result, "requested_model", None)
         latency, itok, otok, error = getattr(result, "latency_ms", latency_fallback), getattr(result, "input_tokens", None), getattr(result, "output_tokens", None), getattr(result, "error", None)
+        stop_reason = getattr(result, "stop_reason", None)
     provider_mode = mode or provider_mode
     model_id = answered or requested or model_id
     token_usage = {"input_tokens": itok, "output_tokens": otok}
     if not ok or error or text is None:
-        reason = f"provider error: {error}" if error else "provider error: no text returned"
-        return Investigation(status="unavailable", reasons=[reason], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack)
+        if error == "no_text" and stop_reason == "max_tokens":
+            reason = f"provider error: no_text (output limit of {limit} tokens reached before any answer text)"
+        elif error:
+            reason = f"provider error: {error}"
+        else:
+            reason = "provider error: no text returned"
+        return Investigation(status="unavailable", reasons=[reason, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)
     reasons = validate(text, pack)
     if reasons:
-        return Investigation(status="rejected", reasons=reasons, model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack)
+        return Investigation(status="rejected", reasons=[*reasons, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)
     parsed, _ = _parse_output(text)
-    return Investigation(status="ok", output=parsed, reasons=[], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack)
+    return Investigation(status="ok", output=parsed, reasons=notes, model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)

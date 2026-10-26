@@ -56,7 +56,7 @@ def test_valid_output_passes():
     assert result.output is not None
     assert result.provider_mode == "mock"
     assert result.prompt_version == "inv-v1"
-    assert fake.calls[0][2] == 1500
+    assert fake.calls[0][2] == 8000
 
 def test_unknown_evidence_id_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
@@ -143,6 +143,60 @@ def test_mock_investigation_labeled():
     assert result.provider_mode == "mock"
     assert result.output.observations
     assert all(o.text.startswith("[MOCK]") for o in result.output.observations)
+
+class NoTextMaxTokensProvider:
+    mode = "live"
+    model_id = "muse-spark-1.3"
+    def __init__(self):
+        self.calls = []
+    def generate(self, prompt=None, *, messages=None, max_tokens=None):
+        self.calls.append((prompt, messages, max_tokens))
+        from aria_home.provider import ProviderResult
+        return ProviderResult(ok=False, mode="live", requested_model=self.model_id, answered_model=self.model_id, text=None, latency_ms=1.0, input_tokens=10, output_tokens=1500, error="no_text", stop_reason="max_tokens")
+
+def test_investigation_max_tokens_default_and_recorded():
+    scenario = _scenario(); at = _at(scenario)
+    fake = FakeProvider(_valid_json(at))
+    result = investigate(scenario, at, fake)
+    assert fake.calls[0][2] == 8000
+    assert result.max_tokens_used == 8000
+    assert result.status == "ok"
+
+def test_investigation_max_tokens_env_override(monkeypatch):
+    monkeypatch.setenv("ARIA_HOME_INVESTIGATION_MAX_TOKENS", "4000")
+    scenario = _scenario(); at = _at(scenario)
+    fake = FakeProvider(_valid_json(at))
+    result = investigate(scenario, at, fake)
+    assert fake.calls[0][2] == 4000
+    assert result.max_tokens_used == 4000
+    assert result.status == "ok"
+
+def test_investigation_max_tokens_arg_overrides_env(monkeypatch):
+    monkeypatch.setenv("ARIA_HOME_INVESTIGATION_MAX_TOKENS", "4000")
+    scenario = _scenario(); at = _at(scenario)
+    fake = FakeProvider(_valid_json(at))
+    result = investigate(scenario, at, fake, max_tokens=2000)
+    assert fake.calls[0][2] == 2000
+    assert result.max_tokens_used == 2000
+    assert result.status == "ok"
+
+def test_investigation_max_tokens_invalid_falls_back_with_note(monkeypatch):
+    for bad in ("not-a-number", "100", "99999"):
+        monkeypatch.setenv("ARIA_HOME_INVESTIGATION_MAX_TOKENS", bad)
+        scenario = _scenario(); at = _at(scenario)
+        fake = FakeProvider(_valid_json(at))
+        result = investigate(scenario, at, fake)
+        assert fake.calls[0][2] == 8000
+        assert result.max_tokens_used == 8000
+        assert any("config note" in r and "ARIA_HOME_INVESTIGATION_MAX_TOKENS" in r for r in result.reasons)
+
+def test_no_text_max_tokens_explicit_reason():
+    scenario = _scenario(); at = _at(scenario)
+    provider = NoTextMaxTokensProvider()
+    result = investigate(scenario, at, provider)
+    assert result.status == "unavailable"
+    assert result.reasons == [f"provider error: no_text (output limit of {result.max_tokens_used} tokens reached before any answer text)"]
+    assert result.max_tokens_used == 8000
 
 def test_api_investigation_mock_200():
     client = create_app().test_client()
