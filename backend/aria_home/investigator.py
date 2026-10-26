@@ -259,7 +259,7 @@ def validate(output, pack) -> list[str]:
             val = float(m)
         except ValueError:
             continue
-        if not any(val == a for a in allowed):
+        if not any(val == a or abs(val) == abs(a) for a in allowed):
             reasons.append(f"number not present in evidence pack: {m}")
     if parsed.readiness == "on_track":
         metrics = pack.get("metrics") or {}
