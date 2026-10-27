@@ -9,7 +9,7 @@ from pathlib import Path
 from .contracts import SourceKind
 from .investigator import build_evidence_pack, investigate
 from .outcomes import follow_up_for
-from .provider import MockProvider, ProviderConfig, get_provider
+from .provider import BasetenConfig, BasetenProvider, MockProvider, ProviderConfig, get_provider
 from .readiness import STALE_READING_AGE_S
 from .scenario import load_scenario
 from .verification import verify_recovery
@@ -21,6 +21,8 @@ EVAL_DIR = BACKEND_DIR / "eval"
 EXPECTED_PATH = EVAL_DIR / "expected.json"
 RESULTS_PATH = EVAL_DIR / "results-offline.json"
 LIVE_RESULTS_PATH = EVAL_DIR / "results-live.json"
+LIVE_BASETEN_RESULTS_PATH = EVAL_DIR / "results-live-baseten.json"
+BASETEN_RESULTS_PATH = LIVE_BASETEN_RESULTS_PATH
 DOCS_PATH = REPO_DIR / "docs" / "evaluation.md"
 
 CASES = (
@@ -299,16 +301,24 @@ def run_model_cases(provider, cases=None, max_calls=None):
     return records
 
 
-def check_live_allowed(live, max_calls, env=None):
+def check_live_allowed(live, max_calls, env=None, provider=None, provider_name=None):
     source = os.environ if env is None else env
-    enabled = source.get("ARIA_HOME_MODEL_ENABLED") == "1"
+    get = source.get if hasattr(source, "get") else lambda k, d=None: getattr(source, k, d)
+    chosen = provider_name or provider or "meta"
+    chosen = str(chosen).lower()
     missing = []
     if not live:
         missing.append("--live")
     if not isinstance(max_calls, int) or isinstance(max_calls, bool) or max_calls < 1:
         missing.append("--max-calls N (positive integer)")
-    if not enabled:
-        missing.append("ARIA_HOME_MODEL_ENABLED=1")
+    if chosen == "baseten":
+        if get("ARIA_HOME_BASETEN_ENABLED") != "1":
+            missing.append("ARIA_HOME_BASETEN_ENABLED=1")
+    elif chosen in ("meta", "meta-provider", "meta_provider"):
+        if get("ARIA_HOME_MODEL_ENABLED") != "1":
+            missing.append("ARIA_HOME_MODEL_ENABLED=1")
+    else:
+        missing.append("--provider meta|baseten")
     if missing:
         raise RuntimeError("live evaluation refused; missing: " + ", ".join(missing))
     return True
@@ -401,6 +411,7 @@ def main(argv=None, env=None):
     group.add_argument("--live", action="store_true", help="run the model condition on live models (requires --max-calls and ARIA_HOME_MODEL_ENABLED=1)")
     group.add_argument("--mock-model", action="store_true", help="run the model condition with the mock provider (no network)")
     parser.add_argument("--max-calls", type=int, default=None)
+    parser.add_argument("--provider", choices=["meta", "baseten"], default="meta")
     parser.add_argument("--results", default=None, help="output JSON path (offline mode)")
     parser.add_argument("--docs", default=None, help="output markdown path (offline mode)")
     args = parser.parse_args(argv)
@@ -425,10 +436,20 @@ def main(argv=None, env=None):
         return 0
 
     try:
-        check_live_allowed(args.live, args.max_calls, env=source_env)
+        check_live_allowed(args.live, args.max_calls, env=source_env, provider=args.provider)
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(2) from exc
+    if args.provider == "baseten":
+        baseten_config = BasetenConfig.from_env(source_env)
+        provider = BasetenProvider(baseten_config)
+        if getattr(provider, "mode", None) != "live":
+            print("live evaluation refused; provider is not live (check ARIA_HOME_BASETEN_ENABLED and BASETEN_API_KEY)", file=sys.stderr)
+            raise SystemExit(2)
+        records = run_model_cases(provider, max_calls=args.max_calls)
+        LIVE_BASETEN_RESULTS_PATH.write_text(json.dumps({"mode": "live", "provider": "baseten", "model_id": baseten_config.model_id, "records": records}, indent=2) + "\n", encoding="utf-8")
+        print(f"live model cases: {len(records)}; wrote {LIVE_BASETEN_RESULTS_PATH}")
+        return 0
     config = ProviderConfig.from_env(source_env)
     provider = get_provider(config)
     if getattr(provider, "mode", None) != "live":

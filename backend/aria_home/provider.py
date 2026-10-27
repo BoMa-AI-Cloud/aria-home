@@ -473,6 +473,339 @@ class MetaProvider:
 
 LiveProvider = MetaProvider
 
+BASETEN_BASE_URL = "https://inference.baseten.co/v1"
+BASETEN_DEFAULT_MODEL_ID = "meta-models/muse-spark-open-1026"
+DEFAULT_BASETEN_MODEL_ID = BASETEN_DEFAULT_MODEL_ID
+BASETEN_MODEL_ID = BASETEN_DEFAULT_MODEL_ID
+BASETEN_ALLOWED_MODEL_IDS = frozenset({BASETEN_DEFAULT_MODEL_ID})
+ALLOWED_BASETEN_MODEL_IDS = BASETEN_ALLOWED_MODEL_IDS
+
+
+def _validate_baseten_model_id(model_id):
+    if model_id is not None and model_id not in BASETEN_ALLOWED_MODEL_IDS:
+        raise ValueError(
+            f"disallowed Baseten model id: {model_id!r}; "
+            f"allowed model ids: {sorted(BASETEN_ALLOWED_MODEL_IDS)}"
+        )
+    return model_id
+
+
+@dataclass(frozen=True)
+class BasetenConfig:
+    base_url: str | None = BASETEN_BASE_URL
+    provider_url: str | None = None
+    model_id: str | None = BASETEN_DEFAULT_MODEL_ID
+    api_key: str | None = field(default=None, repr=False)
+    enabled: bool = False
+    timeout_s: float = DEFAULT_TIMEOUT_S
+    max_tokens: int = DEFAULT_MAX_TOKENS
+
+    def __post_init__(self):
+        _validate_baseten_model_id(self.model_id)
+        if self.provider_url and not self.base_url:
+            object.__setattr__(self, "base_url", self.provider_url)
+        elif self.provider_url:
+            object.__setattr__(self, "base_url", self.provider_url)
+        if self.base_url:
+            object.__setattr__(self, "provider_url", self.base_url)
+
+    @property
+    def model(self):
+        return self.model_id
+
+    @property
+    def timeout(self):
+        return self.timeout_s
+
+    @property
+    def max_output_tokens(self):
+        return self.max_tokens
+
+    @property
+    def configured(self):
+        return bool(self.base_url and self.model_id and self.api_key)
+
+    def is_configured(self):
+        return self.configured
+
+    def missing_settings(self):
+        missing = []
+        if not self.model_id:
+            missing.append("ARIA_HOME_BASETEN_MODEL_ID")
+        if not self.api_key:
+            missing.append("BASETEN_API_KEY")
+        if not self.enabled:
+            missing.append("ARIA_HOME_BASETEN_ENABLED")
+        return missing
+
+    @classmethod
+    def from_env(cls, env=None):
+        source = os.environ if env is None else env
+        if isinstance(source, cls):
+            return source
+        get = source.get if hasattr(source, "get") else lambda k, d=None: getattr(source, k, d)
+        if not hasattr(source, "get") and not isinstance(source, dict):
+            return cls(
+                base_url=getattr(source, "base_url", None) or getattr(source, "provider_url", None) or BASETEN_BASE_URL,
+                model_id=getattr(source, "model_id", None) or getattr(source, "model", None) or BASETEN_DEFAULT_MODEL_ID,
+                api_key=getattr(source, "api_key", None),
+                enabled=getattr(source, "enabled", False) in (True, "1", 1),
+                timeout_s=float(getattr(source, "timeout_s", None) or getattr(source, "timeout", None) or DEFAULT_TIMEOUT_S),
+                max_tokens=int(getattr(source, "max_tokens", None) or getattr(source, "max_output_tokens", None) or DEFAULT_MAX_TOKENS),
+            )
+        base_url = get("ARIA_HOME_BASETEN_BASE_URL") or get("base_url") or get("provider_url") or BASETEN_BASE_URL
+        model_id = get("ARIA_HOME_BASETEN_MODEL_ID") or get("model_id") or get("model") or BASETEN_DEFAULT_MODEL_ID
+        api_key = get("BASETEN_API_KEY") or get("api_key")
+        raw_enabled = get("ARIA_HOME_BASETEN_ENABLED", get("enabled", False))
+        enabled = raw_enabled == "1" or raw_enabled is True or raw_enabled == 1
+        timeout_raw = get("timeout_s") or get("timeout") or DEFAULT_TIMEOUT_S
+        max_raw = get("max_tokens") or get("max_output_tokens") or get("maxTokens") or DEFAULT_MAX_TOKENS
+        if isinstance(base_url, str):
+            base_url = base_url.strip() or BASETEN_BASE_URL
+        if isinstance(model_id, str):
+            model_id = model_id.strip() or None
+        if isinstance(api_key, str):
+            api_key = api_key.strip() or None
+        return cls(
+            base_url=base_url,
+            model_id=model_id,
+            api_key=api_key,
+            enabled=enabled,
+            timeout_s=float(timeout_raw),
+            max_tokens=int(max_raw),
+        )
+
+
+BasetenProviderConfig = BasetenConfig
+
+
+def _coerce_baseten_config(config=None, env=None):
+    if isinstance(config, BasetenConfig):
+        return config
+    if config is None:
+        return BasetenConfig.from_env(env)
+    if isinstance(config, dict):
+        has_env_keys = any(
+            k in config
+            for k in ("BASETEN_API_KEY", "ARIA_HOME_BASETEN_MODEL_ID", "ARIA_HOME_BASETEN_ENABLED", "ARIA_HOME_BASETEN_BASE_URL")
+        )
+        if has_env_keys:
+            return BasetenConfig.from_env(config)
+        return BasetenConfig(
+            base_url=config.get("base_url") or config.get("provider_url") or config.get("url") or BASETEN_BASE_URL,
+            model_id=config.get("model_id") or config.get("model") or config.get("requested_model") or BASETEN_DEFAULT_MODEL_ID,
+            api_key=config.get("api_key"),
+            enabled=config.get("enabled", False) in (True, "1", 1),
+            timeout_s=float(config.get("timeout_s") or config.get("timeout") or DEFAULT_TIMEOUT_S),
+            max_tokens=int(config.get("max_tokens") or config.get("max_output_tokens") or DEFAULT_MAX_TOKENS),
+        )
+    return BasetenConfig.from_env(config)
+
+
+def build_baseten_request(config, messages):
+    base = (config.base_url or config.provider_url or BASETEN_BASE_URL).rstrip("/")
+    return {
+        "url": f"{base}/chat/completions",
+        "headers": {
+            "Authorization": f"Bearer {config.api_key}",
+            "Content-Type": "application/json",
+        },
+        "json": {
+            "model": config.model_id,
+            "max_tokens": config.max_tokens,
+            "messages": messages,
+        },
+    }
+
+
+class BasetenProvider:
+    mode = "live"
+
+    def __init__(self, config=None, transport=None, *, timeout=None, timeout_s=None, max_tokens=None, max_output_tokens=None, env=None, api_key=None, model_id=None, enabled=None, base_url=None):
+        self.config = _coerce_baseten_config(config, env=env)
+        overrides = {}
+        if api_key is not None:
+            overrides["api_key"] = api_key
+        if model_id is not None:
+            overrides["model_id"] = model_id
+        if enabled is not None:
+            overrides["enabled"] = enabled in (True, "1", 1)
+        if base_url is not None:
+            overrides["base_url"] = base_url
+        if overrides:
+            from dataclasses import replace as _replace
+
+            self.config = _replace(self.config, **overrides)
+        _validate_baseten_model_id(self.config.model_id)
+        self.transport = transport
+        resolved_timeout = timeout if timeout is not None else timeout_s
+        self.timeout_s = float(resolved_timeout) if resolved_timeout is not None else float(self.config.timeout_s)
+        resolved_max = max_tokens if max_tokens is not None else max_output_tokens
+        self.max_tokens = int(resolved_max) if resolved_max is not None else int(self.config.max_tokens)
+        if resolved_max is not None:
+            object.__setattr__(self.config, "max_tokens", self.max_tokens)
+
+    @property
+    def model_id(self):
+        return self.config.model_id
+
+    @property
+    def requested_model(self):
+        return self.config.model_id
+
+    def generate(self, prompt=None, *, messages=None, max_tokens=None):
+        start = time.perf_counter()
+
+        def elapsed():
+            return (time.perf_counter() - start) * 1000.0
+
+        def fail(category, answered_model=None, content_block_types=None, stop_reason=None, input_tokens=None, output_tokens=None):
+            return ProviderResult(
+                ok=False,
+                mode="live",
+                requested_model=self.config.model_id,
+                answered_model=answered_model,
+                text=None,
+                latency_ms=elapsed(),
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                error=category,
+                content_block_types=content_block_types,
+                stop_reason=stop_reason,
+            )
+
+        if not self.config.enabled:
+            return fail("disabled")
+        if not self.config.api_key:
+            return fail("not_configured")
+        if not self.config.model_id:
+            return fail("not_configured")
+        _validate_baseten_model_id(self.config.model_id)
+
+        effective_max = int(max_tokens) if max_tokens is not None else int(self.max_tokens)
+        from dataclasses import replace as _replace
+
+        effective_config = _replace(self.config, max_tokens=effective_max)
+        request = build_baseten_request(effective_config, _normalize_messages(prompt, messages))
+        try:
+            with httpx.Client(transport=self.transport, timeout=self.timeout_s) as client:
+                response = client.post(request["url"], headers=request["headers"], json=request["json"])
+        except httpx.TimeoutException:
+            return fail("timeout")
+        except httpx.HTTPError:
+            return fail("server_error")
+
+        status = response.status_code
+        if status in (401, 403):
+            return fail("auth")
+        if status == 429:
+            return fail("rate_limited")
+        if 500 <= status <= 599:
+            return fail("server_error")
+        if not 200 <= status <= 299:
+            return fail("bad_response")
+
+        try:
+            body = response.json()
+        except ValueError:
+            return fail("bad_response")
+        if not isinstance(body, dict):
+            return fail("bad_response")
+
+        def usage_tokens():
+            usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
+            raw_in = usage.get("prompt_tokens", usage.get("input_tokens"))
+            raw_out = usage.get("completion_tokens", usage.get("output_tokens"))
+            return (
+                raw_in if isinstance(raw_in, int) else None,
+                raw_out if isinstance(raw_out, int) else None,
+            )
+
+        answered_model = body.get("model")
+        if not isinstance(answered_model, str) or not answered_model:
+            return fail("bad_response")
+        choices = body.get("choices")
+        if not isinstance(choices, list) or len(choices) == 0:
+            input_tokens, output_tokens = usage_tokens()
+            return fail("bad_response", answered_model=answered_model, input_tokens=input_tokens, output_tokens=output_tokens)
+        choice = choices[0] if isinstance(choices[0], dict) else {}
+        raw_finish = choice.get("finish_reason") or choice.get("stop_reason")
+        stop_reason = raw_finish if isinstance(raw_finish, str) else None
+        if answered_model != self.config.model_id:
+            input_tokens, output_tokens = usage_tokens()
+            return fail("model_mismatch", answered_model=answered_model, stop_reason=stop_reason, input_tokens=input_tokens, output_tokens=output_tokens)
+
+        message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+        reasoning = None
+        for key in ("reasoning_content", "reasoning", "reasoning_text"):
+            if isinstance(message.get(key), str) and message.get(key):
+                reasoning = message[key]
+                break
+        if reasoning is None and isinstance(choice.get("reasoning_content"), str):
+            reasoning = choice["reasoning_content"]
+        if reasoning is None and isinstance(choice.get("reasoning"), str):
+            reasoning = choice["reasoning"]
+
+        content = message.get("content")
+        text = None
+        block_types = []
+        if reasoning:
+            block_types.append("reasoning")
+        if isinstance(content, str):
+            text = content
+            if content.strip():
+                block_types.append("text")
+        elif isinstance(content, list):
+            parts = []
+            for block in content:
+                if isinstance(block, str):
+                    parts.append(block)
+                elif isinstance(block, dict):
+                    btype = block.get("type")
+                    if btype in ("reasoning", "thinking", "reasoning_content"):
+                        if "reasoning" not in block_types:
+                            block_types.append("reasoning")
+                        continue
+                    if isinstance(block.get("text"), str):
+                        parts.append(block["text"])
+                    elif isinstance(block.get("content"), str) and btype in ("text", "output_text", None):
+                        parts.append(block["content"])
+            text = "".join(parts) if parts else None
+            if text and text.strip():
+                block_types.append("text")
+        elif isinstance(choice.get("text"), str):
+            text = choice["text"]
+            if text.strip():
+                block_types.append("text")
+
+        input_tokens, output_tokens = usage_tokens()
+        if text is None or not text.strip():
+            return fail(
+                "no_text",
+                answered_model=answered_model,
+                content_block_types=block_types or None,
+                stop_reason=stop_reason,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
+        return ProviderResult(
+            ok=True,
+            mode="live",
+            requested_model=self.config.model_id,
+            answered_model=answered_model,
+            text=text,
+            latency_ms=elapsed(),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error=None,
+            content_block_types=block_types or None,
+            stop_reason=stop_reason,
+        )
+
+    complete = generate
+    chat = generate
+    __call__ = generate
+
 
 def get_provider(env=None):
     config = _coerce_config(env) if not isinstance(env, ProviderConfig) else env

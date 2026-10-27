@@ -20,6 +20,7 @@ In short:
 ## How Meta models are used
 
 At runtime the app calls one Meta model, **muse-spark-1.3**, through the Meta Model API, behind a gated live provider. Mock mode is the default and needs no key. Every model the app calls at runtime is a Meta model.
+The evaluation can also run Muse Spark Open (meta-models/muse-spark-open-1026, a Meta open-weight model) through Baseten's hosted API, evaluation only.
 
 The investigation uses the **inv-v2** contract, which binds the model's claims to the evidence. The model returns structured `facts[]`; each claim type may cite only its allowed evidence fields, values are checked against the evidence pack, and the facts shown as "Verified facts (checked against the evidence)" are rendered by code, not by the model. The model's own wording stays separate under "Interpretation (model-written, not verified)".
 
