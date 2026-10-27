@@ -98,7 +98,11 @@ def supportable_claims(pack, verification_stage, at):
     fresh = False
     if trend.get("last_value") is not None and isinstance(last_at, str):
         age_s = (at - _parse(last_at)).total_seconds()
-        fresh = 0 <= age_s <= STALE_READING_AGE_S
+        fresh = trend.get("fresh", trend.get("is_fresh"))
+        if fresh is None:
+            fresh = 0 <= age_s <= STALE_READING_AGE_S
+        else:
+            fresh = bool(fresh) and age_s >= 0
     change = trend.get("change")
     return {
         "current_temperature": bool(fresh),

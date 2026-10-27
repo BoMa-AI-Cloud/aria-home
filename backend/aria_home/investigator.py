@@ -1,20 +1,22 @@
+import hashlib
 import json
 import math
 import os
 import re
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from .clock import ensure_aware
 from .contracts import SourceKind
+from .eligibility import circuit_records, eligible_records, indoor_records, is_current_record, is_fresh, latest_eligible
 from .evidence import source_status
 from .metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
 from .power_context import BANNED_PHRASES, power_context
 from .provider import get_provider
-from .readiness import compute_readiness
+from .readiness import READINESS_POLICY_VERSION, compute_readiness
 from .scheduling import MAX_FOLLOW_UP_DELAY, MIN_FOLLOW_UP_DELAY, compute_follow_up_schedule, compute_next_check_at, validate_follow_up_time
 from .scenario import context_as_of, visible_records
 
@@ -160,14 +162,16 @@ def _round_2sig(value):
     if value == 0:
         return 0.0
     decimals = 1 - math.floor(math.log10(abs(value)))
-    return round(value, max(decimals, 0))
+    result = round(value, max(decimals, 0))
+    return 0.0 if result == 0 else result
 
 
 def _round_float(value, key):
     if key and ("rate" in key.lower() or "coverage" in key.lower()):
         if value != 0 and round(value, 1) == 0.0:
             return _round_2sig(value)
-    return round(value, 1)
+    result = round(value, 1)
+    return 0.0 if result == 0 else result
 
 
 def _round_pack(value, key=None):
@@ -190,20 +194,20 @@ def build_evidence_pack(scenario, at) -> dict:
     visible = visible_records(scenario.records, at)
     mode = scenario.manifest.mode
     statuses = [source_status(s, visible, at, mode=mode) for s in SourceKind]
-    zones = sorted({r.subject for r in visible if r.quantity == "indoor_temp"})
+    zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
     zone = zones[0] if zones else "demo-cabin/main"
     trend = temperature_trend(visible, zone, start, at, at) if zones else temperature_trend([], zone, start, at, at)
     ctx = context_as_of(scenario, at)
     gap = None
     if ctx.confirmation is not None:
         gap = target_gap(trend, ctx.confirmation.target_temp, ctx.confirmation.target_unit)
-    circuit_ids = sorted({(r.binding.circuit_id if r.binding else None) or r.subject for r in visible if r.quantity == "circuit_power"})
+    circuit_ids = sorted({(r.binding.circuit_id if r.binding else None) or r.subject for r in eligible_records(visible, "circuit_power", now=at, require_value=False)})
     circuits = {cid: circuit_activity(visible, cid, start, at, at) for cid in circuit_ids}
     pc = power_context(visible, start, at, NOISE_FLOOR_W)
     trend_j, gap_j, circuits_j, pc_j = _jsonable(trend), _jsonable(gap), _jsonable(circuits), _jsonable(pc)
     evidence = []
     for r in visible:
-        evidence.append({"id": r.id, "source": r.source.value, "kind": r.kind.value, "subject": r.subject, "quantity": r.quantity, "value": r.value, "unit": r.unit, "observed_at": r.observed_at.isoformat(), "received_at": r.received_at.isoformat()})
+        evidence.append({"id": r.id, "source": r.source.value, "kind": r.kind.value, "subject": r.subject, "quantity": r.quantity, "value": r.value, "unit": r.unit, "observed_at": r.observed_at.isoformat(), "received_at": r.received_at.isoformat(), "expected_cadence_s": r.expected_cadence_s, "provenance": r.provenance.model_dump(mode="json"), "binding": r.binding.model_dump(mode="json") if r.binding else None, "meter_id": r.meter_id})
     for s in statuses:
         evidence.append({"id": f"source:{s.source.value}", "type": "source_status", "data": _jsonable(s)})
     evidence.append({"id": "metric:indoor_trend", "type": "metric", "name": "indoor_trend", "data": trend_j})
@@ -226,13 +230,86 @@ def build_evidence_pack(scenario, at) -> dict:
     pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence]}
     readiness = compute_readiness(pack, at, flags=dict(ctx.flags))
     pack["readiness"] = dict(readiness)
+    pack["canonical_readiness"] = dict(readiness)
     pack["computed_readiness"] = readiness["status"]
-    return _round_pack(pack)
+    pack["readiness_policy_version"] = READINESS_POLICY_VERSION
+    rounded = _round_pack(pack)
+    rounded["canonical_readiness"] = dict(readiness)
+    rounded["computed_readiness"] = readiness["status"]
+    rounded["readiness_policy_version"] = READINESS_POLICY_VERSION
+    if isinstance(rounded.get("readiness"), dict):
+        rounded["readiness"]["status"] = readiness["status"]
+        rounded["readiness"]["policy_version"] = READINESS_POLICY_VERSION
+    return rounded
+
+def _canonical_json(value):
+    return json.dumps(_canonicalize(value), sort_keys=True, separators=(",", ":"), default=str)
+
+
+def _canonicalize(value):
+    if isinstance(value, dict):
+        return {k: _canonicalize(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_canonicalize(v) for v in value]
+    if isinstance(value, datetime):
+        return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    if isinstance(value, str):
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+        if parsed.tzinfo is not None and parsed.utcoffset() is not None:
+            return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return value
+
+
+def inference_identity(scenario, at, pack=None):
+    if pack is None:
+        pack = build_evidence_pack(scenario, at)
+    evaluated_at_utc = at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    input_material = {
+        "evidence": pack.get("evidence"),
+        "trip": pack.get("trip"),
+        "confirmation": pack.get("confirmation"),
+        "flags": pack.get("readiness_flags"),
+        "source_statuses": pack.get("source_statuses"),
+        "metrics": pack.get("metrics"),
+    }
+    input_revision = hashlib.sha256(_canonical_json(input_material).encode()).hexdigest()
+    identity = {
+        "scenario_id": scenario.manifest.id,
+        "scenario_fixture_version": scenario.manifest.version,
+        "evaluated_at_utc": evaluated_at_utc,
+        "input_revision": input_revision,
+        "prompt_version": PROMPT_VERSION,
+        "readiness_policy_version": pack.get("readiness_policy_version") or READINESS_POLICY_VERSION,
+    }
+    identity_key = hashlib.sha256(_canonical_json(identity).encode()).hexdigest()
+    return {
+        **identity,
+        "identity_key": identity_key,
+        "investigation_id": f"inv-{identity_key[:12]}",
+    }
+
+
+def _stored_readiness(pack):
+    if not isinstance(pack, dict):
+        return None, None
+    for key in ("canonical_readiness", "readiness"):
+        item = pack.get(key)
+        if isinstance(item, dict) and isinstance(item.get("status"), str) and item.get("status"):
+            return item["status"], item.get("policy_version") or pack.get("readiness_policy_version")
+    status = pack.get("computed_readiness")
+    if isinstance(status, str) and status:
+        return status, pack.get("readiness_policy_version")
+    return None, pack.get("readiness_policy_version")
+
 
 def _deterministic_summary(pack):
     pc = pack.get("power_context") or {}
-    readiness = pack.get("readiness") or compute_readiness(pack, pack.get("at"))
-    return {"source_statuses": pack.get("source_statuses", []), "metrics": pack.get("metrics", {}), "power_context": pc, "power_context_statement": pc.get("statement"), "continuity": pc.get("continuity"), "readiness": readiness, "computed_readiness": readiness.get("status") if isinstance(readiness, dict) else None}
+    readiness, _ = _stored_readiness(pack)
+    stored = pack.get("canonical_readiness") or pack.get("readiness") or ({"status": readiness} if readiness else {})
+    return {"source_statuses": pack.get("source_statuses", []), "metrics": pack.get("metrics", {}), "power_context": pc, "power_context_statement": pc.get("statement"), "continuity": pc.get("continuity"), "readiness": stored, "computed_readiness": readiness}
 
 _NUMBER_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
@@ -337,7 +414,53 @@ def _fact_binding(fact, item):
             return item.get("value"), item.get("unit"), item.get("observed_at")
     return None
 
-def _resolve_fact(fact, by_id):
+def _current_claim_reason(fact, item, pack):
+    if not isinstance(pack, dict):
+        return None
+    now = _parse_time(pack.get("at"))
+    if now is None:
+        return None
+    claim = fact.claim_type
+    if claim not in {"current_temperature", "target_gap", "electrical_activity", "equipment_function"}:
+        return None
+    is_record = "data" not in item
+    records = [e for e in pack.get("evidence", []) if isinstance(e, dict) and "data" not in e]
+    metrics = pack.get("metrics") if isinstance(pack.get("metrics"), dict) else {}
+    zone = metrics.get("zone")
+    if is_record:
+        quantity = "indoor_temp" if claim == "current_temperature" else "circuit_power" if claim in {"electrical_activity", "equipment_function"} else None
+        if quantity is None:
+            return None
+        ok, reason = is_current_record(item, records, quantity, now, zone=zone if quantity == "indoor_temp" else None)
+        if not ok:
+            return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: {reason}"
+        return None
+    data = _item_data(item)
+    last_at = _parse_time(data.get("last_observed_at"))
+    if last_at is None:
+        return None
+    pseudo = {"value": data.get("last_value", data.get("latest_value", data.get("max_w", 1))), "observed_at": last_at, "expected_cadence_s": data.get("expected_cadence_s")}
+    if data.get("fresh") is False or data.get("is_fresh") is False or not is_fresh(pseudo, now):
+        return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: stale reading is not eligible as a current claim (historical only)"
+    if claim in {"current_temperature", "target_gap"}:
+        latest = latest_eligible(records, "indoor_temp", now=now, zone=zone)
+        if latest is not None:
+            latest_at = _parse_time(latest.get("observed_at") if isinstance(latest, dict) else getattr(latest, "observed_at", None))
+            if latest_at is not None and last_at < latest_at:
+                return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: superseded reading is not eligible as a current claim; only the latest eligible fresh reading is current (older readings are historical only)"
+    if claim in {"electrical_activity", "equipment_function"}:
+        circuit_id = item.get("circuit_id") or (fact.evidence_id.split("metric:circuit_activity:", 1)[1] if fact.evidence_id.startswith("metric:circuit_activity:") else None)
+        if circuit_id:
+            pool = circuit_records(records, circuit_id, now=now)
+            if pool:
+                latest = pool[-1]
+                latest_at = _parse_time(latest.get("observed_at") if isinstance(latest, dict) else getattr(latest, "observed_at", None))
+                if latest_at is not None and last_at < latest_at:
+                    return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: superseded reading is not eligible as a current claim; only the latest eligible fresh reading is current (older readings are historical only)"
+    return None
+
+
+def _resolve_fact(fact, by_id, pack=None):
     item = by_id.get(fact.evidence_id)
     if item is None:
         return f"unknown evidence id: {fact.evidence_id}", None
@@ -347,6 +470,9 @@ def _resolve_fact(fact, by_id):
     expected, expected_unit, expected_at = binding
     if expected is None:
         return f"fact {fact.claim_type} field {fact.field!r} has no value in evidence {fact.evidence_id}", None
+    current_reason = _current_claim_reason(fact, item, pack)
+    if current_reason:
+        return current_reason, None
     resolved = {"claim_type": fact.claim_type, "evidence_id": fact.evidence_id, "field": fact.field, "value": fact.value, "unit": fact.unit, "at": expected_at}
     if fact.claim_type == "equipment_function":
         if fact.value not in EQUIPMENT_FUNCTION_VALUES:
@@ -395,7 +521,7 @@ def _resolve_facts(parsed, pack):
     if not parsed.facts:
         reasons.append("facts must not be empty")
     for fact in parsed.facts:
-        reason, item = _resolve_fact(fact, by_id)
+        reason, item = _resolve_fact(fact, by_id, pack)
         if reason:
             reasons.append(reason)
         elif item is not None:
@@ -496,9 +622,14 @@ def validate(output, pack) -> list[str]:
         _check_direction(hyp.text, resolved, reasons)
     for text in [*parsed.unknowns, parsed.clarification, parsed.follow_up.observation, *parsed.limitations]:
         _check_numbers(text, resolved, None, reasons)
-    computed = compute_readiness(pack, pack.get("at"))
-    if parsed.readiness != computed["status"]:
-        reasons.append(f"readiness {parsed.readiness} does not match computed readiness {computed['status']}")
+    stored_readiness, stored_policy_version = _stored_readiness(pack)
+    if stored_readiness is None:
+        reasons.append("computed readiness is unavailable in evidence pack; validation does not recompute readiness from display values")
+    else:
+        if stored_policy_version is not None and stored_policy_version != READINESS_POLICY_VERSION:
+            reasons.append(f"readiness policy version {stored_policy_version} does not match current readiness policy version {READINESS_POLICY_VERSION}")
+        if parsed.readiness != stored_readiness:
+            reasons.append(f"readiness {parsed.readiness} does not match computed readiness {stored_readiness}")
     reasons.extend(_follow_up_timing_reasons(parsed, pack))
     return reasons
 
@@ -535,7 +666,7 @@ def investigate(scenario, at, provider=None, max_tokens=None) -> Investigation:
             return Investigation(status="unavailable", reasons=[f"provider error: {exc}", *notes], prompt_version=PROMPT_VERSION, max_tokens_used=limit, summary=summary, evidence_pack=pack)
     provider_mode = getattr(provider, "mode", None)
     model_id = getattr(provider, "model_id", None)
-    readiness = pack.get("readiness") or dict(compute_readiness(pack, at))
+    readiness = pack.get("canonical_readiness") or pack.get("readiness") or {}
     prompt = SYSTEM_PROMPT + f"\nComputed readiness (code-decided, you must explain exactly this status): {readiness.get('status')}\nComputed readiness reasons: {json.dumps(readiness.get('reasons', []))}\nEvidence pack (JSON):\n" + json.dumps(pack)
     started = time.perf_counter()
     try:

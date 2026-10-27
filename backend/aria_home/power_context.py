@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .clock import ensure_aware
 from .contracts import Availability, BindingStatus, EvidenceKind, EvidenceRecord
+from .eligibility import is_measurement_eligible
 from .evidence import freshness
 from .metrics import NOISE_FLOOR_W, _cadence_coverage, _largest_gap_s
 
@@ -197,7 +198,7 @@ def power_context(records, window_start, now, noise_floor_w=NOISE_FLOOR_W, backu
         seen.add(record.id)
         deduped.append(record)
 
-    circuit_records = [r for r in deduped if r.quantity == "circuit_power"]
+    circuit_records = [r for r in deduped if r.quantity == "circuit_power" and is_measurement_eligible(r, require_value=False)]
     by_circuit: dict[str, list[EvidenceRecord]] = {}
     for record in circuit_records:
         by_circuit.setdefault(_circuit_id(record), []).append(record)

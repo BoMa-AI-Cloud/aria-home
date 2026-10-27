@@ -19,6 +19,9 @@ def test_health_returns_ok():
         "status": "ok",
         "service": "aria-home-backend",
         "data_mode": "synthetic",
+        "scenario": "demo_v1",
+        "at": "2026-01-16T18:00:00-05:00",
+        "timezone": "America/New_York",
     }
 
 

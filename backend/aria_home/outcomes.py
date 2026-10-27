@@ -4,6 +4,7 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .contracts import EvidenceKind
+from .eligibility import indoor_records
 from .scheduling import compute_follow_up_schedule, validate_follow_up_time
 
 __all__ = ["OutcomeStatus", "FollowUp", "OutcomeResult", "follow_up_for", "evaluate_outcome", "compute_follow_up_schedule", "validate_follow_up_time"]
@@ -152,13 +153,8 @@ def evaluate_outcome(followup: FollowUp, records, now: datetime) -> OutcomeResul
     _require_aware(now)
     candidates = [
         r
-        for r in records
-        if r.quantity == "indoor_temp"
-        and r.subject == followup.zone
-        and r.value is not None
-        and getattr(r, "kind", EvidenceKind.measurement) == EvidenceKind.measurement
-        and r.received_at <= now
-        and r.observed_at > followup.created_at
+        for r in indoor_records(records, followup.zone, now=now)
+        if r.observed_at > followup.created_at
     ]
     candidates.sort(key=lambda r: (r.observed_at, r.received_at, r.id))
     has_after_deadline = any(r.observed_at > followup.deadline for r in candidates)

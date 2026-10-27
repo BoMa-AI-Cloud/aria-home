@@ -6,5 +6,6 @@
   "author": "ARIA Home (synthetic)",
   "created": "2026-10-26",
   "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created. Trip known_at/revision_id availability timestamps were added on 2026-10-26 (synthetic); existing reading timestamps were not changed.",
-  "start": "2026-01-16T15:00:00-05:00"
+  "start": "2026-01-16T15:00:00-05:00",
+  "timezone": "America/New_York"
 }

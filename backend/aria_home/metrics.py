@@ -5,6 +5,7 @@ from datetime import datetime
 
 from .clock import ensure_aware
 from .contracts import EvidenceRecord, SourceKind
+from .eligibility import circuit_records, indoor_records, is_fresh
 
 # Configured power threshold separating idle draw from real load. Set by
 # configuration, not tuned on observed data.
@@ -60,26 +61,18 @@ def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime,
     ensure_aware(start, "start")
     ensure_aware(end, "end")
     ensure_aware(now, "now")
-    room_candidates = [r for r in records if r.source == SourceKind.room_sensor and r.quantity == "indoor_temp" and r.subject == zone]
-    candidates = room_candidates or [r for r in records if r.source == SourceKind.thermostat and r.quantity == "indoor_temp" and r.subject == zone]
-    seen: set[str] = set()
-    deduped: list[EvidenceRecord] = []
-    for record in candidates:
-        if record.id in seen:
-            continue
-        seen.add(record.id)
-        deduped.append(record)
+    deduped = indoor_records(records, zone, now=now, require_value=False)
     missing_count = 0
     samples: list[tuple[datetime, float, str | None, int | None]] = []
+    sample_records: list[EvidenceRecord] = []
     for record in deduped:
-        if record.received_at > now:
-            continue
         if record.observed_at < start or record.observed_at > end:
             continue
         if record.value is None or not _is_number(record.value):
             missing_count += 1
             continue
         samples.append((record.observed_at, float(record.value), record.unit, record.expected_cadence_s))
+        sample_records.append(record)
     if not samples:
         return {
             "zone": zone,
@@ -98,6 +91,11 @@ def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime,
             "unit": "F",
             "unit_converted": False,
             "sufficient": False,
+            "source": deduped[-1].source.value if deduped else None,
+            "expected_cadence_s": deduped[-1].expected_cadence_s if deduped else None,
+            "last_id": None,
+            "fresh": False,
+            "is_fresh": False,
         }
     units = {unit for _, _, unit, _ in samples}
     if len(units) == 1:
@@ -143,6 +141,13 @@ def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime,
         "unit": out_unit,
         "unit_converted": converted,
         "sufficient": sufficient,
+        "source": sample_records[-1].source.value if sample_records else None,
+        "expected_cadence_s": cadence_s,
+        "last_id": sample_records[-1].id if sample_records else None,
+        "last_received_at": sample_records[-1].received_at if sample_records else None,
+        "provenance": sample_records[-1].provenance.model_dump(mode="json") if sample_records else None,
+        "fresh": is_fresh(sample_records[-1], now) if sample_records else False,
+        "is_fresh": is_fresh(sample_records[-1], now) if sample_records else False,
     }
 
 
@@ -158,6 +163,11 @@ def target_gap(trend: dict, target_temp: float, target_unit: str) -> dict | None
         "latest_observed_at": trend["last_observed_at"],
         "target_temp": float(target_temp),
         "target_unit": target_unit,
+        "source": trend.get("source"),
+        "expected_cadence_s": trend.get("expected_cadence_s"),
+        "last_id": trend.get("last_id"),
+        "fresh": trend.get("fresh", trend.get("is_fresh")),
+        "is_fresh": trend.get("is_fresh", trend.get("fresh")),
     }
 
 
@@ -172,27 +182,17 @@ def circuit_activity(
     ensure_aware(start, "start")
     ensure_aware(end, "end")
     ensure_aware(now, "now")
-    candidates = [
-        r
-        for r in records
-        if r.quantity == "circuit_power"
-        and ((r.binding.circuit_id if r.binding else None) == circuit_id or r.subject == circuit_id)
-    ]
-    seen: set[str] = set()
-    deduped: list[EvidenceRecord] = []
-    for record in candidates:
-        if record.id in seen:
-            continue
-        seen.add(record.id)
-        deduped.append(record)
-    in_window = [r for r in deduped if r.received_at <= now and start <= r.observed_at <= end]
+    deduped = circuit_records(records, circuit_id, now=now, require_value=False)
+    in_window = [r for r in deduped if start <= r.observed_at <= end]
     missing_count = 0
     samples: list[tuple[datetime, float, int | None]] = []
+    sample_records: list[EvidenceRecord] = []
     for record in in_window:
         if record.value is None or not _is_number(record.value):
             missing_count += 1
             continue
         samples.append((record.observed_at, float(record.value), record.expected_cadence_s))
+        sample_records.append(record)
     rank = {"confirmed": 2, "candidate": 1, "unknown": 0}
     statuses = [(r.binding.status.value if r.binding else "unknown") for r in in_window]
     binding = "unknown"
@@ -222,4 +222,11 @@ def circuit_activity(
         "first_observed_at": times[0] if times else None,
         "last_observed_at": times[-1] if times else None,
         "meaning": CIRCUIT_MEANING,
+        "source": sample_records[-1].source.value if sample_records else None,
+        "expected_cadence_s": cadence_s,
+        "last_id": sample_records[-1].id if sample_records else None,
+        "last_received_at": sample_records[-1].received_at if sample_records else None,
+        "provenance": sample_records[-1].provenance.model_dump(mode="json") if sample_records else None,
+        "fresh": is_fresh(sample_records[-1], now) if sample_records else False,
+        "is_fresh": is_fresh(sample_records[-1], now) if sample_records else False,
     }

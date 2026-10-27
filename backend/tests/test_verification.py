@@ -152,6 +152,135 @@ def test_room_readings_removed_after_1820_unable_to_verify(tmp_path):
     assert result["stage"] == "unable_to_verify"
 
 
+def test_arrival_gap_after_verification_unable_despite_fresh_post_arrival_readings(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-gap")
+    _edit_room(
+        target,
+        lambda records: [
+            r
+            for r in records
+            if not ("2026-01-16T20:20:00-05:00" < r["observed_at"] <= "2026-01-16T21:00:00-05:00")
+        ],
+    )
+    result = _verify_variant(target, at(21, 6))
+    assert result["stage"] != "arrival_met"
+    assert result["stage"] == "unable_to_verify"
+    assert any("coverage" in reason or "gap" in reason for reason in result["reasons"])
+    assert "room-temp-2105" not in result["supporting_ids"]
+
+
+def test_arrival_reading_exactly_at_arrival_covers_boundary(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-exact")
+    result = _verify_variant(target, at(21, 6))
+    assert result["stage"] == "arrival_met"
+    assert "room-temp-2100" in result["supporting_ids"]
+
+
+def test_arrival_final_gap_exactly_at_limit_is_arrival_met(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-final-exact")
+    _edit_room(
+        target,
+        lambda records: [
+            r
+            for r in records
+            if not ("2026-01-16T20:50:00-05:00" < r["observed_at"] <= "2026-01-16T21:00:00-05:00")
+        ],
+    )
+    result = _verify_variant(target, at(21, 6))
+    assert result["stage"] == "arrival_met"
+
+
+def test_arrival_final_gap_one_second_over_limit_is_unable(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-final-over")
+
+    def over(records):
+        out = []
+        for row in records:
+            if "2026-01-16T20:50:00-05:00" < row["observed_at"] <= "2026-01-16T21:00:00-05:00":
+                continue
+            if row["observed_at"] == "2026-01-16T20:50:00-05:00":
+                row = {**row, "observed_at": "2026-01-16T20:49:59-05:00"}
+            out.append(row)
+        return out
+
+    _edit_room(target, over)
+    result = _verify_variant(target, at(21, 6))
+    assert result["stage"] == "unable_to_verify"
+    assert any("coverage" in reason or "gap" in reason for reason in result["reasons"])
+
+
+def test_arrival_internal_excessive_gap_is_unable(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-internal-gap")
+    _edit_room(
+        target,
+        lambda records: [
+            r
+            for r in records
+            if r["observed_at"] not in ("2026-01-16T20:30:00-05:00", "2026-01-16T20:35:00-05:00")
+        ],
+    )
+    result = _verify_variant(target, at(21, 6))
+    assert result["stage"] == "unable_to_verify"
+    assert any("coverage" in reason or "gap" in reason for reason in result["reasons"])
+
+
+def test_arrival_delayed_reading_only_counts_after_receipt(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-delayed")
+
+    def delayed(records):
+        out = []
+        for row in records:
+            observed = row["observed_at"]
+            if observed == "2026-01-16T20:50:00-05:00":
+                out.append({**row, "observed_at": "2026-01-16T20:49:30-05:00"})
+            elif observed == "2026-01-16T20:55:00-05:00":
+                out.append(
+                    {
+                        **row,
+                        "id": "room-temp-delayed-2059",
+                        "observed_at": "2026-01-16T20:59:00-05:00",
+                        "received_at": "2026-01-16T21:05:00-05:00",
+                    }
+                )
+            elif "2026-01-16T20:50:00-05:00" < observed:
+                continue
+            else:
+                out.append(row)
+        return out
+
+    _edit_room(target, delayed)
+    before = _verify_variant(target, at(21, 4))
+    assert before["stage"] != "arrival_met"
+    assert before["stage"] == "unable_to_verify"
+    assert "room-temp-delayed-2059" not in before["supporting_ids"]
+    after = _verify_variant(target, at(21, 6))
+    assert after["stage"] == "arrival_met"
+    assert "room-temp-delayed-2059" in after["supporting_ids"]
+
+
+def test_arrival_coverage_mixed_timezone_offsets_same_instants(tmp_path):
+    target = _copy_scenario(tmp_path, "arrival-tz")
+    other_tz = timezone(timedelta(hours=-4))
+
+    def convert(records):
+        out = []
+        for row in records:
+            if row["observed_at"] >= "2026-01-16T20:20:00-05:00":
+                row = {
+                    **row,
+                    "observed_at": datetime.fromisoformat(row["observed_at"]).astimezone(other_tz).isoformat(),
+                    "received_at": datetime.fromisoformat(row["received_at"]).astimezone(other_tz).isoformat(),
+                }
+            out.append(row)
+        return out
+
+    _edit_room(target, convert)
+    now = datetime(2026, 1, 16, 22, 6, tzinfo=other_tz)
+    result = _verify_variant(target, now)
+    assert result["stage"] == "arrival_met"
+    assert "room-temp-2100" in result["supporting_ids"]
+
+
 def test_one_dip_inside_hold_window_not_goal_verified(tmp_path):
     target = _copy_scenario(tmp_path, "dip")
 

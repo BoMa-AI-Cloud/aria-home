@@ -70,10 +70,8 @@ class Store:
             conn.close()
 
     def _init_schema(self):
-        with self._connection() as conn:
-            conn.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS investigations (
+        statements = [
+            """CREATE TABLE IF NOT EXISTS investigations (
                     id TEXT PRIMARY KEY,
                     scenario TEXT NOT NULL,
                     evaluated_at TEXT NOT NULL,
@@ -83,8 +81,8 @@ class Store:
                     provider_mode TEXT,
                     prompt_version TEXT,
                     created_at TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS follow_ups (
+                )""",
+            """CREATE TABLE IF NOT EXISTS follow_ups (
                     investigation_id TEXT PRIMARY KEY,
                     created_at TEXT NOT NULL,
                     deadline TEXT NOT NULL,
@@ -92,16 +90,31 @@ class Store:
                     last_status TEXT,
                     last_evaluated_at TEXT,
                     supporting_ids TEXT NOT NULL DEFAULT '[]'
-                );
-                CREATE TABLE IF NOT EXISTS outcome_events (
+                )""",
+            """CREATE TABLE IF NOT EXISTS outcome_events (
                     investigation_id TEXT NOT NULL,
                     evaluated_at TEXT NOT NULL,
                     status TEXT,
                     sample_count INTEGER,
                     note TEXT,
                     UNIQUE(investigation_id, evaluated_at)
-                );
-                CREATE TABLE IF NOT EXISTS notifications (
+                )""",
+            """CREATE TABLE IF NOT EXISTS inference_requests (
+                    identity_key TEXT PRIMARY KEY,
+                    investigation_id TEXT NOT NULL UNIQUE,
+                    scenario_id TEXT NOT NULL,
+                    scenario_fixture_version TEXT NOT NULL,
+                    evaluated_at_utc TEXT NOT NULL,
+                    input_revision TEXT NOT NULL,
+                    prompt_version TEXT NOT NULL,
+                    readiness_policy_version TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    result_json TEXT,
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )""",
+            """CREATE TABLE IF NOT EXISTS notifications (
                     id TEXT PRIMARY KEY,
                     investigation_id TEXT NOT NULL,
                     audience TEXT NOT NULL,
@@ -112,16 +125,18 @@ class Store:
                     delivery TEXT NOT NULL DEFAULT 'simulated',
                     state TEXT NOT NULL,
                     refusal_reason TEXT
-                );
-                CREATE TABLE IF NOT EXISTS notification_acks (
+                )""",
+            """CREATE TABLE IF NOT EXISTS notification_acks (
                     id TEXT PRIMARY KEY,
                     notification_id TEXT NOT NULL,
                     actor TEXT NOT NULL,
                     acknowledged_at TEXT NOT NULL,
                     UNIQUE(notification_id, actor, acknowledged_at)
-                );
-                """
-            )
+                )""",
+        ]
+        with self._connection(immediate=True) as conn:
+            for statement in statements:
+                conn.execute(statement)
             cols = {r["name"] for r in conn.execute("PRAGMA table_info(follow_ups)").fetchall()}
             if "next_check_at" not in cols:
                 conn.execute("ALTER TABLE follow_ups ADD COLUMN next_check_at TEXT")
@@ -139,6 +154,65 @@ class Store:
     def __exit__(self, *exc):
         self.close()
         return False
+
+    def claim_inference(self, identity, *, retry=False):
+        now = _iso(datetime.now(timezone.utc))
+        with self._connection(immediate=True) as conn:
+            if retry:
+                cur = conn.execute(
+                    "UPDATE inference_requests SET state = 'pending', result_json = NULL, attempts = attempts + 1, updated_at = ? WHERE identity_key = ? AND state = 'failed'",
+                    (now, identity["identity_key"]),
+                )
+                if cur.rowcount == 1:
+                    row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+                    return True, self._inference_from_row(row)
+            cur = conn.execute(
+                """
+                INSERT OR IGNORE INTO inference_requests
+                    (identity_key, investigation_id, scenario_id, scenario_fixture_version, evaluated_at_utc, input_revision, prompt_version, readiness_policy_version, state, result_json, attempts, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NULL, 1, ?, ?)
+                """,
+                (identity["identity_key"], identity["investigation_id"], identity["scenario_id"], identity["scenario_fixture_version"], identity["evaluated_at_utc"], identity["input_revision"], identity["prompt_version"], identity["readiness_policy_version"], now, now),
+            )
+            claimed = cur.rowcount == 1
+            row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+            return claimed, self._inference_from_row(row)
+
+    @staticmethod
+    def _inference_from_row(row):
+        if row is None:
+            return None
+        return {
+            "identity_key": row["identity_key"],
+            "investigation_id": row["investigation_id"],
+            "scenario_id": row["scenario_id"],
+            "scenario_fixture_version": row["scenario_fixture_version"],
+            "evaluated_at_utc": row["evaluated_at_utc"],
+            "input_revision": row["input_revision"],
+            "prompt_version": row["prompt_version"],
+            "readiness_policy_version": row["readiness_policy_version"],
+            "state": row["state"],
+            "result": json.loads(row["result_json"]) if row["result_json"] else None,
+            "attempts": row["attempts"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    def get_inference(self, identity_key):
+        with self._connection() as conn:
+            row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
+        return self._inference_from_row(row)
+
+    def complete_inference(self, identity_key, result, state):
+        if state not in ("completed", "failed"):
+            raise ValueError("inference state must be 'completed' or 'failed'")
+        with self._connection(immediate=True) as conn:
+            conn.execute(
+                "UPDATE inference_requests SET state = ?, result_json = ?, updated_at = ? WHERE identity_key = ?",
+                (state, json.dumps(_jsonable(result)), _iso(datetime.now(timezone.utc)), identity_key),
+            )
+            row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
+        return self._inference_from_row(row)
 
     def save_investigation(self, investigation=None, *, investigation_id=None, id=None, scenario=None, evaluated_at=None, created_at=None, status=None, output=None, model_id=None, provider_mode=None, prompt_version=None):
         inv_id = investigation_id or id
@@ -334,8 +408,11 @@ class Store:
             row = self._follow_up_row_from_conn(conn, investigation_id)
             if row is None:
                 return None
-            if at_iso is not None and row["last_evaluated_at"] == at_iso:
-                return row
+            if at_iso is not None and row["last_evaluated_at"]:
+                latest = _parse_dt(row["last_evaluated_at"])
+                current = _parse_dt(at_iso)
+                if current <= latest:
+                    return row
             conn.execute(
                 "UPDATE follow_ups SET last_status = ?, last_evaluated_at = ?, supporting_ids = ? WHERE investigation_id = ?",
                 (status, at_iso, json.dumps(list(supporting_ids or [])), investigation_id),
@@ -350,13 +427,13 @@ class Store:
     update_follow_up = record_outcome
     save_outcome = record_outcome
 
-    def list_outcomes(self, investigation_id):
+    def list_outcomes(self, investigation_id, at=None):
         with self._connection() as conn:
             rows = conn.execute(
                 "SELECT investigation_id, evaluated_at, status, sample_count, note FROM outcome_events WHERE investigation_id = ? ORDER BY evaluated_at",
                 (investigation_id,),
             ).fetchall()
-        return [
+        results = [
             {
                 "investigation_id": r["investigation_id"],
                 "evaluated_at": r["evaluated_at"],
@@ -366,6 +443,10 @@ class Store:
             }
             for r in rows
         ]
+        if at is not None:
+            cutoff = _parse_dt(at)
+            results = [r for r in results if _parse_dt(r["evaluated_at"]) <= cutoff]
+        return results
 
     def save_notification(self, *, investigation_id, audience, kind, idempotency_key, payload, created_at, delivery="simulated", state="queued", refusal_reason=None):
         notif_id = f"notif-{hashlib.sha256(idempotency_key.encode()).hexdigest()[:12]}"
@@ -400,25 +481,30 @@ class Store:
             row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
         return self._notification_from_row(row) if row else None
 
-    def get_notification(self, notification_id):
+    def get_notification(self, notification_id, at=None):
         with self._connection() as conn:
             row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
         if row is None:
             return None
         result = self._notification_from_row(row)
-        result["acks"] = self.list_acks(notification_id)
+        if at is not None and _parse_dt(result["created_at"]) > _parse_dt(at):
+            return None
+        result["acks"] = self.list_acks(notification_id, at=at)
         return result
 
-    def list_notifications(self, investigation_id=None):
+    def list_notifications(self, investigation_id=None, at=None):
         with self._connection() as conn:
             if investigation_id is None:
                 rows = conn.execute("SELECT * FROM notifications ORDER BY created_at, audience, id").fetchall()
             else:
                 rows = conn.execute("SELECT * FROM notifications WHERE investigation_id = ? ORDER BY created_at, audience, id", (investigation_id,)).fetchall()
+        cutoff = _parse_dt(at) if at is not None else None
         results = []
         for row in rows:
             item = self._notification_from_row(row)
-            item["acks"] = self.list_acks(item["id"])
+            if cutoff is not None and _parse_dt(item["created_at"]) > cutoff:
+                continue
+            item["acks"] = self.list_acks(item["id"], at=cutoff)
             results.append(item)
         return results
 
@@ -438,10 +524,14 @@ class Store:
             row = conn.execute("SELECT * FROM notification_acks WHERE notification_id = ? AND actor = ? AND acknowledged_at = ?", (notification_id, str(actor), _iso(at))).fetchone()
         return {"id": row["id"], "notification_id": row["notification_id"], "actor": row["actor"], "acknowledged_at": row["acknowledged_at"], "by": row["actor"], "at": row["acknowledged_at"]}
 
-    def list_acks(self, notification_id):
+    def list_acks(self, notification_id, at=None):
         with self._connection() as conn:
             rows = conn.execute("SELECT * FROM notification_acks WHERE notification_id = ? ORDER BY acknowledged_at, actor", (notification_id,)).fetchall()
-        return [{"id": r["id"], "notification_id": r["notification_id"], "actor": r["actor"], "acknowledged_at": r["acknowledged_at"], "by": r["actor"], "at": r["acknowledged_at"]} for r in rows]
+        results = [{"id": r["id"], "notification_id": r["notification_id"], "actor": r["actor"], "acknowledged_at": r["acknowledged_at"], "by": r["actor"], "at": r["acknowledged_at"]} for r in rows]
+        if at is not None:
+            cutoff = _parse_dt(at)
+            results = [r for r in results if _parse_dt(r["acknowledged_at"]) <= cutoff]
+        return results
 
     def list_investigations(self):
         with self._connection() as conn:

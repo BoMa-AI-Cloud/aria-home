@@ -234,7 +234,8 @@ def test_pack_floats_rounded_for_display():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)
     assert pack["metrics"]["target_gap"]["gap"] == -15.9
     assert pack["metrics"]["indoor_trend"]["rate_per_hour"] == 0.034
-    for f in _walk_floats(pack):
+    display_pack = {k: v for k, v in pack.items() if k != "canonical_readiness"}
+    for f in _walk_floats(display_pack):
         decimals = len(repr(f).split(".")[1]) if "." in repr(f) else 0
         if abs(f) < 0.05 and f != 0:
             assert decimals <= 3

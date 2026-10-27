@@ -251,18 +251,18 @@ class MockProvider:
             gap = metrics.get("target_gap") or {}
             circuits = metrics.get("circuits") or {}
             facts = []
-            if trend.get("last_value") is not None:
+            if trend.get("last_value") is not None and trend.get("fresh", trend.get("is_fresh", True)):
                 fact = {"claim_type": "current_temperature", "evidence_id": trend_id, "field": "last_value", "value": trend["last_value"], "unit": trend.get("unit") or "F", "at": trend.get("last_observed_at")}
                 facts.append(fact)
             if gap.get("target_temp") is not None and "metric:target_gap" in ids:
                 facts.append({"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": gap["target_temp"], "unit": gap.get("target_unit") or gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
-            if gap.get("gap") is not None and "metric:target_gap" in ids:
+            if gap.get("gap") is not None and "metric:target_gap" in ids and trend.get("fresh", trend.get("is_fresh", True)):
                 facts.append({"claim_type": "target_gap", "evidence_id": "metric:target_gap", "field": "gap", "value": gap["gap"], "unit": gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
             circuit_id = next((cid for cid in sorted(circuits) if "furnace" in cid), None) or (sorted(circuits)[0] if circuits else None)
             if circuit_id is not None:
                 circuit = circuits.get(circuit_id) or {}
                 circuit_evidence = f"metric:circuit_activity:{circuit_id}"
-                if circuit_evidence in ids and circuit.get("max_w") is not None:
+                if circuit_evidence in ids and circuit.get("max_w") is not None and circuit.get("fresh", circuit.get("is_fresh", True)):
                     facts.append({"claim_type": "electrical_activity", "evidence_id": circuit_evidence, "field": "max_w", "value": circuit["max_w"], "unit": circuit.get("unit") or "W", "at": circuit.get("last_observed_at")})
                     facts.append({"claim_type": "equipment_function", "evidence_id": circuit_evidence, "field": "active", "value": "not_observed" if circuit.get("active") is False else "unknown", "unit": None, "at": circuit.get("last_observed_at")})
             if not facts:

@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from .eligibility import freshness_limit_s, is_measurement_eligible
+
 MIN_SAMPLES = 3
 MIN_COVERAGE = 0.5
 STALE_READING_AGE_S = 3600.0
@@ -9,6 +11,8 @@ MIN_RISE_F = 1.0
 MIN_RATE_PER_HOUR_F = 0.5
 PROJECTION_MARGIN_F = 0.5
 ARRIVAL_TIME_MARGIN_S = 1800.0
+READINESS_POLICY_VERSION = "readiness-policy-v1"
+TARGET_GAP_TOLERANCE_F = 0.0
 
 THRESHOLDS = {
     "MIN_SAMPLES": MIN_SAMPLES,
@@ -20,6 +24,7 @@ THRESHOLDS = {
     "MIN_RATE_PER_HOUR_F": MIN_RATE_PER_HOUR_F,
     "PROJECTION_MARGIN_F": PROJECTION_MARGIN_F,
     "ARRIVAL_TIME_MARGIN_S": ARRIVAL_TIME_MARGIN_S,
+    "TARGET_GAP_TOLERANCE_F": TARGET_GAP_TOLERANCE_F,
 }
 
 _FLAG_ALIASES = {
@@ -57,6 +62,14 @@ class ReadinessResult(dict):
     def target_at_arrival(self):
         return self.get("target_at_arrival")
 
+    @property
+    def policy_version(self):
+        return self.get("policy_version")
+
+
+def _result(status, reasons, inputs, target_at_arrival=None):
+    return ReadinessResult(status=status, reasons=reasons, inputs=inputs, target_at_arrival=target_at_arrival, policy_version=READINESS_POLICY_VERSION)
+
 
 def _parse_time(value):
     if isinstance(value, datetime):
@@ -72,7 +85,8 @@ def _parse_time(value):
 def _fmt_num(value):
     if value is None:
         return "unknown"
-    text = f"{float(value):.2f}"
+    value = 0.0 if float(value) == 0 else float(value)
+    text = f"{value:.2f}"
     if "." in text:
         text = text.rstrip("0").rstrip(".")
     return text or "0"
@@ -81,7 +95,8 @@ def _fmt_num(value):
 def _fmt_signed(value):
     if value is None:
         return "unknown"
-    return f"{float(value):+.2f}"
+    value = 0.0 if float(value) == 0 else float(value)
+    return f"{value:+.2f}"
 
 
 def _fmt_duration(seconds):
@@ -205,13 +220,18 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
             room_status = item
     zone = metrics.get("zone") or data.get("zone")
     evidence_list = data.get("evidence") if isinstance(data.get("evidence"), list) else []
+    indoor_evidence = [
+        item for item in evidence_list
+        if isinstance(item, dict) and item.get("quantity") == "indoor_temp"
+    ]
+    eligible_indoor = [
+        item for item in indoor_evidence
+        if is_measurement_eligible(item, quantity="indoor_temp", zone=zone if zone and item.get("subject") is not None else None, require_value=False)
+    ]
     has_room_sensor = any(
-        isinstance(item, dict)
-        and item.get("source") == "room_sensor"
-        and item.get("quantity") == "indoor_temp"
-        and (zone is None or item.get("subject") in (None, zone))
-        for item in evidence_list
-    ) or bool(room_status and _num(room_status.get("record_count")))
+        item.get("source") == "room_sensor"
+        for item in eligible_indoor
+    ) or (not indoor_evidence and bool(room_status and _num(room_status.get("record_count"))))
     indoor_source = "room_sensor" if has_room_sensor else "thermostat"
     indoor_status = room_status if has_room_sensor else thermostat_status
     availability = indoor_status.get("availability") if indoor_status else None
@@ -244,8 +264,12 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         "indoor_availability": availability,
         "room_sensor_availability": room_status.get("availability") if room_status else None,
         "thermostat_telemetry_missing": thermostat_missing,
+        "eligible_indoor_count": len(eligible_indoor),
+        "indoor_measurement_eligible": bool(eligible_indoor) if indoor_evidence else None,
         "flags": flag_map,
         "thresholds": dict(THRESHOLDS),
+        "policy_version": READINESS_POLICY_VERSION,
+        "target_gap_tolerance_f": TARGET_GAP_TOLERANCE_F,
     }
 
     reasons = []
@@ -277,6 +301,8 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if gap_info is None or gap_raw is None:
         cannot.append("target gap is unavailable")
 
+    if indoor_evidence and not eligible_indoor:
+        cannot.append("no eligible indoor measurement: only non-measurement or ineligible-source records are present (human statements may corroborate only)")
     if availability == "conflicting":
         cannot.append("indoor readings are conflicting")
     elif not has_room_sensor and any(isinstance(s, dict) and s.get("availability") == "conflicting" for s in statuses):
@@ -294,7 +320,14 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if now_dt is not None and last_at is not None:
         age_s = (now_dt - last_at).total_seconds()
         inputs["reading_age_s"] = age_s
-        if age_s > STALE_READING_AGE_S:
+        cadence = trend.get("expected_cadence_s") or (gap_info.get("expected_cadence_s") if gap_info else None)
+        if cadence is None and eligible_indoor:
+            cadence = next((item.get("expected_cadence_s") for item in eligible_indoor if item.get("expected_cadence_s") is not None), None)
+        freshness_limit = STALE_READING_AGE_S
+        if isinstance(cadence, (int, float)) and not isinstance(cadence, bool):
+            freshness_limit = min(STALE_READING_AGE_S, 2 * float(cadence))
+        inputs["freshness_limit_s"] = freshness_limit
+        if age_s > freshness_limit:
             cannot.append(f"latest indoor reading is stale ({_fmt_duration(age_s)} old)")
     elif last_value is not None:
         cannot.append("latest indoor reading time is unavailable")
@@ -335,31 +368,42 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         for item in data.get("evidence", []) if isinstance(data.get("evidence"), list) else []:
             if not isinstance(item, dict) or item.get("quantity") != "indoor_temp":
                 continue
+            if not is_measurement_eligible(item, quantity="indoor_temp", zone=zone if zone and item.get("subject") is not None else None):
+                continue
             value = _num(item.get("value"))
             observed = _parse_time(item.get("observed_at"))
             received = _parse_time(item.get("received_at"))
             if value is None or observed is None or received is None:
                 continue
             if received <= arrival and observed <= arrival:
-                candidates.append((item.get("source"), observed, received, value, item.get("unit")))
+                candidates.append((item.get("source"), observed, received, value, item.get("unit"), item))
         arrival_value = None
         arrival_unit = None
         arrival_observed = None
+        arrival_item = None
         if candidates:
             for preferred in ("room_sensor", "thermostat"):
                 group = [c for c in candidates if c[0] == preferred]
                 if group:
                     candidates = group
                     break
-            _, arrival_observed, _, arrival_value, arrival_unit = max(candidates, key=lambda c: (c[1], c[2]))
-        elif last_value is not None and last_at is not None and last_at <= arrival:
+            _, arrival_observed, _, arrival_value, arrival_unit, arrival_item = max(candidates, key=lambda c: (c[1], c[2]))
+        elif last_value is not None and last_at is not None and last_at <= arrival and not indoor_evidence:
             arrival_value, arrival_unit, arrival_observed = last_value, unit, last_at
 
         outcome = "unknown"
-        if arrival_value is not None and arrival_observed is not None and 0 <= (arrival - arrival_observed).total_seconds() <= STALE_READING_AGE_S:
-            converted = _to_target(arrival_value, arrival_unit)
-            if converted is not None:
-                outcome = "met" if converted >= float(target_temp) else "not_met"
+        if arrival_value is not None and arrival_observed is not None:
+            age_at_arrival = (arrival - arrival_observed).total_seconds()
+            limit = STALE_READING_AGE_S
+            if arrival_item is not None:
+                limit = min(STALE_READING_AGE_S, freshness_limit_s(arrival_item))
+            elif isinstance(trend.get("expected_cadence_s"), (int, float)):
+                limit = min(STALE_READING_AGE_S, 2 * float(trend["expected_cadence_s"]))
+            if 0 <= age_at_arrival <= limit:
+                converted = _to_target(arrival_value, arrival_unit)
+                if converted is not None:
+                    tolerance = TARGET_GAP_TOLERANCE_F * 5.0 / 9.0 if target_unit == "C" else TARGET_GAP_TOLERANCE_F
+                    outcome = "met" if converted >= float(target_temp) - tolerance else "not_met"
         inputs["evaluated_at_arrival"] = True
         inputs["arrival_outcome"] = outcome
         inputs["target_at_arrival"] = outcome
@@ -371,7 +415,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
             reason = f"Arrival has passed: the target was not met at arrival time (latest reading received by arrival was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, below the {_fmt_num(target_temp)} {target_unit} target)."
         else:
             reason = "Arrival has passed: whether the target was met at arrival time is unknown (no fresh indoor reading was received by arrival)."
-        return ReadinessResult(status="arrival_passed", reasons=[reason], inputs=inputs, target_at_arrival=outcome)
+        return _result("arrival_passed", [reason], inputs, target_at_arrival=outcome)
 
     deduped = []
     for reason in cannot:
@@ -380,13 +424,13 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if deduped:
         if thermostat_note and thermostat_note not in deduped:
             deduped.append(thermostat_note)
-        return ReadinessResult(status="cannot_tell", reasons=deduped, inputs=inputs, target_at_arrival=None)
+        return _result("cannot_tell", deduped, inputs, target_at_arrival=None)
 
-    if gap_f is not None and gap_f >= 0:
+    if gap_f is not None and gap_f >= -TARGET_GAP_TOLERANCE_F:
         if thermostat_note:
             reasons.append(thermostat_note)
         reasons.append("latest fresh indoor reading already meets the target")
-        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
+        return _result("on_track", reasons, inputs, target_at_arrival=None)
 
     projected_f = None
     closes_in_h = None
@@ -419,7 +463,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         if thermostat_note:
             reasons.append(thermostat_note)
         reasons.append("gap is small and sustained warming over the trend window would close it before arrival with margin")
-        return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
+        return _result("on_track", reasons, inputs, target_at_arrival=None)
 
     if thermostat_note:
         reasons.append(thermostat_note)
@@ -438,4 +482,4 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         reasons.append("warming is not sustained over the minimum window and rise thresholds")
     elif not with_margin:
         reasons.append("projected warming does not close the gap before arrival with margin")
-    return ReadinessResult(status="at_risk", reasons=reasons, inputs=inputs, target_at_arrival=None)
+    return _result("at_risk", reasons, inputs, target_at_arrival=None)

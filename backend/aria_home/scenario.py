@@ -28,6 +28,7 @@ class ScenarioManifest(BaseModel):
     author: str
     created: date
     start: datetime
+    timezone: str = "America/New_York"
     scenario_period_note: str | None = None
 
     @field_validator("start")
@@ -66,6 +67,7 @@ class Scenario:
     records: list[EvidenceRecord]
     trip: Trip | None = None
     confirmation: HomeownerConfirmation | None = None
+    confirmations: list[HomeownerConfirmation] = field(default_factory=list)
     path: Path | None = field(default=None, repr=False)
     trips: list[Trip] = field(default_factory=list)
     events: list["ScenarioEvent"] = field(default_factory=list)
@@ -197,12 +199,30 @@ def _confirmation_reference(confirmation, history, current):
     return prior[-1] if prior else None
 
 
+def _confirmation_history(scenario) -> list[HomeownerConfirmation]:
+    listed = list(getattr(scenario, "confirmations", None) or []) if scenario is not None else []
+    single = getattr(scenario, "confirmation", None) if scenario is not None else None
+    if listed and (single is None or any(item is single for item in listed)):
+        history = listed
+    elif single is not None:
+        history = [single]
+    else:
+        history = listed
+    unique: list[HomeownerConfirmation] = []
+    for item in history:
+        if item not in unique:
+            unique.append(item)
+    return sorted(unique, key=lambda item: item.confirmed_at)
+
+
 def context_as_of(scenario, now: datetime) -> AsOfContext:
     ensure_aware(now, "now")
     history = _trip_history(scenario)
     visible = [t for t in history if t.known_at is None or t.known_at <= now]
     trip = visible[-1] if visible else None
-    raw_confirmation = getattr(scenario, "confirmation", None) if scenario is not None else None
+    confirmation_history = _confirmation_history(scenario)
+    visible_confirmations = [c for c in confirmation_history if c.confirmed_at <= now]
+    raw_confirmation = visible_confirmations[-1] if visible_confirmations else None
     flags = {
         "trip_cancelled": False,
         "trip_unconfirmed": False,
@@ -259,7 +279,7 @@ get_context_as_of = context_as_of
 
 def scenario_as_of(scenario, now: datetime) -> Scenario:
     ctx = context_as_of(scenario, now)
-    return replace(scenario, trip=ctx.trip, confirmation=ctx.confirmation, trips=list(ctx.trips))
+    return replace(scenario, trip=ctx.trip, confirmation=ctx.confirmation, confirmations=[ctx.confirmation] if ctx.confirmation is not None else [], trips=list(ctx.trips))
 
 
 as_of_scenario = scenario_as_of
@@ -274,6 +294,7 @@ def load_scenario(path) -> Scenario:
     records: list[EvidenceRecord] = []
     trips: list[Trip] = []
     confirmation: HomeownerConfirmation | None = None
+    confirmations: list[HomeownerConfirmation] = []
 
     source_files = list(SOURCE_FILES)
     if (base / "room_sensor.json").is_file():
@@ -317,6 +338,14 @@ def load_scenario(path) -> Scenario:
                     trips.append(cancelled_trip)
         if extra.get("confirmation") is not None:
             confirmation = HomeownerConfirmation.model_validate(extra["confirmation"])
+            if confirmation not in confirmations:
+                confirmations.append(confirmation)
+        if isinstance(extra.get("confirmations"), list):
+            for item in extra["confirmations"]:
+                candidate = HomeownerConfirmation.model_validate(item)
+                if candidate not in confirmations:
+                    confirmations.append(candidate)
+                confirmation = candidate
         for row in rows:
             data = dict(row)
             data["mode"] = manifest.mode.value
@@ -333,7 +362,7 @@ def load_scenario(path) -> Scenario:
         else:
             event_rows = events_payload.get("events", events_payload.get("records", []))
         events = [ScenarioEvent.model_validate(row) for row in event_rows]
-    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, path=base, trips=trips, events=events)
+    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events)
 
 
 def visible_records(records: list[EvidenceRecord], now: datetime) -> list[EvidenceRecord]:

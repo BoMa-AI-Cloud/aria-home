@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from .clock import ensure_aware
 from .contracts import Availability, DataMode, EvidenceRecord, SourceKind, SourceStatus
+from .eligibility import ALLOWED_SOURCES, is_measurement_eligible
 
 FUTURE_SKEW = timedelta(seconds=60)
 
@@ -28,7 +29,12 @@ def source_status(
 ) -> SourceStatus:
     ensure_aware(now, "now")
     source = SourceKind(source)
-    relevant = [r for r in records if r.source is source]
+    relevant = [
+        r
+        for r in records
+        if r.source is source
+        and (r.quantity not in ALLOWED_SOURCES or is_measurement_eligible(r, require_value=False))
+    ]
 
     seen: set[str] = set()
     deduped: list[EvidenceRecord] = []

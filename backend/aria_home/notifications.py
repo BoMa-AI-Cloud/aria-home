@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from .scenario import context_as_of, events_as_of
+from .scheduling import compute_follow_up_schedule
 
 AUDIENCES = ("homeowner", "property_manager", "hvac_company")
 
@@ -23,6 +24,7 @@ STAGE_IN_WORDS = {
     "reporting_restored": "Thermostat reporting is restored; recovery is not yet verified.",
     "warming_observed": "Warming has been observed in independent readings.",
     "goal_verified": "The temperature goal has been verified.",
+    "goal_not_maintained": "The temperature goal was verified earlier but is no longer being maintained.",
     "arrival_met": "The temperature goal was still met at arrival.",
     "unable_to_verify": "Recovery cannot be verified from the available readings.",
 }
@@ -167,6 +169,22 @@ def build_payload(audience, investigation=None, readiness=None, verification=Non
     return validate_payload(audience, payload)
 
 
+def homeowner_refusal_reason(context):
+    confirmation = _get(context, "confirmation")
+    if confirmation is None:
+        return "homeowner_preference_missing"
+    value = _get(confirmation, "notify_homeowner")
+    if value is True:
+        return None
+    if value is False:
+        return "homeowner_opted_out"
+    return "homeowner_preference_missing"
+
+
+def homeowner_is_authorized(context):
+    return homeowner_refusal_reason(context) is None
+
+
 def manager_is_authorized(context):
     confirmation = _get(context, "confirmation")
     return bool(confirmation is not None and _get(confirmation, "manager_authorized"))
@@ -188,10 +206,19 @@ def _decision(audience, kind, allowed, reason, payload, investigation_id):
 
 
 def decide_notifications(investigation=None, readiness=None, verification=None, context=None, events=None, now=None, scenario=None, investigation_id=""):
+    """Homeowner: only an as-of confirmation with notify_homeowner is True allows delivery.
+
+    A False preference is refused as homeowner_opted_out; a missing or
+    unknown preference is refused as homeowner_preference_missing. There is
+    no emergency/status override. This gate is independent of manager
+    authorization. Refused decisions are persisted by callers as refused
+    audit rows, never delivered.
+    """
     status = _readiness_status(readiness, investigation)
     decisions = []
     homeowner = build_payload("homeowner", investigation, readiness, verification, context, events, now, scenario)
-    decisions.append(_decision("homeowner", homeowner["kind"], True, None, homeowner, investigation_id))
+    reason = homeowner_refusal_reason(context)
+    decisions.append(_decision("homeowner", homeowner["kind"], reason is None, reason, homeowner, investigation_id))
     if status in ("at_risk", "cannot_tell"):
         manager = build_payload("property_manager", investigation, readiness, verification, context, events, now, scenario)
         if manager_is_authorized(context):
@@ -206,6 +233,47 @@ def decide_hvac_notification(investigation=None, readiness=None, verification=No
     if hvac_is_authorized(events):
         return _decision("hvac_company", payload["kind"], True, None, payload, investigation_id)
     return _decision("hvac_company", payload["kind"], False, "manager_hvac_not_authorized", payload, investigation_id)
+
+
+def _deterministic_created_at(store, scenario, investigation_id, gate_at, discovery_at):
+    if gate_at is None or discovery_at is None:
+        return discovery_at
+    follow_up = None
+    try:
+        follow_up = store.get_follow_up(investigation_id)
+    except Exception:
+        follow_up = None
+    anchor = _get(follow_up, "created_at") if follow_up is not None else None
+    if anchor is None:
+        try:
+            row = store.get_investigation(investigation_id)
+        except Exception:
+            row = None
+        raw_anchor = row.get("evaluated_at") or row.get("created_at") if isinstance(row, dict) else None
+        anchor = raw_anchor if isinstance(raw_anchor, datetime) else None
+        if anchor is None and isinstance(raw_anchor, str):
+            try:
+                anchor = datetime.fromisoformat(raw_anchor.replace("Z", "+00:00"))
+            except ValueError:
+                anchor = None
+    if anchor is None:
+        return discovery_at
+    deadline = _get(follow_up, "deadline") if follow_up is not None else None
+    cadence_s = _get(follow_up, "cadence_s") if follow_up is not None else None
+    if cadence_s is None and scenario is not None:
+        cadence_s = next((r.expected_cadence_s for r in (getattr(scenario, "records", None) or []) if r.quantity == "indoor_temp" and r.expected_cadence_s is not None), None)
+    if gate_at <= anchor:
+        return min(anchor, discovery_at) if discovery_at >= anchor else anchor
+    current = anchor
+    for _ in range(10000):
+        schedule = compute_follow_up_schedule(current, deadline=deadline, cadence_s=cadence_s)
+        nxt = schedule.get("next_check_at") if hasattr(schedule, "get") else None
+        if nxt is None or nxt <= current:
+            return discovery_at
+        if nxt >= gate_at:
+            return min(nxt, discovery_at)
+        current = nxt
+    return discovery_at
 
 
 def _persist_decisions(store, investigation_id, decisions, created_at):
@@ -251,4 +319,8 @@ def create_hvac_notification(store, scenario, investigation_id, investigation, r
     context = context_as_of(scenario, at) if scenario is not None else None
     events = events_as_of(scenario, at) if scenario is not None else []
     decision = decide_hvac_notification(investigation, readiness, verification, context, events, at, scenario, investigation_id)
-    return _persist_decisions(store, investigation_id, [decision], at)[0]
+    created_at = at
+    if decision["allowed"] and scenario is not None:
+        gate_at = next((_get(e, "available_at") for e in (getattr(scenario, "events", None) or []) if _get(e, "kind") == "manager_hvac_authorized"), None)
+        created_at = _deterministic_created_at(store, scenario, investigation_id, gate_at, at)
+    return _persist_decisions(store, investigation_id, [decision], created_at)[0]

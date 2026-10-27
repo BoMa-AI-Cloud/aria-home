@@ -10,5 +10,10 @@ def test_evaluation_offline_returns_results_file():
     )
     resp = create_app().test_client().get("/api/evaluation/offline")
     assert resp.status_code == 200
-    assert resp.get_json() == expected
+    assert resp.get_json() == {
+        **expected,
+        "scenario": "demo_v1",
+        "at": "2026-01-16T18:00:00-05:00",
+        "timezone": "America/New_York",
+    }
     assert resp.get_json()["totals"]["combined"]["fully_correct"] == resp.get_json()["totals"]["combined"]["cases"]

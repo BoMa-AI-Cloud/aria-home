@@ -76,7 +76,8 @@ def test_manager_refused_without_authorization(tmp_path, monkeypatch):
     assert manager[0]["refusal_reason"] == "manager_not_authorized"
     assert manager[0]["reason"] == "manager_not_authorized"
     homeowner = [r for r in rows if r["audience"] == "homeowner"]
-    assert homeowner and homeowner[0]["state"] == "simulated_delivered"
+    assert homeowner and homeowner[0]["state"] == "refused"
+    assert homeowner[0]["refusal_reason"] == "homeowner_preference_missing"
 
 
 def test_manager_not_created_when_on_track_unit():
