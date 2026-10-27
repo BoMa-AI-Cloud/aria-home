@@ -35,6 +35,7 @@ Times for commits come from `git log`. EDT = UTC-4.
 - 2026-10-26: Day 6: evaluation harness with 12 builder-labeled cases across combined vs single-source conditions (D6-1, 53a06bd) and live results on 24 operator-run calls (D6-2, 8b2f07d). Checks at 53a06bd: backend 205 passed. No live model calls by Muse; the offline CLI and live runs were operator-run.
 - 2026-10-26: Day 7: readiness after arrival (D7-1 first run rejected by operator review because it fired at arrival and scored too coarsely; corrected in D7-1b; commit 0ebc264); operator walk-through UI fixes (D7-2 4d3bacb; backend 216 passed, typecheck and build passed, e2e 4 passed); user-test kit and feature freeze (D7-3 88ad45b, docs/usability.md, docs/freeze.md).
 - 2026-10-27: Day 8: as-built video plan (D8-1 2a70217) and rebalanced storyboard (D8-1b a7f2bdd; the Muse run returned the table without editing the file and the operator pasted it verbatim); footage recorder (D8-2 7f23970; 5 clips recorded by the operator, e2e 4 passed); judges' README (D8-3 b7da8f3).
+- 2026-10-27: Day 9: clean-setup check on a fresh clone at cd776d0 (D9-1; backend 216 passed, e2e 4 passed) and README venv gap fix for `test:e2e` / `record:demo`.
 
 ## How the code was written
 

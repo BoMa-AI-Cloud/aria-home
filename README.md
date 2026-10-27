@@ -97,9 +97,9 @@ npm run typecheck
 npm run test:e2e
 ```
 
-`npm run test:e2e` starts its own backend and frontend servers on ports 5000 and 5173, so stop the dev servers first. It runs the Playwright end-to-end test in the installed Google Chrome (no browser download).
+`npm run test:e2e` starts its own backend and frontend servers on ports 5000 and 5173, so stop the dev servers first. It starts the backend with plain `python -m flask ...`, so the backend virtual environment must be active in that terminal (or Flask must be installed for that python). Activate it first: PowerShell `..\backend\.venv\Scripts\Activate.ps1`, macOS/Linux `source ../backend/.venv/bin/activate`. It runs the Playwright end-to-end test in the installed Google Chrome (no browser download).
 
-**Recording footage:** `cd frontend && npm run record:demo` drives the real running frontend and backend at 1280x720 in mock mode on a fresh database, and writes one `.webm` clip per storyboard segment to `frontend/recordings/` (ignored by git).
+**Recording footage:** `cd frontend && npm run record:demo` drives the real running frontend and backend at 1280x720 in mock mode on a fresh database, and writes one `.webm` clip per storyboard segment to `frontend/recordings/` (ignored by git). It starts the backend with plain `python -m flask ...`, so the backend virtual environment must be active in that terminal (or Flask must be installed for that python): PowerShell `..\backend\.venv\Scripts\Activate.ps1`, macOS/Linux `source ../backend/.venv/bin/activate`.
 
 **Live mode (optional):** set `ARIA_HOME_MODEL_ENABLED=1` to enable live model calls (anything else stays in mock mode), `ARIA_HOME_PROVIDER_URL` to the model API base host, `ARIA_HOME_MODEL_ID` to the model to call, and `MODEL_API_KEY` to the API key (sent as `Authorization: Bearer <key>`). Keys live only in local environment variables; `.env` files are ignored.
 
