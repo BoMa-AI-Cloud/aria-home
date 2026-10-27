@@ -11,6 +11,7 @@ import {
   type ContextFlags,
   type ContextResponse,
   type CreateInvestigationResponse,
+  type EvidenceTimelineEntry,
   type InvestigationResponse,
   type InvestigationSummary,
   type Notification,
@@ -737,6 +738,41 @@ function OutcomeSection({
   );
 }
 
+function EvidenceTimelineSection({ entries }: { entries: EvidenceTimelineEntry[] }) {
+  if (entries.length === 0) return <p>No evidence timeline entries yet.</p>;
+  return (
+    <ol className="evidence-timeline">
+      {entries.map((entry) => (
+        <li key={entry.kind} className="evidence-timeline-entry">
+          <p className="evidence-timeline-label">{entry.label}</p>
+          {entry.corroboration_only && <p className="corroboration-only">Corroboration only</p>}
+          <dl className="card-facts">
+            <div>
+              <dt>Observed</dt>
+              <dd>
+                <time dateTime={entry.observed_at}>{formatTimestamp(entry.observed_at)}</time>
+              </dd>
+            </div>
+            <div>
+              <dt>Received / available</dt>
+              <dd>
+                <time dateTime={entry.received_at}>{formatTimestamp(entry.received_at)}</time>
+              </dd>
+            </div>
+            <div>
+              <dt>First known (evaluation)</dt>
+              <dd>
+                <time dateTime={entry.first_known_at}>{formatTimestamp(entry.first_known_at)}</time>
+              </dd>
+            </div>
+          </dl>
+          <p className="supporting-ids">Supporting records: {entry.supporting_ids.join(", ")}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function SourceCard({ status }: { status: SourceStatus }) {
   const missing = status.availability === "missing" || status.newest_observed_at === null;
   return (
@@ -999,6 +1035,7 @@ const INSET_TARGETS: Record<string, string[]> = {
   evidence: ["evidence"],
   "not-responding": ["outcome", "investigation"],
   arrival: ["outcome", "homeowner"],
+  "evidence-timeline": ["evidence-timeline"],
 };
 
 export default function App() {
@@ -1023,6 +1060,7 @@ export default function App() {
   const [replayLoading, setReplayLoading] = useState(false);
   const [replayError, setReplayError] = useState<string | null>(null);
   const [verification, setVerification] = useState<VerificationResult | null>(null);
+  const [evidenceTimeline, setEvidenceTimeline] = useState<EvidenceTimelineEntry[]>([]);
   const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryEntry[]>([]);
   const [events, setEvents] = useState<ScenarioEvent[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -1083,6 +1121,7 @@ export default function App() {
     setVerificationHistory([]);
     setInvestigationId(null);
     setVerification(null);
+    setEvidenceTimeline([]);
     setEvents([]);
     setNotifications([]);
     setNotificationsError(null);
@@ -1121,6 +1160,7 @@ export default function App() {
             setOutcome(followUp.outcome);
             setHistory(followUp.history);
             setVerification(followUp.verification ?? null);
+            setEvidenceTimeline(followUp.evidence_timeline ?? []);
             setVerificationHistory(followUp.verification_history ?? []);
             if (followUp.notifications) {
               setNotifications(followUp.notifications);
@@ -1182,6 +1222,7 @@ export default function App() {
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
+        setEvidenceTimeline(response.evidence_timeline ?? []);
         setVerificationHistory(response.verification_history ?? []);
         if (response.notifications) {
           setNotifications(response.notifications);
@@ -1316,6 +1357,11 @@ export default function App() {
           loading={replayLoading}
           verification={verification}
         />
+      </section>
+
+      <section aria-labelledby="evidence-timeline-heading" className={insetClass("evidence-timeline")}>
+        <h2 id="evidence-timeline-heading">Evidence timeline</h2>
+        <EvidenceTimelineSection entries={evidenceTimeline} />
       </section>
 
       <section aria-labelledby="notifications-heading" className={insetClass("notifications")}>

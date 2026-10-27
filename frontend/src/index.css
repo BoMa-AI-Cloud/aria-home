@@ -373,6 +373,34 @@ section {
   margin: 0 0 0.25rem;
 }
 
+.evidence-timeline {
+  background: #ffffff;
+  border: 1px solid #7d7767;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+}
+
+.evidence-timeline-entry {
+  margin-bottom: 1rem;
+}
+
+.evidence-timeline-label {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.corroboration-only {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.supporting-ids {
+  font-size: 0.85rem;
+  color: #3d3d3d;
+  word-break: break-word;
+  margin: 0.25rem 0 0;
+}
+
 .notification-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));

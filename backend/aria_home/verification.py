@@ -363,3 +363,95 @@ def verify_recovery(scenario, followup, now):
         return _result("goal_not_maintained", reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
     arrival_ids = list(dict.fromkeys(arrival_goal_ids + [r.id for r in through_arrival]))
     return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the confirmed arrival is at or above the target with no coverage gap over 2x cadence"] + corroboration_reasons, arrival_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival, arrival_met_at=arrival)
+
+
+def _timeline_entry(kind, label, supporting_ids, observed_at, received_at, first_known_at, corroboration_only=False):
+    return {
+        "kind": kind,
+        "label": label,
+        "supporting_ids": list(supporting_ids),
+        "supporting_record_ids": list(supporting_ids),
+        "observed_at": observed_at,
+        "received_at": received_at,
+        "available_at": received_at,
+        "first_known_at": first_known_at,
+        "evaluated_at": first_known_at,
+        "corroboration_only": corroboration_only,
+    }
+
+
+def build_evidence_timeline(scenario, followup, now):
+    ensure_aware(now, "now")
+    created_at = _get(followup, "created_at")
+    deadline = _get(followup, "deadline")
+    zone = _get(followup, "zone")
+    target_temp = float(_get(followup, "target_temp"))
+    target_unit = _get(followup, "target_unit")
+    min_samples = int(_get(followup, "min_samples"))
+    min_rise_f = float(_get(followup, "min_rise_f"))
+    if isinstance(scenario, (list, tuple)):
+        all_records = list(scenario)
+        all_events = []
+    else:
+        all_records = list(_get(scenario, "records", []) or [])
+        all_events = list(_get(scenario, "events", []) or [])
+    records = _dedup([r for r in all_records if r.received_at <= now])
+    events = [e for e in all_events if e.available_at <= now]
+    entries = []
+
+    thermostat = sorted(
+        [r for r in eligible_records(records, "indoor_temp") if r.source is SourceKind.thermostat],
+        key=lambda r: (r.observed_at, r.received_at, r.id),
+    )
+    restored = None
+    for earlier, later in zip(thermostat, thermostat[1:]):
+        cadence_s = later.expected_cadence_s or earlier.expected_cadence_s
+        if cadence_s is not None and (later.observed_at - earlier.observed_at).total_seconds() > MAX_GAP_CADENCE_MULTIPLIER * cadence_s and later.observed_at > created_at:
+            restored = later
+            break
+    if restored is not None:
+        entries.append(_timeline_entry("reporting_restored", "Thermostat reporting restored", [restored.id], restored.observed_at, restored.received_at, restored.received_at))
+
+    room_all = _room_records(records, zone)
+    room_after = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
+    if room_after:
+        first = room_after[0]
+        for index, record in enumerate(room_after):
+            if index + 1 < min_samples:
+                continue
+            rise_f = _rise_f(first.value, first.unit, record.value, record.unit, target_unit)
+            if rise_f is not None and rise_f >= min_rise_f:
+                entries.append(_timeline_entry("warming_observed", "Warming first observed", [first.id, record.id], record.observed_at, record.received_at, record.received_at))
+                break
+        for record in room_after:
+            if _in_target_unit(record.value, record.unit, target_unit) >= target_temp:
+                entries.append(_timeline_entry("target_reached", "Target first reached", [record.id], record.observed_at, record.received_at, record.received_at))
+                break
+
+    analysis = _goal_analysis(room_after, followup) if room_after else {"verified_at": None, "verified_segment": []}
+    verified_at = analysis["verified_at"]
+    verified_segment = analysis["verified_segment"]
+    if verified_at is not None and verified_segment:
+        last = verified_segment[-1]
+        entries.append(_timeline_entry("goal_verified", "Hold completed and goal verified", [r.id for r in verified_segment], verified_at, last.received_at, last.received_at))
+
+    for event in sorted(events, key=lambda e: (e.available_at, e.event_time, e.id)):
+        if event.kind in CORROBORATION_EVENT_KINDS:
+            entries.append(_timeline_entry("hvac_completion_report", "HVAC completion report available", [event.id], event.event_time, event.available_at, event.available_at, corroboration_only=True))
+
+    arrival = _arrival(scenario, followup, now)
+    if arrival is not None and now >= arrival:
+        through = [r for r in room_all if r.observed_at <= arrival and r.observed_at > created_at]
+        if through and through[-1].observed_at >= arrival:
+            last = through[-1]
+            first_known = max(arrival, last.received_at)
+            if first_known <= now:
+                support = list(dict.fromkeys([r.id for r in verified_segment] + [last.id]))
+                entries.append(_timeline_entry("arrival_checked", "Arrival checked", support, arrival, last.received_at, first_known))
+
+    entries = [e for e in entries if e["first_known_at"] <= now]
+    entries.sort(key=lambda e: (e["first_known_at"], e["observed_at"], e["kind"]))
+    return entries
+
+
+evidence_timeline = build_evidence_timeline

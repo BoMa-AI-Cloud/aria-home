@@ -185,6 +185,12 @@ test("video scenario shows verification stages and simulated timeline", async ({
 
   await demoControls.getByRole("button", { name: "20:21" }).click();
   await expect(headline).toContainText("Temperature goal verified");
+  const evidenceTimeline = page.locator("section", {
+    has: page.getByRole("heading", { name: "Evidence timeline" }),
+  });
+  await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(4);
+  await expect(evidenceTimeline).not.toContainText("HVAC completion report available");
+  await expect(evidenceTimeline).not.toContainText("Corroboration only");
   const report = timeline.locator("article", { hasText: "HVAC completion report" });
   await expect(report).toHaveCount(0);
   await expect(timeline).not.toContainText("Corroboration only");
@@ -195,6 +201,24 @@ test("video scenario shows verification stages and simulated timeline", async ({
 
   await demoControls.getByRole("button", { name: "21:01" }).click();
   await expect(headline).toContainText("Arrival expectation met");
+  await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(6);
+  expect(
+    (await evidenceTimeline.locator(".evidence-timeline-label").allTextContents()).map((t) => t.trim()),
+  ).toEqual([
+    "Thermostat reporting restored",
+    "Warming first observed",
+    "Target first reached",
+    "Hold completed and goal verified",
+    "HVAC completion report available",
+    "Arrival checked",
+  ]);
+  const reportRow = evidenceTimeline.locator(".evidence-timeline-entry", {
+    hasText: "HVAC completion report available",
+  });
+  await expect(reportRow).toContainText("Corroboration only");
+  await expect(reportRow).toContainText("8:45 PM ET");
+  await expect(evidenceTimeline.locator(".evidence-timeline-entry").first()).toContainText("6:20 PM ET");
+  await expect(evidenceTimeline.locator(".evidence-timeline-entry").last()).toContainText("9:00 PM ET");
   await expect(outcome).toContainText("Latest reading used: observed");
   await expect(outcome.locator(".stage-times")).not.toContainText("8:40 PM");
   await expect(outcome).not.toContainText("8:40 PM");
@@ -336,6 +360,7 @@ test("without inset the full page still renders all panels", async ({ page }) =>
     "Confirmed plan and permissions",
     "Investigation",
     "Outcome",
+    "Evidence timeline",
     "Notifications (simulated delivery)",
     "Homeowner update",
     "Simulated timeline",

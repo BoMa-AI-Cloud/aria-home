@@ -145,3 +145,25 @@ test("i9-arrival", async ({ page }) => {
   await show(page, outcome.locator(".outcome-status"), 3500);
   await show(page, update, 4000);
 });
+
+test("i10-timeline", async ({ page }) => {
+  await openInset(page, "evidence-timeline");
+  await replay(page, "21:01");
+  const timeline = section(page, "Evidence timeline");
+  await expect(timeline.locator(".evidence-timeline-entry")).toHaveCount(6);
+  for (const label of [
+    "Thermostat reporting restored",
+    "Warming first observed",
+    "Target first reached",
+    "Hold completed and goal verified",
+    "HVAC completion report available",
+    "Arrival checked",
+  ]) {
+    await expect(timeline).toContainText(label);
+  }
+  const report = timeline.locator(".evidence-timeline-entry", {
+    hasText: "HVAC completion report available",
+  });
+  await expect(report).toContainText("Corroboration only");
+  await show(page, timeline, 7000);
+});

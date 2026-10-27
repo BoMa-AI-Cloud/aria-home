@@ -17,7 +17,7 @@ from aria_home.provider import ProviderConfig, get_provider
 from aria_home.scenario import context_as_of, events_as_of, load_scenario, visible_records
 from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
-from aria_home.verification import verify_recovery
+from aria_home.verification import build_evidence_timeline, verify_recovery
 from aria_home.notifications import create_hvac_notification, create_investigation_notifications
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
@@ -460,6 +460,18 @@ def create_app():
                 entry_verification = verify_recovery(scn, follow_up, entry_at)
                 verification_history.append({"evaluated_at": entry["evaluated_at"], "stage": entry_verification["stage"], "sample_count": entry.get("sample_count")})
             payload["verification_history"] = verification_history
+        timeline = build_evidence_timeline(scn, follow_up, at) if any(r.source is SourceKind.room_sensor for r in scn.records) else []
+        payload["evidence_timeline"] = [
+            {
+                **entry,
+                "observed_at": entry["observed_at"].isoformat() if hasattr(entry["observed_at"], "isoformat") else entry["observed_at"],
+                "received_at": entry["received_at"].isoformat() if hasattr(entry["received_at"], "isoformat") else entry["received_at"],
+                "available_at": entry["available_at"].isoformat() if hasattr(entry["available_at"], "isoformat") else entry["available_at"],
+                "first_known_at": entry["first_known_at"].isoformat() if hasattr(entry["first_known_at"], "isoformat") else entry["first_known_at"],
+                "evaluated_at": entry["evaluated_at"].isoformat() if hasattr(entry["evaluated_at"], "isoformat") else entry["evaluated_at"],
+            }
+            for entry in timeline
+        ]
         if scn.manifest.id == "demo_video_v1" and not is_rewind:
             stored_output = investigation_row["output"] if investigation_row else None
             pseudo = {"output": stored_output} if stored_output else None

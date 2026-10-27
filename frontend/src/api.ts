@@ -663,6 +663,27 @@ export interface EventsResponse {
   events: ScenarioEvent[];
 }
 
+export type EvidenceTimelineKind =
+  | "reporting_restored"
+  | "warming_observed"
+  | "target_reached"
+  | "goal_verified"
+  | "hvac_completion_report"
+  | "arrival_checked";
+
+export interface EvidenceTimelineEntry {
+  kind: EvidenceTimelineKind;
+  label: string;
+  supporting_ids: string[];
+  supporting_record_ids: string[];
+  observed_at: string;
+  received_at: string;
+  available_at: string;
+  first_known_at: string;
+  evaluated_at: string;
+  corroboration_only: boolean;
+}
+
 export interface FollowUpResponse {
   data_mode: DataMode;
   investigation_id: string;
@@ -676,6 +697,7 @@ export interface FollowUpResponse {
   history: OutcomeHistoryEntry[];
   verification?: VerificationResult | null;
   verification_history?: VerificationHistoryEntry[];
+  evidence_timeline?: EvidenceTimelineEntry[];
   notifications?: Notification[];
 }
 
