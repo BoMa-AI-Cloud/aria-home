@@ -42,10 +42,10 @@ These are builder-labeled cases on synthetic data — a small sample, not a benc
 | Condition | Fully correct (of 12) |
 |---|---|
 | Combined (all sources) | 12 |
-| Thermostat only | 8 |
+| Thermostat only | 7 |
 | Room sensor only | 3 |
-| Electrical only | 3 |
-| Calendar only | 3 |
+| Electrical only | 2 |
+| Calendar only | 2 |
 
 Combined evidence matches every expected readiness label and every scored verification stage. Single-source conditions mostly fall back to unsupported answers (`cannot_tell`, `telemetry_missing`, `unable_to_verify`) rather than asserting the opposite. Two findings stand out: during the thermostat outage, thermostat-only evidence cannot support even a current-temperature claim, while independent room readings still show no warming; and electrical activity alone never supports a useful-heat claim — only temperature evidence can show warming.
 
