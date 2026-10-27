@@ -36,6 +36,39 @@ async function replay(page: Page, label: string) {
   await page.locator(".demo-controls").getByRole("button", { name: label }).click();
 }
 
+test("c1-opening", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/cards.html#opening");
+  await expect(
+    page.getByText(
+      "ARIA is my existing personal-assistant project. Its name, planning notes, and ARIA Home designs predate this event. All ARIA Home code shown was written this week with Meta's Muse models.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("Synthetic demo data")).toBeVisible();
+  await page.waitForTimeout(5000);
+});
+
+test("c2-evaluation", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/cards.html#evaluation");
+  await expect(page.getByText("Combined (all sources)")).toBeVisible();
+  await expect(page.getByText("12/12")).toBeVisible();
+  await expect(page.getByText("Thermostat only")).toBeVisible();
+  await expect(page.getByText("8/12")).toBeVisible();
+  await expect(page.getByText("12 builder-labelled synthetic cases. Not a benchmark of real homes.")).toBeVisible();
+  await page.waitForTimeout(5000);
+});
+
+test("c3-closing", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/cards.html#closing");
+  await expect(page.getByText("Not just an automation completed. An expectation met.")).toBeVisible();
+  await expect(
+    page.getByText(
+      "ARIA Home connects the plan, coordinates the response, and verifies the result, so coming home feels like coming home.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("https://github.com/BoMa-AI-Cloud/aria-home")).toBeVisible();
+  await page.waitForTimeout(5000);
+});
+
 test("s1-trip-cards", async ({ page }) => {
   await openVideoScenario(page);
 

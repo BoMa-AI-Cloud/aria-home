@@ -30,6 +30,13 @@ def create_app():
     def health():
         return jsonify({"status": "ok", "service": "aria-home-backend", "data_mode": "synthetic"})
 
+    @app.get("/api/evaluation/offline")
+    def evaluation_offline():
+        import json
+
+        path = Path(__file__).resolve().parent.parent / "eval" / "results-offline.json"
+        return jsonify(json.loads(path.read_text(encoding="utf-8")))
+
     @app.get("/api/sources")
     def sources():
         raw_at = request.args.get("at")

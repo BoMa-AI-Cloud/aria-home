@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARIA Home — Title cards</title>
+    <link rel="icon" href="data:," />
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: #f7f5f0; color: #17202a; font-family: Georgia, "Times New Roman", serif; }
+      body { width: 1280px; height: 720px; overflow: hidden; }
+      main { width: 1280px; height: 720px; display: flex; align-items: center; justify-content: center; padding: 64px 80px; }
+      section[hidden] { display: none; }
+      section { max-width: 1020px; text-align: left; }
+      h1 { font-size: 56px; line-height: 1.08; margin: 0 0 28px; font-weight: 700; }
+      p { font-size: 34px; line-height: 1.35; margin: 0 0 24px; }
+      .label { font-family: Arial, Helvetica, sans-serif; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 28px; }
+      .small { font-size: 26px; }
+      table { border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; font-size: 30px; margin: 8px 0 28px; }
+      th, td { border: 2px solid #17202a; padding: 12px 22px; text-align: left; }
+      th { background: #e8e2d5; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section data-card="opening">
+        <p class="label">ARIA Home</p>
+        <h1>ARIA is my existing personal-assistant project. Its name, planning notes, and ARIA Home designs predate this event. All ARIA Home code shown was written this week with Meta's Muse models.</h1>
+        <p>Synthetic demo data</p>
+      </section>
+      <section data-card="evaluation" hidden>
+        <p class="label">Evaluation — offline</p>
+        <h1>Offline evaluation</h1>
+        <table>
+          <thead><tr><th>Condition</th><th>Fully correct</th></tr></thead>
+          <tbody id="evaluation-rows"></tbody>
+        </table>
+        <p class="small" id="evaluation-note">Loading evaluation results…</p>
+      </section>
+      <section data-card="closing" hidden>
+        <p class="label">ARIA Home</p>
+        <h1>Not just an automation completed. An expectation met.</h1>
+        <p>ARIA Home connects the plan, coordinates the response, and verifies the result, so coming home feels like coming home.</p>
+        <p class="small">https://github.com/BoMa-AI-Cloud/aria-home</p>
+      </section>
+    </main>
+    <script type="module" src="/src/cards.ts"></script>
+  </body>
+</html>

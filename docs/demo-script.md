@@ -356,6 +356,12 @@ Recording footage:
 - Clips land in `frontend/recordings/` (ignored by git), one `.webm` per
   storyboard segment: `s1-trip-cards`, `s2-not-responding`,
   `s3-authorized-help`, `s4-recovery`, and `s5-report-and-arrival`.
-- The footage is the real UI; the evaluation title card (section A,
-  2:10-2:25) and the front-door / warm-room door shots are not product UI
-  and are not recorded by this command.
+- The same command also records three title-card clips from
+  `frontend/cards.html`: `c1-opening`, `c2-evaluation`, and
+  `c3-closing`. These are title cards, not product UI: the opening and
+  closing cards carry the section A disclosure / closing lines, and the
+  evaluation card shows the offline totals read at runtime from
+  `backend/eval/results-offline.json` via `GET /api/evaluation/offline`.
+- The footage of the five `s*` segments is the real UI; the front-door /
+  warm-room door shots are not product UI and are not recorded by this
+  command.
