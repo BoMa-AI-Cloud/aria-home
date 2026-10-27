@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "record:demo": "playwright test -c playwright.record.config.ts",
+    "record:insets": "playwright test -c playwright.record.config.ts --project=insets",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

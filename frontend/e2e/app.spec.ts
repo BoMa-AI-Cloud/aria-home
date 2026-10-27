@@ -305,6 +305,21 @@ test("video scenario shows scoped simulated notifications and homeowner update",
   expect(failedRequests).toEqual([]);
 });
 
+test("without inset the full page still renders all panels", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  for (const heading of [
+    "Investigation",
+    "Outcome",
+    "Notifications (simulated delivery)",
+    "Homeowner update",
+    "Simulated timeline",
+    "Evidence sources",
+  ]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(page.locator(".page")).not.toHaveClass(/inset-active/);
+});
+
 test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) => {
   await page.goto("http://127.0.0.1:5173/");
 
@@ -329,4 +344,59 @@ test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) 
   await expect(replay2101).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met");
+});
+
+test("source cards follow scenario, replay advance and rewind in ET", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  const headerTime = page.locator("header .eval-time");
+  const evidence = page.locator("section", {
+    has: page.getByRole("heading", { name: "Evidence sources" }),
+  });
+  const investigation = page.locator("section", {
+    has: page.getByRole("heading", { name: "Investigation" }),
+  });
+  const thermostat = page.locator('article[aria-label="thermostat source"]');
+  await expect(headerTime).toContainText("6:00 PM ET");
+  const initialCard = await thermostat.innerText();
+
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+  await expect(headerTime).toContainText("4:31 PM ET");
+  await expect(investigation).toContainText("4:31 PM ET");
+  await expect(thermostat).not.toHaveText(initialCard);
+
+  const demoControls = page.locator(".demo-controls");
+  await demoControls.getByRole("button", { name: "18:21" }).click();
+  await expect(headerTime).toContainText("6:21 PM ET");
+  await expect(investigation).toContainText(/Historical investigation/);
+  const advancedCard = await thermostat.innerText();
+  expect(advancedCard).not.toEqual(initialCard);
+
+  await demoControls.getByRole("button", { name: "16:31" }).click();
+  await expect(headerTime).toContainText("4:31 PM ET");
+});
+
+test("rapid replay selections end on the last selection", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  const headerTime = page.locator("header .eval-time");
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Outcome" }),
+  });
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+  const demoControls = page.locator(".demo-controls");
+  await expect(demoControls.getByRole("button", { name: "16:31" })).toBeEnabled();
+  await demoControls.getByRole("button", { name: "19:51" }).click();
+  await demoControls.getByRole("button", { name: "20:21" }).click();
+  await demoControls.getByRole("button", { name: "21:01" }).click();
+  await expect(headerTime).toContainText("9:01 PM ET");
+  await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met");
+});
+
+test("scenario times show ET in both browser timezones", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+  const investigation = page.locator("section", {
+    has: page.getByRole("heading", { name: "Investigation" }),
+  });
+  await expect(investigation).toContainText("4:31 PM ET");
+  await expect(page.locator("header .eval-time")).toContainText("4:31 PM ET");
 });

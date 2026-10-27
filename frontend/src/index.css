@@ -402,3 +402,27 @@ section {
   font-size: 1.1rem;
   font-weight: 700;
 }
+
+/* Test-only inset zoom (?inset=<panel>, set in App.tsx): hides everything except the target panel and scales it to fill the viewport. No effect without the parameter. Demo controls stay in the DOM above the panel so replay buttons remain usable, then scroll out of view. */
+.page.inset-active {
+  max-width: none;
+  padding: 0.75rem;
+}
+
+.page.inset-active main > header,
+.page.inset-active .banner {
+  display: none;
+}
+
+.page.inset-active main > section:not(.inset-target) {
+  display: none;
+}
+
+.page.inset-active main > section.inset-target {
+  margin-bottom: 0;
+  zoom: 1.65;
+}
+
+.page.inset-not-responding main > section[aria-labelledby="investigation-heading"] > *:not(h2):not(.readiness-block) {
+  display: none;
+}

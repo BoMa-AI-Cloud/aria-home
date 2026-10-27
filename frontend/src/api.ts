@@ -154,6 +154,8 @@ export interface HomeownerConfirmation {
 
 export interface MetricsResponse {
   data_mode: DataMode;
+  scenario?: string;
+  timezone?: string;
   computed_by: string;
   at: string;
   zone: string;
@@ -333,6 +335,9 @@ export interface Investigation {
 
 export interface InvestigationResponse extends Investigation {
   data_mode: DataMode;
+  scenario?: string;
+  at?: string;
+  timezone?: string;
   readiness: ReadinessResult | null;
   computed_readiness: ReadinessStatus | null;
   evaluated_at?: string;
@@ -399,6 +404,9 @@ export interface Notification {
 
 export interface NotificationsResponse {
   data_mode: DataMode;
+  scenario?: string;
+  at?: string;
+  timezone?: string;
   investigation_id: string | null;
   notifications: Notification[];
 }
@@ -416,11 +424,16 @@ export interface HealthResponse {
   status: string;
   service: string;
   data_mode: DataMode;
+  scenario: string;
+  at: string;
+  timezone: string;
 }
 
 export interface SourcesResponse {
   data_mode: DataMode;
+  scenario: string;
   at: string;
+  timezone: string;
   sources: SourceStatus[];
 }
 
@@ -436,18 +449,27 @@ export function fetchHealth(): Promise<HealthResponse> {
   return fetchJson<HealthResponse>("/api/health");
 }
 
-export function fetchSources(at?: string): Promise<SourcesResponse> {
-  const query = at ? `?at=${encodeURIComponent(at)}` : "";
+export function fetchSources(scenario?: string, at?: string): Promise<SourcesResponse> {
+  const params = new URLSearchParams();
+  if (scenario) params.set("scenario", scenario);
+  if (at) params.set("at", at);
+  const query = params.toString() ? `?${params.toString()}` : "";
   return fetchJson<SourcesResponse>(`/api/sources${query}`);
 }
 
-export function fetchMetrics(at?: string): Promise<MetricsResponse> {
-  const query = at ? `?at=${encodeURIComponent(at)}` : "";
+export function fetchMetrics(at?: string, scenario?: string): Promise<MetricsResponse> {
+  const params = new URLSearchParams();
+  if (at) params.set("at", at);
+  if (scenario) params.set("scenario", scenario);
+  const query = params.toString() ? `?${params.toString()}` : "";
   return fetchJson<MetricsResponse>(`/api/metrics${query}`);
 }
 
-export function fetchInvestigation(at?: string): Promise<InvestigationResponse> {
-  const query = at ? `?at=${encodeURIComponent(at)}` : "";
+export function fetchInvestigation(at?: string, scenario?: string): Promise<InvestigationResponse> {
+  const params = new URLSearchParams();
+  if (at) params.set("at", at);
+  if (scenario) params.set("scenario", scenario);
+  const query = params.toString() ? `?${params.toString()}` : "";
   return fetchJson<InvestigationResponse>(`/api/investigation${query}`);
 }
 
@@ -513,6 +535,8 @@ export type CreateInvestigationStatus =
 
 export interface CreateInvestigationResponse {
   data_mode: DataMode;
+  at?: string;
+  timezone?: string;
   investigation_id: string;
   id: string;
   scenario: string;
@@ -541,6 +565,7 @@ export type VerificationStage =
   | "reporting_restored"
   | "warming_observed"
   | "goal_verified"
+  | "goal_not_maintained"
   | "arrival_met"
   | "unable_to_verify";
 
@@ -551,6 +576,8 @@ export interface VerificationResult {
   corroboration_ids: string[];
   corroboration: string[];
   evaluated_at: string;
+  goal_verified_at?: string | null;
+  arrival_met_at?: string | null;
   latest_reading_used?: { id?: string | null; observed_at: string; received_at: string } | null;
 }
 
@@ -573,6 +600,7 @@ export interface EventsResponse {
   data_mode: DataMode;
   scenario: string;
   at: string;
+  timezone?: string;
   events: ScenarioEvent[];
 }
 
@@ -580,6 +608,8 @@ export interface FollowUpResponse {
   data_mode: DataMode;
   investigation_id: string;
   scenario: string;
+  at?: string;
+  timezone?: string;
   status: OutcomeStatus;
   outcome: OutcomeResult;
   follow_up: FollowUpPayload | null;
@@ -595,11 +625,16 @@ export async function createInvestigation(
   at: string,
 ): Promise<CreateInvestigationResponse> {
   const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
-  const response = await fetch(`/api/investigations${query}`, { method: "POST" });
-  if (!response.ok) {
-    throw new Error(`POST /api/investigations failed with status ${response.status}`);
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const response = await fetch(`/api/investigations${query}`, { method: "POST" });
+    if (!response.ok) {
+      throw new Error(`POST /api/investigations failed with status ${response.status}`);
+    }
+    const body = (await response.json()) as CreateInvestigationResponse;
+    if (response.status !== 202) return body;
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
-  return (await response.json()) as CreateInvestigationResponse;
+  throw new Error("POST /api/investigations still pending");
 }
 
 export function fetchFollowUp(investigationId: string, at: string): Promise<FollowUpResponse> {
@@ -613,8 +648,11 @@ export function fetchEvents(scenario: string, at: string): Promise<EventsRespons
   return fetchJson<EventsResponse>(`/api/events${query}`);
 }
 
-export function fetchNotifications(investigationId?: string | null): Promise<NotificationsResponse> {
-  const query = investigationId ? `?investigation_id=${encodeURIComponent(investigationId)}` : "";
+export function fetchNotifications(investigationId?: string | null, at?: string): Promise<NotificationsResponse> {
+  const params = new URLSearchParams();
+  if (investigationId) params.set("investigation_id", investigationId);
+  if (at) params.set("at", at);
+  const query = params.toString() ? `?${params.toString()}` : "";
   return fetchJson<NotificationsResponse>(`/api/notifications${query}`);
 }
 

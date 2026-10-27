@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ackNotification,
   createInvestigation,
@@ -65,6 +65,7 @@ const VERIFICATION_LABEL: Record<VerificationStage, string> = {
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
   goal_verified: "Temperature goal verified",
+  goal_not_maintained: "Temperature goal no longer maintained",
   arrival_met: "Arrival expectation met",
   unable_to_verify: "Unable to verify",
 };
@@ -118,18 +119,26 @@ function formatAge(age_s: number | null): string {
   return minutes === 0 ? `${hours}h old` : `${hours}h ${minutes}min old`;
 }
 
+const PROPERTY_TIMEZONE = "America/New_York";
+
+function startAtForScenario(scenarioId: string): string {
+  return scenarioId === VIDEO_SCENARIO ? VIDEO_START_AT : REPLAY_START_AT;
+}
+
 function formatTimestamp(value: string | null): string {
   if (!value) return "No reading";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? value
-    : date.toLocaleString(undefined, {
+    : `${new Intl.DateTimeFormat("en-US", {
+        timeZone: PROPERTY_TIMEZONE,
         year: "numeric",
         month: "numeric",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
-      });
+        hour12: true,
+      }).format(date)} ET`;
 }
 
 const PAYLOAD_LABELS: Record<string, string> = {
@@ -192,6 +201,7 @@ const VALUE_LABELS: Record<string, string> = {
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
   goal_verified: "Temperature goal verified",
+  goal_not_maintained: "Temperature goal no longer maintained",
   arrival_met: "Arrival expectation met",
   unable_to_verify: "Unable to verify",
 };
@@ -302,10 +312,12 @@ function InvestigationSection({
   data,
   error,
   created,
+  replayAt,
 }: {
   data: InvestigationResponse | null;
   error: string | null;
   created: CreateInvestigationResponse | null;
+  replayAt: string | null;
 }) {
   if (!data && !error) return <p role="status">Loading investigation…</p>;
   if (error) {
@@ -340,10 +352,25 @@ function InvestigationSection({
     created?.investigation?.evaluated_at ??
     data.evidence_pack?.at ??
     null;
+  const isHistorical =
+    evaluatedAt !== null &&
+    replayAt !== null &&
+    !Number.isNaN(Date.parse(evaluatedAt)) &&
+    !Number.isNaN(Date.parse(replayAt)) &&
+    Date.parse(evaluatedAt) < Date.parse(replayAt);
   const evaluationLine = evaluatedAt ? (
-    <p className="investigation-evaluation-time">
-      Evaluation time: <time dateTime={evaluatedAt}>{formatTimestamp(evaluatedAt)}</time>
-    </p>
+    <>
+      <p className="investigation-evaluation-time">
+        Evaluation time: <time dateTime={evaluatedAt}>{formatTimestamp(evaluatedAt)}</time>
+      </p>
+      {isHistorical && (
+        <p className="historical-investigation" role="note">
+          Historical investigation — evaluated earlier than the replay time{" "}
+          <time dateTime={replayAt}>{formatTimestamp(replayAt)}</time>; this investigation was
+          evaluated at an earlier time than the replay time.
+        </p>
+      )}
+    </>
   ) : null;
 
   if (data.status === "rejected" || data.status === "unavailable" || !data.output) {
@@ -865,7 +892,23 @@ function HomeownerUpdateCard({
   );
 }
 
+const INSET_TARGETS: Record<string, string[]> = {
+  timeline: ["timeline"],
+  outcome: ["outcome"],
+  notifications: ["notifications"],
+  investigation: ["investigation"],
+  homeowner: ["homeowner"],
+  evidence: ["evidence"],
+  "not-responding": ["outcome", "investigation"],
+  arrival: ["outcome", "homeowner"],
+};
+
 export default function App() {
+  // Test-only inset zoom: ?inset=<panel> hides all but that panel and scales it (see index.css). No effect without the parameter.
+  const inset =
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("inset") : null;
+  const insetPanels = inset ? (INSET_TARGETS[inset] ?? []) : [];
+  const insetClass = (panel: string) => (insetPanels.includes(panel) ? "inset-target" : undefined);
   const [data, setData] = useState<SourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [createdInvestigation, setCreatedInvestigation] =
@@ -886,24 +929,35 @@ export default function App() {
   const [notificationsError, setNotificationsError] = useState<string | null>(null);
   const [ackingId, setAckingId] = useState<string | null>(null);
   const [followUpTargetTemp, setFollowUpTargetTemp] = useState<number | null>(null);
+  const [selectedAt, setSelectedAt] = useState<string>(REPLAY_START_AT);
+  const [sourcesLoading, setSourcesLoading] = useState(false);
+  const sourcesTokenRef = useRef(0);
+  const investigationTokenRef = useRef(0);
+  const replayTokenRef = useRef(0);
+  const eventsTokenRef = useRef(0);
 
   useEffect(() => {
-    let cancelled = false;
-    fetchSources()
+    const token = ++sourcesTokenRef.current;
+    setSourcesLoading(true);
+    setError(null);
+    fetchSources(scenario, selectedAt)
       .then((response) => {
-        if (!cancelled) setData(response);
+        if (token !== sourcesTokenRef.current) return;
+        if (response.scenario !== scenario) return;
+        if (Date.parse(response.at) !== Date.parse(selectedAt)) return;
+        setData(response);
+        setSourcesLoading(false);
       })
       .catch(() => {
-        if (!cancelled) setError("Backend not reachable");
+        if (token !== sourcesTokenRef.current) return;
+        setError("Backend not reachable");
+        setSourcesLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }, [scenario, selectedAt]);
 
   useEffect(() => {
-    let cancelled = false;
-    const startAt = scenario === VIDEO_SCENARIO ? VIDEO_START_AT : REPLAY_START_AT;
+    const token = ++investigationTokenRef.current;
+    const startAt = startAtForScenario(scenario);
     setReplayLoading(true);
     setReplayError(null);
     setCreatedInvestigation(null);
@@ -919,7 +973,8 @@ export default function App() {
     setReplayAt(null);
     createInvestigation(scenario, startAt)
       .then((response) => {
-        if (cancelled) return;
+        if (token !== investigationTokenRef.current) return;
+        if (response.scenario !== scenario) return;
         setCreatedInvestigation(response);
         setInvestigationId(response.investigation_id);
         setOutcome(response.outcome);
@@ -944,7 +999,8 @@ export default function App() {
         setReplayLoading(false);
         fetchFollowUp(response.investigation_id, startAt)
           .then((followUp) => {
-            if (cancelled) return;
+            if (token !== investigationTokenRef.current) return;
+            if (followUp.scenario !== scenario) return;
             setOutcome(followUp.outcome);
             setHistory(followUp.history);
             setVerification(followUp.verification ?? null);
@@ -952,9 +1008,9 @@ export default function App() {
             if (followUp.notifications) {
               setNotifications(followUp.notifications);
             } else {
-              fetchNotifications(response.investigation_id)
+              fetchNotifications(response.investigation_id, startAt)
                 .then((notifs) => {
-                  if (!cancelled) setNotifications(notifs.notifications);
+                  if (token === investigationTokenRef.current) setNotifications(notifs.notifications);
                 })
                 .catch(() => undefined);
             }
@@ -962,37 +1018,48 @@ export default function App() {
           .catch(() => undefined);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (token !== investigationTokenRef.current) return;
         setInvestigationId(null);
         setReplayError("Follow-up not reachable");
         setReplayLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
   }, [scenario]);
 
   useEffect(() => {
     if (!replayAt) return;
-    let cancelled = false;
+    const token = ++eventsTokenRef.current;
     fetchEvents(scenario, replayAt)
       .then((response) => {
-        if (!cancelled) setEvents(response.events);
+        if (token !== eventsTokenRef.current) return;
+        if (response.scenario !== scenario) return;
+        if (Date.parse(response.at) !== Date.parse(replayAt)) return;
+        setEvents(response.events);
       })
       .catch(() => {
-        if (!cancelled) setEvents([]);
+        if (token === eventsTokenRef.current) setEvents([]);
       });
-    return () => {
-      cancelled = true;
-    };
   }, [scenario, replayAt]);
+
+  function handleScenarioChange(nextScenario: string) {
+    replayTokenRef.current += 1;
+    investigationTokenRef.current += 1;
+    sourcesTokenRef.current += 1;
+    setScenario(nextScenario);
+    setSelectedAt(startAtForScenario(nextScenario));
+    setSourcesLoading(true);
+  }
 
   function handleReplayTime(at: string) {
     if (!investigationId) return;
+    const token = ++replayTokenRef.current;
+    setSelectedAt(at);
     setReplayLoading(true);
     setReplayError(null);
     fetchFollowUp(investigationId, at)
       .then((response) => {
+        if (token !== replayTokenRef.current) return;
+        if (response.scenario !== scenario) return;
+        if (response.at && Date.parse(response.at) !== Date.parse(at)) return;
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
@@ -1001,14 +1068,19 @@ export default function App() {
           setNotifications(response.notifications);
           setNotificationsError(null);
         } else {
-          fetchNotifications(investigationId)
-            .then((notifs) => setNotifications(notifs.notifications))
-            .catch(() => setNotificationsError("Notifications not reachable"));
+          fetchNotifications(investigationId, at)
+            .then((notifs) => {
+              if (token === replayTokenRef.current) setNotifications(notifs.notifications);
+            })
+            .catch(() => {
+              if (token === replayTokenRef.current) setNotificationsError("Notifications not reachable");
+            });
         }
         setReplayAt(at);
         setReplayLoading(false);
       })
       .catch(() => {
+        if (token !== replayTokenRef.current) return;
         setReplayError("Follow-up not reachable");
         setReplayLoading(false);
       });
@@ -1054,7 +1126,7 @@ export default function App() {
   });
 
   return (
-    <div className="page">
+    <div className={`page${inset && insetPanels.length ? ` inset-active inset-${inset}` : ""}`}>
       <section className="demo-controls" aria-label="Demo controls">
         <p className="demo-controls-title">Demo controls (synthetic replay)</p>
         <label className="demo-scenario">
@@ -1062,7 +1134,7 @@ export default function App() {
           <select
             aria-label="Scenario"
             value={scenario}
-            onChange={(event) => setScenario(event.target.value)}
+            onChange={(event) => handleScenarioChange(event.target.value)}
           >
             {SCENARIOS.map((option) => (
               <option key={option.id} value={option.id}>
@@ -1077,8 +1149,8 @@ export default function App() {
               key={time.at}
               type="button"
               onClick={() => handleReplayTime(time.at)}
-              disabled={!investigationId || replayLoading}
-              aria-pressed={replayAt === time.at}
+              disabled={!investigationId}
+              aria-pressed={selectedAt === time.at}
               aria-label={`Replay to ${time.label}`}
             >
               {time.label}
@@ -1103,12 +1175,12 @@ export default function App() {
         )}
       </header>
 
-      <section aria-labelledby="investigation-heading">
+      <section aria-labelledby="investigation-heading" className={insetClass("investigation")}>
         <h2 id="investigation-heading">Investigation</h2>
-        <InvestigationSection data={displayInvestigation} error={investigationError} created={createdInvestigation} />
+        <InvestigationSection data={displayInvestigation} error={investigationError} created={createdInvestigation} replayAt={selectedAt} />
       </section>
 
-      <section aria-labelledby="outcome-heading">
+      <section aria-labelledby="outcome-heading" className={insetClass("outcome")}>
         <h2 id="outcome-heading">Outcome</h2>
         <OutcomeSection
           outcome={outcome}
@@ -1122,7 +1194,7 @@ export default function App() {
         />
       </section>
 
-      <section aria-labelledby="notifications-heading">
+      <section aria-labelledby="notifications-heading" className={insetClass("notifications")}>
         <h2 id="notifications-heading">Notifications (simulated delivery)</h2>
         <NotificationsSection
           notifications={visibleNotifications}
@@ -1132,7 +1204,7 @@ export default function App() {
         />
       </section>
 
-      <section aria-labelledby="homeowner-update-heading">
+      <section aria-labelledby="homeowner-update-heading" className={insetClass("homeowner")}>
         <h2 id="homeowner-update-heading">Homeowner update</h2>
         <HomeownerUpdateCard
           verification={verification}
@@ -1142,14 +1214,20 @@ export default function App() {
         />
       </section>
 
-      <section aria-labelledby="timeline-heading">
+      <section aria-labelledby="timeline-heading" className={insetClass("timeline")}>
         <h2 id="timeline-heading">Simulated timeline</h2>
         <SimulatedTimeline events={events} replayAt={replayAt} />
       </section>
 
-      <section aria-labelledby="evidence-heading">
+      <section aria-labelledby="evidence-heading" className={insetClass("evidence")}>
         <h2 id="evidence-heading">Evidence sources</h2>
-        {!data && !error && <p role="status">Loading evidence…</p>}
+        {sourcesLoading && data && (
+          <p role="status" className="stale-evidence">
+            Stale evidence — loading the selected scenario and replay time…
+          </p>
+        )}
+        {sourcesLoading && <p role="status">Loading evidence…</p>}
+        {!data && !error && !sourcesLoading && <p role="status">Loading evidence…</p>}
         {error && (
           <p role="alert" className="error">
             Backend not reachable

@@ -26,11 +26,15 @@ try {
 } catch {
 }
 
-const dbPath = path.join(os.tmpdir(), "aria-home-recording.db");
-for (const suffix of ["", "-wal", "-shm"]) {
-  try {
-    fs.unlinkSync(`${dbPath}${suffix}`);
-  } catch {
+const inheritedDbPath = process.env.ARIA_HOME_RECORDING_DB_PATH;
+const dbPath = inheritedDbPath ?? path.join(os.tmpdir(), `aria-home-recording-${process.pid}.db`);
+if (!inheritedDbPath) {
+  process.env.ARIA_HOME_RECORDING_DB_PATH = dbPath;
+  for (const suffix of ["", "-wal", "-shm"]) {
+    try {
+      fs.unlinkSync(`${dbPath}${suffix}`);
+    } catch {
+    }
   }
 }
 
@@ -52,7 +56,20 @@ export default defineConfig({
   projects: [
     {
       name: "chrome",
+      testMatch: "**/demo.record.ts",
       use: { channel: "chrome", headless: true },
+    },
+    {
+      name: "insets",
+      testMatch: "**/insets.record.ts",
+      outputDir: "recordings-insets",
+      use: {
+        channel: "chrome",
+        headless: true,
+        viewport: { width: 900, height: 506 },
+        deviceScaleFactor: 2,
+        video: { mode: "on", size: { width: 900, height: 506 } },
+      },
     },
   ],
   webServer: [
