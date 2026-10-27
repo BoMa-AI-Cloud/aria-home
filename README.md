@@ -127,6 +127,8 @@ From the day handoffs and the [feature freeze](docs/freeze.md) (frozen 2026-10-2
 
 Day-by-day record: [Day 1 handoff](docs/day1-handoff.md) · [Day 2 handoff](docs/day2-handoff.md) · [Day 3 handoff](docs/day3-handoff.md) · [Day 4 handoff](docs/day4-handoff.md) · [Day 5 handoff](docs/day5-handoff.md) · [Day 6 handoff](docs/day6-handoff.md) · [Timeline](docs/timeline.md) · [User-test kit](docs/usability.md) · [Feature freeze](docs/freeze.md)
 
+Submission: [Submission checklist and write-up](docs/submission.md)
+
 ## License
 
 No license has been chosen yet. Until one is added, all rights are reserved by the author.
