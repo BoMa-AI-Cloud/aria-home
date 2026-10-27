@@ -17,18 +17,18 @@
     },
     "thermostat_only": {
       "cases": 12,
-      "readiness_correct": 10,
+      "readiness_correct": 9,
       "readiness_wrong": 0,
-      "readiness_unsupported": 4,
+      "readiness_unsupported": 5,
       "target_at_arrival_scored": 4,
       "target_at_arrival_correct": 4,
       "verification_scored": 5,
       "verification_correct": 1,
-      "fully_correct": 8
+      "fully_correct": 7
     },
     "room_sensor_only": {
       "cases": 12,
-      "readiness_correct": 7,
+      "readiness_correct": 10,
       "readiness_wrong": 0,
       "readiness_unsupported": 9,
       "target_at_arrival_scored": 4,
@@ -39,25 +39,25 @@
     },
     "electrical_only": {
       "cases": 12,
-      "readiness_correct": 7,
+      "readiness_correct": 6,
       "readiness_wrong": 0,
-      "readiness_unsupported": 9,
+      "readiness_unsupported": 10,
       "target_at_arrival_scored": 4,
       "target_at_arrival_correct": 0,
       "verification_scored": 5,
       "verification_correct": 1,
-      "fully_correct": 3
+      "fully_correct": 2
     },
     "calendar_only": {
       "cases": 12,
-      "readiness_correct": 7,
+      "readiness_correct": 6,
       "readiness_wrong": 0,
-      "readiness_unsupported": 9,
+      "readiness_unsupported": 10,
       "target_at_arrival_scored": 4,
       "target_at_arrival_correct": 0,
       "verification_scored": 5,
       "verification_correct": 1,
-      "fully_correct": 3
+      "fully_correct": 2
     }
   },
   "highlights": [
@@ -256,44 +256,32 @@
     {
       "case_id": "demo_video_v1@16:31",
       "condition": "thermostat_only",
-      "kind": "unsupported_claim",
-      "claim": "current_temperature",
-      "detail": "thermostat_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31."
-    },
-    {
-      "case_id": "demo_video_v1@16:31",
-      "condition": "thermostat_only",
-      "kind": "unsupported_claim",
-      "claim": "target_gap",
-      "detail": "thermostat_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31."
+      "kind": "unsupported",
+      "expected_readiness": "at_risk",
+      "got_readiness": "cannot_tell",
+      "expected_verification": "telemetry_missing",
+      "got_verification": "telemetry_missing",
+      "detail": "thermostat_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
       "case_id": "demo_video_v1@16:31",
       "condition": "electrical_only",
-      "kind": "unsupported_claim",
-      "claim": "current_temperature",
-      "detail": "electrical_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31."
-    },
-    {
-      "case_id": "demo_video_v1@16:31",
-      "condition": "electrical_only",
-      "kind": "unsupported_claim",
-      "claim": "target_gap",
-      "detail": "electrical_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31."
+      "kind": "unsupported",
+      "expected_readiness": "at_risk",
+      "got_readiness": "cannot_tell",
+      "expected_verification": "telemetry_missing",
+      "got_verification": "telemetry_missing",
+      "detail": "electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
       "case_id": "demo_video_v1@16:31",
       "condition": "calendar_only",
-      "kind": "unsupported_claim",
-      "claim": "current_temperature",
-      "detail": "calendar_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31."
-    },
-    {
-      "case_id": "demo_video_v1@16:31",
-      "condition": "calendar_only",
-      "kind": "unsupported_claim",
-      "claim": "target_gap",
-      "detail": "calendar_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31."
+      "kind": "unsupported",
+      "expected_readiness": "at_risk",
+      "got_readiness": "cannot_tell",
+      "expected_verification": "telemetry_missing",
+      "got_verification": "telemetry_missing",
+      "detail": "calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
       "case_id": "demo_video_v1@18:21",
@@ -310,10 +298,10 @@
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
+      "got_readiness": "at_risk",
       "expected_verification": "reporting_restored",
       "got_verification": "telemetry_missing",
-      "detail": "room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored."
+      "detail": "room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/reporting_restored."
     },
     {
       "case_id": "demo_video_v1@18:21",
@@ -350,10 +338,10 @@
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
+      "got_readiness": "at_risk",
       "expected_verification": "warming_observed",
       "got_verification": "telemetry_missing",
-      "detail": "room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed."
+      "detail": "room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/warming_observed."
     },
     {
       "case_id": "demo_video_v1@18:51",
@@ -390,10 +378,10 @@
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "on_track",
-      "got_readiness": "cannot_tell",
+      "got_readiness": "on_track",
       "expected_verification": "goal_verified",
       "got_verification": "telemetry_missing",
-      "detail": "room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified."
+      "detail": "room_sensor_only gives unsupported answer (on_track/telemetry_missing) where combined gives the expected on_track/goal_verified."
     },
     {
       "case_id": "demo_video_v1@20:21",
@@ -1520,8 +1508,8 @@
       "at": "2026-01-16T16:31:00-05:00",
       "condition": "combined",
       "sources_kept": "all",
-      "expected_readiness": "cannot_tell",
-      "got_readiness": "cannot_tell",
+      "expected_readiness": "at_risk",
+      "got_readiness": "at_risk",
       "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
@@ -1550,9 +1538,9 @@
       "at": "2026-01-16T16:31:00-05:00",
       "condition": "thermostat_only",
       "sources_kept": "thermostat",
-      "expected_readiness": "cannot_tell",
+      "expected_readiness": "at_risk",
       "got_readiness": "cannot_tell",
-      "readiness_correct": true,
+      "readiness_correct": false,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -1560,8 +1548,8 @@
       "expected_verification": "telemetry_missing",
       "got_verification": "telemetry_missing",
       "verification_correct": true,
-      "correct": true,
-      "classification": "correct",
+      "correct": false,
+      "classification": "unsupported",
       "claims": {
         "current_temperature": false,
         "target_temperature": true,
@@ -1580,8 +1568,8 @@
       "at": "2026-01-16T16:31:00-05:00",
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
-      "expected_readiness": "cannot_tell",
-      "got_readiness": "cannot_tell",
+      "expected_readiness": "at_risk",
+      "got_readiness": "at_risk",
       "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
@@ -1610,9 +1598,9 @@
       "at": "2026-01-16T16:31:00-05:00",
       "condition": "electrical_only",
       "sources_kept": "electrical",
-      "expected_readiness": "cannot_tell",
+      "expected_readiness": "at_risk",
       "got_readiness": "cannot_tell",
-      "readiness_correct": true,
+      "readiness_correct": false,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -1620,8 +1608,8 @@
       "expected_verification": "telemetry_missing",
       "got_verification": "telemetry_missing",
       "verification_correct": true,
-      "correct": true,
-      "classification": "correct",
+      "correct": false,
+      "classification": "unsupported",
       "claims": {
         "current_temperature": false,
         "target_temperature": true,
@@ -1640,9 +1628,9 @@
       "at": "2026-01-16T16:31:00-05:00",
       "condition": "calendar_only",
       "sources_kept": "calendar",
-      "expected_readiness": "cannot_tell",
+      "expected_readiness": "at_risk",
       "got_readiness": "cannot_tell",
-      "readiness_correct": true,
+      "readiness_correct": false,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -1650,8 +1638,8 @@
       "expected_verification": "telemetry_missing",
       "got_verification": "telemetry_missing",
       "verification_correct": true,
-      "correct": true,
-      "classification": "correct",
+      "correct": false,
+      "classification": "unsupported",
       "claims": {
         "current_temperature": false,
         "target_temperature": true,
@@ -1731,8 +1719,8 @@
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
-      "readiness_correct": false,
+      "got_readiness": "at_risk",
+      "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -1881,8 +1869,8 @@
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
-      "readiness_correct": false,
+      "got_readiness": "at_risk",
+      "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -2031,8 +2019,8 @@
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "on_track",
-      "got_readiness": "cannot_tell",
-      "readiness_correct": false,
+      "got_readiness": "on_track",
+      "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,

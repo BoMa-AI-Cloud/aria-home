@@ -197,11 +197,29 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
 
     statuses = data.get("source_statuses") if isinstance(data.get("source_statuses"), list) else []
     thermostat_status = None
+    room_status = None
     for item in statuses:
-        if isinstance(item, dict) and item.get("source") == "thermostat":
+        if isinstance(item, dict) and item.get("source") == "thermostat" and thermostat_status is None:
             thermostat_status = item
-            break
-    availability = thermostat_status.get("availability") if thermostat_status else None
+        if isinstance(item, dict) and item.get("source") == "room_sensor" and room_status is None:
+            room_status = item
+    zone = metrics.get("zone") or data.get("zone")
+    evidence_list = data.get("evidence") if isinstance(data.get("evidence"), list) else []
+    has_room_sensor = any(
+        isinstance(item, dict)
+        and item.get("source") == "room_sensor"
+        and item.get("quantity") == "indoor_temp"
+        and (zone is None or item.get("subject") in (None, zone))
+        for item in evidence_list
+    ) or bool(room_status and _num(room_status.get("record_count")))
+    indoor_source = "room_sensor" if has_room_sensor else "thermostat"
+    indoor_status = room_status if has_room_sensor else thermostat_status
+    availability = indoor_status.get("availability") if indoor_status else None
+    thermostat_availability = thermostat_status.get("availability") if thermostat_status else None
+    thermostat_missing = has_room_sensor and (
+        thermostat_status is None or thermostat_availability in ("missing", "stale", "invalid")
+    )
+    thermostat_note = "thermostat telemetry missing; room sensor used" if thermostat_missing else None
 
     inputs = {
         "gap": gap_raw,
@@ -221,7 +239,11 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         "planned_arrival": arrival.isoformat() if arrival else (trip.get("planned_arrival") if trip else None),
         "now": now_dt.isoformat() if now_dt else None,
         "hours_to_arrival": hours_to_arrival,
-        "thermostat_availability": availability,
+        "thermostat_availability": thermostat_availability,
+        "indoor_source": indoor_source,
+        "indoor_availability": availability,
+        "room_sensor_availability": room_status.get("availability") if room_status else None,
+        "thermostat_telemetry_missing": thermostat_missing,
         "flags": flag_map,
         "thresholds": dict(THRESHOLDS),
     }
@@ -257,7 +279,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
 
     if availability == "conflicting":
         cannot.append("indoor readings are conflicting")
-    elif any(isinstance(s, dict) and s.get("availability") == "conflicting" for s in statuses):
+    elif not has_room_sensor and any(isinstance(s, dict) and s.get("availability") == "conflicting" for s in statuses):
         cannot.append("indoor readings are conflicting")
     if availability in ("missing", "stale", "invalid"):
         cannot.append(f"indoor reading is {availability}")
@@ -356,9 +378,13 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         if reason not in deduped:
             deduped.append(reason)
     if deduped:
+        if thermostat_note and thermostat_note not in deduped:
+            deduped.append(thermostat_note)
         return ReadinessResult(status="cannot_tell", reasons=deduped, inputs=inputs, target_at_arrival=None)
 
     if gap_f is not None and gap_f >= 0:
+        if thermostat_note:
+            reasons.append(thermostat_note)
         reasons.append("latest fresh indoor reading already meets the target")
         return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
 
@@ -390,9 +416,13 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
             and closes_in_h * 3600.0 <= hours_to_arrival * 3600.0 - ARRIVAL_TIME_MARGIN_S
         )
     if small_gap and sustained and with_margin:
+        if thermostat_note:
+            reasons.append(thermostat_note)
         reasons.append("gap is small and sustained warming over the trend window would close it before arrival with margin")
         return ReadinessResult(status="on_track", reasons=reasons, inputs=inputs, target_at_arrival=None)
 
+    if thermostat_note:
+        reasons.append(thermostat_note)
     reasons.append("At current readings the target may not be reached by arrival; this is not a guaranteed prediction.")
     if gap_f is not None:
         reasons.append(f"latest reading is {abs(gap_f):.1f} F below target")

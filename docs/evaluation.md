@@ -9,10 +9,10 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 | Condition | Cases | Readiness correct | Wrong | Unsupported | Target at arrival correct (scored) | Verification correct (scored) | Fully correct |
 |---|---|---|---|---|---|---|---|
 | combined | 12 | 12 | 0 | 0 | 4 (4) | 5 (5) | 12 |
-| thermostat_only | 12 | 10 | 0 | 4 | 4 (4) | 1 (5) | 8 |
-| room_sensor_only | 12 | 7 | 0 | 9 | 1 (4) | 1 (5) | 3 |
-| electrical_only | 12 | 7 | 0 | 9 | 0 (4) | 1 (5) | 3 |
-| calendar_only | 12 | 7 | 0 | 9 | 0 (4) | 1 (5) | 3 |
+| thermostat_only | 12 | 9 | 0 | 5 | 4 (4) | 1 (5) | 7 |
+| room_sensor_only | 12 | 10 | 0 | 9 | 1 (4) | 1 (5) | 3 |
+| electrical_only | 12 | 6 | 0 | 10 | 0 (4) | 1 (5) | 2 |
+| calendar_only | 12 | 6 | 0 | 10 | 0 (4) | 1 (5) | 2 |
 
 ## Cases
 
@@ -53,24 +53,24 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 | demo_cancelled_v1@18:00 | room_sensor_only | cannot_tell | cannot_tell | yes |
 | demo_cancelled_v1@18:00 | electrical_only | cannot_tell | cannot_tell | yes |
 | demo_cancelled_v1@18:00 | calendar_only | cannot_tell | cannot_tell | yes |
-| demo_video_v1@16:31 | combined | cannot_tell / telemetry_missing | cannot_tell / telemetry_missing | yes |
-| demo_video_v1@16:31 | thermostat_only | cannot_tell / telemetry_missing | cannot_tell / telemetry_missing | yes |
-| demo_video_v1@16:31 | room_sensor_only | cannot_tell / telemetry_missing | cannot_tell / telemetry_missing | yes |
-| demo_video_v1@16:31 | electrical_only | cannot_tell / telemetry_missing | cannot_tell / telemetry_missing | yes |
-| demo_video_v1@16:31 | calendar_only | cannot_tell / telemetry_missing | cannot_tell / telemetry_missing | yes |
+| demo_video_v1@16:31 | combined | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| demo_video_v1@16:31 | thermostat_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@16:31 | room_sensor_only | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| demo_video_v1@16:31 | electrical_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@16:31 | calendar_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:21 | combined | at_risk / reporting_restored | at_risk / reporting_restored | yes |
 | demo_video_v1@18:21 | thermostat_only | at_risk / reporting_restored | cannot_tell / unable_to_verify | no (unsupported) |
-| demo_video_v1@18:21 | room_sensor_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@18:21 | room_sensor_only | at_risk / reporting_restored | at_risk / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:21 | electrical_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:21 | calendar_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:51 | combined | at_risk / warming_observed | at_risk / warming_observed | yes |
 | demo_video_v1@18:51 | thermostat_only | at_risk / warming_observed | cannot_tell / unable_to_verify | no (unsupported) |
-| demo_video_v1@18:51 | room_sensor_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@18:51 | room_sensor_only | at_risk / warming_observed | at_risk / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:51 | electrical_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@18:51 | calendar_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@20:21 | combined | on_track / goal_verified | on_track / goal_verified | yes |
 | demo_video_v1@20:21 | thermostat_only | on_track / goal_verified | on_track / unable_to_verify | no (unsupported) |
-| demo_video_v1@20:21 | room_sensor_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
+| demo_video_v1@20:21 | room_sensor_only | on_track / goal_verified | on_track / telemetry_missing | no (unsupported) |
 | demo_video_v1@20:21 | electrical_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@20:21 | calendar_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
 | demo_video_v1@21:01 | combined | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / arrival_met (target at arrival: met) | yes |
@@ -102,22 +102,19 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - room_sensor_only cannot support the current_temperature claim that combined supports at demo_cancelled_v1@18:00.
 - electrical_only cannot support the current_temperature claim that combined supports at demo_cancelled_v1@18:00.
 - calendar_only cannot support the current_temperature claim that combined supports at demo_cancelled_v1@18:00.
-- thermostat_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31.
-- thermostat_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31.
-- electrical_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31.
-- electrical_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31.
-- calendar_only cannot support the current_temperature claim that combined supports at demo_video_v1@16:31.
-- calendar_only cannot support the target_gap claim that combined supports at demo_video_v1@16:31.
+- thermostat_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
+- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
+- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
 - thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/reporting_restored.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
+- room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
 - thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/warming_observed.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
+- room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/warming_observed.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
 - thermostat_only gives unsupported answer (on_track/unable_to_verify) where combined gives the expected on_track/goal_verified.
-- room_sensor_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
+- room_sensor_only gives unsupported answer (on_track/telemetry_missing) where combined gives the expected on_track/goal_verified.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
 - thermostat_only gives unsupported answer (arrival_passed/unable_to_verify) where combined gives the expected arrival_passed/arrival_met.

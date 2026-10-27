@@ -22,7 +22,7 @@ ARIA Home connects calendar, thermostat, room-sensor, electrical, and weather ev
 
 The app calls only Meta models at runtime (muse-spark-1.3), with claim binding that rejects mismatches. All application code in the repository was written this week by muse-wonder-1.0 and muse-spark-1.3 through Claude Code, which reviewed, tested and pushed it; every prompt and answer is in the public build log.
 
-On 12 builder-labeled synthetic cases, combined evidence scored 12/12; thermostat-only 8/12; all other single sources 3/12. In one operator-run live pass (24 calls), 0 answers were rejected by the claim checks. Limits: small synthetic sample, no real channels or equipment control.
+On 12 builder-labeled synthetic cases, combined evidence scored 12/12; thermostat-only 7/12; room-sensor-only 3/12; electrical-only and calendar-only 2/12 each. In one operator-run live pass (24 calls), 0 answers were rejected by the claim checks. Limits: small synthetic sample, no real channels or equipment control.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 

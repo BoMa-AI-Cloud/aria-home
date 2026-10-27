@@ -19,7 +19,7 @@ All thresholds are named module-level constants in `readiness.py`:
 |---|---|---|
 | `MIN_SAMPLES` | 3 | Fewer indoor samples than this gives `cannot_tell`. |
 | `MIN_COVERAGE` | 0.5 | Cadence coverage below this gives `cannot_tell`. |
-| `STALE_READING_AGE_S` | 3600 s | Latest indoor reading older than this gives `cannot_tell`; a thermostat source status of `missing`, `stale`, or `invalid` also gives `cannot_tell`. |
+| `STALE_READING_AGE_S` | 3600 s | Latest indoor reading older than this gives `cannot_tell`; the indoor source status of `missing`, `stale`, or `invalid` also gives `cannot_tell` (room sensor when it is the indoor source, otherwise thermostat). |
 | `SMALL_GAP_F` | 2.0 F | Only a gap at or below this can qualify for projected `on_track`. |
 | `MIN_TREND_WINDOW_S` | 3600 s | Warming must be observed over at least this first-to-last sample window to project. |
 | `MIN_RISE_F` | 1.0 F | First-to-last rise over the trend window must be at least this to project. |
@@ -31,6 +31,18 @@ Temperature gaps, rises, and rates in Celsius are converted to Fahrenheit
 equivalents before comparison with the `*_F` thresholds.
 
 ## Rules
+
+### Indoor source
+
+When a scenario has room-sensor `indoor_temp` records for the zone, readiness
+uses the room sensor — as `metrics.temperature_trend` already does — for the
+indoor reading, freshness, coverage, and trend. A missing, stale, or invalid
+thermostat does not then make readiness `cannot_tell`; instead the result
+carries the separate reason "thermostat telemetry missing; room sensor used"
+(`inputs.indoor_source` is `room_sensor`). Scenarios without a room sensor for
+the zone are unchanged and judge freshness on the thermostat. For example,
+`demo_video_v1` at 16:31 is `at_risk`: the fresh room reading is 52.0 F at
+16:30, 16 F below target with a flat trend, while the thermostat is offline.
 
 ### arrival_passed
 
@@ -64,10 +76,11 @@ Returned when any of these holds; all applicable reasons are listed:
   (`confirmation_outdated` flag). Context rules that set these flags are added
   by another task; `compute_readiness` accepts them as the `flags` argument, a
   `readiness_flags`/`flags` entry in the pack, or keyword arguments.
-- Indoor reading missing (no latest value, or thermostat availability
+- Indoor reading missing (no latest value, or the indoor source availability
   `missing`), stale (availability `stale`/`invalid`, or latest reading older
-  than `STALE_READING_AGE_S`), or conflicting (thermostat availability
-  `conflicting`).
+  than `STALE_READING_AGE_S`), or conflicting (the indoor source availability
+  `conflicting`). With a room sensor for the zone the indoor source is the
+  room sensor, not the thermostat (see Indoor source above).
 - Coverage below `MIN_COVERAGE`, coverage unavailable, or fewer than
   `MIN_SAMPLES` samples.
 

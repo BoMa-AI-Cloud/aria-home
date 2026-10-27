@@ -44,7 +44,7 @@ test("c1-opening", async ({ page }) => {
     ),
   ).toBeVisible();
   await expect(page.getByText("Synthetic demo data")).toBeVisible();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(15000);
 });
 
 test("c2-evaluation", async ({ page }) => {
@@ -52,9 +52,9 @@ test("c2-evaluation", async ({ page }) => {
   await expect(page.getByText("Combined (all sources)")).toBeVisible();
   await expect(page.getByText("12/12")).toBeVisible();
   await expect(page.getByText("Thermostat only")).toBeVisible();
-  await expect(page.getByText("8/12")).toBeVisible();
+  await expect(page.getByText("7/12")).toBeVisible();
   await expect(page.getByText("12 builder-labelled synthetic cases. Not a benchmark of real homes.")).toBeVisible();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(15000);
 });
 
 test("c3-closing", async ({ page }) => {
@@ -66,7 +66,7 @@ test("c3-closing", async ({ page }) => {
     ),
   ).toBeVisible();
   await expect(page.getByText("https://github.com/BoMa-AI-Cloud/aria-home")).toBeVisible();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(10000);
 });
 
 test("s1-trip-cards", async ({ page }) => {
@@ -79,7 +79,7 @@ test("s1-trip-cards", async ({ page }) => {
     await expect(card).toContainText("SIMULATED");
     await expect(card).toContainText("Event time");
     await expect(card).toContainText("Available time");
-    await show(page, card);
+    await show(page, card, 4000);
   }
   await expect(timeline.locator("article", { hasText: "Airport location" }).first()).toContainText("Consented");
   await expect(timeline.locator("article", { hasText: "Confirmation request" }).first()).toContainText("Asks");
@@ -88,11 +88,11 @@ test("s1-trip-cards", async ({ page }) => {
   for (const title of ["Preparation authorized", "Scene command", "Scene acknowledged"]) {
     const card = timeline.locator("article", { hasText: title }).first();
     await expect(card).toContainText("SIMULATED");
-    await show(page, card);
+    await show(page, card, 4000);
   }
   const acknowledged = timeline.locator("article", { hasText: "Scene acknowledged" }).first();
   await expect(acknowledged).toContainText("Acknowledged, physical success unknown");
-  await show(page, acknowledged);
+  await show(page, acknowledged, 6000);
   await expectMockVisible(page);
 });
 
@@ -105,7 +105,7 @@ test("s2-not-responding", async ({ page }) => {
   await expect(outcome).toContainText("Follow-up rule:");
   await expect(outcome).toContainText("Latest reading used: observed");
   await expect(outcome).toContainText("Evaluation (replay) time");
-  await show(page, outcome.locator(".outcome-status"), 4000);
+  await show(page, outcome.locator(".outcome-status"), 10000);
 
   const investigation = section(page, "Investigation");
   await expect(investigation).toContainText("Evaluation time:");
@@ -115,7 +115,7 @@ test("s2-not-responding", async ({ page }) => {
   await expect(investigation).toContainText("Power context");
   await expect(investigation).toContainText("Limitations:");
   await expect(investigation.getByText(MOCK)).toBeVisible();
-  await show(page, investigation, 4000);
+  await show(page, investigation, 8000);
   await expectMockVisible(page);
 });
 
@@ -127,7 +127,7 @@ test("s3-authorized-help", async ({ page }) => {
   const managerCard = notifications.locator('article[aria-label="Property manager notification"]');
   await expect(managerCard).toContainText("Simulated delivery");
   await expect(managerCard).toContainText("Simulated, no message was sent");
-  await show(page, managerCard);
+  await show(page, managerCard, 4000);
 
   await replay(page, "16:52");
   const hvacCard = notifications.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" });
@@ -138,14 +138,14 @@ test("s3-authorized-help", async ({ page }) => {
   await expect(hvacCard).toContainText("manager_contact_label");
   await expect(hvacCard).toContainText("relevant_observations");
   await expect(hvacCard).not.toContainText("itinerary");
-  await show(page, hvacCard, 4000);
+  await show(page, hvacCard, 7000);
 
   const outcome = section(page, "Outcome");
   const headlineBefore = await outcome.locator(".outcome-status").innerText();
   await managerCard.scrollIntoViewIfNeeded();
   await managerCard.getByRole("button", { name: "Acknowledge (simulated)" }).click();
   await expect(managerCard).toContainText("Acknowledged, not resolved");
-  await show(page, managerCard);
+  await show(page, managerCard, 5000);
   await expect(outcome.locator(".outcome-status")).toContainText(headlineBefore.replace(/^Status:\s*/, ""));
   await expectMockVisible(page);
 });
@@ -166,11 +166,11 @@ test("s4-recovery", async ({ page }) => {
     await expect(headline).toContainText(expected);
     if (label === "19:51") await expect(headline).not.toContainText("Temperature goal verified");
     await expect(outcome).toContainText("Latest reading used: observed");
-    await show(page, headline, 3500);
+    await show(page, headline, label === "19:51" || label === "20:21" ? 9000 : label === "18:51" ? 7000 : 6000);
   }
   await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
   await expect(outcome.locator(".outcome-history")).toContainText("Temperature goal verified");
-  await show(page, outcome.locator(".outcome-history"));
+  await show(page, outcome.locator(".outcome-history"), 6000);
   await expectMockVisible(page);
 });
 
@@ -187,14 +187,14 @@ test("s5-report-and-arrival", async ({ page }) => {
   const report = timeline.locator("article", { hasText: "HVAC completion report" }).first();
   await expect(report).toContainText("SIMULATED");
   await expect(report).toContainText("Corroboration only, does not set the outcome");
-  await show(page, report, 4000);
+  await show(page, report, 6000);
 
   await replay(page, "21:01");
   await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met");
-  await show(page, outcome.locator(".outcome-status"), 4000);
+  await show(page, outcome.locator(".outcome-status"), 8000);
   const update = page.locator('article[aria-label="Homeowner update"]');
   await expect(update).toContainText("Your home reached and held 68 F before you arrived");
   await expect(update).toContainText("Evaluation time:");
-  await show(page, update, 4000);
+  await show(page, update, 7000);
   await expectMockVisible(page);
 });
