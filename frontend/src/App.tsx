@@ -522,7 +522,7 @@ function OutcomeSection({
       )}
       {verification ? (
         <>
-          <p className="outcome-status verification-stage">
+          <p className="outcome-status verification-stage" aria-live="polite">
             Status: <strong>{VERIFICATION_LABEL[verification.stage]}</strong>
           </p>
           <p className="follow-up-rule">Follow-up rule: {OUTCOME_LABEL[outcome.status]}</p>
@@ -556,7 +556,7 @@ function OutcomeSection({
           </ol>
         </>
       ) : (
-        <p className="outcome-status">
+        <p className="outcome-status" aria-live="polite">
           Status: <strong>{OUTCOME_LABEL[outcome.status]}</strong>
         </p>
       )}
@@ -779,9 +779,14 @@ function NotificationsSection({
       </p>
     );
   }
-  if (notifications.length === 0) return <p>No notifications yet.</p>;
+  if (notifications.length === 0)
+    return (
+      <div className="notification-cards" aria-live="polite">
+        <p>No notifications yet.</p>
+      </div>
+    );
   return (
-    <div className="notification-cards">
+    <div className="notification-cards" aria-live="polite">
       {notifications.map((notification) => {
         const audienceLabel =
           NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience;
@@ -1049,8 +1054,8 @@ export default function App() {
   });
 
   return (
-    <main className="page">
-      <div className="demo-controls" role="group" aria-label="Demo controls">
+    <div className="page">
+      <section className="demo-controls" aria-label="Demo controls">
         <p className="demo-controls-title">Demo controls (synthetic replay)</p>
         <label className="demo-scenario">
           Scenario{" "}
@@ -1074,12 +1079,14 @@ export default function App() {
               onClick={() => handleReplayTime(time.at)}
               disabled={!investigationId || replayLoading}
               aria-pressed={replayAt === time.at}
+              aria-label={`Replay to ${time.label}`}
             >
               {time.label}
             </button>
           ))}
         </div>
-      </div>
+      </section>
+      <main>
       {data && (
         <p className="banner" role="status">
           {data.data_mode.toUpperCase()} DATA - demo scenario, not a real home{" "}
@@ -1158,6 +1165,7 @@ export default function App() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </div>
   );
 }

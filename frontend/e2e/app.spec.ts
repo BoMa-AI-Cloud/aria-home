@@ -304,3 +304,29 @@ test("video scenario shows scoped simulated notifications and homeowner update",
 
   expect(failedRequests).toEqual([]);
 });
+
+test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+
+  const scenario = page.getByLabel("Scenario");
+  const replay2101 = page.getByRole("button", { name: "Replay to 21:01" });
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Outcome" }),
+  });
+
+  await page.keyboard.press("Tab");
+  await expect(scenario).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await expect(scenario).toHaveValue("demo_video_v1");
+
+  await expect(replay2101).toBeEnabled();
+  await expect(scenario).toBeFocused();
+  for (let i = 0; i < 10; i += 1) {
+    await page.keyboard.press("Tab");
+  }
+  await expect(replay2101).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met");
+});

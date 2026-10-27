@@ -10,6 +10,11 @@ body {
   color: #1a1a1a;
 }
 
+:focus-visible {
+  outline: 3px solid #0057b8;
+  outline-offset: 2px;
+}
+
 .page {
   max-width: 72rem;
   margin: 0 auto;
@@ -51,7 +56,7 @@ section {
 
 .card {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-left-width: 0.4rem;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -139,7 +144,7 @@ section {
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
 }
 
 .readiness-on_track { border-left: 0.4rem solid #1e7b34; }
@@ -152,7 +157,7 @@ section {
   display: inline-block;
   font-size: 0.8rem;
   background: #e8e2d4;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 1rem;
   padding: 0 0.5rem;
   margin: 0.1rem;
@@ -161,7 +166,7 @@ section {
 
 .power-context {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   margin-top: 1rem;
@@ -191,7 +196,7 @@ section {
 
 .investigation-block {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   margin: 0 0 1rem;
@@ -202,7 +207,7 @@ section {
 }
 
 .context-notes {
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   margin: 0 0 1rem;
@@ -268,7 +273,7 @@ section {
 
 .outcome {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
 }
@@ -337,7 +342,7 @@ section {
 
 .event-card {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 1rem;
 }
@@ -347,7 +352,7 @@ section {
   font-size: 0.8rem;
   font-weight: 700;
   background: #e8e2d4;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 1rem;
   padding: 0 0.5rem;
 }
@@ -365,7 +370,7 @@ section {
 .notification-card,
 .homeowner-update-card {
   background: #ffffff;
-  border: 1px solid #b9b3a6;
+  border: 1px solid #7d7767;
   border-radius: 0.5rem;
   padding: 1rem;
 }
