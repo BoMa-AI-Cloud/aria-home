@@ -93,6 +93,9 @@ Every file below was created during the event. No code, data, fixtures or assets
 | docs/day4-handoff.md | yes | uncommitted | none |
 | docs/day5-handoff.md | yes | uncommitted | none |
 | docs/day6-handoff.md | yes | uncommitted | none |
+| docs/day8-handoff.md | yes | uncommitted | none |
+| docs/freeze.md | yes | 88ad45b | none |
+| docs/usability.md | yes | 88ad45b | none |
 | docs/evaluation.md | yes | 53a06bd | none |
 | docs/demo-script.md | yes | day4-09 | none |
 | docs/existing-vs-new.md | yes | 37321b9 | none |
@@ -103,6 +106,8 @@ Every file below was created during the event. No code, data, fixtures or assets
 | frontend/index.html | yes | 0ba5213 | none |
 | frontend/package-lock.json | yes | 0ba5213 | none |
 | frontend/package.json | yes | 0ba5213 | none |
+| frontend/playwright.record.config.ts | yes | 7f23970 | none |
+| frontend/recording/demo.record.ts | yes | 7f23970 | none |
 | frontend/playwright.config.ts | yes | 814ca9e | none |
 | frontend/src/App.tsx | yes | 0ba5213 | none |
 | frontend/src/api.ts | yes | 0ba5213 | none |
