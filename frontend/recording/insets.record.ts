@@ -44,9 +44,28 @@ test("i0-plan", async ({ page }) => {
 });
 
 test("i1-trip", async ({ page }) => {
-  await openInset(page, "timeline");
+  await openInset(page, "trip");
   await replay(page, "09:20");
   const timeline = section(page, "Simulated timeline");
+  const layout = await timeline.locator(".event-card").evaluateAll((cards) =>
+    cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      const facts = card.querySelectorAll(".card-facts dt, .card-facts dd");
+      return {
+        top: Math.round(rect.top),
+        width: rect.width,
+        factsOverflow: [...facts].some((fact) => fact.scrollWidth > fact.clientWidth + 1),
+      };
+    }),
+  );
+  expect(layout.length).toBeGreaterThan(0);
+  for (const card of layout) {
+    expect(card.width).toBeGreaterThanOrEqual(380);
+    expect(card.factsOverflow).toBe(false);
+  }
+  const perRow = new Map<number, number>();
+  for (const card of layout) perRow.set(card.top, (perRow.get(card.top) ?? 0) + 1);
+  expect(Math.max(...perRow.values())).toBeLessThanOrEqual(2);
   for (const title of ["Flight confirmation email", "Confirmation request"]) {
     const card = timeline.locator("article", { hasText: title }).first();
     await expect(card).toContainText("SIMULATED");

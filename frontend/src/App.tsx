@@ -1028,6 +1028,7 @@ function HomeownerUpdateCard({
 const INSET_TARGETS: Record<string, string[]> = {
   plan: ["plan"],
   timeline: ["timeline"],
+  trip: ["timeline"],
   outcome: ["outcome"],
   notifications: ["notifications"],
   investigation: ["investigation"],

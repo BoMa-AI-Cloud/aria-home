@@ -17,7 +17,7 @@ This section supersedes A2 and A wherever they conflict. It is a production plan
 that every shot works: each segment carries its implementation status, judged from the code at
 commit 6a659ca. Three layers:
 
-1. **AI-generated dramatization** of one woman travelling home (labelled "AI-generated dramatization").
+1. **AI-generated dramatization** of one woman travelling home (labelled "AI-generated dramatization"). Story scenes: Grok Imagine and Meta AI.
 2. **Real ARIA Home interface recordings** on the synthetic `demo_video_v1` scenario (labelled
    "ARIA Home — synthetic scenario"). Every functional claim rests on this layer, never on layer 1.
 3. **Narration in ARIA's voice**: Kokoro-82M, voice `af_bella` (Apache-2.0 licensed open-weight model),
@@ -69,7 +69,7 @@ Real-UI share: segments 1-5 and 7-9 carry readable real UI for about 120 of 180 
 
 Target pace about 125 words per minute with pauses; the word counts below leave room to read the UI.
 
-0. (22 w) ARIA is my existing assistant project. The name, notes and ARIA Home designs came before this event. Everything shown here was built this week with Meta's models.
+0. (33 w) ARIA is my existing assistant project; its name, notes and ARIA Home designs came first. All ARIA Home code was built this week with Meta's models. Story scenes: Grok Imagine and Meta AI.
 1. (24 w) She's heading home today. Her flight email and calendar suggest an arrival tonight, but a suggestion isn't a plan, and it certainly isn't proof she boarded.
 2. (30 w) So ARIA asks. She confirms the cabin, a nine o'clock arrival, sixty-eight degrees, and that her property manager may be contacted if something goes wrong. Her location supports the plan. Nothing more.
 3. (25 w) Preparation starts quietly. The command is acknowledged, but an acknowledgement isn't warmth. In the air, her location is simply unavailable, and ARIA assumes nothing about her schedule.

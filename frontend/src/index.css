@@ -466,3 +466,27 @@ section {
 .page.inset-not-responding main > section[aria-labelledby="investigation-heading"] > *:not(h2):not(.readiness-block) {
   display: none;
 }
+
+.page.inset-trip main > section.inset-target {
+  zoom: 1;
+}
+
+.page.inset-trip .event-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page.inset-trip .event-card {
+  min-width: 0;
+}
+
+.page.inset-trip .event-card .card-facts div {
+  grid-template-columns: 1fr;
+  gap: 0.1rem;
+}
+
+.page.inset-trip .event-card .card-title,
+.page.inset-trip .event-card .card-facts dt,
+.page.inset-trip .event-card .card-facts dd {
+  overflow-wrap: normal;
+  word-break: normal;
+}
