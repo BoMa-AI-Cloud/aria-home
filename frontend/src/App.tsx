@@ -369,7 +369,7 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
           </div>
         ))}
         {target && (
-          <div>
+          <div className="key-plan-row">
             <dt>Target temperature</dt>
             <dd>{target}</dd>
           </div>
@@ -378,12 +378,12 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
           <dt>Homeowner notification</dt>
           <dd>{data.notify_homeowner ? "Yes — notify homeowner" : "No — do not notify homeowner"}</dd>
         </div>
-        <div>
+        <div className="key-plan-row">
           <dt>Manager coordination</dt>
           <dd>{data.manager_authorized ? "Manager coordination allowed" : "Manager coordination not allowed"}</dd>
         </div>
         {data.confirmed_at && (
-          <div>
+          <div className="key-plan-row">
             <dt>Confirmed</dt>
             <dd>
               <time dateTime={data.confirmed_at}>{formatTimestamp(data.confirmed_at)}</time>
@@ -1039,10 +1039,29 @@ const INSET_TARGETS: Record<string, string[]> = {
   "evidence-timeline": ["evidence-timeline"],
 };
 
+const KEY_CAPTIONS: Record<string, string> = {
+  "k-plan": "Replay time: 9:20 AM ET",
+  "k-trip": "Replay time: 9:20 AM ET",
+  "k-location": "Replay time: 2:06 PM ET",
+  "k-at-risk": "Replay time: 4:31 PM ET",
+  "k-help": "Replay time: 4:52 PM ET",
+  "k-ack": "Replay time: 4:52 PM ET",
+  "k-restored": "Replay time: 6:21 PM ET",
+  "k-warming": "Replay time: 6:51 PM ET",
+  "k-not-yet": "Replay time: 7:51 PM ET",
+  "k-verified": "Replay time: 8:21 PM ET",
+  "k-arrival": "Replay time: 9:01 PM ET",
+  "k-report": "Replay time: 8:46 PM ET",
+  "k-home": "Replay time: 9:01 PM ET",
+};
+
 export default function App() {
   // Test-only inset zoom: ?inset=<panel> hides all but that panel and scales it (see index.css). No effect without the parameter.
   const inset =
     typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("inset") : null;
+  const keyName =
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("key") : null;
+  const keyCaption = keyName ? KEY_CAPTIONS[keyName] : undefined;
   const insetPanels = inset ? (INSET_TARGETS[inset] ?? []) : [];
   const insetClass = (panel: string) => (insetPanels.includes(panel) ? "inset-target" : undefined);
   const [data, setData] = useState<SourcesResponse | null>(null);
@@ -1287,7 +1306,7 @@ export default function App() {
   });
 
   return (
-    <div className={`page${inset && insetPanels.length ? ` inset-active inset-${inset}` : ""}`}>
+    <div className={`page${inset && insetPanels.length ? ` inset-active inset-${inset}` : ""}${keyCaption ? ` key-active key-${keyName}` : ""}`}>
       <section className="demo-controls" aria-label="Demo controls">
         <p className="demo-controls-title">Demo controls (synthetic replay)</p>
         <label className="demo-scenario">
@@ -1415,6 +1434,7 @@ export default function App() {
         )}
       </section>
       </main>
+      {keyCaption && <p className="key-caption">{keyCaption}</p>}
     </div>
   );
 }

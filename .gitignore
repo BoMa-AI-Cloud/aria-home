@@ -28,6 +28,7 @@ playwright-report/
 test-results/
 frontend/recordings/
 frontend/recordings-insets/
+frontend/recordings-keys/
 
 # Editors and OS
 .vscode/

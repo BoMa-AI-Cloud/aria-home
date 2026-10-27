@@ -10,6 +10,7 @@
     "test:e2e": "playwright test",
     "record:demo": "playwright test -c playwright.record.config.ts",
     "record:insets": "playwright test -c playwright.record.config.ts --project=insets",
+    "record:keys": "playwright test -c playwright.record.config.ts --project=keys",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -490,3 +490,245 @@ section {
   overflow-wrap: normal;
   word-break: normal;
 }
+
+/* Test-only key-line close-ups (?key=<name>, set in App.tsx): show one real element, large and centred on a plain light background. No effect without the parameter. Demo controls stay in the DOM above so replay buttons remain usable, then scroll out of view. */
+.page.key-active {
+  max-width: none;
+  padding: 0.75rem;
+  background: #f7f5f0;
+}
+
+.page.key-active main > header,
+.page.key-active .banner {
+  display: none;
+}
+
+.page.key-active main > section {
+  display: none;
+  margin-bottom: 0;
+}
+
+.page.key-active main > section > h2 {
+  display: none;
+}
+
+.page.key-k-plan main > section[aria-labelledby="confirmed-plan-heading"],
+.page.key-k-trip main > section[aria-labelledby="timeline-heading"],
+.page.key-k-location main > section[aria-labelledby="timeline-heading"],
+.page.key-k-at-risk main > section[aria-labelledby="investigation-heading"],
+.page.key-k-help main > section[aria-labelledby="notifications-heading"],
+.page.key-k-ack main > section[aria-labelledby="notifications-heading"],
+.page.key-k-restored main > section[aria-labelledby="outcome-heading"],
+.page.key-k-warming main > section[aria-labelledby="outcome-heading"],
+.page.key-k-not-yet main > section[aria-labelledby="outcome-heading"],
+.page.key-k-verified main > section[aria-labelledby="outcome-heading"],
+.page.key-k-arrival main > section[aria-labelledby="outcome-heading"],
+.page.key-k-report main > section[aria-labelledby="timeline-heading"],
+.page.key-k-home main > section[aria-labelledby="homeowner-update-heading"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 22rem;
+  text-align: center;
+}
+
+.key-caption {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0.6rem;
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #5a5a5a;
+}
+
+.page.key-k-plan .confirmed-plan {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 2.75rem;
+  line-height: 1.25;
+}
+
+.page.key-k-plan .confirmed-plan > p {
+  display: none;
+}
+
+.page.key-k-plan .confirmed-plan .card-facts {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.page.key-k-plan .confirmed-plan .card-facts > div:not(.key-plan-row) {
+  display: none;
+}
+
+.page.key-k-plan .confirmed-plan .card-facts > div.key-plan-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.page.key-active .event-cards,
+.page.key-active .notification-cards {
+  display: block;
+}
+
+.page.key-active .event-card,
+.page.key-active .notification-card,
+.page.key-active .homeowner-update-card {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 2.75rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.page.key-active .event-card .card-title,
+.page.key-active .notification-card .card-title {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.page.key-active .simulated-tag {
+  font-size: 1.6rem;
+}
+
+.page.key-k-trip .event-card:not([aria-label="Flight confirmation email event"]),
+.page.key-k-location .event-card:not([aria-label="Location unavailable event"]),
+.page.key-k-report .event-card:not([aria-label="HVAC completion report event"]),
+.page.key-k-help .notification-card:not([aria-label="HVAC company notification"]),
+.page.key-k-ack .notification-card:not([aria-label="Property manager notification"]) {
+  display: none;
+}
+
+.page.key-k-trip section[aria-labelledby="timeline-heading"] > p,
+.page.key-k-location section[aria-labelledby="timeline-heading"] > p,
+.page.key-k-report section[aria-labelledby="timeline-heading"] > p {
+  display: none;
+}
+
+.page.key-k-trip .event-card > dl ~ dl,
+.page.key-k-trip .event-card > .fields-sent,
+.page.key-k-location .event-card > dl,
+.page.key-k-location .event-card > p:not(.simulated-tag),
+.page.key-k-report .event-card > dl,
+.page.key-k-report .event-card > .fields-sent,
+.page.key-k-report .event-card > .simulated-tag {
+  display: none;
+}
+
+.page.key-k-trip .event-card .card-facts {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  font-size: 2.2rem;
+}
+
+.page.key-k-trip .event-card .card-facts > div {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.page.key-k-trip .event-card .card-facts > div:first-child {
+  display: none;
+}
+
+.page.key-k-at-risk section[aria-labelledby="investigation-heading"] > *:not(.readiness-block) {
+  display: none;
+}
+
+.page.key-k-at-risk .readiness-block {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 2.75rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.page.key-k-at-risk .readiness-block > h3 {
+  display: none;
+}
+
+.page.key-k-at-risk .readiness {
+  background: transparent;
+  border: none;
+  font-size: 2.75rem;
+  margin: 0 0 0.75rem;
+}
+
+.page.key-k-at-risk .readiness-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 2.2rem;
+  color: #3d3d3d;
+}
+
+.page.key-k-help .notification-card > dl,
+.page.key-k-help .notification-card > p:not(.notification-state):not(.fields-sent) {
+  display: none;
+}
+
+.page.key-k-help .notification-state {
+  font-size: 2.75rem;
+  margin: 0.5rem 0;
+}
+
+.page.key-k-help .fields-sent {
+  font-size: 1.8rem;
+}
+
+.page.key-k-ack .notification-card > *:not(.notification-ack):not(button) {
+  display: none;
+}
+
+.page.key-k-ack .notification-ack {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.page.key-active .outcome {
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: center;
+}
+
+.page.key-active .outcome > *:not(.outcome-status):not(.latest-reading-used) {
+  display: none;
+}
+
+.page.key-active .outcome-status {
+  font-size: 3rem;
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.page.key-active .latest-reading-used {
+  font-size: 2.2rem;
+  line-height: 1.3;
+  margin: 0;
+  color: #3d3d3d;
+}
+
+.page.key-k-report .event-card > p {
+  font-size: 2.5rem;
+  margin: 0.5rem 0 0;
+}
+
+.page.key-k-home .homeowner-update-card > p:not(.homeowner-update) {
+  display: none;
+}
+
+.page.key-k-home .homeowner-update {
+  font-size: 3.2rem;
+  line-height: 1.25;
+  margin: 0;
+}

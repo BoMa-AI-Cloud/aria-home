@@ -71,6 +71,18 @@ export default defineConfig({
         video: { mode: "on", size: { width: 900, height: 506 } },
       },
     },
+    {
+      name: "keys",
+      testMatch: "**/keys.record.ts",
+      outputDir: "recordings-keys",
+      use: {
+        channel: "chrome",
+        headless: true,
+        viewport: { width: 1280, height: 360 },
+        deviceScaleFactor: 2,
+        video: { mode: "on", size: { width: 1280, height: 360 } },
+      },
+    },
   ],
   webServer: [
     {

@@ -371,6 +371,24 @@ test("without inset the full page still renders all panels", async ({ page }) =>
   await expect(page.locator(".page")).not.toHaveClass(/inset-active/);
 });
 
+test("without key the full page still renders all panels", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  for (const heading of [
+    "Confirmed plan and permissions",
+    "Investigation",
+    "Outcome",
+    "Evidence timeline",
+    "Notifications (simulated delivery)",
+    "Homeowner update",
+    "Simulated timeline",
+    "Evidence sources",
+  ]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(page.locator(".page")).not.toHaveClass(/key-active/);
+  await expect(page.locator(".key-caption")).toHaveCount(0);
+});
+
 test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) => {
   await page.goto("http://127.0.0.1:5173/");
 
