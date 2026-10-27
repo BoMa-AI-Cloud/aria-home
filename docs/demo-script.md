@@ -11,7 +11,154 @@ or message presented as simulated), replayed (fixture records shown at a
 chosen replay evaluation time), live inference (a real model call made for
 the recording).
 
-## A2. Story cut (current)
+## A3. Story cut, three layers (canonical, 2026-10-27)
+
+This section supersedes A2 and A wherever they conflict. It is a production plan, not a statement
+that every shot works: each segment carries its implementation status, judged from the code at
+commit 6a659ca. Three layers:
+
+1. **AI-generated dramatization** of one woman travelling home (labelled "AI-generated dramatization").
+2. **Real ARIA Home interface recordings** on the synthetic `demo_video_v1` scenario (labelled
+   "ARIA Home — synthetic scenario"). Every functional claim rests on this layer, never on layer 1.
+3. **Narration in ARIA's voice**: Kokoro-82M, voice `af_bella` (Apache-2.0 licensed open-weight model),
+   labelled "Narration — synthetic voice". A production tool only; the app never calls it.
+
+**Continuity rule.** She never arrives at a cold cabin. The cold cabin appears only as a remote
+cutaway while she is in transit; her first arrival is the ending, after the goal is verified.
+
+**Non-negotiable event order** (scenario times, 2026-01-16, -05:00, from `demo_video_v1`):
+thermostat reporting restored (18:20 observed, 18:21 evaluated) → independent room readings show
+warming (18:51) → target first reached (19:50, not yet verified at 19:51) → target held 30 min and
+verified (20:21) → HVAC completion report available to ARIA (20:45, corroboration only) → target
+still met at arrival (21:00, evaluated 21:01). The report never sets or overrides the outcome. The
+sensor evidence establishes the monitored temperature goal only, not equipment reliability or which
+repair caused recovery.
+
+**Layouts.** Full story (emotion, transitions); split screen (story left 45%, real UI right 55% at
+readable size, never a small inset); full UI (the decisive verification timeline). Generated phone
+screens stay blank or indistinct; real recordings are composited in the edit.
+
+**Labels.** "AI-generated dramatization"; "ARIA Home — synthetic scenario"; "Simulated preparation
+command"; "Simulated service contact"; "Scenario replay advanced" on every physical-time jump;
+"Processing time shortened" if an inference wait is edited; inference mode stated separately from
+data mode ("synthetic sensor data — mock inference" or "— live Meta inference"); never present mock
+or cached inference as a fresh live response.
+
+### A3.1 Storyboard (exactly 180 s)
+
+Status key as at the top of this file. Times are video times.
+
+| # | Time (s) | Purpose | Dramatized visual | Real UI required | Layout | On-screen labels | Transition | Status / acceptance check |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0:00-0:10 (10) | Disclosure | none (title card c1) | c1 opening card | full card | "Synthetic demo data" | fade in | implemented (c1). Check: wording matches README pre-existing vs built. |
+| 1 | 0:10-0:24 (14) | A plan exists | Shot 1 hotel phone check | Simulated timeline: "Flight confirmation email", calendar trip (09:20) | split | AI-generated dramatization; ARIA Home — synthetic scenario; "Proposal, not proof of boarding" | cut | implemented (cards). Check: cards show SIMULATED and available times. |
+| 2 | 0:24-0:42 (18) | She confirms and authorizes | Shot 2 departure airport | Confirmed plan and permissions: property, arrival 9:00 PM, 68 °F, manager coordination allowed, confirmed 9:20 AM; "Airport location (simulated)" card | split | "Simulated location" | match cut on phone | **partial**: confirmation exists as fixture data and a "Confirmation request" card; no screen shows the confirmed fields and permissions together. Gap G1. |
+| 3 | 0:42-0:56 (14) | Preparation starts quietly | Shot 3 takeoff / window | "Preparation authorized", "Scene command", "Scene acknowledged — Acknowledged, physical success unknown"; "Location unavailable" | split | "Simulated preparation command"; "Acknowledgement is not proof of warming" | dissolve | implemented (timeline cards). Check: no card claims warming. |
+| 4 | 0:56-1:20 (24) | The home is not responding | Shot 4 cold cabin cutaway (4 s full story, then split) | 16:31: Outcome "Thermostat telemetry missing"; Readiness "At risk"; verified facts "Indoor temperature 52.0 F (at 16:30)" from the room sensor; Power context with limitations | full story → split | "Remote cutaway — she is still travelling"; "Scenario replay advanced" | slow push-in | implemented (D9-6 fix, 97aa0ee). Check: no thermostat value presented as current; no useful-heat claim. |
+| 5 | 1:20-1:36 (16) | Authorized help | Shot 5 property manager on a call | 16:52: Property manager card; HVAC company card with "fields sent:" (property_label, access_note, manager_contact_label, relevant_observations); "Acknowledged, not resolved" | split | "Simulated service contact"; "Approved fields only" | cut | implemented (D5). Check: no itinerary/email/location field; HVAC card absent or refused before 16:45. |
+| 6 | 1:36-1:46 (10) | A professional visit | Shot 6 technician arrives and works | none (story only) | full story | "AI-generated dramatization"; "Simulated service visit" | cut | n/a (dramatization). Check: no repair instructions, no implication ARIA controls equipment. |
+| 7 | 1:46-2:04 (18) | Recovery detected independently | Shot 7 technician packs up (2 s), then UI | 18:21 "Thermostat reporting restored" with progression 1 Reached, 2-4 Not reached (narrated as "verification pending"); 18:51 "Warming observed" | split → full UI | "Scenario replay advanced"; "Reconnection alone closes nothing" | wipe to full UI | implemented. Check: 18:21 does not show verified; History lists stages. |
+| 8 | 2:04-2:30 (26) | Goal reached, held, verified | Shot 8 landing, phone in hand (blank screen) at the end | 19:51 "Warming observed" (goal reached, not yet verified); 20:21 "Temperature goal verified" with "Latest reading used: observed … received …" and evaluation time; then homeowner update card | full UI → split | "Scenario replay advanced (30-minute hold)"; "ARIA Home — synthetic scenario" | hold, then cut to landing | implemented; **partial** for a single readable evidence timeline (Gap G2). Check: 19:51 never shows verified. |
+| 9 | 2:30-2:42 (12) | The report comes after | Shot 9 night drive | 20:46: "HVAC completion report — Corroboration only, does not set the outcome", event 8:40 PM, available 8:45 PM, verification at 8:21 PM | split | "Report available after verification"; "Travel times are scenario estimates" | dissolve | implemented (card); ordering shown across two places (Gap G2). Check: report absent at 20:21. |
+| 10 | 2:42-2:54 (12) | Return to warmth | Shot 10 she opens the door to the warm cabin | 21:01 "Arrival expectation met" (small status card, real wording) | full story | "AI-generated dramatization" | slow fade | implemented (stage). Check: arrival evaluated at 21:01, not assumed. |
+| 11 | 2:54-3:00 (6) | Close | none (c3 card) | c3 closing card with repo URL | full card | none | fade out | implemented (c3). |
+
+Real-UI share: segments 1-5 and 7-9 carry readable real UI for about 120 of 180 s (split or full).
+
+### A3.2 Voiceover draft (about 330 words; timed read not yet performed)
+
+Target pace about 125 words per minute with pauses; the word counts below leave room to read the UI.
+
+0. (22 w) ARIA is my existing assistant project. The name, notes and ARIA Home designs came before this event. Everything shown here was built this week with Meta's models.
+1. (24 w) She's heading home today. Her flight email and calendar suggest an arrival tonight, but a suggestion isn't a plan, and it certainly isn't proof she boarded.
+2. (30 w) So ARIA asks. She confirms the cabin, a nine o'clock arrival, sixty-eight degrees, and that her property manager may be contacted if something goes wrong. Her location supports the plan. Nothing more.
+3. (25 w) Preparation starts quietly. The command is acknowledged, but an acknowledgement isn't warmth. In the air, her location is simply unavailable, and ARIA assumes nothing about her schedule.
+4. (40 w) Back at the cabin, something's wrong. The thermostat has gone silent. ARIA won't treat old thermostat numbers as current; an independent room sensor reads fifty-two degrees and isn't warming. There's electrical activity, but activity isn't heat. The home is at risk.
+5. (30 w) Within her permission, ARIA alerts the property manager, who authorizes the HVAC company on file. The request carries only what's needed: the property, access, and what was observed. Acknowledged, not resolved.
+6. (10 w) A technician arrives. ARIA doesn't control the equipment. It keeps watching.
+7. (30 w) On the next sensor update, the thermostat is back. That alone closes nothing; verification is pending. ARIA cross-checks the reported state, the heating circuit, and the room sensor. Then warming appears.
+8. (45 w) At seven fifty-one the room reaches sixty-eight degrees, and ARIA still waits. A goal isn't verified until it holds. Thirty minutes later, every reading is still at target. Now it's verified, from sensor evidence alone. As she lands, one short update tells her it's done.
+9. (28 w) The technician's report reaches the manager afterward. It's useful corroboration, but it arrived after verification, and it can't change what the sensors already showed. Her drive-time estimate is just that, an estimate.
+10. (18 w) She opens the door to the warm home she expected. She never had to chase the repair.
+11. (12 w) Not just an automation completed. An expectation met.
+
+### A3.3 Scene prompts (tool-agnostic)
+
+**Shared continuity specification** (paste before every prompt): the same adult woman, mid-thirties,
+shoulder-length dark brown hair, camel wool coat, cream scarf, dark jeans, black ankle boots; a navy
+hard-shell carry-on and a phone in a plain black case; always seen from behind or in profile without
+a visible face. The same single-storey log cabin: dark timber, green metal roof, a covered front
+porch with two steps and a lantern to the left of a wooden door, pine forest, snow on the ground,
+one large front window to the right of the door. Interior: stone fireplace on the left wall, plaid
+armchair, wooden floor, the same large window. Technician: an adult in plain dark-grey work jacket
+and cap, no name tags or logos, seen from behind or side-on. Story day: one winter day, light snow,
+morning hotel → afternoon airport and flight → dusk cabin cutaways → night landing, drive and
+arrival. Style: cinematic, natural colour, shallow depth of field, no readable text, no logos, no
+real brands or places, no legible screens, no credentials or personal details.
+
+| Shot | Subject / action | Framing and camera | Lighting / mood | Space for UI | Consistency | Motion |
+|---|---|---|---|---|---|---|
+| 1 Hotel | She stands by a hotel window holding her phone, carry-on by the door | medium wide from behind, slow push-in | soft morning daylight, calm | right 55% quiet (wall, curtain) | coat, carry-on, phone | still + editorial push acceptable |
+| 2 Airport | She walks through an anonymous concourse, pauses to look at her phone | tracking from behind, then hold | warm afternoon interior light, blurred signage | right 55% soft bokeh | same clothes and bag | motion |
+| 3 Flight | Window view over wing and clouds, her shoulder and hair in foreground, phone face-down on tray | close over-shoulder, static | cool blue, quiet | right side sky | hair, coat colour | still + slow drift acceptable |
+| 4 Cold cabin cutaway | The empty cabin at dusk, dark window, then dim cold interior with the armchair | wide exterior, then interior static | blue-grey, faint frost, no people | right 55% (snow field / wall) | cabin exterior and interior spec | motion (slow) |
+| 5 Manager | An adult on a phone call in a plain office doorway, from behind | medium, static | neutral daylight | right 55% wall | plain clothes, no logos | still + editorial movement acceptable |
+| 6 Technician | Unmarked van parks at the cabin porch; technician walks in carrying a plain tool bag; brief shot working at a plain furnace from behind | wide then medium from behind | late-afternoon, warm work light inside | none needed | same cabin, technician spec | motion |
+| 7 Packing up | Technician closes the tool bag in the utility room, light now warmer | medium from behind, static | warm | right side for brief overlay | technician spec | still acceptable |
+| 8 Landing | She walks into a night arrivals hall, glances at a phone with a blank screen | tracking from behind | warm night interior | right 55% | clothes, bag, phone | motion |
+| 9 Drive | Night drive on a snowy forest road, dashboard glow, her hands on the wheel | interior over-shoulder, gentle sway | dark, headlights on snow | right side windscreen | coat sleeve, phone mounted face-down | motion |
+| 10 Return | She climbs the two porch steps and opens the wooden door; warm firelit interior, fireplace lit | from behind, slow follow | warm amber against blue night | none | cabin entrance, lantern, interior spec | motion |
+
+### A3.4 UI capture checklist
+
+Verify each state on a fresh database (`backend/instance/aria_home.db` deleted), backend with
+`ARIA_HOME_MODEL_ENABLED=0` for mock takes, scenario "Trip home, thermostat offline (video)".
+
+| State to capture | Replay | Status | Verify before recording |
+|---|---|---|---|
+| Trip proposal cards (flight email, calendar) | 09:20 | implemented | cards tagged SIMULATED with event and available times |
+| Confirmation and authorization (property, arrival, 68 °F, manager coordination, confirmed time) | 09:20 | **partial** (fixture + request card only; Gap G1) | one readable panel lists all confirmed fields and permissions |
+| Simulated preparation command and acknowledgement | 14:06 | implemented | "Acknowledged, physical success unknown" visible |
+| Location unavailable | 14:06 | implemented | "Location unavailable" card, no schedule inference |
+| Thermostat offline plus independent room readings | 16:31 | implemented | Outcome "Thermostat telemetry missing"; verified fact cites room sensor 52.0 F at 16:30 |
+| Evidence-backed investigation | 16:31 | implemented (mock); **unverified** live under the current readiness rules | verified facts / readiness / interpretation split; MOCK label in frame unless a live take is approved |
+| HVAC-contact approval and scoped request | 16:52 | implemented | HVAC card "fields sent:" shows exactly four fields; refused before 16:45 |
+| Acknowledgement is not resolution | 16:52 | implemented | "Acknowledged, not resolved"; Outcome headline unchanged |
+| Thermostat reconnects without resolution | 18:21 | implemented | "Thermostat reporting restored"; stages 2-4 Not reached |
+| Warming observed | 18:51 | implemented | headline "Warming observed" |
+| Reached but not yet verified | 19:51 | implemented | headline still "Warming observed" |
+| Target reached and maintained, verified | 20:21 | implemented | "Temperature goal verified"; latest reading used, observed and received times |
+| Verification timestamp before report receipt | 20:21 vs 20:46 | implemented across two views; **partial** as one timeline (Gap G2) | report absent at 20:21; report card at 20:46 shows available 8:45 PM |
+| Homeowner update | 21:01 | implemented | "Your home reached and held 68 F before you arrived" |
+| Arrival goal maintained | 21:01 | implemented | "Arrival expectation met" |
+
+### A3.5 Minimum build gap plan
+
+Travel, email and location feeds, preparation commands and service contacts stay synthetic or
+simulated. No email OAuth, GPS, flight tracking, routing or device control.
+
+- **G1, confirmed plan and permissions panel (missing).** A read-only panel rendered from the as-of
+  confirmation (property, arrival 9:00 PM with its labelled allowances, 68 °F, manager coordination
+  allowed, confirmed time, revision), hidden before `confirmed_at`. No interactive flow needed.
+- **G2, one evidence timeline (partial).** A single ordered list for the verification: thermostat
+  restored, warming first observed, target first reached, hold completed and verified, report
+  available, arrival check — each with observed, received and evaluation times, so segment 8-9 can
+  be filmed full-frame and read in one shot.
+- **G3, legible close-up capture (partial).** The interrupted D9-9 work (stashed on 2026-10-27 as
+  "day9-09 inset close-ups") records one panel at a time at 2x scale; finish it, or capture with the
+  browser zoom, so split-screen UI is readable at normal playback size.
+
+### A3.6 Production sequence
+
+1. Lock this storyboard and the continuity specification.
+2. Test one or two generated scenes against the continuity spec.
+3. Generate the remaining scenes while capturing the real UI states separately.
+4. Assemble a rough cut with temporary narration.
+5. Record the final narration after timing is stable.
+6. Verify labels, legibility, every functional claim against A3.4, exactly 180 s, captions for
+   accessibility, and that the video link is publicly accessible.
+
+## A2. Story cut (superseded by A3)
 
 This cut follows the homeowner — a woman, never named, face never shown — as
 she travels home. Every dramatization scene is labelled on screen
