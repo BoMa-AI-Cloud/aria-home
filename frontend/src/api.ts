@@ -437,6 +437,57 @@ export interface SourcesResponse {
   sources: SourceStatus[];
 }
 
+export interface ArrivalAllowance {
+  kind: string;
+  minutes: number;
+  label: string;
+}
+
+export interface ArrivalPlan {
+  label?: string;
+  landing?: string;
+  airport_exit_baggage_allowance_min?: number;
+  airport_exit_baggage_label?: string;
+  driving_allowance_min?: number;
+  driving_label?: string;
+  planned_property_arrival?: string;
+  derivation?: string;
+}
+
+export interface ContextResponse {
+  data_mode: DataMode;
+  scenario: string;
+  at: string;
+  timezone: string;
+  confirmed: boolean;
+  reason: string | null;
+  reason_in_words?: string;
+  property_label?: string;
+  property_id?: string;
+  planned_arrival?: string | null;
+  arrival_plan?: ArrivalPlan | null;
+  landing?: string | null;
+  allowances?: ArrivalAllowance[];
+  arrival_allowances?: ArrivalAllowance[];
+  arrival_estimates_note?: string;
+  target_temp?: number;
+  target_unit?: string;
+  target_temperature?: string;
+  notify_homeowner?: boolean;
+  homeowner_notification_preference?: boolean;
+  manager_authorized?: boolean;
+  manager_coordination_permission?: boolean;
+  manager_coordination?: string;
+  confirmed_at?: string | null;
+  revision_id?: string | null;
+  trip_revision_id?: string | null;
+  trip?: Trip | null;
+  confirmation?: HomeownerConfirmation | null;
+  flags: ContextFlags;
+  context_flags: ContextFlags;
+  readiness_flags: ContextFlags;
+}
+
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(path);
   if (!response.ok) {
@@ -455,6 +506,14 @@ export function fetchSources(scenario?: string, at?: string): Promise<SourcesRes
   if (at) params.set("at", at);
   const query = params.toString() ? `?${params.toString()}` : "";
   return fetchJson<SourcesResponse>(`/api/sources${query}`);
+}
+
+export function fetchContext(scenario?: string, at?: string): Promise<ContextResponse> {
+  const params = new URLSearchParams();
+  if (scenario) params.set("scenario", scenario);
+  if (at) params.set("at", at);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return fetchJson<ContextResponse>(`/api/context${query}`);
 }
 
 export function fetchMetrics(at?: string, scenario?: string): Promise<MetricsResponse> {

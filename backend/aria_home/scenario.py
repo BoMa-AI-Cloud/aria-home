@@ -71,6 +71,7 @@ class Scenario:
     path: Path | None = field(default=None, repr=False)
     trips: list[Trip] = field(default_factory=list)
     events: list["ScenarioEvent"] = field(default_factory=list)
+    arrival_plan: dict | None = None
 
     @property
     def trip_revisions(self):
@@ -295,6 +296,7 @@ def load_scenario(path) -> Scenario:
     trips: list[Trip] = []
     confirmation: HomeownerConfirmation | None = None
     confirmations: list[HomeownerConfirmation] = []
+    arrival_plan: dict | None = None
 
     source_files = list(SOURCE_FILES)
     if (base / "room_sensor.json").is_file():
@@ -340,6 +342,8 @@ def load_scenario(path) -> Scenario:
             confirmation = HomeownerConfirmation.model_validate(extra["confirmation"])
             if confirmation not in confirmations:
                 confirmations.append(confirmation)
+        if isinstance(extra.get("arrival_plan"), dict):
+            arrival_plan = dict(extra["arrival_plan"])
         if isinstance(extra.get("confirmations"), list):
             for item in extra["confirmations"]:
                 candidate = HomeownerConfirmation.model_validate(item)
@@ -362,7 +366,7 @@ def load_scenario(path) -> Scenario:
         else:
             event_rows = events_payload.get("events", events_payload.get("records", []))
         events = [ScenarioEvent.model_validate(row) for row in event_rows]
-    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events)
+    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events, arrival_plan=arrival_plan)
 
 
 def visible_records(records: list[EvidenceRecord], now: datetime) -> list[EvidenceRecord]:

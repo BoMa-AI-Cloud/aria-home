@@ -29,6 +29,20 @@ async function replay(page: Page, label: string) {
   await expect(button).toBeEnabled({ timeout: 30_000 });
 }
 
+test("i0-plan", async ({ page }) => {
+  await openInset(page, "plan");
+  await replay(page, "09:20");
+  const plan = section(page, "Confirmed plan and permissions");
+  await expect(plan).toContainText("demo-cabin");
+  await expect(plan).toContainText("9:00 PM");
+  await expect(plan).toContainText("68 F");
+  await expect(plan).toContainText("Manager coordination allowed");
+  await expect(plan).toContainText("9:20 AM");
+  await expect(plan).toContainText("trip-video-001-rev1");
+  await expect(plan).toContainText("scenario estimates");
+  await show(page, plan, 7000);
+});
+
 test("i1-trip", async ({ page }) => {
   await openInset(page, "timeline");
   await replay(page, "09:20");

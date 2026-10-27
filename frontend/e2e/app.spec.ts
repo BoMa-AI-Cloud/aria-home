@@ -305,9 +305,35 @@ test("video scenario shows scoped simulated notifications and homeowner update",
   expect(failedRequests).toEqual([]);
 });
 
+test("video scenario shows confirmed plan and permissions at 09:20", async ({ page }) => {
+  await page.goto("http://127.0.0.1:5173/");
+  const plan = page.locator("section", {
+    has: page.getByRole("heading", { name: "Confirmed plan and permissions" }),
+  });
+  await expect(plan).toBeVisible();
+  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+  const demoControls = page.locator(".demo-controls");
+  const time0920 = demoControls.getByRole("button", { name: "09:20" });
+  await expect(time0920).toBeEnabled();
+  await time0920.click();
+  await expect(plan).toContainText("demo-cabin");
+  await expect(plan).toContainText("9:00 PM");
+  await expect(plan).toContainText("7:45 PM");
+  await expect(plan).toContainText("45 min airport-exit/baggage");
+  await expect(plan).toContainText("30 min driving");
+  await expect(plan).toContainText("scenario estimates");
+  await expect(plan).toContainText("68 F");
+  await expect(plan).toContainText("notify homeowner");
+  await expect(plan).toContainText("Manager coordination allowed");
+  await expect(plan).toContainText("9:20 AM");
+  await expect(plan).toContainText("trip-video-001-rev1");
+  await expect(plan).not.toContainText("Not yet confirmed");
+});
+
 test("without inset the full page still renders all panels", async ({ page }) => {
   await page.goto("http://127.0.0.1:5173/");
   for (const heading of [
+    "Confirmed plan and permissions",
     "Investigation",
     "Outcome",
     "Notifications (simulated delivery)",

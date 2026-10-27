@@ -281,6 +281,41 @@ def create_app():
         item = {k: v for k, v in row.items() if k != "payload_json"}
         return item
 
+    @app.get("/api/context")
+    def context_endpoint():
+        scn = _load_named_scenario(request.args.get("scenario"))
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic", "scenario": request.args.get("scenario"), "at": request.args.get("at"), "timezone": scenario.manifest.timezone}), 404
+        at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
+        if error:
+            return error
+        ctx = context_as_of(scn, at)
+        flags = dict(ctx.flags)
+        base = {"data_mode": scn.manifest.mode.value, "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "flags": flags, "context_flags": dict(flags), "readiness_flags": dict(flags)}
+        trip_payload = ctx.trip.model_dump(mode="json") if ctx.trip is not None else None
+        if ctx.confirmation is None:
+            if flags.get("trip_cancelled"):
+                reason, reason_in_words = "trip_cancelled", "Trip cancelled"
+            elif flags.get("confirmation_outdated"):
+                reason, reason_in_words = "confirmation_outdated", "Confirmation outdated for the current trip"
+            elif flags.get("trip_mismatched"):
+                reason, reason_in_words = "trip_mismatched", "Trip and confirmation do not match"
+            else:
+                reason, reason_in_words = "trip_unconfirmed", "Not yet confirmed"
+            return jsonify({**base, "confirmed": False, "reason": reason, "reason_in_words": reason_in_words, "confirmation": None, "confirmed_at": None, "revision_id": None, "current_trip_revision_id": ctx.trip.revision_id if ctx.trip is not None else None})
+        confirmation = ctx.confirmation
+        trip = ctx.trip
+        arrival_plan = dict(getattr(scn, "arrival_plan", None) or {}) or None
+        allowances = []
+        if arrival_plan:
+            if arrival_plan.get("airport_exit_baggage_allowance_min") is not None:
+                allowances.append({"kind": "airport_exit_baggage", "minutes": arrival_plan["airport_exit_baggage_allowance_min"], "label": arrival_plan.get("airport_exit_baggage_label") or f"labeled allowance: {arrival_plan['airport_exit_baggage_allowance_min']} min airport-exit/baggage"})
+            if arrival_plan.get("driving_allowance_min") is not None:
+                allowances.append({"kind": "driving", "minutes": arrival_plan["driving_allowance_min"], "label": arrival_plan.get("driving_label") or f"labeled allowance: {arrival_plan['driving_allowance_min']} min driving"})
+        revision_id = confirmation.revision_id or confirmation.trip_revision_id or (trip.revision_id if trip is not None else None)
+        property_label = trip.property_id if trip is not None else confirmation.property_id
+        return jsonify({**base, "confirmed": True, "reason": None, "property_label": property_label, "property_id": property_label, "property": property_label, "planned_arrival": trip.planned_arrival.isoformat() if trip is not None else None, "arrival_plan": arrival_plan, "landing": arrival_plan.get("landing") if arrival_plan else None, "allowances": allowances, "arrival_allowances": allowances, "arrival_estimates_note": "Arrival times and allowances are scenario estimates, not live travel claims", "estimates_note": "Scenario estimates, not live travel claims", "target_temp": confirmation.target_temp, "target_unit": confirmation.target_unit, "target_temperature": f"{confirmation.target_temp:g} {confirmation.target_unit}", "notify_homeowner": confirmation.notify_homeowner, "homeowner_notification_preference": confirmation.notify_homeowner, "homeowner_notification": confirmation.notify_homeowner, "manager_authorized": confirmation.manager_authorized, "manager_coordination_permission": confirmation.manager_authorized, "manager_coordination": "allowed" if confirmation.manager_authorized else "not allowed", "confirmed_at": confirmation.confirmed_at.isoformat(), "revision_id": revision_id, "trip_revision_id": revision_id, "confirmation_revision_id": revision_id, "trip_revision": confirmation.trip_revision, "trip": trip_payload, "confirmation": confirmation.model_dump(mode="json")})
+
     def _follow_up_payload(store, investigation_id, at=None, outcome=None):
         follow_up = store.get_follow_up(investigation_id)
         row = store.get_follow_up_row(investigation_id)

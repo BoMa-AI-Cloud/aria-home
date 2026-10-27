@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import {
   ackNotification,
   createInvestigation,
+  fetchContext,
   fetchEvents,
   fetchFollowUp,
   fetchNotifications,
   fetchSources,
   type Availability,
   type ContextFlags,
+  type ContextResponse,
   type CreateInvestigationResponse,
   type InvestigationResponse,
   type InvestigationSummary,
@@ -304,6 +306,101 @@ function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {
           </ul>
         </>
       )}
+    </div>
+  );
+}
+
+function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; error: string | null }) {
+  if (error) {
+    return (
+      <p role="alert" className="error">
+        Confirmed plan not reachable
+      </p>
+    );
+  }
+  if (!data) return <p role="status">Loading confirmed plan…</p>;
+  const flags = data.context_flags ?? data.flags;
+  if (!data.confirmed) {
+    return (
+      <div className="confirmed-plan">
+        <p className="confirmed-plan-status">
+          {flags?.confirmation_outdated ? "Confirmation outdated" : flags?.trip_cancelled ? "Trip cancelled" : flags?.trip_mismatched ? "Trip and confirmation do not match" : "Not yet confirmed"}
+        </p>
+        {data.reason_in_words && data.reason_in_words !== "Not yet confirmed" && <p>{data.reason_in_words}</p>}
+        {flags?.confirmation_outdated && <p>Confirmation outdated for the current trip — the confirmed plan no longer matches the current trip revision.</p>}
+        <p>
+          Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
+        </p>
+      </div>
+    );
+  }
+  const allowances = data.allowances ?? data.arrival_allowances ?? [];
+  const target =
+    data.target_temperature ??
+    (data.target_temp !== undefined ? `${formatTargetTemp(data.target_temp)} ${data.target_unit ?? "F"}` : null);
+  return (
+    <div className="confirmed-plan">
+      <dl className="card-facts">
+        <div>
+          <dt>Property</dt>
+          <dd>{data.property_label ?? data.property_id ?? data.trip?.property_id ?? "—"}</dd>
+        </div>
+        {data.planned_arrival && (
+          <div>
+            <dt>Planned arrival</dt>
+            <dd>
+              <time dateTime={data.planned_arrival}>{formatTimestamp(data.planned_arrival)}</time>
+            </dd>
+          </div>
+        )}
+        {data.landing && (
+          <div>
+            <dt>Landing</dt>
+            <dd>
+              <time dateTime={data.landing}>{formatTimestamp(data.landing)}</time>
+            </dd>
+          </div>
+        )}
+        {allowances.map((allowance) => (
+          <div key={allowance.kind}>
+            <dt>{allowance.kind === "driving" ? "Driving allowance" : "Airport-exit/baggage allowance"}</dt>
+            <dd>{allowance.label}</dd>
+          </div>
+        ))}
+        {target && (
+          <div>
+            <dt>Target temperature</dt>
+            <dd>{target}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Homeowner notification</dt>
+          <dd>{data.notify_homeowner ? "Yes — notify homeowner" : "No — do not notify homeowner"}</dd>
+        </div>
+        <div>
+          <dt>Manager coordination</dt>
+          <dd>{data.manager_authorized ? "Manager coordination allowed" : "Manager coordination not allowed"}</dd>
+        </div>
+        {data.confirmed_at && (
+          <div>
+            <dt>Confirmed</dt>
+            <dd>
+              <time dateTime={data.confirmed_at}>{formatTimestamp(data.confirmed_at)}</time>
+            </dd>
+          </div>
+        )}
+        {data.revision_id && (
+          <div>
+            <dt>Revision</dt>
+            <dd>{data.revision_id}</dd>
+          </div>
+        )}
+      </dl>
+      {allowances.length > 0 && <p>Arrival times and allowances are scenario estimates, not live travel claims.</p>}
+      {data.arrival_plan?.derivation && <p>{data.arrival_plan.derivation}</p>}
+      <p>
+        Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
+      </p>
     </div>
   );
 }
@@ -893,6 +990,7 @@ function HomeownerUpdateCard({
 }
 
 const INSET_TARGETS: Record<string, string[]> = {
+  plan: ["plan"],
   timeline: ["timeline"],
   outcome: ["outcome"],
   notifications: ["notifications"],
@@ -910,6 +1008,8 @@ export default function App() {
   const insetPanels = inset ? (INSET_TARGETS[inset] ?? []) : [];
   const insetClass = (panel: string) => (insetPanels.includes(panel) ? "inset-target" : undefined);
   const [data, setData] = useState<SourcesResponse | null>(null);
+  const [contextData, setContextData] = useState<ContextResponse | null>(null);
+  const [contextError, setContextError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [createdInvestigation, setCreatedInvestigation] =
     useState<CreateInvestigationResponse | null>(null);
@@ -932,6 +1032,7 @@ export default function App() {
   const [selectedAt, setSelectedAt] = useState<string>(REPLAY_START_AT);
   const [sourcesLoading, setSourcesLoading] = useState(false);
   const sourcesTokenRef = useRef(0);
+  const contextTokenRef = useRef(0);
   const investigationTokenRef = useRef(0);
   const replayTokenRef = useRef(0);
   const eventsTokenRef = useRef(0);
@@ -952,6 +1053,22 @@ export default function App() {
         if (token !== sourcesTokenRef.current) return;
         setError("Backend not reachable");
         setSourcesLoading(false);
+      });
+  }, [scenario, selectedAt]);
+
+  useEffect(() => {
+    const token = ++contextTokenRef.current;
+    setContextError(null);
+    fetchContext(scenario, selectedAt)
+      .then((response) => {
+        if (token !== contextTokenRef.current) return;
+        if (response.scenario !== scenario) return;
+        if (Date.parse(response.at) !== Date.parse(selectedAt)) return;
+        setContextData(response);
+      })
+      .catch(() => {
+        if (token !== contextTokenRef.current) return;
+        setContextError("Confirmed plan not reachable");
       });
   }, [scenario, selectedAt]);
 
@@ -1044,6 +1161,8 @@ export default function App() {
     replayTokenRef.current += 1;
     investigationTokenRef.current += 1;
     sourcesTokenRef.current += 1;
+    contextTokenRef.current += 1;
+    setContextData(null);
     setScenario(nextScenario);
     setSelectedAt(startAtForScenario(nextScenario));
     setSourcesLoading(true);
@@ -1174,6 +1293,11 @@ export default function App() {
           </p>
         )}
       </header>
+
+      <section aria-labelledby="confirmed-plan-heading" className={insetClass("plan")}>
+        <h2 id="confirmed-plan-heading">Confirmed plan and permissions</h2>
+        <ConfirmedPlanSection data={contextData} error={contextError} />
+      </section>
 
       <section aria-labelledby="investigation-heading" className={insetClass("investigation")}>
         <h2 id="investigation-heading">Investigation</h2>
