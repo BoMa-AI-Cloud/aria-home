@@ -344,3 +344,18 @@ Disclosure and labels during the edit:
   buttons.
 - [ ] Final cut is exactly 180 s, follows the section A storyboard, and
   contains none of the section G claims to avoid.
+
+Recording footage:
+
+- Run `cd frontend && npm run record:demo`. This uses
+  `frontend/playwright.record.config.ts` and `frontend/recording/demo.record.ts`
+  to drive the real running frontend and backend at 1280x720, in mock mode
+  (`ARIA_HOME_MODEL_ENABLED=0`) on a fresh database under the OS temp dir,
+  so the "MOCK - example answer, not live inference" label is in frame
+  whenever the Investigation is in frame.
+- Clips land in `frontend/recordings/` (ignored by git), one `.webm` per
+  storyboard segment: `s1-trip-cards`, `s2-not-responding`,
+  `s3-authorized-help`, `s4-recovery`, and `s5-report-and-arrival`.
+- The footage is the real UI; the evaluation title card (section A,
+  2:10-2:25) and the front-door / warm-room door shots are not product UI
+  and are not recorded by this command.

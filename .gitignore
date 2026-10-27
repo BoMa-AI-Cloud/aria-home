@@ -26,6 +26,7 @@ dist/
 build/
 playwright-report/
 test-results/
+frontend/recordings/
 
 # Editors and OS
 .vscode/
