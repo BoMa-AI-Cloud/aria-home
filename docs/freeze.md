@@ -1,5 +1,9 @@
 # ARIA Home feature freeze
 
+Initial freeze: 2026-10-26 at commit 4d3bacb. Brad lifted the self-imposed
+feature freeze on 2026-10-28 for the Audit 3 repair and the integrations that
+follow. A final freeze date will be set later.
+
 Frozen from 2026-10-26 (local). The demo is what commit 4d3bacb does; the
 remaining work is testing it, filming it, and writing it up.
 

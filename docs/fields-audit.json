@@ -1,0 +1,56 @@
+{
+  "scenario": "demo_video_v1",
+  "audience": "hvac_company",
+  "kind": "hvac_request",
+  "at": "2026-01-16T16:52:00-05:00",
+  "notification_created_at": "2026-01-16T16:46:00-05:00",
+  "fields_sent": [
+    "access_note",
+    "audience",
+    "kind",
+    "manager_contact_label",
+    "property_label",
+    "relevant_observations"
+  ],
+  "field_values": {
+    "access_note": "lockbox access per manager (synthetic)",
+    "audience": "hvac_company",
+    "kind": "hvac_request",
+    "manager_contact_label": "property manager on file (synthetic label)",
+    "property_label": "demo-cabin",
+    "relevant_observations": [
+      "Indoor temperature 52.0 F (at 16:30)",
+      "Target 68.0 F",
+      "16.0 F below target",
+      "Electrical activity 550.0 W",
+      "Equipment function unknown"
+    ]
+  },
+  "fields_refused": [
+    "evaluated_at",
+    "planned_arrival",
+    "readiness",
+    "readiness_in_words",
+    "requested_action",
+    "stage",
+    "stage_in_words",
+    "verified_facts",
+    "what_was_done"
+  ],
+  "refused_notifications": [
+    {
+      "audience": "hvac_company",
+      "kind": "hvac_request",
+      "refusal_reason": "manager_hvac_not_authorized"
+    }
+  ],
+  "authorising_event": {
+    "id": "evt-video-manager-hvac-authorized",
+    "kind": "manager_hvac_authorized",
+    "available_at": "2026-01-16T16:45:00-05:00",
+    "event_time": "2026-01-16T16:45:00-05:00"
+  },
+  "simulated": true,
+  "delivery": "simulated",
+  "state": "simulated_delivered"
+}

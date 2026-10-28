@@ -115,6 +115,24 @@ Every file below was created during the event. No code, data, fixtures or assets
 | frontend/src/main.tsx | yes | 0ba5213 | none |
 | frontend/tsconfig.json | yes | 0ba5213 | none |
 | frontend/vite.config.ts | yes | 0ba5213 | none |
+| .github/workflows/ci.yml | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| LICENSE | yes (Audit 3, 2026-10-28, approved by Brad) | uncommitted | none (MIT, Copyright (c) 2026 Bradley Allen Wentzel) |
+| SECURITY.md | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| backend/requirements.lock | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| backend/requirements-dev.txt | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| backend/tests/test_audit3_group4_safety.py | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| backend/tests/test_audit3_group4_fields_audit.py | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| docs/fields-audit.json | yes (Audit 3, 2026-10-28; generated from the code's `demo_video_v1` HVAC notification at 16:52, not hand-typed) | uncommitted | none |
+| docs/red-team.md | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| docs/architecture-future.md | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| docs/killer-apps-analysis.md | yes (Audit 3, 2026-10-28) | uncommitted | none |
+| backend/aria_home/whatsapp.py | yes (integrations, 2026-10-28, approved by Brad) | uncommitted | none |
+| backend/aria_home/emporia.py | yes (integrations, 2026-10-28, approved by Brad) | uncommitted | none |
+| backend/tests/test_audit3_whatsapp.py | yes (integrations, 2026-10-28) | uncommitted | none |
+| backend/tests/test_audit3_emporia.py | yes (integrations, 2026-10-28) | uncommitted | none |
+| docs/whatsapp-audit.json | yes (integrations, 2026-10-28; generated from the code's WhatsApp channel config and `demo_video_v1` HVAC payload, not hand-typed) | uncommitted | none |
+
+New files from the earlier Audit 3 groups (in the working tree, uncommitted): `backend/aria_home/eligibility.py`, `backend/tests/test_audit3_evidence_verification.py`, `backend/tests/test_audit3_group2_identity_persistence.py`, `backend/tests/test_audit3_group3_lifecycle.py`, and the Audit 3 build-log prompt/answer pairs under `docs/build-log/`. Group 4 also edited `docs/evaluation.md`, `docs/submission.md`, `docs/freeze.md`, `README.md`, `backend/requirements.txt` (pytest moved to `requirements-dev.txt`) and this file; the shipped fixtures, scenarios and recorded live-result files were not changed.
 
 First-commit values that are build-log task ids (e.g. day4-01a2) mark files
 whose commit hash is not in the timeline; the task's prompt/answer pair is in

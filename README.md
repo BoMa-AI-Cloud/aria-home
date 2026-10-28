@@ -1,12 +1,21 @@
 # ARIA Home
 
+I live in Petoskey, Michigan, where the winters are long and cold. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built to help notice sooner and get the right person moving. It does not repair or control anything.
+
+## What judges should click
+
+1. Start the backend (port 5000) and frontend (port 5173) as in "Try it in 5 minutes" below.
+2. Open the page on port 5173. In "Demo controls (synthetic replay)", set "Scenario" to "Trip home, thermostat offline (video)".
+3. Click the replay buttons in order: 16:31, 16:52, 18:21, 18:51, 19:51, 20:21, 20:46, 21:01.
+4. At 16:52, check the HVAC company card under "Notifications (simulated delivery)" and its "fields sent:" line; click "Acknowledge (simulated)" on the property manager card and confirm the Outcome headline does not change. At 20:46, find the "HVAC completion report" card — it appears only after the 20:21 verification, as corroboration only.
+
 ARIA Home answers one question for a returning homeowner: **Will my property be ready when I arrive, and if something looks wrong, who should respond?**
 
 It is a solo entry in the Meta Global AI Developer Hackathon (Indie Developer track, theme "Build for Your World").
 
 The core idea is simple: an automation starting is not the homeowner's expectation met. ARIA Home connects the evidence — a planned trip, thermostat, room-sensor, electrical and weather records — coordinates authorized help when something looks wrong, independently detects recovery from later readings, and verifies the result before it reports an outcome.
 
-What works now: a code-computed readiness status explained by a model investigation, deterministic power context with stated limitations, scoped simulated notifications to the homeowner and property manager, follow-up outcomes checked against later measurements, recovery verification stages from `telemetry_missing` to `arrival_met`, and a labeled simulated timeline with replay through arrival. Key endpoints include `GET /api/health`, `GET /api/sources`, `GET /api/provider`, `GET /api/metrics`, `GET /api/power-context`, `GET /api/investigation`, `POST /api/investigations`, `GET /api/follow-ups/<id>`, and `GET /api/events`.
+What works now: a code-computed readiness status explained by a model investigation, deterministic power context with stated limitations, scoped simulated notifications to the homeowner and property manager, follow-up outcomes checked against later measurements, recovery verification stages from `telemetry_missing` to `arrival_met`, and a labeled simulated timeline with replay through arrival. Key endpoints include `GET /api/health`, `GET /api/sources`, `GET /api/provider`, `GET /api/metrics`, `GET /api/power-context`, `GET /api/investigation`, `POST /api/investigations`, `GET /api/follow-ups/<id>`, `GET /api/events`, and `GET /api/live-power` (optional Emporia read-only panel, off by default).
 
 ## Built during the hackathon vs pre-existing
 
@@ -32,6 +41,18 @@ The model may explain a computed status, describe supporting and conflicting evi
 
 The full rules and thresholds are in [Readiness rules](docs/readiness-rules.md).
 
+## Code vs model: who decides what
+
+| Question | Decided by | Why |
+|---|---|---|
+| Readiness (`on_track`, `at_risk`, `cannot_tell`, `arrival_passed`, incl. target-at-arrival) | Code (`backend/aria_home/readiness.py`, `readiness-policy-v2`) | The status must follow the same thresholds every time; the model is told the computed status and a disagreeing answer is rejected, so agreement is contract-following, not independent accuracy. |
+| Follow-up scheduling | Code (`scheduling.py`, `outcomes.py`) | A model-supplied time outside the allowed window is checked and replaced. |
+| Outcome and recovery verification (`telemetry_missing` → `arrival_met`) | Code from later measurements only (`outcomes.py`, `verification.py`) | Human statements, acknowledgements, service visits and the HVAC completion report never set an outcome or advance a stage; only later readings do. |
+| Explanation, verified facts vs interpretation | Model explains; code renders the verified facts (inv-v2) | Each model fact may cite only its allowed evidence and values are checked against the evidence pack; the model's own wording stays separate and unverified. |
+| Is the home warming / is heat useful? | Code, from temperature evidence only | Watts are not heat: circuit activity can show a circuit is drawing power, but only temperature readings can show warming, so electrical-only evidence never yields `on_track` or a warming stage. |
+
+Possible uses (not measured): vacant rentals, seasonal homes, small buildings.
+
 The application code itself was written by **muse-wonder-1.0** and **muse-spark-1.3** through Claude Code. Every prompt and answer, failed runs included, is in [docs/build-log/](docs/build-log/README.md). The operator (Claude, directed by Brad Wentzel) wrote the prompts, reviewed and tested each change, ran the approved installs and live smoke tests, and pushed the commits.
 
 ## Results
@@ -50,11 +71,11 @@ These are builder-labeled cases on synthetic data — a small sample, not a benc
 
 Combined evidence matches every expected readiness label and every scored verification stage. Single-source conditions mostly fall back to unsupported answers (`cannot_tell`, `telemetry_missing`, `unable_to_verify`) rather than asserting the opposite. Two findings stand out: during the thermostat outage, thermostat-only evidence cannot support even a current-temperature claim, while independent room readings still show no warming; and electrical activity alone never supports a useful-heat claim — only temperature evidence can show warming.
 
-**Live (operator-run, approved by Brad):** 24 calls — the 12 cases on muse-spark-1.3 and on muse-wonder-1.0, no retries. Both models returned 12/12 valid answers with **0 of 24 rejected** by the claim checks. Read the agreement figure honestly: readiness agreement is enforced (the model is told the computed status and a mismatch is rejected), so 24/24 agreement shows the models followed the contract, not that they judged readiness independently. The meaningful result is the 0 rejections. It was one run per case, input-token counts are unreliable, and the live run used the pre-Day-7 readiness labels, so it did not exercise the later `arrival_passed` target-at-arrival rule. No winner is declared on quality.
+**Live (operator-run, approved by Brad):** the recorded runs are registered in [Evaluation](docs/evaluation.md) with model ids, provider routes, dates, code snapshots and policy versions — the pre-Audit-2 run (snapshot 53a06bd, 2026-10-26) was 24 calls in total: the 12 cases on muse-spark-1.3 and the same 12 cases on muse-wonder-1.0 via the Meta Model API, each model returning 12/12 valid answers with **0 of 24 rejected**; the current-code run (snapshot 114be6a, 2026-10-27) gave muse-spark-1.3 8/12 valid via the Meta Model API and meta-models/muse-spark-open-1026 via Baseten 1/12 valid at 12000 tokens and 0/12 at 2000 tokens. Readiness agreement is enforced (the model is told the computed status and a mismatch is rejected), so agreement shows the models followed the contract, not that they judged readiness independently. No recorded live run is a current live call, and no cost figure is recorded, so none is stated.
 
 ## Try it in 5 minutes
 
-Mock mode is the default: no environment variables and no API key are needed, and the investigation is labeled "MOCK - example answer, not live inference".
+Supported versions: Python 3.12 and Node 22 (CI, `.github/workflows/ci.yml`); developed locally on Python 3.12.7 / Node 25.9.0. Backend runtime pins are in `backend/requirements.lock` (exact versions from `backend/requirements.txt`); dev/test dependencies (pytest) are in `backend/requirements-dev.txt`. Mock mode is the default: no environment variables and no API key are needed, and the investigation is labeled "MOCK - example answer, not live inference".
 
 Terminal 1 — backend, from the repo root:
 
@@ -63,7 +84,8 @@ Terminal 1 — backend, from the repo root:
 cd backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements.lock
+pip install -r requirements-dev.txt
 ```
 
 ```
@@ -71,7 +93,8 @@ pip install -r requirements.txt
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.lock
+pip install -r requirements-dev.txt
 ```
 
 ```
@@ -104,10 +127,14 @@ npm run test:e2e
 
 **Live mode (optional):** set `ARIA_HOME_MODEL_ENABLED=1` to enable live model calls (anything else stays in mock mode), `ARIA_HOME_PROVIDER_URL` to the model API base host, `ARIA_HOME_MODEL_ID` to the model to call, and `MODEL_API_KEY` to the API key (sent as `Authorization: Bearer <key>`). Keys live only in local environment variables; `.env` files are ignored.
 
+**WhatsApp test delivery (optional, off by default):** set `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEST_RECIPIENT` (the owner's own verified test number, which stands in for the HVAC company) plus `ARIA_HOME_WHATSAPP_LIVE=1`. Only then is the allowed HVAC-company notice also sent once via the WhatsApp Cloud API (`POST https://graph.facebook.com/v25.0/{phone_number_id}/messages`, plain-text message starting "ARIA Home test (synthetic scenario)", rendered from the exact allowlisted payload fields); the card then reads "Sent to the owner's test number on WhatsApp (stands in for the HVAC company)". With anything missing, the notice stays exactly as today ("Simulated, no message was sent"). Never sent to any other number; at most one real send per notification id ever. Field audit: [WhatsApp audit](docs/whatsapp-audit.json), generated from the code.
+
+**Emporia live panel (optional, off by default):** set `EMPORIA_EMAIL`, `EMPORIA_PASSWORD` plus `ARIA_HOME_EMPORIA_LIVE=1`. Only then does `GET /api/live-power` return the owner's real per-circuit watts (read-only via pyemvue, cached 60 s, `source: "live-read-only (owner's home)"`) and the frontend shows a small separate panel, "Your real home, right now (live, read-only, Emporia Vue)". The panel is hidden otherwise, so the judge demo is unchanged. Live watts are display only: never evidence for readiness, warming or verification, never in the evidence pack (watts are not heat).
+
 ## Safety and honesty rules
 
-- **Synthetic data only.** Every thermostat, electrical, weather, calendar and contact record is invented for the demo and labeled synthetic. No credentials, real travel details or personal contacts appear anywhere.
-- **Simulated delivery and control.** Notifications are simulated only — every card reads "Simulated, no message was sent", and there is no real email, SMS or push channel. The app reads and explains; it never operates equipment, and scene/command acknowledgements are simulated timeline events that change no physical state.
+- **Synthetic data only.** Every thermostat, electrical, weather, calendar and contact record is invented for the demo and labeled synthetic. No credentials, real travel details or personal contacts appear anywhere. The only real data the app can ever touch is the optional, off-by-default Emporia live-watts panel, which is display only and never stored in the repo.
+- **Simulated delivery and control.** Notifications are simulated only by default — every card reads "Simulated, no message was sent", and there is no real email, SMS or push channel. The one exception is the optional WhatsApp test delivery above: only the allowed HVAC-company notice, only to the owner's own test number, at most once per notice. The app reads and explains; it never operates equipment, and scene/command acknowledgements are simulated timeline events that change no physical state.
 - **Scoped notifications.** Each audience (homeowner, property manager, HVAC company) has an allowlist of fields it may receive, enforced in code with refusals recorded. The HVAC request carries only property, access, manager contact and relevant observations — never itinerary, email or location — and is sent only after a manager authorization event.
 - **Acknowledgement is not resolution.** A simulated acknowledgement is recorded as its own event and never changes readiness, outcome or verification. The same applies to service visits and the HVAC completion report, which is corroboration only and never sets an outcome.
 - **No future data in replay.** Records, trip revisions, confirmations, events and notifications are visible only at or after their received/available times, so a replay at any moment shows only what ARIA could have known then.
@@ -115,16 +142,16 @@ npm run test:e2e
 
 ## Known limits
 
-From the day handoffs and the [feature freeze](docs/freeze.md) (frozen 2026-10-26; the demo is what commit 4d3bacb does):
+From the day handoffs and the [feature freeze](docs/freeze.md) (initial freeze 2026-10-26 at 4d3bacb, lifted 2026-10-28 for the Audit 3 repair and the integrations that follow; a final freeze date will be set later):
 
-- All data is synthetic and every message, scene, visit and report is simulated; there are no real channels and ARIA Home controls no equipment. Email, location, scene, confirmation and service-visit moments have no dedicated UI and appear as labeled simulated timeline cards.
+- All data is synthetic and every message, scene, visit and report is simulated; there are no real channels except the optional WhatsApp test delivery to the owner's own test number, and ARIA Home controls no equipment. Email, location, scene, confirmation and service-visit moments have no dedicated UI and appear as labeled simulated timeline cards.
 - Room-sensor and blower mappings are synthetic assumptions, not measured physical behaviour. Readiness thresholds are fixed constants, not fitted to a home, and projection is a linear extrapolation that ignores weather, equipment cycling and occupancy.
 - The notification allowlists are reviewed by hand, not by an external privacy review; the HVAC request is gated only by a synthetic manager authorization event.
 - The evaluation sample is small and builder-labeled: 12 offline cases, one live run per case. The live agreement rate shows the models followed the readiness contract, not independent readiness judgment, and input-token counts are unreliable.
 - The committed live results used the pre-Day-7 readiness labels; Day 7 added `arrival_passed` with target-at-arrival, which the live run did not exercise.
 - The older follow-up rule and the verification stage can disagree; the UI headlines the verification stage.
 - The claim check is bounded — structured facts plus a phrase/number filter — not a semantic verifier of arbitrary prose.
-- No new features, evidence sources, providers, models or integrations (real email, SMS, location, travel or equipment control) will be added after the freeze; remaining work is user testing, filming and the submission.
+- The Audit 3 repair and the integrations that follow are in scope after the freeze lift on 2026-10-28. Two optional integrations are implemented, both off by default: WhatsApp test delivery of the allowed HVAC notice to the owner's own test number, and the read-only Emporia live-watts panel. No real email, SMS (other than that test number), location, travel or equipment-control integration is implemented — those stay synthetic/simulated (future directions, no code: [Architecture — future](docs/architecture-future.md)).
 
 Day-by-day record: [Day 1 handoff](docs/day1-handoff.md) · [Day 2 handoff](docs/day2-handoff.md) · [Day 3 handoff](docs/day3-handoff.md) · [Day 4 handoff](docs/day4-handoff.md) · [Day 5 handoff](docs/day5-handoff.md) · [Day 6 handoff](docs/day6-handoff.md) · [Timeline](docs/timeline.md) · [User-test kit](docs/usability.md) · [Feature freeze](docs/freeze.md)
 
@@ -132,4 +159,6 @@ Submission: [Submission checklist and write-up](docs/submission.md)
 
 ## License
 
-No license has been chosen yet. Until one is added, all rights are reserved by the author.
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Bradley Allen Wentzel. Security scope and reporting: [SECURITY.md](SECURITY.md).
+
+Further reading: [Red-team notes](docs/red-team.md) · [Architecture — future](docs/architecture-future.md) · [Killer-apps analysis (hypothetical)](docs/killer-apps-analysis.md) · [HVAC field audit](docs/fields-audit.json) · [WhatsApp audit](docs/whatsapp-audit.json)

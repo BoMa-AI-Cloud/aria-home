@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ARIA_HOME_MODEL_ENABLED: "0"
+      ARIA_HOME_BASETEN_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend (pinned lock + dev/test deps)
+        working-directory: backend
+        run: |
+          pip install -r requirements.lock
+          pip install -r requirements-dev.txt
+      - name: Backend tests
+        working-directory: backend
+        run: python -m pytest -q
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Frontend typecheck
+        working-directory: frontend
+        run: npm run typecheck
+      - name: Frontend build
+        working-directory: frontend
+        run: npm run build
+      - name: Install Chrome for Playwright
+        working-directory: frontend
+        run: npx playwright install --with-deps chrome
+      - name: Browser e2e (both timezone projects)
+        working-directory: frontend
+        run: npm run test:e2e
+      - name: Alternate-port smoke (both timezone projects)
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_FRONTEND_PORT: "5174"
+          PLAYWRIGHT_BACKEND_PORT: "5001"
+        run: npm run test:e2e
+      - name: npm audit (reporting only, does not fail on advisories)
+        if: always()
+        continue-on-error: true
+        working-directory: frontend
+        run: npm audit --omit=dev
+      - name: pip-audit (reporting only, does not fail on advisories)
+        if: always()
+        continue-on-error: true
+        working-directory: backend
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.lock

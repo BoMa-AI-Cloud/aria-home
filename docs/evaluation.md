@@ -130,6 +130,23 @@ The 12 cases pair each scenario with fixed replay times. Expected readiness (and
 - Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
 
+## How the code counts (Audit 3, 2026-10-28)
+
+- **Cases and scenarios are different counts.** The code (`backend/aria_home/evaluation.py`, `CASES` / `backend/eval/expected.json`) defines **12 cases** across **6 scenarios** (`demo_v1`, `demo_recovery_v1`, `demo_no_followup_v1`, `demo_revised_v1`, `demo_cancelled_v1`, `demo_video_v1`). Each case is run under 5 conditions (combined + 4 single-source), giving 60 case-condition rows. Never write this as "12 x 7".
+- **Recovery verification is scored for 5 of the 12 cases** — only the `demo_video_v1` cases carry `expected_verification` (the only scenario with room-sensor records), so per condition `verification_scored` is 5. The other 7 cases score readiness (and, where applicable, target-at-arrival) only.
+- **Three different totals, kept separate:** readiness correct (of 12 per condition), verification correct (of the 5 scored), and fully correct (a case-condition row counts only if readiness, any scored verification, and any scored target-at-arrival all match). See the Totals table.
+- **Readiness agreement is contract-following, not independent accuracy.** The contract (`inv-v2`) tells the model the code-computed readiness and rejects a disagreeing answer, so live agreement shows the model followed the contract. It is not evidence the model judged readiness independently.
+
+## Recorded live runs (register; no re-runs)
+
+| Date | Model id(s) | Provider route | Calls | Code snapshot | Policy version | Recorded result |
+|---|---|---|---|---|---|---|
+| 2026-10-26 | `muse-spark-1.3`; `muse-wonder-1.0` | Meta Model API | 24 total = 12 cases on each of 2 models (see below) | 53a06bd | pre-Audit-2 labels; prompt `inv-v2`; readiness labels pre-date `arrival_passed` target-at-arrival and `readiness-policy-v2` stamping | Each model 12/12 valid, 0 rejected (source: `backend/eval/results-live.json`) |
+| 2026-10-27 | `muse-spark-1.3` | Meta Model API | 12 | 114be6a (after Audit 2 repairs) | prompt `inv-v2`; `readiness-policy-v1` (Day-7 labels with `arrival_passed` and target-at-arrival; the `readiness-policy-v2` stamp came later in Audit 3, 2026-10-28) | 8/12 valid, 4 rejected (source: `backend/eval/results-live-current.json`) |
+| 2026-10-27 | `meta-models/muse-spark-open-1026` | Baseten (evaluation only) | 12 at 12000 tokens; 12 at 2000 tokens | 114be6a | prompt `inv-v2`; `readiness-policy-v1` (Day-7 labels with `arrival_passed` and target-at-arrival; the `readiness-policy-v2` stamp came later in Audit 3, 2026-10-28) | 1/12 valid at 12000 tokens; 0/12 valid at 2000 tokens (all 12 no-answer, reasoning used the budget) (source: `backend/eval/results-live-current.json`) |
+
+Resolving the wording: "24 calls" was 12 cases run on each of two models, not 24 cases. "12/12 valid" applies per model in that run (12 valid of that model's 12 calls; 24/24 valid across both). Cost: no dollar figure is recorded in the recorded files, so none is stated here.
+
 ## Live model condition (2026-10-26)
 
 Note: the live run used the earlier labels (before the strictly-after-arrival correction and target-at-arrival scoring), so its computed-readiness column reflects those earlier labels.
