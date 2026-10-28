@@ -5,7 +5,7 @@
 | Requirement | Status / where satisfied |
 |---|---|
 | Public repo containing only event work | Satisfied: https://github.com/BoMa-AI-Cloud/aria-home — every file listed as new during the event in [Existing vs new](existing-vs-new.md); pre-existing input is the name "ARIA" and private planning notes only, no code |
-| 3-minute video opens stating what was pre-existing vs built this week, and shows only event-built features | Satisfied in script: opening line in [Demo video plan](demo-script.md) section A — "ARIA is my existing personal-assistant project. Its name, planning notes, and ARIA Home designs predate this event. All ARIA Home code shown was written this week with Meta's Muse models." Functional claims use real interface footage; simulated actor cards are labeled simulations, per section F |
+| 3-minute video opens stating what was pre-existing vs built this week, and shows only event-built features | Satisfied in script: opening line in [Demo video plan](demo-script.md) — "ARIA is my existing assistant project; its name, notes and ARIA Home designs came first. All ARIA Home code was built this week with Meta's models. Story scenes: Grok Imagine and Meta AI." Functional claims use real interface footage; simulated actor cards are labeled simulations, per section F |
 | Video link accessible | Brad, pending |
 | Every team member listed (solo) | Brad, pending (submission form) |
 | Meta models only at runtime | Satisfied: runtime calls only muse-spark-1.3 through the Meta Model API behind a gated live provider; see README "How Meta models are used" and `backend/aria_home/provider.py` |
@@ -14,7 +14,7 @@
 | Deadline Nov 4, 5 PM ET | Brad, pending (submit before the deadline) |
 | Optional: Most Viral Project post on X, with its link submitted | Brad, pending |
 
-## 2. Write-up draft (222 words)
+## 2. Write-up draft
 
 An absent homeowner cannot tell whether the home will be ready for their return. An automation starting is not proof the expectation was met.
 
@@ -22,7 +22,7 @@ ARIA Home connects calendar, thermostat, room-sensor, electrical, and weather ev
 
 The app calls only Meta models at runtime (muse-spark-1.3), with claim binding that rejects mismatches. All application code in the repository was written this week by muse-wonder-1.0 and muse-spark-1.3 through Claude Code, which reviewed, tested and pushed it; every prompt and answer is in the public build log.
 
-On 12 builder-labeled synthetic cases, combined evidence scored 12/12; thermostat-only 7/12; room-sensor-only 3/12; electrical-only and calendar-only 2/12 each. In one operator-run live pass (24 calls), 0 answers were rejected by the claim checks. Limits: small synthetic sample, no real channels or equipment control.
+On 12 builder-labeled synthetic cases, combined evidence scored 12/12; thermostat-only 7/12; room-sensor-only 3/12; electrical-only and calendar-only 2/12 each. In a live run on the current code (12 calls), muse-spark-1.3 gave 8 valid answers; the claim checks rejected 4, all after-arrival cases citing a stale reading as current. Limits: small synthetic sample, no real channels or equipment control.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 
