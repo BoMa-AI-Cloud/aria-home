@@ -170,6 +170,19 @@ The 17 cases pair each scenario with fixed replay times. Expected readiness (and
 - Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
 
+## Live runs
+
+| Date | Snapshot | Model and route | Calls | Valid | Rejected | Readiness agreement |
+|---|---|---|---|---|---|---|
+| 2026-10-26 | 53a06bd | muse-spark-1.3 via the Meta Model API | 12 | 12 | 0 | 12/12 |
+| 2026-10-26 | 53a06bd | muse-wonder-1.0 via the Meta Model API | 12 | 12 | 0 | 12/12 |
+| 2026-10-27 | 114be6a | muse-spark-1.3 via the Meta Model API, 12000 tokens | 12 | 8 | 4 | 8/8 |
+| 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 12000 tokens | 12 | 1 | 10 (+1 no answer) | 1/1 |
+| 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 2000 tokens | 12 | 0 | 0 (+12 no answer) | — |
+| 2026-10-28 | 77cafc9 | muse-spark-1.3 via the Meta Model API, 12000 tokens | 17 | 11 | 6 | 11/11 |
+
+Details per run are in the sections below. Only the latest run reflects the current code; earlier rows are kept for the record and are superseded, not current.
+
 ## Live model condition (2026-10-26)
 
 Note: the live run used the earlier labels (before the strictly-after-arrival correction and target-at-arrival scoring), so its computed-readiness column reflects those earlier labels.
@@ -211,3 +224,33 @@ Run by the operator, approved by Brad; 12 eval cases per run; committed snapshot
 Rejection reasons: Muse Spark Open's were mostly prose numbers not present in the cited facts (185 occurrences across the 10 rejected answers), stale or superseded readings stated as current, and the word "confirmed" twice; muse-spark-1.3's four rejections were all after-arrival cases citing a stale or superseded reading as the current temperature.
 
 Honest reading, plainly: every valid answer agreed with the computed readiness (enforced by the contract). The earlier 24/24 results used the pre-repair checks and are not comparable. In after-arrival cases every reading is old by design while the contract still asks for a current temperature, so part of those rejections is a contract gap, not only a model error. Some number-check rejections may come from clock times (for example "09"); not investigated. One run per case, synthetic data, small sample. Conclusion: muse-spark-1.3 stays the runtime model.
+
+## Live evaluation on snapshot 77cafc9 (2026-10-28)
+
+Run by the operator, approved by Brad: exactly 17 calls (the 17 eval cases) on muse-spark-1.3 via the Meta Model API against snapshot 77cafc9 (after Audit 3 and the visual source), 90 s timeout, 12000 output tokens, no retries. Source: `backend/eval/results-live-77cafc9.json`.
+
+| Model | Valid | Rejected | Readiness agreement | Median latency (s) | Median output tokens |
+|---|---|---|---|---|---|
+| muse-spark-1.3 via the Meta Model API | 11/17 | 6 | 11/11 | 24.5 | 6321 |
+
+| Case | Computed readiness | Result |
+|---|---|---|
+| demo_v1@18:00 | at_risk | valid, agreed |
+| demo_recovery_v1@18:00 | at_risk | valid, agreed |
+| demo_recovery_v1@19:00 | arrival_passed | rejected: stale temperature and electrical readings cited as current |
+| demo_recovery_v1@20:31 | arrival_passed | rejected: stale temperature and electrical readings cited as current |
+| demo_no_followup_v1@20:31 | arrival_passed | rejected: old electrical activity cited as current |
+| demo_revised_v1@18:00 | cannot_tell | valid, agreed |
+| demo_cancelled_v1@18:00 | cannot_tell | valid, agreed |
+| demo_video_v1@16:31 | at_risk | valid, agreed |
+| demo_video_v1@18:21 | at_risk | valid, agreed |
+| demo_video_v1@18:51 | at_risk | valid, agreed |
+| demo_video_v1@20:21 | on_track | valid, agreed |
+| demo_video_v1@21:01 | arrival_passed | rejected: superseded room reading cited as current |
+| visual_water_low_temp_v1@18:00 | at_risk | valid, agreed |
+| visual_frost_missed_v1@18:00 | at_risk | valid, agreed |
+| visual_dry_floor_v1@18:00 | at_risk | valid, agreed |
+| visual_water_low_temp_v1@19:00 | arrival_passed | rejected: stale temperature and electrical readings cited as current, plus a number not in the cited facts |
+| visual_frost_missed_v1@20:31 | arrival_passed | rejected: stale temperature and electrical readings cited as current, plus numbers not in the cited facts |
+
+Honest reading, plainly: readiness agreement is enforced by the contract (the model is told the computed status and a mismatch is rejected), so 11/11 agreement shows the model followed the contract, not that it judged readiness independently. The rejections show the claim checks working: each rejected answer cited a stale or superseded reading (or old electrical activity) as current. After arrival every reading is old by design while the contract still asks for a current temperature, so these rejections are at least partly a contract gap, not only a model error (same pattern as the 2026-10-27 run). One run per case, synthetic data, small sample. This is not a pass or fail of the product.
