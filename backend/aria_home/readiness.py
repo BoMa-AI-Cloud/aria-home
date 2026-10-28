@@ -1,6 +1,7 @@
+import math
 from datetime import datetime
 
-from .eligibility import freshness_limit_s, is_measurement_eligible
+from .eligibility import freshness_limit_s, is_measurement_eligible, measurement_conflict_groups
 
 MIN_SAMPLES = 3
 MIN_COVERAGE = 0.5
@@ -11,7 +12,7 @@ MIN_RISE_F = 1.0
 MIN_RATE_PER_HOUR_F = 0.5
 PROJECTION_MARGIN_F = 0.5
 ARRIVAL_TIME_MARGIN_S = 1800.0
-READINESS_POLICY_VERSION = "readiness-policy-v1"
+READINESS_POLICY_VERSION = "readiness-policy-v2"
 TARGET_GAP_TOLERANCE_F = 0.0
 
 THRESHOLDS = {
@@ -120,23 +121,22 @@ def _fmt_duration(seconds):
 def _num(value):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
-    return float(value)
+    result = float(value)
+    return result if math.isfinite(result) else None
 
 
 def _to_f(value, unit):
     if value is None:
         return None
-    if unit == "C":
-        return value * 9.0 / 5.0
-    return value
+    result = value * 9.0 / 5.0 if unit == "C" else value
+    return result if math.isfinite(result) else None
 
 
 def _rate_to_f(value, unit):
     if value is None:
         return None
-    if unit == "C":
-        return value * 9.0 / 5.0
-    return value
+    result = value * 9.0 / 5.0 if unit == "C" else value
+    return result if math.isfinite(result) else None
 
 
 def _normalize_flags(pack, flags, kwargs):
@@ -191,7 +191,10 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     gap_raw = _num(gap_info.get("gap")) if gap_info else None
     gap_f = None
     if gap_raw is not None:
-        gap_f = gap_raw * 9.0 / 5.0 if unit == "C" else gap_raw
+        converted_gap = gap_raw * 9.0 / 5.0 if unit == "C" else gap_raw
+        gap_f = converted_gap if math.isfinite(converted_gap) else None
+        if gap_f is None:
+            gap_raw = None
     last_value = _num(trend.get("last_value"))
     if not trend and gap_info:
         last_value = _num(gap_info.get("latest_value"))
@@ -228,11 +231,17 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         item for item in indoor_evidence
         if is_measurement_eligible(item, quantity="indoor_temp", zone=zone if zone and item.get("subject") is not None else None, require_value=False)
     ]
+    indoor_conflicts = measurement_conflict_groups(
+        indoor_evidence,
+        quantity="indoor_temp",
+        zone=zone if zone else None,
+    ) if indoor_evidence else []
     has_room_sensor = any(
         item.get("source") == "room_sensor"
         for item in eligible_indoor
     ) or (not indoor_evidence and bool(room_status and _num(room_status.get("record_count"))))
     indoor_source = "room_sensor" if has_room_sensor else "thermostat"
+    indoor_conflicts = [item for item in indoor_conflicts if item["source"] == indoor_source]
     indoor_status = room_status if has_room_sensor else thermostat_status
     availability = indoor_status.get("availability") if indoor_status else None
     thermostat_availability = thermostat_status.get("availability") if thermostat_status else None
@@ -265,6 +274,8 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         "room_sensor_availability": room_status.get("availability") if room_status else None,
         "thermostat_telemetry_missing": thermostat_missing,
         "eligible_indoor_count": len(eligible_indoor),
+        "indoor_conflict_count": len(indoor_conflicts),
+        "indoor_conflicting_ids": [rid for item in indoor_conflicts for rid in item["ids"]],
         "indoor_measurement_eligible": bool(eligible_indoor) if indoor_evidence else None,
         "flags": flag_map,
         "thresholds": dict(THRESHOLDS),
@@ -303,7 +314,9 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
 
     if indoor_evidence and not eligible_indoor:
         cannot.append("no eligible indoor measurement: only non-measurement or ineligible-source records are present (human statements may corroborate only)")
-    if availability == "conflicting":
+    if indoor_conflicts:
+        cannot.append("indoor readings are conflicting")
+    elif availability == "conflicting":
         cannot.append("indoor readings are conflicting")
     elif not has_room_sensor and any(isinstance(s, dict) and s.get("availability") == "conflicting" for s in statuses):
         cannot.append("indoor readings are conflicting")
@@ -350,19 +363,21 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
             )
         )
     )
-    if not context_invalid and now_dt is not None and arrival is not None and now_dt > arrival:
+    if not context_invalid and not indoor_conflicts and now_dt is not None and arrival is not None and now_dt > arrival:
         target_unit = (gap_info.get("target_unit") if gap_info else None) or (confirmation.get("target_unit") if confirmation else None) or unit
 
         def _to_target(value, value_unit):
-            if value is None:
+            if value is None or not math.isfinite(float(value)):
                 return None
             if value_unit is None or target_unit is None or value_unit == target_unit:
-                return float(value)
-            if value_unit == "C" and target_unit == "F":
-                return float(value) * 9.0 / 5.0 + 32.0
-            if value_unit == "F" and target_unit == "C":
-                return (float(value) - 32.0) * 5.0 / 9.0
-            return float(value)
+                result = float(value)
+            elif value_unit == "C" and target_unit == "F":
+                result = float(value) * 9.0 / 5.0 + 32.0
+            elif value_unit == "F" and target_unit == "C":
+                result = (float(value) - 32.0) * 5.0 / 9.0
+            else:
+                result = float(value)
+            return result if math.isfinite(result) else None
 
         candidates = []
         for item in data.get("evidence", []) if isinstance(data.get("evidence"), list) else []:

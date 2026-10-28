@@ -1,9 +1,10 @@
+import math
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 from .clock import ensure_aware
 from .contracts import Availability, DataMode, EvidenceRecord, SourceKind, SourceStatus
-from .eligibility import ALLOWED_SOURCES, is_measurement_eligible
+from .eligibility import ALLOWED_SOURCES, is_measurement_eligible, normalized_measurement_value
 
 FUTURE_SKEW = timedelta(seconds=60)
 
@@ -65,10 +66,23 @@ def source_status(
             stale_count=0,
         )
 
-    groups: dict[tuple, set] = defaultdict(set)
+    string_groups: dict[tuple, set] = defaultdict(set)
     for record in deduped:
-        groups[(record.subject, record.quantity, record.observed_at)].add(record.value)
-    conflicting_keys = [key for key, values in groups.items() if len(values) > 1]
+        if isinstance(record.value, str):
+            string_groups[(record.subject, record.quantity, record.observed_at)].add(record.value)
+    conflicting_keys = [key for key, values in string_groups.items() if len(values) > 1]
+    groups: dict[tuple, list] = defaultdict(list)
+    for record in deduped:
+        value = normalized_measurement_value(record)
+        if value is None:
+            continue
+        groups[(record.subject, record.quantity, record.observed_at)].append(value)
+    numeric_conflicting = []
+    for key, values in groups.items():
+        ordered = sorted(values)
+        if any(not math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9) for a, b in zip(ordered, ordered[1:])):
+            numeric_conflicting.append(key)
+    conflicting_keys = list(dict.fromkeys(conflicting_keys + numeric_conflicting))
     if conflicting_keys:
         for subject, quantity, observed_at in conflicting_keys:
             notes.append(

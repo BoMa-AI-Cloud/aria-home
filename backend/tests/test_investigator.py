@@ -207,9 +207,12 @@ def test_no_text_max_tokens_explicit_reason():
     assert result.reasons == [f"provider error: no_text (output limit of {result.max_tokens_used} tokens reached before any answer text)"]
     assert result.max_tokens_used == 12000
 
-def test_api_investigation_mock_200():
+def test_api_investigation_mock_200(tmp_path, monkeypatch):
+    monkeypatch.setenv("ARIA_HOME_DB_PATH", str(tmp_path / "investigation.db"))
     client = create_app().test_client()
-    resp = client.get("/api/investigation")
+    created = client.post("/api/investigations?scenario=demo_v1&at=2026-01-16T18:00:00-05:00")
+    assert created.status_code == 200
+    resp = client.get("/api/investigation?scenario=demo_v1&at=2026-01-16T18:00:00-05:00")
     assert resp.status_code == 200
     payload = resp.get_json()
     assert payload["data_mode"] == "synthetic"

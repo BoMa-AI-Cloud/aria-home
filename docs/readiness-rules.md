@@ -15,7 +15,7 @@ status as before.
 
 Readiness is computed once, from canonical (unrounded) inputs, in
 `compute_readiness`. Every result is stamped with
-`READINESS_POLICY_VERSION` (`readiness-policy-v1`, also in
+`READINESS_POLICY_VERSION` (`readiness-policy-v2`, also in
 `inputs.policy_version` and the pack's `readiness_policy_version`). The
 evidence pack keeps that decision in `canonical_readiness` (unrounded) and
 `computed_readiness`; the `metrics`/`evidence` values shown to the model are
@@ -56,7 +56,7 @@ All thresholds are named module-level constants in `readiness.py`:
 | `PROJECTION_MARGIN_F` | 0.5 F | Projected temperature at arrival must reach target plus this margin. |
 | `ARRIVAL_TIME_MARGIN_S` | 1800 s | The gap must be projected to close at least this long before arrival. |
 | `TARGET_GAP_TOLERANCE_F` | 0.0 F | Explicit tolerance in the meets-target decision (`gap_f >= -TARGET_GAP_TOLERANCE_F`); default zero, never implied by display rounding. See Canonical decision precision above. |
-| `READINESS_POLICY_VERSION` | `readiness-policy-v1` | Version stamped on every readiness result and evidence pack. |
+| `READINESS_POLICY_VERSION` | `readiness-policy-v2` | Version stamped on every readiness result and evidence pack. |
 
 Temperature gaps, rises, and rates in Celsius are converted to Fahrenheit
 equivalents before comparison with the `*_F` thresholds.
@@ -98,6 +98,23 @@ Allowed source/kind per measurement path:
 | Recovery/outcome room readings | `indoor_temp` | `room_sensor` preferred; `thermostat` only when no room sensor (trends/outcomes use the same indoor selection) | `measurement` only |
 | Recovery thermostat telemetry gate | `indoor_temp` | `thermostat` | `measurement` only |
 | Circuit activity, power context, electrical claims | `circuit_power` | `electrical` | `measurement` only |
+
+Shared conflict and finiteness policy (`eligibility.measurement_conflict_groups`,
+used by readiness, evidence `source_status`, and recovery verification):
+readings are grouped by (source, subject, quantity, observed_at) after unit
+normalization (Celsius converted to Fahrenheit). Genuinely identical
+duplicates — same normalized value — collapse to one reading keeping
+provenance and never count twice. A group with distinct normalized values is
+an unresolved conflict: it is excluded from eligible measurements and is
+never resolved by record id or insertion order. Readings from different
+sensors or zones are separate groups, not conflicts. An unresolved conflict
+in the indoor source gives readiness `cannot_tell`, and a conflict inside a
+required hold or arrival interval gives verification `unable_to_verify`,
+never a success stage. Non-finite numbers (NaN, +/-inf, and values that
+overflow on unit conversion) are rejected at the `EvidenceRecord` contract
+and are ineligible in every measurement path; invalid units are rejected at
+the same boundary. String-valued evidence (for example HVAC reported state)
+remains valid.
 
 Thermostat `hvac_reported_state`/`setpoint` records are `device_report`, not
 physical measurements: they may support/contradict heating as reported state
@@ -293,13 +310,19 @@ Stages, in order (each requires the previous):
 2. `reporting_restored`: fresh thermostat telemetry after a gap over 2x
    cadence. It never closes anything alone.
 3. `warming_observed`: at least `min_samples` room-sensor (not thermostat)
-   `indoor_temp` readings after the follow-up's `created_at`, first-to-last
-   rise at least `min_rise_f`, and neither the latest reported thermostat
-   state nor the latest fresh mapped-circuit activity contradicts heating
-   (a non-heating reported state, or no active mapped circuit when one is
-   freshly checked, contradicts). Electrical activity is supporting only:
-   its ids may appear in `supporting_ids`, but watts alone never advance
-   the stage, and it is never proof of useful heat.
+   `indoor_temp` readings after the follow-up's `created_at` with a
+   first-to-last rise of at least `min_rise_f`. Warming is a temperature
+   claim only. Equipment observations are separate claims: a reported
+   thermostat state scoped to the zone and fresh, and mapped-circuit
+   activity scoped to the property/binding and fresh, are noted as
+   supporting observations only. A normal idle/off state at target, a
+   quiet mapped circuit, a stale equipment observation, or fan-only
+   activity never blocks a temperature stage the room-sensor readings
+   support, and equipment activity alone (for example an active fan with
+   no useful warming) never creates `warming_observed`. An already-warm
+   home at/above target throughout does not need a rise to satisfy
+   `goal_verified`/`arrival_met`; it needs the required hold. No stage
+   claims a repair caused the recovery.
 4. `goal_verified`: the latest eligible segment is a contiguous set of
    room-sensor readings, all observed at or before the follow-up deadline,
    where every reading is at/above the target for at least `GOAL_HOLD_S`,

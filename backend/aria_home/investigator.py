@@ -15,12 +15,14 @@ from .eligibility import circuit_records, eligible_records, indoor_records, is_c
 from .evidence import source_status
 from .metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
 from .power_context import BANNED_PHRASES, power_context
-from .provider import get_provider
+from .provider import get_provider, normalized_provider_identity
 from .readiness import READINESS_POLICY_VERSION, compute_readiness
 from .scheduling import MAX_FOLLOW_UP_DELAY, MIN_FOLLOW_UP_DELAY, compute_follow_up_schedule, compute_next_check_at, validate_follow_up_time
 from .scenario import context_as_of, visible_records
 
 PROMPT_VERSION = "inv-v2"
+INPUT_REVISION_VERSION = "input-revision-v2"
+INFERENCE_IDENTITY_VERSION = "inference-identity-v2"
 
 INVESTIGATION_MAX_TOKENS_VAR = "ARIA_HOME_INVESTIGATION_MAX_TOKENS"
 INVESTIGATION_MAX_TOKENS_DEFAULT = 12000
@@ -188,7 +190,7 @@ def _round_pack(value, key=None):
     return value
 
 
-def build_evidence_pack(scenario, at) -> dict:
+def _build_unrounded_evidence_pack(scenario, at) -> dict:
     ensure_aware(at, "at")
     start = at - timedelta(hours=3)
     visible = visible_records(scenario.records, at)
@@ -233,6 +235,12 @@ def build_evidence_pack(scenario, at) -> dict:
     pack["canonical_readiness"] = dict(readiness)
     pack["computed_readiness"] = readiness["status"]
     pack["readiness_policy_version"] = READINESS_POLICY_VERSION
+    return pack
+
+
+def build_evidence_pack(scenario, at) -> dict:
+    pack = _build_unrounded_evidence_pack(scenario, at)
+    readiness = pack["canonical_readiness"]
     rounded = _round_pack(pack)
     rounded["canonical_readiness"] = dict(readiness)
     rounded["computed_readiness"] = readiness["status"]
@@ -247,6 +255,10 @@ def _canonical_json(value):
 
 
 def _canonicalize(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return 0.0 if value == 0 else value
     if isinstance(value, dict):
         return {k: _canonicalize(v) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
@@ -263,26 +275,64 @@ def _canonicalize(value):
     return value
 
 
-def inference_identity(scenario, at, pack=None):
-    if pack is None:
-        pack = build_evidence_pack(scenario, at)
-    evaluated_at_utc = at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-    input_material = {
-        "evidence": pack.get("evidence"),
-        "trip": pack.get("trip"),
-        "confirmation": pack.get("confirmation"),
-        "flags": pack.get("readiness_flags"),
-        "source_statuses": pack.get("source_statuses"),
-        "metrics": pack.get("metrics"),
+def _canonical_decision_inputs(scenario, at, raw_pack):
+    records = []
+    for item in raw_pack.get("evidence") or []:
+        if not isinstance(item, dict) or "quantity" not in item:
+            continue
+        records.append({k: item.get(k) for k in ("id", "source", "kind", "subject", "quantity", "value", "unit", "observed_at", "received_at", "expected_cadence_s", "provenance", "binding", "meter_id")})
+    records.sort(key=lambda r: _canonical_json(r))
+    statuses = sorted((raw_pack.get("source_statuses") or []), key=lambda s: _canonical_json(s))
+    trip = raw_pack.get("trip")
+    if isinstance(trip, dict):
+        trip = {k: v for k, v in trip.items() if k != "title"}
+    readiness = raw_pack.get("canonical_readiness") or raw_pack.get("readiness") or {}
+    return {
+        "input_revision_version": INPUT_REVISION_VERSION,
+        "scenario_id": scenario.manifest.id,
+        "scenario_fixture_version": scenario.manifest.version,
+        "evaluated_at_utc": at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "records": records,
+        "decision_record_ids": sorted({r["id"] for r in records}),
+        "trip": trip,
+        "confirmation": raw_pack.get("confirmation"),
+        "flags": raw_pack.get("readiness_flags"),
+        "source_statuses": statuses,
+        "metrics": raw_pack.get("metrics"),
+        "readiness_inputs": readiness.get("inputs") if isinstance(readiness, dict) else None,
+        "readiness_status": readiness.get("status") if isinstance(readiness, dict) else None,
+        "policy_versions": {"prompt": PROMPT_VERSION, "readiness": READINESS_POLICY_VERSION, "input_revision": INPUT_REVISION_VERSION},
     }
-    input_revision = hashlib.sha256(_canonical_json(input_material).encode()).hexdigest()
+
+
+def _resolved_provider_identity(provider, provider_identity):
+    if provider_identity is not None:
+        resolved = normalized_provider_identity(provider_identity)
+    elif provider is not None:
+        resolved = normalized_provider_identity(provider)
+    else:
+        resolved = {"mode": "unspecified", "provider": "unspecified", "model_id": None, "endpoint": None, "generation": {}}
+    if provider is not None or provider_identity is not None:
+        generation = dict(resolved.get("generation") or {})
+        generation.setdefault("investigation_max_tokens", investigation_max_tokens()[0])
+        resolved = {**resolved, "generation": generation}
+    return resolved
+
+
+def inference_identity(scenario, at, pack=None, provider=None, provider_identity=None):
+    raw_pack = _build_unrounded_evidence_pack(scenario, at)
+    evaluated_at_utc = at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    input_revision = hashlib.sha256(_canonical_json(_canonical_decision_inputs(scenario, at, raw_pack)).encode()).hexdigest()
+    resolved_provider = _resolved_provider_identity(provider, provider_identity)
     identity = {
+        "identity_version": INFERENCE_IDENTITY_VERSION,
         "scenario_id": scenario.manifest.id,
         "scenario_fixture_version": scenario.manifest.version,
         "evaluated_at_utc": evaluated_at_utc,
         "input_revision": input_revision,
         "prompt_version": PROMPT_VERSION,
-        "readiness_policy_version": pack.get("readiness_policy_version") or READINESS_POLICY_VERSION,
+        "readiness_policy_version": READINESS_POLICY_VERSION,
+        "provider": resolved_provider,
     }
     identity_key = hashlib.sha256(_canonical_json(identity).encode()).hexdigest()
     return {

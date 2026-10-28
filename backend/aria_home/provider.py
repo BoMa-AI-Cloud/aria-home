@@ -807,6 +807,90 @@ class BasetenProvider:
     __call__ = generate
 
 
+_SECRET_KEY_PARTS = ("api_key", "apikey", "authorization", "secret", "password", "credential", "auth_token", "access_token")
+
+
+def _endpoint_identity(raw_url):
+    if not raw_url:
+        return None
+    from urllib.parse import urlparse
+
+    text = str(raw_url).strip()
+    parsed = urlparse(text if "://" in text else f"//{text}")
+    host = (parsed.hostname or "").lower()
+    if parsed.port:
+        host = f"{host}:{parsed.port}"
+    path = parsed.path or "/"
+    if len(path) > 1:
+        path = path.rstrip("/")
+    return {"host": host, "path": path}
+
+
+def _sanitize_generation(value):
+    if not isinstance(value, dict):
+        return {}
+    out = {}
+    for key in sorted(value):
+        lowered = str(key).lower()
+        if any(part in lowered for part in _SECRET_KEY_PARTS):
+            continue
+        item = value[key]
+        if isinstance(item, (str, int, float, bool)) or item is None:
+            out[str(key)] = item
+    return out
+
+
+def normalized_provider_identity(provider=None):
+    if isinstance(provider, dict) and any(k in provider for k in ("mode", "provider", "model_id", "endpoint", "generation")) and not any(k in provider for k in ("provider_url", "base_url", "url", "api_key")):
+        endpoint = provider.get("endpoint")
+        if isinstance(endpoint, str):
+            endpoint = _endpoint_identity(endpoint)
+        elif isinstance(endpoint, dict):
+            endpoint = {"host": str(endpoint.get("host") or "").lower(), "path": str(endpoint.get("path") or "/")}
+        return {
+            "mode": str(provider.get("mode") or "unspecified").lower(),
+            "provider": str(provider.get("provider") or provider.get("provider_id") or "unspecified"),
+            "model_id": provider.get("model_id"),
+            "endpoint": endpoint,
+            "generation": _sanitize_generation(provider.get("generation") or {}),
+        }
+    if provider is None:
+        return {"mode": "unspecified", "provider": "unspecified", "model_id": None, "endpoint": None, "generation": {}}
+    config = getattr(provider, "config", None)
+    if config is None and isinstance(provider, (ProviderConfig, BasetenConfig)):
+        config = provider
+    def _attr(*names):
+        for obj in (provider, config):
+            if obj is None:
+                continue
+            for name in names:
+                value = getattr(obj, name, None) if not isinstance(obj, dict) else obj.get(name)
+                if value is not None:
+                    return value
+        return None
+
+    mode = _attr("mode")
+    if mode is None:
+        mode = "live" if _attr("enabled") else "mock"
+    model_id = _attr("model_id", "requested_model", "model")
+    raw_url = _attr("provider_url", "base_url", "url", "endpoint")
+    generation = {}
+    explicit = _attr("generation", "generation_settings")
+    if isinstance(explicit, dict):
+        generation.update(_sanitize_generation(explicit))
+    max_tokens = _attr("max_tokens", "max_output_tokens")
+    if max_tokens is not None:
+        generation["max_tokens"] = int(max_tokens)
+    provider_name = _attr("provider_name", "provider_id", "provider_identity") or type(provider).__name__
+    return {
+        "mode": str(mode).lower(),
+        "provider": str(provider_name),
+        "model_id": str(model_id) if model_id is not None else None,
+        "endpoint": _endpoint_identity(raw_url),
+        "generation": generation,
+    }
+
+
 def get_provider(env=None):
     config = _coerce_config(env) if not isinstance(env, ProviderConfig) else env
     if isinstance(env, ProviderConfig):

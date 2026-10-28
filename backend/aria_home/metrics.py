@@ -1,5 +1,6 @@
 """Deterministic metrics over evidence records. Pure functions: no I/O, no model calls."""
 
+import math
 from collections import Counter
 from datetime import datetime
 
@@ -54,7 +55,7 @@ def _largest_gap_s(times: list[datetime]) -> float | None:
 
 
 def _is_number(value) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
 
 
 def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime, end: datetime, now: datetime) -> dict:
@@ -108,9 +109,38 @@ def temperature_trend(records: list[EvidenceRecord], zone: str, start: datetime,
         out_unit = samples[0][2] or "F"
         converted = any(unit != out_unit for _, _, unit, _ in samples)
     points = sorted(
-        ((observed, _convert_temp(value, unit, out_unit), cadence) for observed, value, unit, cadence in samples),
+        (
+            (observed, converted, cadence)
+            for observed, value, unit, cadence in samples
+            for converted in (_convert_temp(value, unit, out_unit),)
+            if math.isfinite(converted)
+        ),
         key=lambda p: p[0],
     )
+    if not points:
+        return {
+            "zone": zone,
+            "sample_count": 0,
+            "missing_count": missing_count,
+            "coverage": 0.0,
+            "coverage_basis": "no_cadence",
+            "gaps_over_cadence": 0,
+            "largest_gap_s": None,
+            "first_value": None,
+            "first_observed_at": None,
+            "last_value": None,
+            "last_observed_at": None,
+            "change": None,
+            "rate_per_hour": None,
+            "unit": "F",
+            "unit_converted": False,
+            "sufficient": False,
+            "source": deduped[-1].source.value if deduped else None,
+            "expected_cadence_s": deduped[-1].expected_cadence_s if deduped else None,
+            "last_id": None,
+            "fresh": False,
+            "is_fresh": False,
+        }
     times = [t for t, _, _ in points]
     first_time, first_value, _ = points[0]
     last_time, last_value, _ = points[-1]

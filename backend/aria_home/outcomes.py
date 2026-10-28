@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 from enum import Enum
 
@@ -47,6 +48,13 @@ class FollowUp(BaseModel):
     @property
     def scheduled_at(self):
         return self.next_check_at
+
+    @field_validator("target_temp", "min_rise_f", "cadence_s")
+    @classmethod
+    def _finite(cls, value):
+        if value is not None and not math.isfinite(float(value)):
+            raise ValueError("numeric follow-up fields must be finite")
+        return value
 
     @field_validator("created_at", "deadline", "next_check_at")
     @classmethod
@@ -131,18 +139,23 @@ def follow_up_for(scenario, investigation_id, created_at, cadence_s=None) -> Fol
 def _to_fahrenheit(value: float, unit: str | None, fallback_unit: str) -> float:
     effective = unit or fallback_unit
     if effective == "C":
-        return value * 9.0 / 5.0 + 32.0
-    return value
+        result = value * 9.0 / 5.0 + 32.0
+        return result if math.isfinite(result) else math.nan
+    return value if math.isfinite(value) else math.nan
 
 
 def _in_target_unit(record, target_unit: str) -> float:
     value = float(record.value)
+    if not math.isfinite(value):
+        return math.nan
     if record.unit == target_unit or record.unit is None:
         return value
     if record.unit == "C" and target_unit == "F":
-        return value * 9.0 / 5.0 + 32.0
+        result = value * 9.0 / 5.0 + 32.0
+        return result if math.isfinite(result) else math.nan
     if record.unit == "F" and target_unit == "C":
-        return (value - 32.0) * 5.0 / 9.0
+        result = (value - 32.0) * 5.0 / 9.0
+        return result if math.isfinite(result) else math.nan
     return value
 
 

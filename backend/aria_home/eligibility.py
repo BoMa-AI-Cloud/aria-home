@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 
 from .clock import ensure_aware
@@ -52,7 +53,69 @@ def _kind(obj):
 
 
 def _is_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
+
+
+def is_finite_number(value):
+    return _is_number(value)
+
+
+def normalized_measurement_value(record):
+    value = _get(record, "value")
+    if not _is_number(value):
+        return None
+    result = float(value)
+    if _get(record, "unit") == "C":
+        result = result * 9.0 / 5.0 + 32.0
+    return result if math.isfinite(result) else None
+
+
+def _values_distinct(values):
+    ordered = sorted(values)
+    return any(not math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9) for a, b in zip(ordered, ordered[1:]))
+
+
+def _conflict_key(record):
+    return (
+        _enum_str(_get(record, "source")),
+        _get(record, "subject"),
+        _get(record, "quantity"),
+        _parse_time(_get(record, "observed_at")),
+    )
+
+
+def measurement_conflict_groups(records, quantity=None, zone=None):
+    groups = {}
+    for record in records or []:
+        if not is_measurement_eligible(record, quantity=quantity, zone=zone, require_value=True):
+            continue
+        value = normalized_measurement_value(record)
+        if value is None:
+            continue
+        key = _conflict_key(record)
+        if key[3] is None:
+            continue
+        groups.setdefault(key, []).append((record, value))
+    conflicts = []
+    for key, items in groups.items():
+        values = [value for _, value in items]
+        if _values_distinct(values):
+            conflicts.append(
+                {
+                    "key": key,
+                    "source": key[0],
+                    "subject": key[1],
+                    "quantity": key[2],
+                    "observed_at": key[3],
+                    "values": values,
+                    "ids": [str(_get(r, "id")) for r, _ in items],
+                }
+            )
+    return sorted(conflicts, key=lambda item: item["observed_at"])
+
+
+def conflicting_observed_times(records, quantity=None, zone=None):
+    return {item["observed_at"] for item in measurement_conflict_groups(records, quantity=quantity, zone=zone)}
 
 
 def freshness_limit_s(record):
@@ -84,7 +147,10 @@ def is_measurement_eligible(record, now=None, quantity=None, zone=None, require_
         return False
     if zone is not None and _get(record, "subject") != zone:
         return False
-    if require_value and not _is_number(_get(record, "value")):
+    value = _get(record, "value")
+    if value is not None and isinstance(value, (int, float)) and not isinstance(value, bool) and normalized_measurement_value(record) is None:
+        return False
+    if require_value and normalized_measurement_value(record) is None:
         return False
     observed = _parse_time(_get(record, "observed_at"))
     received = _parse_time(_get(record, "received_at"))
@@ -105,7 +171,7 @@ def _sort_key(record):
 
 def eligible_records(records, quantity, now=None, zone=None, require_value=True):
     seen = set()
-    out = []
+    filtered = []
     for record in records or []:
         rid = _get(record, "id")
         if rid in seen:
@@ -113,7 +179,29 @@ def eligible_records(records, quantity, now=None, zone=None, require_value=True)
         if not is_measurement_eligible(record, now=now, quantity=quantity, zone=zone, require_value=require_value):
             continue
         seen.add(rid)
-        out.append(record)
+        filtered.append(record)
+    filtered.sort(key=_sort_key)
+    groups = {}
+    order = []
+    for record in filtered:
+        if normalized_measurement_value(record) is None:
+            order.append((None, record))
+            continue
+        key = _conflict_key(record)
+        if key not in groups:
+            groups[key] = []
+            order.append((key, record))
+        groups[key].append(record)
+    out = []
+    for key, record in order:
+        if key is None:
+            out.append(record)
+            continue
+        group = groups[key]
+        values = [normalized_measurement_value(r) for r in group]
+        if _values_distinct(values):
+            continue
+        out.append(group[0])
     return sorted(out, key=_sort_key)
 
 

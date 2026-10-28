@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 from enum import Enum
 
@@ -116,6 +117,8 @@ class EvidenceRecord(_Strict):
 
     @model_validator(mode="after")
     def _validate_record(self):
+        if isinstance(self.value, (int, float)) and not isinstance(self.value, bool) and not math.isfinite(float(self.value)):
+            raise ValueError("value must be finite")
         if self.observed_at > self.received_at:
             raise ValueError("observed_at must not be after received_at")
         allowed = QUANTITY_UNITS.get(self.quantity)
@@ -146,6 +149,13 @@ class Trip(_Strict):
     def _aware(cls, value):
         return _require_aware(value)
 
+    @field_validator("target_temp")
+    @classmethod
+    def _finite_target(cls, value):
+        if value is not None and not math.isfinite(float(value)):
+            raise ValueError("target_temp must be finite")
+        return value
+
     @field_validator("target_unit")
     @classmethod
     def _unit(cls, value):
@@ -169,6 +179,13 @@ class HomeownerConfirmation(_Strict):
     @property
     def confirmed_revision_id(self):
         return self.revision_id or self.trip_revision_id
+
+    @field_validator("target_temp")
+    @classmethod
+    def _finite_target(cls, value):
+        if not math.isfinite(float(value)):
+            raise ValueError("target_temp must be finite")
+        return value
 
     @field_validator("target_unit")
     @classmethod

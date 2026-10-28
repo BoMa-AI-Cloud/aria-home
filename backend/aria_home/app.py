@@ -1,5 +1,6 @@
 """Flask application factory for the ARIA Home backend."""
 import os
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -19,6 +20,8 @@ from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
 from aria_home.verification import build_evidence_timeline, verify_recovery
 from aria_home.notifications import create_hvac_notification, create_investigation_notifications
+from aria_home.whatsapp import attempt_hvac_whatsapp_delivery
+from aria_home.emporia import read_live_power
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
 
@@ -147,15 +150,8 @@ def create_app():
         ]
         trip_payload = ctx.trip.model_dump(mode="json") if ctx.trip is not None else None
         confirmation_payload = ctx.confirmation.model_dump(mode="json") if ctx.confirmation is not None else None
-        readiness_pack = {
-            "at": at.isoformat(),
-            "trip": trip_payload,
-            "confirmation": confirmation_payload,
-            "source_statuses": _jsonable(statuses),
-            "metrics": {"indoor_trend": _jsonable(trend), "target_gap": _jsonable(gap)},
-            "readiness_flags": dict(ctx.flags),
-        }
-        readiness = compute_readiness(readiness_pack, at, flags=dict(ctx.flags))
+        canonical_pack = build_evidence_pack(scn, at)
+        readiness = canonical_pack.get("readiness") or canonical_pack.get("canonical_readiness")
         return jsonify(
             {
                 "data_mode": scn.manifest.mode.value,
@@ -209,6 +205,17 @@ def create_app():
         )
         return jsonify(payload)
 
+    @app.get("/api/live-power")
+    def live_power_endpoint():
+        try:
+            payload = read_live_power()
+        except Exception as exc:
+            payload = {"status": "unavailable", "source": "live-read-only (owner's home)", "fetched_at": None, "circuits": [], "error": str(exc)[:200]}
+        if not isinstance(payload, dict):
+            payload = {"status": "unavailable", "source": "live-read-only (owner's home)", "fetched_at": None, "circuits": [], "error": "unavailable"}
+        payload.setdefault("source", "live-read-only (owner's home)")
+        return jsonify(payload)
+
     @app.get("/api/investigation")
     def investigation():
         scn = _load_named_scenario(request.args.get("scenario"))
@@ -228,15 +235,29 @@ def create_app():
             provider = get_provider()
         except ValueError as exc:
             return jsonify({"error": str(exc), "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone}), 400
-        result = investigate(scn, at, provider)
-        payload = result.model_dump(mode="json")
-        payload["data_mode"] = "synthetic"
-        payload["scenario"] = scn.manifest.id
-        payload["at"] = at.isoformat()
-        payload["timezone"] = scn.manifest.timezone
-        payload["evaluated_at"] = at.isoformat()
-        payload["readiness"] = result.evidence_pack.get("readiness") if result.evidence_pack else None
-        payload["computed_readiness"] = payload["readiness"].get("status") if isinstance(payload.get("readiness"), dict) else None
+        pack = build_evidence_pack(scn, at)
+        identity = inference_identity(scn, at, pack=pack, provider=provider)
+        store = _get_store()
+        row = store.get_inference(identity["identity_key"])
+        readiness = pack.get("readiness") if isinstance(pack, dict) else None
+        summary = {"source_statuses": pack.get("source_statuses", []), "metrics": pack.get("metrics", {}), "power_context": pack.get("power_context", {}), "power_context_statement": (pack.get("power_context") or {}).get("statement"), "continuity": (pack.get("power_context") or {}).get("continuity"), "readiness": readiness, "computed_readiness": readiness.get("status") if isinstance(readiness, dict) else None}
+        base = {"data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "evaluated_at": at.isoformat(), "readiness": readiness, "computed_readiness": summary["computed_readiness"], "identity_key": identity["identity_key"], "investigation_id": identity["investigation_id"], "id": identity["investigation_id"]}
+        if row is not None and row.get("state") in ("completed", "failed") and row.get("result") is not None:
+            payload = dict(row["result"])
+            payload.update(base)
+            payload["deduplicated"] = True
+            payload["inference_state"] = row["state"]
+            stored_readiness = payload.get("evidence_pack", {}).get("readiness") if isinstance(payload.get("evidence_pack"), dict) else None
+            if stored_readiness is not None:
+                payload["readiness"] = stored_readiness
+                payload["computed_readiness"] = stored_readiness.get("status") if isinstance(stored_readiness, dict) else None
+            return jsonify(payload)
+        if row is not None and row.get("state") == "pending":
+            return jsonify({**base, "status": "pending", "investigation_status": "pending", "inference_state": "pending", "output": None, "reasons": ["inference is pending"], "model_id": None, "prompt_version": identity["prompt_version"], "provider_mode": None, "summary": summary, "evidence_pack": pack}), 202
+        if row is not None and row.get("state") == "recovery_required":
+            return jsonify({**base, "status": "recovery_required", "investigation_status": "recovery_required", "inference_state": "recovery_required", "output": None, "reasons": ["inference claim expired before completion; recovery requires an explicit POST with retry=true"], "model_id": None, "prompt_version": identity["prompt_version"], "provider_mode": None, "summary": summary, "evidence_pack": pack}), 409
+        payload = {"status": "unavailable", "output": None, "reasons": ["no stored investigation for this scenario and time; create one with POST /api/investigations"], "model_id": None, "prompt_version": identity["prompt_version"], "provider_mode": None, "latency_ms": None, "input_tokens": None, "output_tokens": None, "token_usage": {"input_tokens": None, "output_tokens": None}, "max_tokens_used": None, "summary": summary, "evidence_pack": pack, "inference_state": "not_started"}
+        payload.update(base)
         return jsonify(payload)
 
     _store = None
@@ -261,7 +282,10 @@ def create_app():
                 path = SCENARIO_PATH.parent / scenario_name
                 if not (path / "manifest.json").is_file():
                     return None
-                _scenarios[scenario_name] = load_scenario(path)
+                try:
+                    _scenarios[scenario_name] = load_scenario(path)
+                except (ValueError, TypeError, KeyError, OSError):
+                    return None
         return _scenarios[scenario_name]
 
     def _parse_at(raw_at, default):
@@ -342,26 +366,61 @@ def create_app():
         except ValueError as exc:
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
         pack = build_evidence_pack(scn, at)
-        identity = inference_identity(scn, at, pack=pack)
+        identity = inference_identity(scn, at, pack=pack, provider=provider)
         investigation_id = identity["investigation_id"]
         store = _get_store()
         retry = str(request.args.get("retry") or "").lower() in ("1", "true", "yes")
-        claimed, claim_row = store.claim_inference(identity, retry=retry)
+        test_delay_s = 0.0
+        test_fail = False
+        lease_override = None
+        if os.environ.get("ARIA_HOME_E2E_HOOKS") == "1" and os.environ.get("ARIA_HOME_MODEL_ENABLED") != "1":
+            try:
+                test_delay_s = min(max(float(request.args.get("test_delay_s") or 0), 0.0), 30.0)
+            except (TypeError, ValueError):
+                test_delay_s = 0.0
+            test_fail = str(request.args.get("test_fail") or "").lower() in ("1", "true", "yes")
+            try:
+                lease_raw = request.args.get("lease_s")
+                lease_override = min(max(int(float(lease_raw)), 1), 600) if lease_raw else None
+            except (TypeError, ValueError):
+                lease_override = None
+        claim_kwargs = {"lease_seconds": lease_override} if lease_override else {}
+        claimed, claim_row = store.claim_inference(identity, retry=retry, **claim_kwargs)
         deduplicated = False
+        owner_id = claim_row.get("owner_id") if claim_row else None
         if not claimed:
+            if claim_row is not None and claim_row.get("state") == "recovery_required":
+                return jsonify({"data_mode": "synthetic", "status": "recovery_required", "investigation_status": "recovery_required", "inference_state": "recovery_required", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity": identity, "identity_key": identity["identity_key"], "error": "inference recovery required; repeat with retry=true to explicitly re-run", "deduplicated": False}), 409
             if claim_row is None or claim_row["state"] == "pending":
-                return jsonify({"data_mode": "synthetic", "status": "pending", "investigation_status": "pending", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity": {k: identity[k] for k in ("scenario_id", "scenario_fixture_version", "evaluated_at_utc", "input_revision", "prompt_version", "readiness_policy_version")}, "identity_key": identity["identity_key"]}), 202
+                return jsonify({"data_mode": "synthetic", "status": "pending", "investigation_status": "pending", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity": identity, "identity_key": identity["identity_key"]}), 202
             if claim_row["result"] is None:
                 return jsonify({"data_mode": "synthetic", "status": "pending", "investigation_status": "pending", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity_key": identity["identity_key"]}), 202
             result = Investigation.model_validate(claim_row["result"])
             deduplicated = True
         else:
+            if test_delay_s:
+                time.sleep(test_delay_s)
             try:
-                result = investigate(scn, at, provider)
+                if test_fail:
+                    result = Investigation(status="unavailable", reasons=["provider error: test_fail"], prompt_version=identity["prompt_version"], evidence_pack=pack)
+                else:
+                    result = investigate(scn, at, provider)
             except Exception as exc:
                 result = Investigation(status="unavailable", reasons=[f"provider error: {exc}"], prompt_version=identity["prompt_version"], evidence_pack=pack)
-            store.complete_inference(identity["identity_key"], result.model_dump(mode="json"), "completed" if result.status == "ok" else "failed")
+            completion = store.complete_inference(identity["identity_key"], result.model_dump(mode="json"), "completed" if result.status == "ok" else "failed", owner_id=owner_id)
+            if completion is not None and not completion.get("completion_accepted", True):
+                if completion.get("state") == "pending":
+                    return jsonify({"data_mode": "synthetic", "status": "pending", "investigation_status": "pending", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity": identity, "identity_key": identity["identity_key"]}), 202
+                if completion.get("state") == "recovery_required":
+                    return jsonify({"data_mode": "synthetic", "status": "recovery_required", "investigation_status": "recovery_required", "inference_state": "recovery_required", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity": identity, "identity_key": identity["identity_key"], "error": "inference recovery required; repeat with retry=true to explicitly re-run", "deduplicated": False}), 409
+                if completion.get("result") is not None:
+                    result = Investigation.model_validate(completion["result"])
+                    deduplicated = True
+                else:
+                    return jsonify({"data_mode": "synthetic", "status": "pending", "investigation_status": "pending", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "identity_key": identity["identity_key"]}), 202
         store.save_investigation(result, investigation_id=investigation_id, scenario=scn.manifest.id, evaluated_at=at)
+        _inference_row = store.get_inference(identity["identity_key"]) or {}
+        identity_extra = {"provider": identity.get("provider"), "provider_identity": identity.get("provider"), "identity_version": identity.get("identity_version"), "attempts": _inference_row.get("attempts"), "attempt_history": _inference_row.get("attempt_history", [])}
         _readiness_for_notif = result.evidence_pack.get("readiness") if result.evidence_pack else None
         notif_rows = [_notification_api(r) for r in create_investigation_notifications(store, scn, investigation_id, result, _readiness_for_notif, at)]
         ctx = context_as_of(scn, at)
@@ -377,16 +436,16 @@ def create_app():
         computed_readiness = readiness.get("status") if isinstance(readiness, dict) else None
         investigation_payload.update({"id": investigation_id, "investigation_id": investigation_id, "scenario": scn.manifest.id, "evaluated_at": at.isoformat(), "readiness": readiness, "computed_readiness": computed_readiness})
         if schedule["deadline_passed"]:
-            return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"]})
+            return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
         try:
             follow_up = follow_up_for(scn, investigation_id, at, cadence_s=cadence_s)
         except ValueError as exc:
             if "deadline_passed" in str(exc):
-                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"]})
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
             if any(token in str(exc) for token in ("trip_cancelled", "trip_unconfirmed", "trip_mismatched", "confirmation_outdated", "no homeowner confirmation", "no trip visible")):
                 primary = next((name for name in ("trip_cancelled", "confirmation_outdated", "trip_mismatched", "trip_unconfirmed") if ctx.flags.get(name)), "trip_unconfirmed")
                 not_scheduled = {**schedule_payload, "status": "not_scheduled", "schedule_status": "not_scheduled", "next_check_at": None, "when": None}
-                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "cannot_tell", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": not_scheduled, "schedule": not_scheduled, "schedule_status": "not_scheduled", "flag": primary, "flags": dict(ctx.flags), "readiness_flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "deadline_passed": False, "next_check_at": None, "outcome": None, "error": str(exc), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"]})
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "cannot_tell", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": not_scheduled, "schedule": not_scheduled, "schedule_status": "not_scheduled", "flag": primary, "flags": dict(ctx.flags), "readiness_flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "deadline_passed": False, "next_check_at": None, "outcome": None, "error": str(exc), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
         if follow_up.next_check_at is None or follow_up.next_check_at.tzinfo is None or follow_up.next_check_at <= follow_up.created_at:
             return jsonify({"error": "invalid follow-up schedule", "data_mode": "synthetic"}), 400
@@ -395,7 +454,7 @@ def create_app():
             store.save_follow_up(follow_up, outcome=outcome)
         except ValueError as exc:
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
-        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json"), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"]})
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json"), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
 
     @app.get("/api/events")
     def events_endpoint():
@@ -476,7 +535,12 @@ def create_app():
             stored_output = investigation_row["output"] if investigation_row else None
             pseudo = {"output": stored_output} if stored_output else None
             readiness_for_hvac = {"status": "cannot_tell", "reasons": list(verification["reasons"]) if verification else []}
-            create_hvac_notification(store, scn, investigation_id, pseudo, readiness_for_hvac, at, verification=verification)
+            hvac_row = create_hvac_notification(store, scn, investigation_id, pseudo, readiness_for_hvac, at, verification=verification)
+            if isinstance(hvac_row, dict):
+                try:
+                    attempt_hvac_whatsapp_delivery(store, hvac_row)
+                except Exception:
+                    pass
         payload["notifications"] = [_notification_api(r) for r in store.list_notifications(investigation_id, at=at)]
         return jsonify(payload)
 
@@ -509,17 +573,49 @@ def create_app():
         existing = store.get_notification(notification_id)
         if existing is None:
             return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
-        body = request.get_json(silent=True) or {}
-        actor = body.get("actor") or body.get("by") or body.get("who") or request.args.get("actor") or "unknown"
-        raw_at = body.get("at") or body.get("acknowledged_at") or body.get("when") or request.args.get("at")
-        if raw_at:
+        if existing.get("state") != "simulated_delivered":
+            return jsonify({"error": f"notification in state {existing.get('state')} cannot be acknowledged; only simulated_delivered notifications can be acknowledged", "data_mode": "synthetic"}), 409
+        raw_body = request.get_data(cache=True)
+        if raw_body:
+            try:
+                body = request.get_json(force=False)
+            except Exception:
+                return jsonify({"error": "request body must be a JSON object", "data_mode": "synthetic"}), 400
+        else:
+            body = {}
+        if not isinstance(body, dict):
+            return jsonify({"error": "request body must be a JSON object", "data_mode": "synthetic"}), 400
+        actor = body.get("actor", body.get("by"))
+        if not isinstance(actor, str) or not actor.strip():
+            return jsonify({"error": "actor must be a non-empty string", "data_mode": "synthetic"}), 400
+        actor = actor.strip()
+        allowed_actors = {"homeowner": {"homeowner"}, "property_manager": {"property_manager"}, "hvac_company": {"hvac_company"}}
+        allowed = allowed_actors.get(existing.get("audience"), set())
+        if actor not in allowed:
+            return jsonify({"error": f"actor {actor!r} is not allowed to acknowledge a {existing.get('audience')} notification", "data_mode": "synthetic"}), 403
+        raw_at = body.get("at", body.get("acknowledged_at"))
+        if raw_at is None:
+            raw_at = request.args.get("at")
+        if raw_at is None:
+            from datetime import timezone as _tz
+            at = datetime.now(_tz.utc)
+        else:
+            if not isinstance(raw_at, str):
+                return jsonify({"error": "at must be an ISO 8601 datetime string", "data_mode": "synthetic"}), 400
             at, error = _parse_at(raw_at, None)
             if error:
                 return error
-        else:
-            from datetime import timezone as _tz
-            at = datetime.now(_tz.utc)
+        created_at = existing.get("created_at")
+        if created_at:
+            try:
+                created_dt = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+            except ValueError:
+                created_dt = None
+            if created_dt is not None and at < created_dt:
+                return jsonify({"error": "acknowledgement time must not be earlier than the notification creation time", "data_mode": "synthetic"}), 400
         ack = store.record_ack(notification_id, actor, at)
+        if ack is None:
+            return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
         updated = store.get_notification(notification_id)
         inv_row = store.get_investigation(updated["investigation_id"]) if updated else None
         ack_scenario = inv_row["scenario"] if inv_row else scenario.manifest.id

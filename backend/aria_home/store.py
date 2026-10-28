@@ -2,8 +2,9 @@ import hashlib
 import json
 import os
 import sqlite3
+import uuid
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from .outcomes import FollowUp
@@ -11,6 +12,7 @@ from .scheduling import validate_follow_up_time
 
 ENV_VAR = "ARIA_HOME_DB_PATH"
 DEFAULT_PATH = Path(__file__).resolve().parent.parent / "instance" / "aria_home.db"
+INFERENCE_LEASE_SECONDS = 120
 
 
 def default_db_path():
@@ -114,6 +116,19 @@ class Store:
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )""",
+            """CREATE TABLE IF NOT EXISTS inference_attempts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    identity_key TEXT NOT NULL,
+                    investigation_id TEXT NOT NULL,
+                    attempt_number INTEGER NOT NULL,
+                    state TEXT NOT NULL,
+                    status TEXT,
+                    result_json TEXT,
+                    error TEXT,
+                    started_at TEXT NOT NULL,
+                    finished_at TEXT,
+                    UNIQUE(identity_key, attempt_number)
+                )""",
             """CREATE TABLE IF NOT EXISTS notifications (
                     id TEXT PRIMARY KEY,
                     investigation_id TEXT NOT NULL,
@@ -133,6 +148,12 @@ class Store:
                     acknowledged_at TEXT NOT NULL,
                     UNIQUE(notification_id, actor, acknowledged_at)
                 )""",
+            """CREATE TABLE IF NOT EXISTS whatsapp_attempts (
+                    notification_id TEXT PRIMARY KEY,
+                    state TEXT NOT NULL,
+                    message_id TEXT,
+                    attempted_at TEXT NOT NULL
+                )""",
         ]
         with self._connection(immediate=True) as conn:
             for statement in statements:
@@ -144,6 +165,15 @@ class Store:
                 conn.execute("ALTER TABLE follow_ups ADD COLUMN schedule_status TEXT")
             if "deadline_passed" not in cols:
                 conn.execute("ALTER TABLE follow_ups ADD COLUMN deadline_passed INTEGER NOT NULL DEFAULT 0")
+            inf_cols = {r["name"] for r in conn.execute("PRAGMA table_info(inference_requests)").fetchall()}
+            if "provider_identity" not in inf_cols:
+                conn.execute("ALTER TABLE inference_requests ADD COLUMN provider_identity TEXT")
+            if "accepted_result_json" not in inf_cols:
+                conn.execute("ALTER TABLE inference_requests ADD COLUMN accepted_result_json TEXT")
+            if "owner_id" not in inf_cols:
+                conn.execute("ALTER TABLE inference_requests ADD COLUMN owner_id TEXT")
+            if "lease_expires_at" not in inf_cols:
+                conn.execute("ALTER TABLE inference_requests ADD COLUMN lease_expires_at TEXT")
 
     def close(self):
         pass
@@ -155,34 +185,72 @@ class Store:
         self.close()
         return False
 
-    def claim_inference(self, identity, *, retry=False):
-        now = _iso(datetime.now(timezone.utc))
+    @staticmethod
+    def _attempts_from_conn(conn, identity_key):
+        try:
+            rows = conn.execute("SELECT * FROM inference_attempts WHERE identity_key = ? ORDER BY attempt_number", (identity_key,)).fetchall()
+        except Exception:
+            return []
+        return [{"attempt_number": r["attempt_number"], "state": r["state"], "status": r["status"], "result": json.loads(r["result_json"]) if r["result_json"] else None, "error": r["error"], "started_at": r["started_at"], "finished_at": r["finished_at"], "investigation_id": r["investigation_id"]} for r in rows]
+
+    def claim_inference(self, identity, *, retry=False, lease_seconds=INFERENCE_LEASE_SECONDS, owner_id=None):
+        now_dt = datetime.now(timezone.utc)
+        now = _iso(now_dt)
+        lease_expires = _iso(now_dt + timedelta(seconds=lease_seconds)) if lease_seconds is not None else None
+        new_owner = owner_id or uuid.uuid4().hex
+        provider_json = json.dumps(_jsonable(identity.get("provider"))) if identity.get("provider") is not None else None
         with self._connection(immediate=True) as conn:
-            if retry:
-                cur = conn.execute(
-                    "UPDATE inference_requests SET state = 'pending', result_json = NULL, attempts = attempts + 1, updated_at = ? WHERE identity_key = ? AND state = 'failed'",
-                    (now, identity["identity_key"]),
-                )
-                if cur.rowcount == 1:
-                    row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
-                    return True, self._inference_from_row(row)
+            existing = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+            if existing is not None:
+                state = existing["state"]
+                if state == "pending":
+                    lease_raw = existing["lease_expires_at"] if "lease_expires_at" in existing.keys() else None
+                    lease_dt = _parse_dt(lease_raw) if lease_raw else None
+                    if lease_dt is None or lease_dt <= now_dt:
+                        conn.execute("UPDATE inference_requests SET state = 'recovery_required', updated_at = ? WHERE identity_key = ?", (now, identity["identity_key"]))
+                        conn.execute("UPDATE inference_attempts SET state = 'recovery_required' WHERE identity_key = ? AND attempt_number = ? AND state = 'pending'", (identity["identity_key"], existing["attempts"]))
+                        state = "recovery_required"
+                        existing = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+                if retry and state in ("failed", "recovery_required"):
+                    cur = conn.execute(
+                        "UPDATE inference_requests SET state = 'pending', result_json = NULL, attempts = attempts + 1, provider_identity = COALESCE(?, provider_identity), owner_id = ?, lease_expires_at = ?, updated_at = ? WHERE identity_key = ? AND state = ?",
+                        (provider_json, new_owner, lease_expires, now, identity["identity_key"], state),
+                    )
+                    if cur.rowcount == 1:
+                        row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+                        conn.execute("INSERT OR IGNORE INTO inference_attempts (identity_key, investigation_id, attempt_number, state, started_at) VALUES (?, ?, ?, 'pending', ?)", (identity["identity_key"], row["investigation_id"], row["attempts"], now))
+                        return True, self._inference_from_row(row, conn)
+                    existing = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
+                    return False, self._inference_from_row(existing, conn)
+                if state != "pending" or not retry:
+                    return False, self._inference_from_row(existing, conn)
+                return False, self._inference_from_row(existing, conn)
             cur = conn.execute(
                 """
                 INSERT OR IGNORE INTO inference_requests
-                    (identity_key, investigation_id, scenario_id, scenario_fixture_version, evaluated_at_utc, input_revision, prompt_version, readiness_policy_version, state, result_json, attempts, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NULL, 1, ?, ?)
+                    (identity_key, investigation_id, scenario_id, scenario_fixture_version, evaluated_at_utc, input_revision, prompt_version, readiness_policy_version, state, result_json, attempts, created_at, updated_at, provider_identity, owner_id, lease_expires_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NULL, 1, ?, ?, ?, ?, ?)
                 """,
-                (identity["identity_key"], identity["investigation_id"], identity["scenario_id"], identity["scenario_fixture_version"], identity["evaluated_at_utc"], identity["input_revision"], identity["prompt_version"], identity["readiness_policy_version"], now, now),
+                (identity["identity_key"], identity["investigation_id"], identity["scenario_id"], identity["scenario_fixture_version"], identity["evaluated_at_utc"], identity["input_revision"], identity["prompt_version"], identity["readiness_policy_version"], now, now, provider_json, new_owner, lease_expires),
             )
             claimed = cur.rowcount == 1
             row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity["identity_key"],)).fetchone()
-            return claimed, self._inference_from_row(row)
+            if claimed and row is not None:
+                conn.execute("INSERT OR IGNORE INTO inference_attempts (identity_key, investigation_id, attempt_number, state, started_at) VALUES (?, ?, 1, 'pending', ?)", (identity["identity_key"], row["investigation_id"], now))
+            return claimed, self._inference_from_row(row, conn)
 
     @staticmethod
-    def _inference_from_row(row):
+    def _inference_from_row(row, conn=None):
         if row is None:
             return None
-        return {
+        keys = row.keys()
+        state = row["state"]
+        lease_raw = row["lease_expires_at"] if "lease_expires_at" in keys else None
+        if state == "pending":
+            lease_dt = _parse_dt(lease_raw) if lease_raw else None
+            if lease_dt is None or lease_dt <= datetime.now(timezone.utc):
+                state = "recovery_required"
+        result = {
             "identity_key": row["identity_key"],
             "investigation_id": row["investigation_id"],
             "scenario_id": row["scenario_id"],
@@ -191,28 +259,95 @@ class Store:
             "input_revision": row["input_revision"],
             "prompt_version": row["prompt_version"],
             "readiness_policy_version": row["readiness_policy_version"],
-            "state": row["state"],
+            "provider": json.loads(row["provider_identity"]) if "provider_identity" in keys and row["provider_identity"] else None,
+            "provider_identity": json.loads(row["provider_identity"]) if "provider_identity" in keys and row["provider_identity"] else None,
+            "state": state,
+            "owner_id": row["owner_id"] if "owner_id" in keys else None,
+            "lease_expires_at": lease_raw,
             "result": json.loads(row["result_json"]) if row["result_json"] else None,
+            "accepted_result": json.loads(row["accepted_result_json"]) if "accepted_result_json" in keys and row["accepted_result_json"] else None,
             "attempts": row["attempts"],
             "created_at": row["created_at"],
             "updated_at": row["updated_at"],
+            "attempt_history": [],
         }
+        if conn is not None:
+            result["attempt_history"] = Store._attempts_from_conn(conn, row["identity_key"])
+        return result
 
     def get_inference(self, identity_key):
         with self._connection() as conn:
             row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
-        return self._inference_from_row(row)
+            return self._inference_from_row(row, conn)
 
-    def complete_inference(self, identity_key, result, state):
+    def list_inference_attempts(self, identity_key=None, investigation_id=None):
+        with self._connection() as conn:
+            if identity_key:
+                return self._attempts_from_conn(conn, identity_key)
+            if investigation_id:
+                row = conn.execute("SELECT identity_key FROM inference_requests WHERE investigation_id = ?", (investigation_id,)).fetchone()
+                return self._attempts_from_conn(conn, row["identity_key"]) if row else []
+            return []
+
+    get_attempt_history = list_inference_attempts
+
+    def complete_inference(self, identity_key, result, state, *, owner_id=None):
         if state not in ("completed", "failed"):
             raise ValueError("inference state must be 'completed' or 'failed'")
+        result_data = _jsonable(result)
+        now = _iso(datetime.now(timezone.utc))
+        status = result_data.get("status") if isinstance(result_data, dict) else None
         with self._connection(immediate=True) as conn:
-            conn.execute(
-                "UPDATE inference_requests SET state = ?, result_json = ?, updated_at = ? WHERE identity_key = ?",
-                (state, json.dumps(_jsonable(result)), _iso(datetime.now(timezone.utc)), identity_key),
-            )
+            existing = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
+            if existing is None:
+                return None
+            if owner_id is not None:
+                current_owner = existing["owner_id"] if "owner_id" in existing.keys() else None
+                lease_raw = existing["lease_expires_at"] if "lease_expires_at" in existing.keys() else None
+                lease_dt = _parse_dt(lease_raw) if lease_raw else None
+                lease_expired = existing["state"] == "pending" and (lease_dt is None or lease_dt <= datetime.now(timezone.utc))
+                if lease_expired:
+                    conn.execute("UPDATE inference_requests SET state = 'recovery_required', updated_at = ? WHERE identity_key = ?", (now, identity_key))
+                    conn.execute("UPDATE inference_attempts SET state = 'recovery_required' WHERE identity_key = ? AND attempt_number = ? AND state = 'pending'", (identity_key, existing["attempts"]))
+                    existing = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
+                if current_owner != owner_id or existing["state"] != "pending":
+                    rejected = self._inference_from_row(existing, conn)
+                    if rejected is not None:
+                        rejected["completion_accepted"] = False
+                    return rejected
+            if state == "completed":
+                conn.execute(
+                    "UPDATE inference_requests SET state = ?, result_json = ?, accepted_result_json = ?, updated_at = ? WHERE identity_key = ?",
+                    (state, json.dumps(result_data), json.dumps(result_data), now, identity_key),
+                )
+            else:
+                conn.execute(
+                    "UPDATE inference_requests SET state = ?, result_json = ?, updated_at = ? WHERE identity_key = ?",
+                    (state, json.dumps(result_data), now, identity_key),
+                )
             row = conn.execute("SELECT * FROM inference_requests WHERE identity_key = ?", (identity_key,)).fetchone()
-        return self._inference_from_row(row)
+            if row is not None:
+                conn.execute(
+                    "UPDATE inference_attempts SET state = ?, status = ?, result_json = ?, finished_at = ? WHERE identity_key = ? AND attempt_number = ?",
+                    (state, status, json.dumps(result_data), now, identity_key, row["attempts"]),
+                )
+                if conn.execute("SELECT changes()").fetchone()[0] == 0:
+                    conn.execute("INSERT OR IGNORE INTO inference_attempts (identity_key, investigation_id, attempt_number, state, status, result_json, started_at, finished_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (identity_key, row["investigation_id"], row["attempts"], state, status, json.dumps(result_data), now, now))
+                if state == "completed":
+                    output = result_data.get("output", result_data) if isinstance(result_data, dict) else result_data
+                    conn.execute(
+                        """
+                        INSERT INTO investigations (id, scenario, evaluated_at, status, output, model_id, provider_mode, prompt_version, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT(id) DO UPDATE SET scenario = excluded.scenario, evaluated_at = excluded.evaluated_at, status = excluded.status, output = excluded.output, model_id = excluded.model_id, provider_mode = excluded.provider_mode, prompt_version = excluded.prompt_version
+                        WHERE investigations.status IS NOT 'ok' OR excluded.status = 'ok'
+                        """,
+                        (row["investigation_id"], row["scenario_id"], row["evaluated_at_utc"], status, json.dumps(output) if output is not None else None, result_data.get("model_id") if isinstance(result_data, dict) else None, result_data.get("provider_mode") if isinstance(result_data, dict) else None, row["prompt_version"], now),
+                    )
+            completed_row = self._inference_from_row(row, conn)
+            if completed_row is not None:
+                completed_row["completion_accepted"] = True
+            return completed_row
 
     def save_investigation(self, investigation=None, *, investigation_id=None, id=None, scenario=None, evaluated_at=None, created_at=None, status=None, output=None, model_id=None, provider_mode=None, prompt_version=None):
         inv_id = investigation_id or id
@@ -252,7 +387,8 @@ class Store:
                 """
                 INSERT INTO investigations (id, scenario, evaluated_at, status, output, model_id, provider_mode, prompt_version, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO NOTHING
+                ON CONFLICT(id) DO UPDATE SET scenario = excluded.scenario, evaluated_at = excluded.evaluated_at, status = excluded.status, output = excluded.output, model_id = excluded.model_id, provider_mode = excluded.provider_mode, prompt_version = excluded.prompt_version
+                WHERE investigations.status IS NOT 'ok' OR excluded.status = 'ok'
                 """,
                 (inv_id, scenario or "", _iso(evaluated_at) or _iso(created), status, output_json, model_id, provider_mode, prompt_version, _iso(created)),
             )
@@ -484,12 +620,14 @@ class Store:
     def get_notification(self, notification_id, at=None):
         with self._connection() as conn:
             row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
+            attempt = self._whatsapp_attempt_from_conn(conn, notification_id)
         if row is None:
             return None
         result = self._notification_from_row(row)
         if at is not None and _parse_dt(result["created_at"]) > _parse_dt(at):
             return None
         result["acks"] = self.list_acks(notification_id, at=at)
+        result["whatsapp"] = attempt
         return result
 
     def list_notifications(self, investigation_id=None, at=None):
@@ -498,6 +636,7 @@ class Store:
                 rows = conn.execute("SELECT * FROM notifications ORDER BY created_at, audience, id").fetchall()
             else:
                 rows = conn.execute("SELECT * FROM notifications WHERE investigation_id = ? ORDER BY created_at, audience, id", (investigation_id,)).fetchall()
+            attempts = {r["notification_id"]: {"state": r["state"], "message_id": r["message_id"], "attempted_at": r["attempted_at"]} for r in conn.execute("SELECT notification_id, state, message_id, attempted_at FROM whatsapp_attempts").fetchall()}
         cutoff = _parse_dt(at) if at is not None else None
         results = []
         for row in rows:
@@ -505,8 +644,47 @@ class Store:
             if cutoff is not None and _parse_dt(item["created_at"]) > cutoff:
                 continue
             item["acks"] = self.list_acks(item["id"], at=cutoff)
+            item["whatsapp"] = attempts.get(item["id"])
             results.append(item)
         return results
+
+    @staticmethod
+    def _whatsapp_attempt_from_conn(conn, notification_id):
+        try:
+            row = conn.execute("SELECT notification_id, state, message_id, attempted_at FROM whatsapp_attempts WHERE notification_id = ?", (notification_id,)).fetchone()
+        except Exception:
+            return None
+        if row is None:
+            return None
+        return {"state": row["state"], "message_id": row["message_id"], "attempted_at": row["attempted_at"]}
+
+    def get_whatsapp_attempt(self, notification_id):
+        with self._connection() as conn:
+            return self._whatsapp_attempt_from_conn(conn, notification_id)
+
+    def claim_whatsapp_attempt(self, notification_id):
+        """Persist a pending attempt before any API call.
+
+        Returns (claimed, row): claimed is True only for the first caller;
+        later callers get the existing row and must not send.
+        """
+        now = _iso(datetime.now(timezone.utc))
+        with self._connection(immediate=True) as conn:
+            cur = conn.execute("INSERT OR IGNORE INTO whatsapp_attempts (notification_id, state, message_id, attempted_at) VALUES (?, 'pending', NULL, ?)", (notification_id, now))
+            claimed = cur.rowcount == 1
+            row = self._whatsapp_attempt_from_conn(conn, notification_id)
+            return claimed, row
+
+    def update_whatsapp_attempt(self, notification_id, state, message_id=None):
+        now = _iso(datetime.now(timezone.utc))
+        with self._connection(immediate=True) as conn:
+            conn.execute("INSERT OR IGNORE INTO whatsapp_attempts (notification_id, state, message_id, attempted_at) VALUES (?, ?, ?, ?)", (notification_id, state, message_id, now))
+            conn.execute("UPDATE whatsapp_attempts SET state = ?, message_id = ?, attempted_at = ? WHERE notification_id = ?", (state, message_id, now, notification_id))
+            row = self._whatsapp_attempt_from_conn(conn, notification_id)
+        return row
+
+    def record_whatsapp_attempt(self, notification_id, state, message_id=None):
+        return self.update_whatsapp_attempt(notification_id, state, message_id=message_id)
 
     def record_ack(self, notification_id, actor, acknowledged_at):
         at = _parse_dt(acknowledged_at)
