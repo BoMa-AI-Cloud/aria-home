@@ -82,3 +82,14 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
   failed:api_error_400 and kept the notice simulated. Cause: the stored WHATSAPP_TEST_RECIPIENT differs from the
   single number on the app's allowed list (compared without printing either). Review finding: the real send is
   triggered from GET /api/follow-ups/<id>, a read endpoint; to be moved to an explicit POST.
+- Committed and pushed day10-07 (fa39f93): the WhatsApp send now runs only from POST /api/notifications/<id>/whatsapp;
+  backend 372 passed, e2e 32 passed. After Brad corrected the stored recipient (confirmed matching the allowed number
+  without printing it), the second approved real send through the new POST returned Meta error 131005
+  "(#131005) Access denied"; nothing was delivered, notice stays simulated. Likely cause: the access token lacks
+  WhatsApp messaging permission or has expired.
+- Brad generated a new access token (operator clicked Generate token without viewing the page; Brad copied and stored it). Third approved send through POST /api/notifications/<id>/whatsapp: Meta accepted it, state delivered_to_test_number, a WhatsApp message id was returned.
+- Brad confirmed the WhatsApp message looks right and approved the visual work (4 muse-image-1.0 + 4 sam-3.1 calls) 2026-10-28.
+- Visual probe (approved: 4 muse-image-1.0 + 4 sam-3.1 calls, Meta Model API, 90 s, no retries): all 8 returned 200.
+  SAM results: water puddle 1 object; frost on copper pipe 0 objects (a false negative: the frost is obvious);
+  dry floor 0; frost on window 4. Committed the images and raw responses as fixtures (backend/fixtures/visual) and
+  queued day10-08 to build the visual evidence source on them.
