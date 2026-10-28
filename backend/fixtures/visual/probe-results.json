@@ -1,0 +1,38 @@
+{
+  "v1-water-floor": {
+    "image_status": 200,
+    "file": "v1-water-floor.webp",
+    "bytes": 261718,
+    "format": "webp",
+    "sam_status": 200,
+    "sam_phrase": "water puddle",
+    "sam_objects": 1
+  },
+  "v2-frost-pipe": {
+    "image_status": 200,
+    "file": "v2-frost-pipe.webp",
+    "bytes": 516894,
+    "format": "webp",
+    "sam_status": 200,
+    "sam_phrase": "frost",
+    "sam_objects": 0
+  },
+  "v3-dry-floor": {
+    "image_status": 200,
+    "file": "v3-dry-floor.webp",
+    "bytes": 229038,
+    "format": "webp",
+    "sam_status": 200,
+    "sam_phrase": "water puddle",
+    "sam_objects": 0
+  },
+  "v4-frost-window": {
+    "image_status": 200,
+    "file": "v4-frost-window.webp",
+    "bytes": 510030,
+    "format": "webp",
+    "sam_status": 200,
+    "sam_phrase": "frost",
+    "sam_objects": 4
+  }
+}
