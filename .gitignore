@@ -40,3 +40,8 @@ Thumbs.db
 *.mp4
 *.mov
 private/
+
+# Local live-integration data (real data never lands in the repo)
+*.live.json
+live-power-cache.json
+backend/instance/live-*.json

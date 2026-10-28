@@ -1,0 +1,43 @@
+{
+  "channel": "whatsapp_cloud_api",
+  "api": {
+    "host": "graph.facebook.com",
+    "version": "v25.0",
+    "path_template": "/v25.0/{phone_number_id}/messages",
+    "method": "POST",
+    "message_type": "text"
+  },
+  "scope": "hvac_company notice only, only after the manager_hvac_authorized event; the recipient is always WHATSAPP_TEST_RECIPIENT, which stands in for the HVAC company; any other recipient is refused and nothing is sent",
+  "opt_in_env": [
+    "WHATSAPP_TOKEN",
+    "WHATSAPP_PHONE_NUMBER_ID",
+    "WHATSAPP_TEST_RECIPIENT",
+    "ARIA_HOME_WHATSAPP_LIVE"
+  ],
+  "live_requires": "WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_TEST_RECIPIENT all set plus ARIA_HOME_WHATSAPP_LIVE=1; otherwise the notice stays simulated",
+  "simulated_notice": "Simulated, no message was sent",
+  "delivered_notice": "Sent to the owner's test number on WhatsApp (stands in for the HVAC company)",
+  "first_line": "ARIA Home test (synthetic scenario)",
+  "fields_sent": [
+    "access_note",
+    "audience",
+    "kind",
+    "manager_contact_label",
+    "property_label",
+    "relevant_observations"
+  ],
+  "example_text": "ARIA Home test (synthetic scenario)\nTo the owner's test number on WhatsApp (stands in for the HVAC company)\naccess_note: lockbox access per manager (synthetic)\naudience: hvac_company\nkind: hvac_request\nmanager_contact_label: property manager on file (synthetic label)\nproperty_label: demo-cabin\nrelevant_observations:\n- Indoor temperature 52.0 F (at 16:30)\n- Target 68.0 F\n- 16.0 F below target\n- Electrical activity 550.0 W\n- Equipment function unknown",
+  "authorising_event": {
+    "id": "evt-video-manager-hvac-authorized",
+    "kind": "manager_hvac_authorized",
+    "available_at": "2026-01-16T16:45:00-05:00",
+    "event_time": "2026-01-16T16:45:00-05:00"
+  },
+  "idempotency": "at most one real send per notification id ever; the attempt is persisted before the API call, so replay, refresh, retry or a second POST never re-sends",
+  "statuses": [
+    "delivered_to_test_number",
+    "refused",
+    "failed:<reason>"
+  ],
+  "secrets": "credentials only from environment variables; the token is used in-memory for the Authorization header and never lands in the database, responses, logs, attempt rows or ids; the recipient number is never stored"
+}
