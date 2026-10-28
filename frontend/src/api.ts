@@ -333,7 +333,9 @@ export interface Investigation {
   evidence_pack: EvidencePack;
 }
 
-export interface InvestigationResponse extends Investigation {
+export interface InvestigationResponse extends Omit<Investigation, "status"> {
+  status: InvestigationStatus | "pending" | "recovery_required";
+  inference_state?: string;
   data_mode: DataMode;
   scenario?: string;
   at?: string;
@@ -387,6 +389,12 @@ export interface NotificationAck {
   at: string;
 }
 
+export interface NotificationWhatsapp {
+  state: string;
+  message_id: string | null;
+  attempted_at: string;
+}
+
 export interface Notification {
   id: string;
   investigation_id: string;
@@ -400,6 +408,7 @@ export interface Notification {
   refusal_reason: string | null;
   reason: string | null;
   acks: NotificationAck[];
+  whatsapp?: NotificationWhatsapp | null;
 }
 
 export interface NotificationsResponse {
@@ -524,12 +533,17 @@ export function fetchMetrics(at?: string, scenario?: string): Promise<MetricsRes
   return fetchJson<MetricsResponse>(`/api/metrics${query}`);
 }
 
-export function fetchInvestigation(at?: string, scenario?: string): Promise<InvestigationResponse> {
+export async function fetchInvestigation(at?: string, scenario?: string): Promise<InvestigationResponse> {
   const params = new URLSearchParams();
   if (at) params.set("at", at);
   if (scenario) params.set("scenario", scenario);
   const query = params.toString() ? `?${params.toString()}` : "";
-  return fetchJson<InvestigationResponse>(`/api/investigation${query}`);
+  const path = `/api/investigation${query}`;
+  const response = await fetch(path);
+  if (response.status !== 200 && response.status !== 202 && response.status !== 409) {
+    throw new Error(`GET ${path} failed with status ${response.status}`);
+  }
+  return (await response.json()) as InvestigationResponse;
 }
 
 export type OutcomeStatus =
@@ -701,21 +715,87 @@ export interface FollowUpResponse {
   notifications?: Notification[];
 }
 
+export class RecoveryRequiredError extends Error {
+  body: unknown;
+  constructor(body: unknown) {
+    super("POST /api/investigations requires explicit recovery (retry=true)");
+    this.name = "RecoveryRequiredError";
+    this.body = body;
+  }
+}
+
+export interface CreateInvestigationOptions {
+  signal?: AbortSignal;
+  onPending?: (attempt: number, elapsedMs: number) => void;
+  queryExtra?: string;
+  deadlineMs?: number;
+}
+
+export const INFERENCE_LEASE_S = 120;
+export const INFERENCE_POLL_MARGIN_S = 15;
+export const INFERENCE_POLL_DEADLINE_MS =
+  (INFERENCE_LEASE_S + INFERENCE_POLL_MARGIN_S) * 1000;
+
+function sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
+  if (ms <= 0) return Promise.resolve();
+  if (signal?.aborted) return Promise.reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(signal?.reason ?? new DOMException("Aborted", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 export async function createInvestigation(
   scenario: string,
   at: string,
+  options?: CreateInvestigationOptions,
 ): Promise<CreateInvestigationResponse> {
-  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
-  for (let attempt = 0; attempt < 50; attempt += 1) {
-    const response = await fetch(`/api/investigations${query}`, { method: "POST" });
+  const extra = options?.queryExtra ? `&${options.queryExtra.replace(/^[?&]/, "")}` : "";
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}${extra}`;
+  const deadlineMs = options?.deadlineMs ?? INFERENCE_POLL_DEADLINE_MS;
+  const start = Date.now();
+  let attempt = 0;
+  for (;;) {
+    if (options?.signal?.aborted) {
+      throw options.signal.reason ?? new DOMException("Aborted", "AbortError");
+    }
+    const response = await fetch(`/api/investigations${query}`, {
+      method: "POST",
+    });
+    if (response.status === 202) {
+      const body = (await response.json()) as { status?: string };
+      if (body.status !== "pending") return body as CreateInvestigationResponse;
+      const elapsed = Date.now() - start;
+      options?.onPending?.(attempt, elapsed);
+      const backoff = Math.min(200 * 2 ** attempt, 2000);
+      if (elapsed + backoff > deadlineMs) {
+        throw new Error("POST /api/investigations still pending");
+      }
+      await sleepAbortable(backoff, options?.signal);
+      attempt += 1;
+      continue;
+    }
+    if (response.status === 409) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: string;
+      } | null;
+      if (body?.status === "recovery_required") {
+        throw new RecoveryRequiredError(body);
+      }
+      throw new Error(`POST /api/investigations failed with status ${response.status}`);
+    }
     if (!response.ok) {
       throw new Error(`POST /api/investigations failed with status ${response.status}`);
     }
-    const body = (await response.json()) as CreateInvestigationResponse;
-    if (response.status !== 202) return body;
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    return (await response.json()) as CreateInvestigationResponse;
   }
-  throw new Error("POST /api/investigations still pending");
 }
 
 export function fetchFollowUp(investigationId: string, at: string): Promise<FollowUpResponse> {
@@ -751,4 +831,28 @@ export async function ackNotification(
     throw new Error(`POST /api/notifications/${notificationId}/ack failed with status ${response.status}`);
   }
   return (await response.json()) as AckNotificationResponse;
+}
+
+export interface LivePowerCircuit {
+  circuit: string;
+  watts: number;
+}
+
+export interface LivePowerResponse {
+  status: "ok" | "not_configured" | "unavailable";
+  source: string;
+  fetched_at: string | null;
+  circuits: LivePowerCircuit[];
+  cached?: boolean;
+  error?: string;
+}
+
+export async function fetchLivePower(): Promise<LivePowerResponse | null> {
+  try {
+    const response = await fetch("/api/live-power");
+    if (!response.ok) return null;
+    return (await response.json()) as LivePowerResponse;
+  } catch {
+    return null;
+  }
 }

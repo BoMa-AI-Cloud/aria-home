@@ -5,8 +5,10 @@ import {
   fetchContext,
   fetchEvents,
   fetchFollowUp,
+  fetchLivePower,
   fetchNotifications,
   fetchSources,
+  RecoveryRequiredError,
   type Availability,
   type ContextFlags,
   type ContextResponse,
@@ -14,6 +16,7 @@ import {
   type EvidenceTimelineEntry,
   type InvestigationResponse,
   type InvestigationSummary,
+  type LivePowerResponse,
   type Notification,
   type NotificationAudience,
   type OutcomeHistoryEntry,
@@ -630,7 +633,7 @@ function OutcomeSection({
   if (!outcome) {
     return (
       <p role="alert" className="error">
-        Follow-up not reachable
+        {error ?? "Follow-up not reachable"}
       </p>
     );
   }
@@ -966,7 +969,11 @@ function NotificationsSection({
                 {formatTimestamp(notification.created_at)}
               </time>
             </p>
-            <p>Simulated, no message was sent</p>
+            <p>
+              {notification.whatsapp?.state === "delivered_to_test_number"
+                ? "Sent to the owner's test number on WhatsApp (stands in for the HVAC company)"
+                : "Simulated, no message was sent"}
+            </p>
             <PayloadFacts payload={notification.payload} />
             {ack ? (
               <p className="notification-ack">
@@ -1022,6 +1029,35 @@ function HomeownerUpdateCard({
         <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
       </p>
     </article>
+  );
+}
+
+function LivePowerPanel({ data }: { data: LivePowerResponse }) {
+  return (
+    <div aria-live="polite">
+      <p>
+        {data.source} — read-only, display only
+      </p>
+      {data.fetched_at && (
+        <p className="eval-time">
+          Read at: <time dateTime={data.fetched_at}>{formatTimestamp(data.fetched_at)}</time>
+          {data.cached ? " (cached)" : ""}
+        </p>
+      )}
+      {data.circuits.length === 0 ? (
+        <p>No circuits reported.</p>
+      ) : (
+        <dl className="card-facts">
+          {data.circuits.map((circuit) => (
+            <div key={circuit.circuit}>
+              <dt>{circuit.circuit}</dt>
+              <dd>{circuit.watts} W</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <p>Watts are not heat: live power never feeds readiness, warming, or verification.</p>
+    </div>
   );
 }
 
@@ -1088,6 +1124,7 @@ export default function App() {
   const [ackingId, setAckingId] = useState<string | null>(null);
   const [followUpTargetTemp, setFollowUpTargetTemp] = useState<number | null>(null);
   const [selectedAt, setSelectedAt] = useState<string>(REPLAY_START_AT);
+  const [livePower, setLivePower] = useState<LivePowerResponse | null>(null);
   const [sourcesLoading, setSourcesLoading] = useState(false);
   const sourcesTokenRef = useRef(0);
   const contextTokenRef = useRef(0);
@@ -1132,7 +1169,16 @@ export default function App() {
 
   useEffect(() => {
     const token = ++investigationTokenRef.current;
-    const startAt = startAtForScenario(scenario);
+    const controller = new AbortController();
+    const search = new URLSearchParams(window.location.search);
+    const startAt = search.get("e2e_at") ?? startAtForScenario(scenario);
+    const e2eParts: string[] = [];
+    for (const [from, to] of [["e2e_delay_s", "test_delay_s"], ["e2e_lease_s", "lease_s"]] as const) {
+      const value = search.get(from);
+      if (value !== null) e2eParts.push(`${to}=${encodeURIComponent(value)}`);
+    }
+    if (search.get("e2e_fail") !== null) e2eParts.push(`test_fail=${encodeURIComponent(search.get("e2e_fail") ?? "1")}`);
+    const queryExtra = e2eParts.length ? e2eParts.join("&") : undefined;
     setReplayLoading(true);
     setReplayError(null);
     setCreatedInvestigation(null);
@@ -1147,7 +1193,7 @@ export default function App() {
     setNotificationsError(null);
     setFollowUpTargetTemp(null);
     setReplayAt(null);
-    createInvestigation(scenario, startAt)
+    createInvestigation(scenario, startAt, { signal: controller.signal, queryExtra })
       .then((response) => {
         if (token !== investigationTokenRef.current) return;
         if (response.scenario !== scenario) return;
@@ -1194,12 +1240,20 @@ export default function App() {
           })
           .catch(() => undefined);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
         if (token !== investigationTokenRef.current) return;
         setInvestigationId(null);
-        setReplayError("Follow-up not reachable");
+        if (error instanceof RecoveryRequiredError) {
+          setReplayError("Inference recovery required — repeat with retry");
+        } else {
+          setReplayError("Follow-up not reachable");
+        }
         setReplayLoading(false);
       });
+    return () => {
+      controller.abort();
+    };
   }, [scenario]);
 
   useEffect(() => {
@@ -1216,6 +1270,16 @@ export default function App() {
         if (token === eventsTokenRef.current) setEvents([]);
       });
   }, [scenario, replayAt]);
+
+  useEffect(() => {
+    let live = true;
+    fetchLivePower().then((response) => {
+      if (live) setLivePower(response);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   function handleScenarioChange(nextScenario: string) {
     replayTokenRef.current += 1;
@@ -1433,6 +1497,12 @@ export default function App() {
           </div>
         )}
       </section>
+      {livePower && livePower.status === "ok" && (
+        <section aria-labelledby="live-power-heading">
+          <h2 id="live-power-heading">Your real home, right now (live, read-only, Emporia Vue)</h2>
+          <LivePowerPanel data={livePower} />
+        </section>
+      )}
       </main>
       {keyCaption && <p className="key-caption">{keyCaption}</p>}
     </div>

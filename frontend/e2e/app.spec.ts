@@ -15,12 +15,13 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
   });
 
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
 
   const banner = page.locator(".banner");
   await expect(banner).toContainText("SYNTHETIC DATA");
   await expect(banner).toContainText(/synthetic/i);
   await expect(banner).not.toContainText(/live/i);
+  await expect(page.locator("body")).not.toContainText("Your real home, right now");
 
   await expect(
     page.getByRole("heading", {
@@ -84,7 +85,7 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
   });
 
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
 
   const demoControls = page.locator(".demo-controls");
   await expect(demoControls).toContainText("Demo controls");
@@ -128,7 +129,7 @@ test("video scenario shows verification stages and simulated timeline", async ({
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
   });
 
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
 
   const demoControls = page.locator(".demo-controls");
   const outcome = page.locator("section", {
@@ -245,7 +246,7 @@ test("video scenario shows scoped simulated notifications and homeowner update",
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
   });
 
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
 
   const demoControls = page.locator(".demo-controls");
   const outcome = page.locator("section", {
@@ -330,7 +331,7 @@ test("video scenario shows scoped simulated notifications and homeowner update",
 });
 
 test("video scenario shows confirmed plan and permissions at 09:20", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   const plan = page.locator("section", {
     has: page.getByRole("heading", { name: "Confirmed plan and permissions" }),
   });
@@ -355,7 +356,7 @@ test("video scenario shows confirmed plan and permissions at 09:20", async ({ pa
 });
 
 test("without inset the full page still renders all panels", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   for (const heading of [
     "Confirmed plan and permissions",
     "Investigation",
@@ -372,7 +373,7 @@ test("without inset the full page still renders all panels", async ({ page }) =>
 });
 
 test("without key the full page still renders all panels", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   for (const heading of [
     "Confirmed plan and permissions",
     "Investigation",
@@ -390,7 +391,7 @@ test("without key the full page still renders all panels", async ({ page }) => {
 });
 
 test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
 
   const scenario = page.getByLabel("Scenario");
   const replay2101 = page.getByRole("button", { name: "Replay to 21:01" });
@@ -416,7 +417,7 @@ test("keyboard replay to 21:01 shows arrival expectation met", async ({ page }) 
 });
 
 test("source cards follow scenario, replay advance and rewind in ET", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   const headerTime = page.locator("header .eval-time");
   const evidence = page.locator("section", {
     has: page.getByRole("heading", { name: "Evidence sources" }),
@@ -445,7 +446,7 @@ test("source cards follow scenario, replay advance and rewind in ET", async ({ p
 });
 
 test("rapid replay selections end on the last selection", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Outcome" }),
@@ -461,7 +462,7 @@ test("rapid replay selections end on the last selection", async ({ page }) => {
 });
 
 test("scenario times show ET in both browser timezones", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),

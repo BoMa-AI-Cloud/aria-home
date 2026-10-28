@@ -13,7 +13,7 @@ async function show(page: Page, locator: Locator, pause = 7000) {
 }
 
 async function openInset(page: Page, inset: string) {
-  await page.goto(`http://127.0.0.1:5173/?inset=${inset}`);
+  await page.goto(`/?inset=${inset}`);
   await page.getByLabel("Scenario").selectOption({ label: SCENARIO });
   const controls = page.locator(".demo-controls");
   await expect(controls.getByRole("button", { name: "16:31" })).toBeEnabled({ timeout: 30_000 });

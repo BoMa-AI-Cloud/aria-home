@@ -39,7 +39,7 @@ export default defineConfig({
       url: `http://127.0.0.1:${backendPort}/api/health`,
       reuseExistingServer: false,
       timeout: 60 * 1000,
-      env: { ARIA_HOME_MODEL_ENABLED: "0", ARIA_HOME_DB_PATH: dbPath },
+      env: { ARIA_HOME_MODEL_ENABLED: "0", ARIA_HOME_DB_PATH: dbPath, ARIA_HOME_E2E_HOOKS: "1" },
     },
     {
       command: `npm run dev -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,

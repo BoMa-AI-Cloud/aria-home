@@ -38,6 +38,9 @@ if (!inheritedDbPath) {
   }
 }
 
+const frontendPort = process.env.PLAYWRIGHT_FRONTEND_PORT ?? "5173";
+const backendPort = process.env.PLAYWRIGHT_BACKEND_PORT ?? "5000";
+
 export default defineConfig({
   testDir: "recording",
   testMatch: "**/*.record.ts",
@@ -48,7 +51,7 @@ export default defineConfig({
   timeout: 180 * 1000,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: `http://127.0.0.1:${frontendPort}`,
     viewport: { width: 1280, height: 720 },
     video: { mode: "on", size: { width: 1280, height: 720 } },
     launchOptions: { slowMo: 250 },
@@ -86,16 +89,16 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "python -m flask --app aria_home.app:create_app run --port 5000",
+      command: `python -m flask --app aria_home.app:create_app run --port ${backendPort}`,
       cwd: "../backend",
-      url: "http://127.0.0.1:5000/api/health",
+      url: `http://127.0.0.1:${backendPort}/api/health`,
       reuseExistingServer: false,
       timeout: 60 * 1000,
       env: { ARIA_HOME_MODEL_ENABLED: "0", ARIA_HOME_DB_PATH: dbPath },
     },
     {
-      command: "npm run dev -- --host 127.0.0.1 --port 5173 --strictPort",
-      url: "http://127.0.0.1:5173",
+      command: `npm run dev -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
+      url: `http://127.0.0.1:${frontendPort}`,
       reuseExistingServer: false,
       timeout: 60 * 1000,
     },

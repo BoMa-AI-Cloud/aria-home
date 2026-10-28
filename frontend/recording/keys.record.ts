@@ -21,7 +21,7 @@ async function show(page: Page, locator: Locator, pause = 6000) {
 }
 
 async function openKey(page: Page, key: string) {
-  await page.goto(`http://127.0.0.1:5173/?key=${key}`);
+  await page.goto(`/?key=${key}`);
   await page.getByLabel("Scenario").selectOption({ label: SCENARIO });
   const controls = page.locator(".demo-controls");
   await expect(controls.getByRole("button", { name: "16:31" })).toBeEnabled({ timeout: 30_000 });

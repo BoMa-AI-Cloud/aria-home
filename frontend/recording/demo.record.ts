@@ -21,7 +21,7 @@ async function expectMockVisible(page: Page) {
 }
 
 async function openVideoScenario(page: Page) {
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("/");
   await expect(page.locator(".banner")).toContainText("SYNTHETIC DATA");
   await page.getByLabel("Scenario").selectOption({ label: SCENARIO });
   const controls = page.locator(".demo-controls");
@@ -37,10 +37,10 @@ async function replay(page: Page, label: string) {
 }
 
 test("c1-opening", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/cards.html#opening");
+  await page.goto("/cards.html#opening");
   await expect(
     page.getByText(
-      "ARIA is my existing assistant project; its name, notes and ARIA Home designs came first. All ARIA Home code was built this week with Meta's models. Story scenes: Grok Imagine and Meta AI.",
+      "ARIA is my existing assistant project; its name, notes and ARIA Home designs came first. All ARIA Home code was built this week with Meta's models. Story scenes and music: Meta AI.",
     ),
   ).toBeVisible();
   await expect(page.getByText("Synthetic demo data")).toBeVisible();
@@ -48,7 +48,7 @@ test("c1-opening", async ({ page }) => {
 });
 
 test("c2-evaluation", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/cards.html#evaluation");
+  await page.goto("/cards.html#evaluation");
   await expect(page.getByText("Combined (all sources)")).toBeVisible();
   await expect(page.getByText("12/12")).toBeVisible();
   await expect(page.getByText("Thermostat only")).toBeVisible();
@@ -58,7 +58,7 @@ test("c2-evaluation", async ({ page }) => {
 });
 
 test("c3-closing", async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173/cards.html#closing");
+  await page.goto("/cards.html#closing");
   await expect(page.getByText("Not just an automation completed. An expectation met.")).toBeVisible();
   await expect(
     page.getByText(
