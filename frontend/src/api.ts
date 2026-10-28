@@ -225,6 +225,7 @@ export interface InvestigationSummary {
 
 export type ClaimType =
   | "current_temperature"
+  | "temperature_at_arrival"
   | "target_temperature"
   | "target_gap"
   | "electrical_activity"

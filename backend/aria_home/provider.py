@@ -222,7 +222,7 @@ class MockProvider:
             text_in = " ".join(str(m.get("content", "")) if isinstance(m, dict) else str(m) for m in messages)
         elif prompt is not None:
             text_in = str(prompt)
-        if "inv-v2" in text_in:
+        if "inv-v3" in text_in:
             import json as _json
             from datetime import datetime as _dt, timedelta as _td
 
@@ -240,41 +240,61 @@ class MockProvider:
                     pack = {}
             ids = pack.get("evidence_ids") or [e.get("id") for e in pack.get("evidence", []) if isinstance(e, dict) and e.get("id")]
             trend_id = "metric:indoor_trend" if "metric:indoor_trend" in ids else (ids[0] if ids else "metric:indoor_trend")
-            power_id = "power:continuity" if "power:continuity" in ids else trend_id
             if pack.get("at"):
                 try:
                     when = (_dt.fromisoformat(str(pack["at"]).replace("Z", "+00:00")) + _td(minutes=30)).isoformat()
                 except Exception:
                     pass
-            metrics = pack.get("metrics") or {}
-            trend = metrics.get("indoor_trend") or {}
-            gap = metrics.get("target_gap") or {}
-            circuits = metrics.get("circuits") or {}
+            readiness = (pack.get("readiness") or {}).get("status") if isinstance(pack.get("readiness"), dict) else None
+            readiness = readiness or pack.get("computed_readiness") or "cannot_tell"
             facts = []
-            if trend.get("last_value") is not None and trend.get("fresh", trend.get("is_fresh", True)):
-                fact = {"claim_type": "current_temperature", "evidence_id": trend_id, "field": "last_value", "value": trend["last_value"], "unit": trend.get("unit") or "F", "at": trend.get("last_observed_at")}
-                facts.append(fact)
-            if gap.get("target_temp") is not None and "metric:target_gap" in ids:
-                facts.append({"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": gap["target_temp"], "unit": gap.get("target_unit") or gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
-            if gap.get("gap") is not None and "metric:target_gap" in ids and trend.get("fresh", trend.get("is_fresh", True)):
-                facts.append({"claim_type": "target_gap", "evidence_id": "metric:target_gap", "field": "gap", "value": gap["gap"], "unit": gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
-            circuit_id = next((cid for cid in sorted(circuits) if "furnace" in cid), None) or (sorted(circuits)[0] if circuits else None)
-            if circuit_id is not None:
-                circuit = circuits.get(circuit_id) or {}
-                circuit_evidence = f"metric:circuit_activity:{circuit_id}"
-                if circuit_evidence in ids and circuit.get("max_w") is not None and circuit.get("fresh", circuit.get("is_fresh", True)):
-                    facts.append({"claim_type": "electrical_activity", "evidence_id": circuit_evidence, "field": "max_w", "value": circuit["max_w"], "unit": circuit.get("unit") or "W", "at": circuit.get("last_observed_at")})
-                    facts.append({"claim_type": "equipment_function", "evidence_id": circuit_evidence, "field": "active", "value": "not_observed" if circuit.get("active") is False else "unknown", "unit": None, "at": circuit.get("last_observed_at")})
+            if readiness == "arrival_passed":
+                from .investigator import _arrival_selection as _arrival_pick
+
+                winner, _ = _arrival_pick(pack)
+                if winner is not None:
+                    facts.append({"claim_type": "temperature_at_arrival", "evidence_id": winner["id"], "field": "value", "value": winner["value"], "unit": winner.get("unit") or "F", "at": winner.get("observed_at")})
+                gap = (pack.get("metrics") or {}).get("target_gap") or {}
+                if gap.get("target_temp") is not None and "metric:target_gap" in ids:
+                    facts.append({"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": gap["target_temp"], "unit": gap.get("target_unit") or gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
+                support_id = winner["id"] if winner is not None else trend_id
+                interpretation = "[MOCK] The verified facts describe the indoor temperature at the planned arrival time."
+                hypothesis = "[MOCK] The cited reading shows the indoor temperature at the planned arrival time."
+            else:
+                metrics = pack.get("metrics") or {}
+                trend = metrics.get("indoor_trend") or {}
+                gap = metrics.get("target_gap") or {}
+                circuits = metrics.get("circuits") or {}
+                if trend.get("last_value") is not None and trend.get("fresh", trend.get("is_fresh", True)):
+                    fact = {"claim_type": "current_temperature", "evidence_id": trend_id, "field": "last_value", "value": trend["last_value"], "unit": trend.get("unit") or "F", "at": trend.get("last_observed_at")}
+                    facts.append(fact)
+                if gap.get("target_temp") is not None and "metric:target_gap" in ids:
+                    facts.append({"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": gap["target_temp"], "unit": gap.get("target_unit") or gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
+                if gap.get("gap") is not None and "metric:target_gap" in ids and trend.get("fresh", trend.get("is_fresh", True)):
+                    facts.append({"claim_type": "target_gap", "evidence_id": "metric:target_gap", "field": "gap", "value": gap["gap"], "unit": gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
+                circuit_id = next((cid for cid in sorted(circuits) if "furnace" in cid), None) or (sorted(circuits)[0] if circuits else None)
+                if circuit_id is not None:
+                    circuit = circuits.get(circuit_id) or {}
+                    circuit_evidence = f"metric:circuit_activity:{circuit_id}"
+                    if circuit_evidence in ids and circuit.get("max_w") is not None and circuit.get("fresh", circuit.get("is_fresh", True)):
+                        facts.append({"claim_type": "electrical_activity", "evidence_id": circuit_evidence, "field": "max_w", "value": circuit["max_w"], "unit": circuit.get("unit") or "W", "at": circuit.get("last_observed_at")})
+                        facts.append({"claim_type": "equipment_function", "evidence_id": circuit_evidence, "field": "active", "value": "not_observed" if circuit.get("active") is False else "unknown", "unit": None, "at": circuit.get("last_observed_at")})
+                support_id = trend_id
+                interpretation = "[MOCK] The verified facts describe the indoor temperature relative to the target."
+                hypothesis = "[MOCK] The property may not yet be ready on arrival based on the cited trend."
             if not facts:
                 facts.append({"claim_type": "equipment_function", "evidence_id": trend_id, "field": "active", "value": "unknown", "unit": None, "at": None})
+                support_id = trend_id
+                interpretation = "[MOCK] The verified facts describe the indoor temperature relative to the target."
+                hypothesis = "[MOCK] The property may not yet be ready on arrival based on the cited trend."
             payload = {
                 "facts": facts,
-                "interpretation": "[MOCK] The verified facts describe the indoor temperature relative to the target.",
-                "hypotheses": [{"text": "[MOCK] The property may not yet be ready on arrival based on the cited trend.", "supporting_ids": [trend_id], "conflicting_ids": []}],
+                "interpretation": interpretation,
+                "hypotheses": [{"text": hypothesis, "supporting_ids": [support_id], "conflicting_ids": []}],
                 "unknowns": ["Whether heating equipment is receiving power is not established by the cited evidence."],
                 "clarification": "Who should respond first if the indoor temperature has not improved by the next check?",
                 "follow_up": {"observation": "Take another indoor temperature reading and review the trend.", "when": when},
-                "readiness": (pack.get("readiness") or {}).get("status") or pack.get("computed_readiness") or "cannot_tell",
+                "readiness": readiness,
                 "limitations": ["Mock example only; not live inference."],
             }
             return ProviderResult(ok=True, mode="mock", requested_model=self.model_id, answered_model=self.model_id, text=_json.dumps(payload), latency_ms=0.0, input_tokens=None, output_tokens=None, error=None)

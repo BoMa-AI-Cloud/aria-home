@@ -5,7 +5,7 @@ requests must not call the provider twice.
 
 ## Identity
 
-Identity version is `inference-identity-v2`. The inference identity is the
+Identity version is `inference-identity-v3`. The inference identity is the
 canonical JSON of:
 
 - `scenario_id` — scenario manifest `id`
@@ -14,10 +14,10 @@ canonical JSON of:
   instant in another offset has the same identity
 - `input_revision` — SHA-256 of the canonical full-precision decision inputs
   (see below)
-- `prompt_version` — `inv-v2` (`PROMPT_VERSION`)
-- `readiness_policy_version` — `readiness-policy-v2`
+- `prompt_version` — `inv-v3` (`PROMPT_VERSION`)
+- `readiness_policy_version` — `readiness-policy-v3`
 - `provider` — normalized non-secret provider identity (see below)
-- `identity_version` — `inference-identity-v2`
+- `identity_version` — `inference-identity-v3`
 
 `identity_key` is the SHA-256 of that identity. The investigation id is
 `inv-<first 12 hex of identity_key>`, so a changed time, changed decision

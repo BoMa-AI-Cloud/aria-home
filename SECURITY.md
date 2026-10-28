@@ -24,7 +24,7 @@ Checked in code/tests (see `backend/tests/`):
 - Visual evidence (`backend/aria_home/visual.py`, checked by `backend/tests/test_visual.py`): synthetic images and recorded sam-3.1 responses only in tests (never a network call); live segmentation refused without the two-variable opt-in; the live model id allowlisted to sam-3.1; `GET /api/visual` and `GET /api/visual/image` gated by `received_at <= at` and constrained to the fixtures directory; HVAC and WhatsApp payloads provably carry the observation line and no image data; visual evidence provably never yields `on_track`, a warming stage, or a verification success, and zero objects never reads as an all-clear.
 - As-of visibility: records, events and notifications with a later received/available time are not returned at an earlier replay time.
 - Acknowledgement, service visits, human statements and the HVAC completion report never set an outcome or advance verification; outcomes come from later measurements only.
-- Claim binding (inv-v2): model facts must cite allowed evidence; readiness/follow-up/outcome are computed in code.
+- Claim binding (inv-v3): model facts must cite allowed evidence, with temperature at arrival (never a current temperature) after arrival; readiness/follow-up/outcome are computed in code.
 
 Not checked / not provided:
 

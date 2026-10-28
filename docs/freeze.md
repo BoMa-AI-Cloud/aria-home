@@ -28,7 +28,7 @@ remaining work is testing it, filming it, and writing it up.
   arrival from readings received by arrival), power context, follow-up
   scheduling, outcome rules, and recovery verification stages
   (`telemetry_missing` to `arrival_met`), all computed in code.
-- Evidence-pack investigation engine (inv-v2 claim binding, code-rendered
+- Evidence-pack investigation engine (inv-v3 claim binding, code-rendered
   verified facts) with mock and gated live Meta providers; the model cannot
   change the readiness status.
 - SQLite store with outcome and verification history surviving restarts.

@@ -7,9 +7,19 @@ states it in the prompt, and rejects any model answer whose `readiness` differs
 from the computed status. The model only explains the computed status.
 
 Statuses: `on_track`, `at_risk`, `cannot_tell`, `arrival_passed`. The
-investigator contract stays `inv-v2`; its schema/prompt status list now also
-includes `arrival_passed`, and the model must return exactly the computed
+investigator contract is `inv-v3`; the model must return exactly the computed
 status as before.
+
+After the confirmed arrival has passed (`arrival_passed`), the contract asks
+for the temperature AT ARRIVAL, not a current temperature: the model states
+one `temperature_at_arrival` fact citing the last eligible `indoor_temp`
+reading observed and received by the planned arrival, by its evidence id
+with its observed time. A `current_temperature` fact after arrival is
+rejected, as is a `temperature_at_arrival` fact citing a reading observed or
+received after arrival, a reading that is not the last eligible one by
+arrival, or an ineligible/conflicted reading. Electrical activity is never a
+temperature fact. Before arrival the current-claim rules below apply
+unchanged.
 
 ## Canonical decision precision vs display rounding
 
@@ -88,7 +98,9 @@ All physical-measurement paths use the single policy in
   fails. Only the latest eligible reading (by observed, then received, time)
   for the chosen source is current; an older eligible reading may only be
   described as historical, never as `current_temperature`, and a stale reading
-  likewise is historical only.
+  likewise is historical only. After the planned arrival has passed there is
+  no current claim at all: `temperature_at_arrival` replaces it (see
+  Statuses above).
 
 Allowed source/kind per measurement path:
 

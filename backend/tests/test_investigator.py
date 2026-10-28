@@ -1,7 +1,9 @@
 import copy
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
+
+import pytest
 
 from aria_home.app import create_app
 from aria_home.contracts import Trip
@@ -10,6 +12,93 @@ from aria_home.provider import MockProvider
 from aria_home.scenario import load_scenario
 
 SCENARIO_DIR = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
+SCENARIOS_ROOT = Path(__file__).resolve().parent.parent / "scenarios"
+
+ARRIVAL_CASES = [
+    ("demo_recovery_v1", "2026-01-16T19:00:00-05:00"),
+    ("demo_recovery_v1", "2026-01-16T20:31:00-05:00"),
+    ("demo_no_followup_v1", "2026-01-16T20:31:00-05:00"),
+    ("demo_video_v1", "2026-01-16T21:01:00-05:00"),
+    ("visual_water_low_temp_v1", "2026-01-16T19:00:00-05:00"),
+    ("visual_frost_missed_v1", "2026-01-16T20:31:00-05:00"),
+]
+
+def _scenario_at(name, at):
+    scenario = load_scenario(SCENARIOS_ROOT / name)
+    return scenario, datetime.fromisoformat(at)
+
+def _mock_text(scenario, at):
+    from aria_home.investigator import SYSTEM_PROMPT
+    pack = build_evidence_pack(scenario, at)
+    prompt = SYSTEM_PROMPT + "\nEvidence pack (JSON):\n" + json.dumps(pack)
+    return MockProvider().generate(prompt).text
+
+def _only_timing(reasons):
+    return [r for r in reasons if not (r.startswith("follow-up time") or r.startswith("follow-up deadline"))]
+
+@pytest.mark.parametrize("name,at", ARRIVAL_CASES)
+def test_arrival_mock_answer_passes(name, at):
+    scenario, at_dt = _scenario_at(name, at)
+    pack = build_evidence_pack(scenario, at_dt)
+    assert pack["computed_readiness"] == "arrival_passed"
+    assert _only_timing(validate(_mock_text(scenario, at_dt), pack)) == []
+    result = investigate(scenario, at_dt, MockProvider())
+    assert result.status == "ok", result.reasons
+    assert result.output.readiness == "arrival_passed"
+    assert result.prompt_version == "inv-v3"
+    assert not [f for f in result.output.facts if f.claim_type == "current_temperature"]
+    assert any(f.claim_type == "temperature_at_arrival" for f in result.output.facts)
+    assert any("at arrival" in s for s in result.output.verified_facts)
+
+def test_arrival_stale_reading_as_current_rejected():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    data = json.loads(_mock_text(scenario, at))
+    data["facts"] = [
+        {"claim_type": "current_temperature", "evidence_id": "tstat-temp-1755", "field": "value", "value": 52.1, "unit": "F", "at": "2026-01-16T17:55:00-05:00"},
+        *[f for f in data["facts"] if f["claim_type"] != "temperature_at_arrival"],
+    ]
+    reasons = validate(data, pack)
+    assert any("must not be stated after the planned arrival" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_arrival_post_arrival_reading_rejected():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    data = json.loads(_mock_text(scenario, at))
+    data["facts"] = [
+        {"claim_type": "temperature_at_arrival", "evidence_id": "tstat-temp-1830", "field": "value", "value": 54.0, "unit": "F", "at": "2026-01-16T18:30:00-05:00"},
+        *[f for f in data["facts"] if f["claim_type"] != "temperature_at_arrival"],
+    ]
+    reasons = validate(data, pack)
+    assert any("observed or received after the planned arrival" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_arrival_superseded_reading_rejected():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    data = json.loads(_mock_text(scenario, at))
+    data["facts"] = [
+        {"claim_type": "temperature_at_arrival", "evidence_id": "tstat-temp-1730", "field": "value", "value": 52.2, "unit": "F", "at": "2026-01-16T17:30:00-05:00"},
+        *[f for f in data["facts"] if f["claim_type"] != "temperature_at_arrival"],
+    ]
+    reasons = validate(data, pack)
+    assert any("not the last eligible reading" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_arrival_electrical_activity_never_temperature():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    electrical = next(e["id"] for e in pack["evidence"] if isinstance(e, dict) and e.get("quantity") == "circuit_power" and isinstance(e.get("value"), (int, float)))
+    value = next(e["value"] for e in pack["evidence"] if isinstance(e, dict) and e.get("id") == electrical)
+    data = json.loads(_mock_text(scenario, at))
+    data["facts"] = [
+        {"claim_type": "temperature_at_arrival", "evidence_id": electrical, "field": "value", "value": value, "unit": "W", "at": "2026-01-16T17:55:00-05:00"},
+        *[f for f in data["facts"] if f["claim_type"] != "temperature_at_arrival"],
+    ]
+    reasons = validate(data, pack)
+    assert any("electrical activity is never a temperature fact" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
 
 def _scenario():
     return load_scenario(SCENARIO_DIR)
@@ -62,7 +151,7 @@ def test_valid_output_passes():
     assert result.status == "ok"
     assert result.output is not None
     assert result.provider_mode == "mock"
-    assert result.prompt_version == "inv-v2"
+    assert result.prompt_version == "inv-v3"
     assert fake.calls[0][2] == 12000
 
 def test_unknown_evidence_id_rejected():
