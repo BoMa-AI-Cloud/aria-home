@@ -76,3 +76,9 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
   text built by the existing HVAC allowlist function, any other recipient refused, attempt persisted before the
   API call; Emporia module reads only. Credential check: none of the seven real credential values appears in any
   of the 77 changed or new files (compared in memory, values never printed).
+- Committed the Audit 3 repair and integrations as c3acce9, 8605c1e, cfdc74a, 916783f and pushed with Brad's approval; the first CI run on GitHub (run 40761110029) passed.
+- One approved real WhatsApp send attempt (demo_video_v1 16:52 HVAC notice, temporary database): Meta refused it
+  with error 131030 "Recipient phone number not in allowed list"; nothing was delivered; the app recorded
+  failed:api_error_400 and kept the notice simulated. Cause: the stored WHATSAPP_TEST_RECIPIENT differs from the
+  single number on the app's allowed list (compared without printing either). Review finding: the real send is
+  triggered from GET /api/follow-ups/<id>, a read endpoint; to be moved to an explicit POST.
