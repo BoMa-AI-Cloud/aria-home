@@ -96,3 +96,4 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
 - Verified task day10-08 (visual evidence on sam-3.1 recordings): backend 390 passed, e2e 34 passed (re-run by the
   operator); GET /api/visual/image ignores caller-supplied paths (four traversal attempts all returned the
   scenario's own fixture); no credential value in the 92 changed text files; no banned claims.
+- Live evaluation (approved: 17 calls, muse-spark-1.3, Meta Model API, snapshot 77cafc9, 90 s, 12000 tokens, no retries): 11 of 17 valid, 6 rejected (all six are after-arrival cases citing an old reading as current), 11 of 11 valid answers agreed with the computed readiness, median 24.5 s. Raw records copied to backend/eval/results-live-77cafc9.json; queued day10-09 to record it.
