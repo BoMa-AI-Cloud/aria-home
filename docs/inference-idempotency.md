@@ -152,6 +152,23 @@ and time; create one with POST /api/investigations`. An active claim returns
 never claims, recovers or calls `provider.generate`. Inference happens
 only through `POST /api/investigations`.
 
+## WhatsApp delivery is never a GET side effect
+
+`GET /api/follow-ups/<investigation_id>` is read-only for the WhatsApp
+channel: it creates the HVAC-company notice row when the
+manager-authorisation gate allows it, but never calls the HTTP layer —
+repeated GETs make zero delivery calls even with live credentials set.
+Real delivery happens only through the explicit
+`POST /api/notifications/<notification_id>/whatsapp`, which sends only
+that HVAC notice and returns its recorded delivery state. The POST is
+409 with `not_configured` when live delivery is not fully opted in
+(changing nothing), 404 for an unknown id, 409 for a non-HVAC notice,
+and 409 when the notice is not yet visible at the given `at`. At most
+one real send per notification id ever: the attempt row is persisted
+before the API call, so a second POST never re-sends.
+`GET /api/whatsapp/status` is read-only and reports only whether live
+delivery is configured, never any value.
+
 ## Notification acknowledgement validation
 
 `POST /api/notifications/<id>/ack` requires a JSON object body such as

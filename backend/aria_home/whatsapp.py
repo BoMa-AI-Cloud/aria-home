@@ -184,7 +184,9 @@ def build_whatsapp_audit(payload, authorising_event):
         "fields_sent": sorted(ALLOWLISTS["hvac_company"]),
         "example_text": build_hvac_whatsapp_text(payload),
         "authorising_event": authorising_event,
-        "idempotency": "at most one real send per notification id ever; the attempt is persisted before the API call, so replay, refresh, retry or a second POST never re-sends",
+        "idempotency": "at most one real send per notification id ever; the attempt is persisted before the API call, so replay, refresh, retry, repeated GETs or a second POST never re-sends",
+        "trigger": "explicit POST /api/notifications/<notification_id>/whatsapp only; GET /api/follow-ups/<investigation_id> never sends",
+        "status": "GET /api/whatsapp/status reports only whether live delivery is configured, never any value",
         "statuses": ["delivered_to_test_number", "refused", "failed:<reason>"],
         "secrets": "credentials only from environment variables; the token is used in-memory for the Authorization header and never lands in the database, responses, logs, attempt rows or ids; the recipient number is never stored",
     }

@@ -33,7 +33,9 @@
     "available_at": "2026-01-16T16:45:00-05:00",
     "event_time": "2026-01-16T16:45:00-05:00"
   },
-  "idempotency": "at most one real send per notification id ever; the attempt is persisted before the API call, so replay, refresh, retry or a second POST never re-sends",
+  "idempotency": "at most one real send per notification id ever; the attempt is persisted before the API call, so replay, refresh, retry, repeated GETs or a second POST never re-sends",
+  "trigger": "explicit POST /api/notifications/<notification_id>/whatsapp only; GET /api/follow-ups/<investigation_id> never sends",
+  "status": "GET /api/whatsapp/status reports only whether live delivery is configured, never any value",
   "statuses": [
     "delivered_to_test_number",
     "refused",

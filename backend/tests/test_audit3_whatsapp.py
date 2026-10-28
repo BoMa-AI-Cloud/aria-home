@@ -22,6 +22,10 @@ LIVE_ENV = {
     "ARIA_HOME_WHATSAPP_LIVE": "1",
 }
 
+INV_AT = "2026-01-16T16:31:00-05:00"
+FOLLOW_AT = "2026-01-16T16:52:00-05:00"
+EARLY_AT = "2026-01-16T16:31:00-05:00"
+
 
 def _client(tmp_path, monkeypatch):
     monkeypatch.setenv("ARIA_HOME_DB_PATH", str(tmp_path / "api.db"))
@@ -40,15 +44,24 @@ def _live_env(monkeypatch, **overrides):
             monkeypatch.setenv(name, value)
 
 
-def _hvac_flow(client):
-    resp = client.post("/api/investigations?scenario=demo_video_v1&at=2026-01-16T16:31:00-05:00")
+def _hvac_flow(client, fake=None):
+    resp = client.post(f"/api/investigations?scenario=demo_video_v1&at={INV_AT}")
     assert resp.status_code == 200
     inv_id = resp.get_json()["investigation_id"]
-    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T16:52:00-05:00")
+    resp = client.get(f"/api/follow-ups/{inv_id}?at={FOLLOW_AT}")
     assert resp.status_code == 200
+    resp = client.get(f"/api/follow-ups/{inv_id}?at={FOLLOW_AT}")
+    assert resp.status_code == 200
+    if fake is not None:
+        assert fake.calls == []
     rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company" and r["state"] == "simulated_delivered")
     return inv_id, hvac
+
+
+def _send(client, notification_id, at=None):
+    query = f"?at={at}" if at else ""
+    return client.post(f"/api/notifications/{notification_id}/whatsapp{query}")
 
 
 def _attempt_rows(tmp_path):
@@ -71,6 +84,16 @@ class _FakeHttp:
         if self.error is not None:
             raise self.error
         return self.status, self.payload
+
+
+def test_get_follow_ups_never_sends_even_when_configured(tmp_path, monkeypatch):
+    _live_env(monkeypatch)
+    fake = _FakeHttp()
+    monkeypatch.setattr(whatsapp, "_http_post", fake)
+    client = _client(tmp_path, monkeypatch)
+    inv_id, hvac = _hvac_flow(client, fake)
+    assert hvac["whatsapp"] is None
+    assert _attempt_rows(tmp_path) == []
 
 
 def test_not_opted_in_leaves_notice_exactly_as_today(tmp_path, monkeypatch):
@@ -96,15 +119,36 @@ def test_each_missing_env_var_stays_simulated(tmp_path, monkeypatch):
         client = _client(tmp_path, monkeypatch)
         _, hvac = _hvac_flow(client)
         assert hvac["whatsapp"] is None, name
+        resp = _send(client, hvac["id"])
+        assert resp.status_code == 409
+        assert resp.get_json()["reason"] == "not_configured"
+        assert _attempt_rows(tmp_path) == []
         (tmp_path / "api.db").unlink()
 
 
-def test_success_records_status_and_message_id(tmp_path, monkeypatch):
+def test_whatsapp_status_reports_only_configured(tmp_path, monkeypatch):
+    for name in whatsapp.REQUIRED_ENV:
+        monkeypatch.delenv(name, raising=False)
+    client = _client(tmp_path, monkeypatch)
+    body = client.get("/api/whatsapp/status").get_json()
+    assert body["configured"] is False
+    text = client.get("/api/whatsapp/status").get_data(as_text=True)
+    assert TOKEN not in text and RECIPIENT not in text
+    _live_env(monkeypatch)
+    body = client.get("/api/whatsapp/status").get_json()
+    assert body["configured"] is True
+    text = client.get("/api/whatsapp/status").get_data(as_text=True)
+    assert TOKEN not in text and RECIPIENT not in text and PHONE_ID not in text
+
+
+def test_post_sends_once_and_second_post_does_not_resend(tmp_path, monkeypatch):
     _live_env(monkeypatch)
     fake = _FakeHttp()
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    inv_id, hvac = _hvac_flow(client)
+    inv_id, hvac = _hvac_flow(client, fake)
+    resp = _send(client, hvac["id"])
+    assert resp.status_code == 200
     assert len(fake.calls) == 1
     call = fake.calls[0]
     assert call["url"] == f"https://graph.facebook.com/v25.0/{PHONE_ID}/messages"
@@ -112,6 +156,31 @@ def test_success_records_status_and_message_id(tmp_path, monkeypatch):
     assert call["body"]["type"] == "text"
     assert call["body"]["to"] == RECIPIENT
     assert call["body"]["text"]["body"].splitlines()[0] == "ARIA Home test (synthetic scenario)"
+    payload = resp.get_json()
+    assert payload["whatsapp"]["state"] == "delivered_to_test_number"
+    assert payload["notification"]["whatsapp"]["message_id"] == "wamid.TEST123"
+    resp = _send(client, hvac["id"])
+    assert resp.status_code == 200
+    assert len(fake.calls) == 1
+    assert len(_attempt_rows(tmp_path)) == 1
+    rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
+    hvac = next(r for r in rows if r["audience"] == "hvac_company")
+    assert hvac["whatsapp"]["state"] == "delivered_to_test_number"
+    assert hvac["whatsapp"]["message_id"] == "wamid.TEST123"
+    assert hvac["whatsapp"]["attempted_at"]
+    stored = _attempt_rows(tmp_path)
+    assert len(stored) == 1 and stored[0][1] == "delivered_to_test_number" and stored[0][2] == "wamid.TEST123"
+
+
+def test_success_records_status_and_message_id(tmp_path, monkeypatch):
+    _live_env(monkeypatch)
+    fake = _FakeHttp()
+    monkeypatch.setattr(whatsapp, "_http_post", fake)
+    client = _client(tmp_path, monkeypatch)
+    inv_id, hvac = _hvac_flow(client, fake)
+    resp = _send(client, hvac["id"])
+    assert resp.status_code == 200
+    assert len(fake.calls) == 1
     rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company")
     assert hvac["whatsapp"]["state"] == "delivered_to_test_number"
@@ -126,14 +195,62 @@ def test_second_post_and_replay_never_resend(tmp_path, monkeypatch):
     fake = _FakeHttp()
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    inv_id, _ = _hvac_flow(client)
+    inv_id, hvac = _hvac_flow(client, fake)
+    assert _send(client, hvac["id"]).status_code == 200
     assert len(fake.calls) == 1
-    url = "/api/investigations?scenario=demo_video_v1&at=2026-01-16T16:31:00-05:00"
+    url = f"/api/investigations?scenario=demo_video_v1&at={INV_AT}"
     assert client.post(url).status_code == 200
-    assert client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T16:52:00-05:00").status_code == 200
+    assert client.get(f"/api/follow-ups/{inv_id}?at={FOLLOW_AT}").status_code == 200
     assert client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T18:21:00-05:00").status_code == 200
     assert len(fake.calls) == 1
     assert len(_attempt_rows(tmp_path)) == 1
+
+
+def test_not_configured_post_returns_409_and_changes_nothing(tmp_path, monkeypatch):
+    for name in whatsapp.REQUIRED_ENV:
+        monkeypatch.delenv(name, raising=False)
+    fake = _FakeHttp()
+    monkeypatch.setattr(whatsapp, "_http_post", fake)
+    client = _client(tmp_path, monkeypatch)
+    _, hvac = _hvac_flow(client, fake)
+    resp = _send(client, hvac["id"])
+    assert resp.status_code == 409
+    assert resp.get_json()["reason"] == "not_configured"
+    assert fake.calls == []
+    assert _attempt_rows(tmp_path) == []
+
+
+def test_wrong_audience_returns_409(tmp_path, monkeypatch):
+    _live_env(monkeypatch)
+    fake = _FakeHttp()
+    monkeypatch.setattr(whatsapp, "_http_post", fake)
+    client = _client(tmp_path, monkeypatch)
+    inv_id, _ = _hvac_flow(client, fake)
+    rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
+    other = next(r for r in rows if r["audience"] != "hvac_company")
+    resp = _send(client, other["id"])
+    assert resp.status_code == 409
+    assert fake.calls == []
+    assert _attempt_rows(tmp_path) == []
+
+
+def test_unknown_notification_returns_404(tmp_path, monkeypatch):
+    _live_env(monkeypatch)
+    client = _client(tmp_path, monkeypatch)
+    resp = _send(client, "notif-does-not-exist")
+    assert resp.status_code == 404
+
+
+def test_not_yet_visible_returns_409(tmp_path, monkeypatch):
+    _live_env(monkeypatch)
+    fake = _FakeHttp()
+    monkeypatch.setattr(whatsapp, "_http_post", fake)
+    client = _client(tmp_path, monkeypatch)
+    _, hvac = _hvac_flow(client, fake)
+    resp = _send(client, hvac["id"], at=EARLY_AT)
+    assert resp.status_code == 409
+    assert fake.calls == []
+    assert _attempt_rows(tmp_path) == []
 
 
 def test_outside_window_clears_status_and_never_500(tmp_path, monkeypatch):
@@ -141,11 +258,15 @@ def test_outside_window_clears_status_and_never_500(tmp_path, monkeypatch):
     fake = _FakeHttp(status=400, payload={"error": {"code": 131047, "message": "Message failed: sent outside the 24-hour window"}})
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    resp = client.post("/api/investigations?scenario=demo_video_v1&at=2026-01-16T16:31:00-05:00")
+    resp = client.post(f"/api/investigations?scenario=demo_video_v1&at={INV_AT}")
     assert resp.status_code == 200
     inv_id = resp.get_json()["investigation_id"]
-    resp = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T16:52:00-05:00")
+    resp = client.get(f"/api/follow-ups/{inv_id}?at={FOLLOW_AT}")
     assert resp.status_code == 200
+    assert fake.calls == []
+    rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
+    hvac = next(r for r in rows if r["audience"] == "hvac_company")
+    assert _send(client, hvac["id"]).status_code == 200
     rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company")
     assert hvac["whatsapp"]["state"] == "failed:outside_24h_window"
@@ -172,7 +293,8 @@ def test_message_content_is_exactly_the_allowlisted_payload(tmp_path, monkeypatc
     fake = _FakeHttp()
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    _, hvac = _hvac_flow(client)
+    _, hvac = _hvac_flow(client, fake)
+    assert _send(client, hvac["id"]).status_code == 200
     assert set(hvac["payload"]) == ALLOWLISTS["hvac_company"]
     text = fake.calls[0]["body"]["text"]["body"]
     assert text == whatsapp.build_hvac_whatsapp_text(hvac["payload"])
@@ -187,7 +309,8 @@ def test_token_and_recipient_never_in_db_responses_or_logs(tmp_path, monkeypatch
     fake = _FakeHttp()
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    inv_id, _ = _hvac_flow(client)
+    inv_id, hvac = _hvac_flow(client, fake)
+    assert _send(client, hvac["id"]).status_code == 200
     with caplog.at_level("INFO"):
         resp = client.get(f"/api/notifications?investigation_id={inv_id}")
         assert resp.status_code == 200
@@ -205,9 +328,9 @@ def test_whatsapp_audit_matches_code(tmp_path, monkeypatch):
     data = json.loads(AUDIT.read_text(encoding="utf-8"))
     monkeypatch.setenv("ARIA_HOME_DB_PATH", str(tmp_path / "audit.db"))
     client = create_app().test_client()
-    inv = client.post("/api/investigations?scenario=demo_video_v1&at=2026-01-16T16:31:00-05:00").get_json()["investigation_id"]
-    client.get(f"/api/follow-ups/{inv}?at=2026-01-16T16:31:00-05:00")
-    client.get(f"/api/follow-ups/{inv}?at=2026-01-16T16:52:00-05:00")
+    inv = client.post(f"/api/investigations?scenario=demo_video_v1&at={INV_AT}").get_json()["investigation_id"]
+    client.get(f"/api/follow-ups/{inv}?at={INV_AT}")
+    client.get(f"/api/follow-ups/{inv}?at={FOLLOW_AT}")
     rows = client.get(f"/api/notifications?investigation_id={inv}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company" and r["state"] == "simulated_delivered")
     scenario = load_scenario(SCENARIOS / "demo_video_v1")

@@ -8,7 +8,9 @@ import {
   fetchLivePower,
   fetchNotifications,
   fetchSources,
+  fetchWhatsappStatus,
   RecoveryRequiredError,
+  sendHvacWhatsapp,
   type Availability,
   type ContextFlags,
   type ContextResponse,
@@ -929,11 +931,17 @@ function NotificationsSection({
   error,
   onAck,
   ackingId,
+  whatsappConfigured,
+  onSendWhatsapp,
+  sendingWhatsappId,
 }: {
   notifications: Notification[];
   error: string | null;
   onAck: (notification: Notification) => void;
   ackingId: string | null;
+  whatsappConfigured: boolean;
+  onSendWhatsapp: (notification: Notification) => void;
+  sendingWhatsappId: string | null;
 }) {
   if (error) {
     return (
@@ -975,6 +983,17 @@ function NotificationsSection({
                 : "Simulated, no message was sent"}
             </p>
             <PayloadFacts payload={notification.payload} />
+            {notification.audience === "hvac_company" &&
+              notification.state === "simulated_delivered" &&
+              whatsappConfigured && (
+                <button
+                  type="button"
+                  onClick={() => onSendWhatsapp(notification)}
+                  disabled={sendingWhatsappId === notification.id}
+                >
+                  Send to my test phone (WhatsApp)
+                </button>
+              )}
             {ack ? (
               <p className="notification-ack">
                 Acknowledged, not resolved —{" "}
@@ -1122,6 +1141,8 @@ export default function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationsError, setNotificationsError] = useState<string | null>(null);
   const [ackingId, setAckingId] = useState<string | null>(null);
+  const [whatsappConfigured, setWhatsappConfigured] = useState(false);
+  const [sendingWhatsappId, setSendingWhatsappId] = useState<string | null>(null);
   const [followUpTargetTemp, setFollowUpTargetTemp] = useState<number | null>(null);
   const [selectedAt, setSelectedAt] = useState<string>(REPLAY_START_AT);
   const [livePower, setLivePower] = useState<LivePowerResponse | null>(null);
@@ -1276,6 +1297,9 @@ export default function App() {
     fetchLivePower().then((response) => {
       if (live) setLivePower(response);
     });
+    fetchWhatsappStatus().then((response) => {
+      if (live) setWhatsappConfigured(response?.configured ?? false);
+    });
     return () => {
       live = false;
     };
@@ -1344,6 +1368,22 @@ export default function App() {
       .catch(() => {
         setNotificationsError("Notifications not reachable");
         setAckingId(null);
+      });
+  }
+
+  function handleSendWhatsapp(notification: Notification) {
+    setSendingWhatsappId(notification.id);
+    sendHvacWhatsapp(notification.id, replayAt ?? undefined)
+      .then((response) => {
+        const updated = response.notification;
+        setNotifications((current) =>
+          current.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)),
+        );
+        setSendingWhatsappId(null);
+      })
+      .catch(() => {
+        setNotificationsError("Notifications not reachable");
+        setSendingWhatsappId(null);
       });
   }
 
@@ -1455,6 +1495,9 @@ export default function App() {
           error={notificationsError}
           onAck={handleAck}
           ackingId={ackingId}
+          whatsappConfigured={whatsappConfigured}
+          onSendWhatsapp={handleSendWhatsapp}
+          sendingWhatsappId={sendingWhatsappId}
         />
       </section>
 

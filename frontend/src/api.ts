@@ -833,6 +833,48 @@ export async function ackNotification(
   return (await response.json()) as AckNotificationResponse;
 }
 
+export interface WhatsappStatusResponse {
+  data_mode: DataMode;
+  scenario?: string;
+  at?: string;
+  timezone?: string;
+  configured: boolean;
+}
+
+export interface WhatsappSendResponse {
+  data_mode: DataMode;
+  scenario?: string;
+  at?: string;
+  timezone?: string;
+  notification: Notification;
+  whatsapp: NotificationWhatsapp | null;
+  delivery: { attempted: boolean; reason?: string; state?: string; message_id?: string | null };
+}
+
+export async function fetchWhatsappStatus(): Promise<WhatsappStatusResponse | null> {
+  try {
+    const response = await fetch("/api/whatsapp/status");
+    if (!response.ok) return null;
+    return (await response.json()) as WhatsappStatusResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function sendHvacWhatsapp(
+  notificationId: string,
+  at?: string,
+): Promise<WhatsappSendResponse> {
+  const query = at ? `?at=${encodeURIComponent(at)}` : "";
+  const response = await fetch(`/api/notifications/${encodeURIComponent(notificationId)}/whatsapp${query}`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error(`POST /api/notifications/${notificationId}/whatsapp failed with status ${response.status}`);
+  }
+  return (await response.json()) as WhatsappSendResponse;
+}
+
 export interface LivePowerCircuit {
   circuit: string;
   watts: number;

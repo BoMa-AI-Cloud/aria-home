@@ -20,7 +20,7 @@ from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
 from aria_home.verification import build_evidence_timeline, verify_recovery
 from aria_home.notifications import create_hvac_notification, create_investigation_notifications
-from aria_home.whatsapp import attempt_hvac_whatsapp_delivery
+from aria_home.whatsapp import attempt_hvac_whatsapp_delivery, whatsapp_config_from_env
 from aria_home.emporia import read_live_power
 
 SCENARIO_PATH = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
@@ -536,11 +536,6 @@ def create_app():
             pseudo = {"output": stored_output} if stored_output else None
             readiness_for_hvac = {"status": "cannot_tell", "reasons": list(verification["reasons"]) if verification else []}
             hvac_row = create_hvac_notification(store, scn, investigation_id, pseudo, readiness_for_hvac, at, verification=verification)
-            if isinstance(hvac_row, dict):
-                try:
-                    attempt_hvac_whatsapp_delivery(store, hvac_row)
-                except Exception:
-                    pass
         payload["notifications"] = [_notification_api(r) for r in store.list_notifications(investigation_id, at=at)]
         return jsonify(payload)
 
@@ -566,6 +561,48 @@ def create_app():
             return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "at": at.isoformat(), "notifications": [_notification_api(r) for r in rows]})
         rows = store.list_notifications(investigation_id)
         return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "notifications": [_notification_api(r) for r in rows]})
+
+    @app.get("/api/whatsapp/status")
+    def whatsapp_status_endpoint():
+        config = whatsapp_config_from_env()
+        return jsonify({"data_mode": "synthetic", "configured": bool(config["configured"])})
+
+    @app.post("/api/notifications/<notification_id>/whatsapp")
+    def send_notification_whatsapp_endpoint(notification_id):
+        store = _get_store()
+        existing = store.get_notification(notification_id)
+        if existing is None:
+            return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
+        if existing.get("audience") != "hvac_company":
+            return jsonify({"error": "only the hvac_company notice can be sent via WhatsApp", "reason": "wrong_audience", "data_mode": "synthetic"}), 409
+        raw_at = request.args.get("at")
+        if raw_at is None:
+            try:
+                body = request.get_json(force=False, silent=True)
+            except Exception:
+                body = None
+            if isinstance(body, dict) and isinstance(body.get("at"), str):
+                raw_at = body.get("at")
+        if raw_at is not None:
+            at, error = _parse_at(raw_at, None)
+            if error:
+                return error
+            try:
+                created_dt = datetime.fromisoformat(str(existing.get("created_at")).replace("Z", "+00:00"))
+            except ValueError:
+                created_dt = None
+            if created_dt is not None and at < created_dt:
+                return jsonify({"error": "notification not yet visible at this time", "reason": "not_yet_visible", "data_mode": "synthetic"}), 409
+        config = whatsapp_config_from_env()
+        if not config["configured"]:
+            return jsonify({"error": "WhatsApp live delivery is not configured", "reason": "not_configured", "data_mode": "synthetic"}), 409
+        try:
+            result = attempt_hvac_whatsapp_delivery(store, existing)
+        except Exception as exc:
+            return jsonify({"error": f"delivery failed: {exc}"[:200], "data_mode": "synthetic"}), 500
+        updated = store.get_notification(notification_id)
+        payload = {"data_mode": "synthetic", "notification": _notification_api(updated), "whatsapp": (updated or {}).get("whatsapp"), "delivery": result}
+        return jsonify(payload)
 
     @app.post("/api/notifications/<notification_id>/ack")
     def ack_notification_endpoint(notification_id):
