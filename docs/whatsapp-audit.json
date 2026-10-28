@@ -26,7 +26,7 @@
     "property_label",
     "relevant_observations"
   ],
-  "example_text": "ARIA Home test (synthetic scenario)\nTo the owner's test number on WhatsApp (stands in for the HVAC company)\naccess_note: lockbox access per manager (synthetic)\naudience: hvac_company\nkind: hvac_request\nmanager_contact_label: property manager on file (synthetic label)\nproperty_label: demo-cabin\nrelevant_observations:\n- Indoor temperature 52.0 F (at 16:30)\n- Target 68.0 F\n- 16.0 F below target\n- Electrical activity 550.0 W\n- Equipment function unknown",
+  "example_text": "ARIA Home test (synthetic scenario)\nTo the owner's test number on WhatsApp (stands in for the HVAC company)\naccess_note: lockbox access per manager (synthetic)\naudience: hvac_company\nkind: hvac_request\nmanager_contact_label: property manager on file (synthetic label)\nproperty_label: demo-house\nrelevant_observations:\n- Indoor temperature 52.0 F (at 16:30)\n- Target 68.0 F\n- 16.0 F below target\n- Electrical activity 550.0 W\n- Equipment function unknown",
   "authorising_event": {
     "id": "evt-video-manager-hvac-authorized",
     "kind": "manager_hvac_authorized",

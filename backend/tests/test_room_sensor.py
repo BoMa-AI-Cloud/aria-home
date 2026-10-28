@@ -7,7 +7,7 @@ from aria_home.metrics import temperature_trend
 from aria_home.scenario import events_as_of, load_scenario
 
 SCENARIO_DIR = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
-ZONE = "demo-cabin/main"
+ZONE = "demo-house/main"
 
 
 def _copy_scenario(tmp_path, with_room_sensor=True):

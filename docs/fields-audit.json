@@ -17,7 +17,7 @@
     "audience": "hvac_company",
     "kind": "hvac_request",
     "manager_contact_label": "property manager on file (synthetic label)",
-    "property_label": "demo-cabin",
+    "property_label": "demo-house",
     "relevant_observations": [
       "Indoor temperature 52.0 F (at 16:30)",
       "Target 68.0 F",

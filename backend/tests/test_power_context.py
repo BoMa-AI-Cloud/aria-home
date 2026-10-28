@@ -59,7 +59,7 @@ def test_p1_demo():
     assert result.statement == EXACT
     assert result.mains.value == "not_available"
     assert result.lineage.lineage_count == 1
-    assert result.lineage.meter_ids == ["demo-cabin-meter-1"]
+    assert result.lineage.meter_ids == ["demo-house-meter-1"]
     assert "Cannot exclude a lost service leg." in result.limitations
     assert "Breaker or equipment supply problems are not observable from branch readings." in result.limitations
     assert "Interruptions outside this window are not covered." in result.limitations

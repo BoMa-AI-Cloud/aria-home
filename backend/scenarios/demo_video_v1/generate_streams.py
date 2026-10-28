@@ -58,7 +58,7 @@ def record(rid, source, kind, quantity, value, unit, t, cadence, **extra):
         "id": rid,
         "source": source,
         "kind": kind,
-        "subject": "demo-cabin/main",
+        "subject": "demo-house/main",
         "quantity": quantity,
         "value": value,
         "unit": unit,
@@ -125,7 +125,7 @@ def main():
                     t,
                     1800,
                     subject=circuit,
-                    meter_id="demo-cabin-meter-1",
+                    meter_id="demo-house-meter-1",
                     binding={"circuit_id": circuit, **binding},
                 )
             )

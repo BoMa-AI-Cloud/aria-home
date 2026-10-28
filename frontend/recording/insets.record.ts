@@ -33,7 +33,7 @@ test("i0-plan", async ({ page }) => {
   await openInset(page, "plan");
   await replay(page, "09:20");
   const plan = section(page, "Confirmed plan and permissions");
-  await expect(plan).toContainText("demo-cabin");
+  await expect(plan).toContainText("demo-house");
   await expect(plan).toContainText("9:00 PM");
   await expect(plan).toContainText("68 F");
   await expect(plan).toContainText("Manager coordination allowed");

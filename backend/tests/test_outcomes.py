@@ -44,7 +44,7 @@ def test_follow_up_uses_confirmation_and_trip_deadline():
     assert followup.deadline == scenario.trip.planned_arrival + timedelta(hours=2)
     assert followup.min_samples == 3
     assert followup.min_rise_f == 2.0
-    assert followup.zone == "demo-cabin/main"
+    assert followup.zone == "demo-house/main"
 
 
 def test_demo_v1_awaiting_at_1830():

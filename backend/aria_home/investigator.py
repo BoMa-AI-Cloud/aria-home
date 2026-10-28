@@ -190,6 +190,15 @@ def _round_pack(value, key=None):
     return value
 
 
+def _visible_visual(visual, at):
+    if not isinstance(visual, dict):
+        return None
+    received = _parse_time(visual.get("received_at"))
+    if received is not None and received > at:
+        return None
+    return visual
+
+
 def _build_unrounded_evidence_pack(scenario, at) -> dict:
     ensure_aware(at, "at")
     start = at - timedelta(hours=3)
@@ -197,7 +206,7 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
     mode = scenario.manifest.mode
     statuses = [source_status(s, visible, at, mode=mode) for s in SourceKind]
     zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
-    zone = zones[0] if zones else "demo-cabin/main"
+    zone = zones[0] if zones else "demo-house/main"
     trend = temperature_trend(visible, zone, start, at, at) if zones else temperature_trend([], zone, start, at, at)
     ctx = context_as_of(scenario, at)
     gap = None
@@ -229,7 +238,7 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
         c = ctx.confirmation
         confirmation = {"trip_id": c.trip_id, "property_id": c.property_id, "target_temp": c.target_temp, "target_unit": c.target_unit, "notify_homeowner": c.notify_homeowner, "manager_authorized": c.manager_authorized, "confirmed_at": c.confirmed_at.isoformat(), "revision_id": c.revision_id, "trip_revision": c.trip_revision, "trip_revision_id": c.trip_revision_id}
         evidence.append({"id": "confirmation:current", "type": "confirmation", "data": confirmation})
-    pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence]}
+    pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": _visible_visual(getattr(scenario, "visual", None), at)}
     readiness = compute_readiness(pack, at, flags=dict(ctx.flags))
     pack["readiness"] = dict(readiness)
     pack["canonical_readiness"] = dict(readiness)
@@ -296,6 +305,7 @@ def _canonical_decision_inputs(scenario, at, raw_pack):
         "decision_record_ids": sorted({r["id"] for r in records}),
         "trip": trip,
         "confirmation": raw_pack.get("confirmation"),
+        "visual_evidence": raw_pack.get("visual_evidence"),
         "flags": raw_pack.get("readiness_flags"),
         "source_statuses": statuses,
         "metrics": raw_pack.get("metrics"),

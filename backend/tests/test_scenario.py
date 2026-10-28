@@ -14,7 +14,7 @@ def test_demo_scenario_loads():
     assert scenario.manifest.mode is DataMode.synthetic
     assert scenario.manifest.author == "ARIA Home (synthetic)"
     assert scenario.trip is not None
-    assert scenario.trip.property_id == "demo-cabin"
+    assert scenario.trip.property_id == "demo-house"
     assert scenario.trip.planned_arrival.hour == 18
     assert scenario.confirmation is not None
     assert scenario.confirmation.target_temp == 68

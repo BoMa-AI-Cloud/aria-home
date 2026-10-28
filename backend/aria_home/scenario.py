@@ -72,6 +72,7 @@ class Scenario:
     trips: list[Trip] = field(default_factory=list)
     events: list["ScenarioEvent"] = field(default_factory=list)
     arrival_plan: dict | None = None
+    visual: dict | None = None
 
     @property
     def trip_revisions(self):
@@ -366,7 +367,21 @@ def load_scenario(path) -> Scenario:
         else:
             event_rows = events_payload.get("events", events_payload.get("records", []))
         events = [ScenarioEvent.model_validate(row) for row in event_rows]
-    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events, arrival_plan=arrival_plan)
+    visual = None
+    visual_path = base / "visual.json"
+    if visual_path.is_file():
+        from .visual import ReplayVisualProvider
+
+        spec = _read_json(visual_path)
+        observation = ReplayVisualProvider().observe(
+            spec["image_id"],
+            spec["phrase"],
+            observed_at=spec["observed_at"],
+            received_at=spec["received_at"],
+            file=spec.get("file"),
+        )
+        visual = observation.as_dict()
+    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events, arrival_plan=arrival_plan, visual=visual)
 
 
 def visible_records(records: list[EvidenceRecord], now: datetime) -> list[EvidenceRecord]:

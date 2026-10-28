@@ -133,7 +133,7 @@ def test_human_fixed_message_never_advances_verification():
     base_outcome = evaluate_outcome(follow, scenario.records, at("18:21")).status
     statement = EvidenceRecord.model_validate({
         "id": "human-fixed-1", "source": "thermostat", "kind": "human_statement",
-        "subject": "demo-cabin/main", "quantity": "indoor_temp", "value": None, "unit": "F",
+        "subject": "demo-house/main", "quantity": "indoor_temp", "value": None, "unit": "F",
         "observed_at": at("17:00").isoformat(), "received_at": at("17:00").isoformat(),
         "expected_cadence_s": None, "mode": "synthetic",
         "provenance": {"fixture_id": "g4", "version": "1"},

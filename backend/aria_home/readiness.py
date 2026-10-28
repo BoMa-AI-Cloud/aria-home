@@ -12,7 +12,7 @@ MIN_RISE_F = 1.0
 MIN_RATE_PER_HOUR_F = 0.5
 PROJECTION_MARGIN_F = 0.5
 ARRIVAL_TIME_MARGIN_S = 1800.0
-READINESS_POLICY_VERSION = "readiness-policy-v2"
+READINESS_POLICY_VERSION = "readiness-policy-v3"
 TARGET_GAP_TOLERANCE_F = 0.0
 
 THRESHOLDS = {
@@ -283,6 +283,35 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         "target_gap_tolerance_f": TARGET_GAP_TOLERANCE_F,
     }
 
+    from .visual import SUPPORTED_DETECTIONS, detection_label, no_detection_line, observation_line
+
+    visual = data.get("visual_evidence") if isinstance(data.get("visual_evidence"), dict) else None
+    if visual is not None and now_dt is not None:
+        received = _parse_time(visual.get("received_at"))
+        if received is not None and received > now_dt:
+            visual = None
+    visual_count = 0
+    visual_phrase = ""
+    if visual is not None:
+        visual_phrase = str(visual.get("phrase") or "")
+        try:
+            visual_count = int(visual.get("object_count") or 0)
+        except (TypeError, ValueError):
+            visual_count = 0
+    visual_detected = visual is not None and visual_count > 0 and detection_label(visual_phrase) in SUPPORTED_DETECTIONS
+    inputs["visual"] = (
+        {
+            "image_id": visual.get("image_id"),
+            "phrase": visual_phrase,
+            "object_count": visual_count,
+            "largest_box_fraction": visual.get("largest_box_fraction"),
+            "provider_mode": visual.get("provider_mode"),
+            "detected": visual_detected,
+        }
+        if visual is not None
+        else None
+    )
+
     reasons = []
     cannot = []
 
@@ -437,6 +466,8 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         if reason not in deduped:
             deduped.append(reason)
     if deduped:
+        if visual_detected and not context_invalid and not indoor_conflicts and availability != "conflicting":
+            return _result("at_risk", [observation_line(visual_phrase), "indoor temperature is unknown or insufficient; the visual detection supports attention, not a readiness guarantee"], inputs, target_at_arrival=None)
         if thermostat_note and thermostat_note not in deduped:
             deduped.append(thermostat_note)
         return _result("cannot_tell", deduped, inputs, target_at_arrival=None)
@@ -482,6 +513,10 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
 
     if thermostat_note:
         reasons.append(thermostat_note)
+    if visual_detected:
+        reasons.append(observation_line(visual_phrase))
+    elif visual is not None and visual_count == 0:
+        reasons.append(no_detection_line(visual_phrase))
     reasons.append("At current readings the target may not be reached by arrival; this is not a guaranteed prediction.")
     if gap_f is not None:
         reasons.append(f"latest reading is {abs(gap_f):.1f} F below target")

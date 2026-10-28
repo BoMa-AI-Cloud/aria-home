@@ -108,7 +108,7 @@ def test_conflict_in_other_zone_does_not_block(tmp_path):
     target = _copy(tmp_path, "conflict-other-zone")
     def add(records):
         latest = next(r for r in records if r["observed_at"] == "2026-01-16T21:00:00-05:00")
-        return records + [{**latest, "id": "other-zone-conflict", "subject": "demo-cabin/other", "value": 40.0}]
+        return records + [{**latest, "id": "other-zone-conflict", "subject": "demo-house/other", "value": 40.0}]
     _edit(target, "room_sensor.json", add)
     result, _, _ = _verify(target, at(21, 1))
     assert result["stage"] == "arrival_met"
@@ -140,7 +140,7 @@ def test_readiness_and_verification_agree_on_conflict(tmp_path):
 def _base_record(**overrides):
     data = {
         "id": "rec-1", "source": "room_sensor", "kind": "measurement",
-        "subject": "demo-cabin/main", "quantity": "indoor_temp",
+        "subject": "demo-house/main", "quantity": "indoor_temp",
         "value": 68.0, "unit": "F",
         "observed_at": at(20, 0), "received_at": at(20, 0),
         "expected_cadence_s": 300, "mode": "synthetic",

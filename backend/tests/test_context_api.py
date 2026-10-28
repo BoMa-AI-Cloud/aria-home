@@ -31,7 +31,7 @@ def test_context_at_and_after_confirmed_at_video(monkeypatch, tmp_path):
         assert resp.status_code == 200
         payload = resp.get_json()
         assert payload["confirmed"] is True
-        assert payload["property_label"] == "demo-cabin"
+        assert payload["property_label"] == "demo-house"
         assert payload["planned_arrival"] == "2026-01-16T21:00:00-05:00"
         assert payload["landing"] == "2026-01-16T19:45:00-05:00"
         assert payload["arrival_plan"]["planned_property_arrival"] == "2026-01-16T21:00:00-05:00"

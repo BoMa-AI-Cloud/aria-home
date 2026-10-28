@@ -1,0 +1,6 @@
+{
+  "records": [
+    {"id": "wx-forecast-1430", "source": "weather", "kind": "forecast", "subject": "demo-house", "quantity": "outdoor_temp_forecast", "value": -10, "unit": "F", "observed_at": "2026-01-16T14:30:00-05:00", "received_at": "2026-01-16T14:30:00-05:00", "expected_cadence_s": 21600, "mode": "synthetic", "provenance": {"fixture_id": "visual_frost_missed_v1", "version": "1"}},
+    {"id": "wx-forecast-1730", "source": "weather", "kind": "forecast", "subject": "demo-house", "quantity": "outdoor_temp_forecast", "value": -12, "unit": "F", "observed_at": "2026-01-16T17:30:00-05:00", "received_at": "2026-01-16T17:30:00-05:00", "expected_cadence_s": 21600, "mode": "synthetic", "provenance": {"fixture_id": "visual_frost_missed_v1", "version": "1"}}
+  ]
+}

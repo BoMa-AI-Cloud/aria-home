@@ -2,7 +2,7 @@
   "id": "demo_v1",
   "version": "1",
   "mode": "synthetic",
-  "description": "Synthetic demo-cabin scenario: owner returns Friday 18:00 America/New_York, thermostat reports heating while indoor temperature stays flat, furnace circuit is quiet.",
+  "description": "Synthetic demo-house scenario: owner returns Friday 18:00 America/New_York, thermostat reports heating while indoor temperature stays flat, furnace circuit is quiet.",
   "author": "ARIA Home (synthetic)",
   "created": "2026-10-26",
   "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created. Trip known_at/revision_id availability timestamps were added on 2026-10-26 (synthetic); existing reading timestamps were not changed.",

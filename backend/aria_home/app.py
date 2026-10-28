@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 
 from aria_home.contracts import SourceKind
 from aria_home.eligibility import eligible_records
@@ -132,7 +132,7 @@ def create_app():
         ctx = context_as_of(scn, at)
         visible = visible_records(scn.records, at)
         zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
-        zone = zones[0] if zones else "demo-cabin/main"
+        zone = zones[0] if zones else "demo-house/main"
         trend = temperature_trend(visible, zone, start, at, at)
         gap = None
         if ctx.confirmation is not None:
@@ -472,6 +472,57 @@ def create_app():
                 "events": [event.model_dump(mode="json") for event in events_as_of(scn, at)],
             }
         )
+
+    @app.get("/api/visual")
+    def visual_endpoint():
+        scn = _load_named_scenario(request.args.get("scenario"))
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic"}), 404
+        at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
+        if error:
+            return error
+        visual = getattr(scn, "visual", None)
+        if isinstance(visual, dict):
+            try:
+                received = datetime.fromisoformat(str(visual.get("received_at")).replace("Z", "+00:00"))
+            except ValueError:
+                received = None
+            if received is not None and received > at:
+                visual = None
+        if visual is None:
+            return jsonify({"data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "visual": None})
+        mode = "live" if visual.get("provider_mode") == "live" else "recorded"
+        payload = dict(visual)
+        payload["caption"] = f"Synthetic image ({visual.get('generator')}) - segmentation by {visual.get('model')} ({mode})"
+        payload["image_url"] = f"/api/visual/image?scenario={scn.manifest.id}&at={at.isoformat()}"
+        return jsonify({"data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "visual": payload})
+
+    @app.get("/api/visual/image")
+    def visual_image_endpoint():
+        from aria_home.visual import FIXTURES_DIR
+
+        scn = _load_named_scenario(request.args.get("scenario"))
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic"}), 404
+        at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
+        if error:
+            return error
+        visual = getattr(scn, "visual", None)
+        if not isinstance(visual, dict):
+            return jsonify({"error": "no visual evidence for this scenario", "data_mode": "synthetic"}), 404
+        try:
+            received = datetime.fromisoformat(str(visual.get("received_at")).replace("Z", "+00:00"))
+        except ValueError:
+            received = None
+        if received is not None and received > at:
+            return jsonify({"error": "no visual evidence at this time", "data_mode": "synthetic"}), 404
+        filename = str(visual.get("file") or "")
+        if not filename.endswith(".webp") or "/" in filename or "\\" in filename:
+            return jsonify({"error": "no visual image for this scenario", "data_mode": "synthetic"}), 404
+        path = (FIXTURES_DIR / filename).resolve()
+        if path.parent != FIXTURES_DIR.resolve() or not path.is_file():
+            return jsonify({"error": "no visual image for this scenario", "data_mode": "synthetic"}), 404
+        return send_file(path, mimetype="image/webp")
 
     @app.get("/api/follow-ups/<investigation_id>")
     def get_follow_up_endpoint(investigation_id):

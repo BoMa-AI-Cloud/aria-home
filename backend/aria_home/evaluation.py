@@ -38,6 +38,11 @@ CASES = (
     ("demo_video_v1", "2026-01-16T18:51:00-05:00"),
     ("demo_video_v1", "2026-01-16T20:21:00-05:00"),
     ("demo_video_v1", "2026-01-16T21:01:00-05:00"),
+    ("visual_water_low_temp_v1", "2026-01-16T18:00:00-05:00"),
+    ("visual_frost_missed_v1", "2026-01-16T18:00:00-05:00"),
+    ("visual_dry_floor_v1", "2026-01-16T18:00:00-05:00"),
+    ("visual_water_low_temp_v1", "2026-01-16T19:00:00-05:00"),
+    ("visual_frost_missed_v1", "2026-01-16T20:31:00-05:00"),
 )
 
 CONDITIONS = ("combined", "thermostat_only", "room_sensor_only", "electrical_only", "calendar_only")
@@ -79,7 +84,7 @@ def _filtered(scenario, condition):
     kept = CONDITION_SOURCES[condition]
     if kept is None:
         return scenario
-    return replace(scenario, records=[r for r in scenario.records if r.source.value == kept])
+    return replace(scenario, records=[r for r in scenario.records if r.source.value == kept], visual=None)
 
 
 def _followup(scenario):
@@ -257,10 +262,11 @@ def _highlights(rows):
 
 def run_offline(cases=None):
     rows = evaluate_cases(cases)
+    count = len(load_expected() if cases is None else cases)
     return {
         "mode": "offline",
         "live": False,
-        "disclaimer": "Synthetic scenarios only; expected labels hand-written by the builder from fixture data; small sample (12 cases); not a benchmark of real homes.",
+        "disclaimer": f"Synthetic scenarios only; expected labels hand-written by the builder from fixture data; small sample ({count} cases); not a benchmark of real homes.",
         "conditions_note": "Source-limited conditions keep only evidence records of one source kind. Trip/confirmation context (arrival and target, the question being asked) is retained, so a lone temperature source can answer where its readings are fresh and sufficient. useful_heat is supportable in no condition: watts alone never prove useful heat.",
         "totals": _totals(rows),
         "highlights": _highlights(rows),
@@ -340,12 +346,13 @@ def _got_label(row):
 
 def render_markdown(results):
     totals = results["totals"]
+    case_count = len({(r["scenario"], r["at"]) for r in results["rows"]}) or len(totals.get("combined", {}).get("cases", 0))
     lines = [
         "# Evaluation (offline, deterministic)",
         "",
         "Synthetic scenarios, expected labels written by the builder, small sample, not a benchmark of real homes.",
         "",
-        "The 12 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat.",
+        f"The {case_count} cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.",
         "",
         "## Totals",
         "",

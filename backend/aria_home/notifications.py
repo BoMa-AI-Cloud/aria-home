@@ -107,7 +107,7 @@ def _property_label(context, scenario=None):
             return str(label)
     trip = _get(scenario, "trip")
     label = _get(trip, "property_id") if trip is not None else None
-    return str(label) if label else "demo-cabin"
+    return str(label) if label else "demo-house"
 
 
 def _event_payload(events, kind):

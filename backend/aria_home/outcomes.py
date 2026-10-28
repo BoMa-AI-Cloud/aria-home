@@ -35,7 +35,7 @@ class FollowUp(BaseModel):
     deadline: datetime
     min_samples: int = Field(default=3, ge=1)
     min_rise_f: float = 2.0
-    zone: str = "demo-cabin/main"
+    zone: str = "demo-house/main"
     next_check_at: datetime | None = None
     schedule_status: str = "scheduled"
     deadline_passed: bool = False

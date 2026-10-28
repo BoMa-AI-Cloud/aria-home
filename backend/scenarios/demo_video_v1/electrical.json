@@ -16,7 +16,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -40,7 +40,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -64,7 +64,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -88,7 +88,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -112,7 +112,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -136,7 +136,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -160,7 +160,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -184,7 +184,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -208,7 +208,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -232,7 +232,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -256,7 +256,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -280,7 +280,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -304,7 +304,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -328,7 +328,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -352,7 +352,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -376,7 +376,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -400,7 +400,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -424,7 +424,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -448,7 +448,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -472,7 +472,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -496,7 +496,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -520,7 +520,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -544,7 +544,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -568,7 +568,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -592,7 +592,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -616,7 +616,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -640,7 +640,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -664,7 +664,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -688,7 +688,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -712,7 +712,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -736,7 +736,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -760,7 +760,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -784,7 +784,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -808,7 +808,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -832,7 +832,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -856,7 +856,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -880,7 +880,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -904,7 +904,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -928,7 +928,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -952,7 +952,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -976,7 +976,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1000,7 +1000,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1024,7 +1024,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1048,7 +1048,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1072,7 +1072,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1096,7 +1096,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1120,7 +1120,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1144,7 +1144,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1168,7 +1168,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1192,7 +1192,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1216,7 +1216,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1240,7 +1240,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1264,7 +1264,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1288,7 +1288,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1312,7 +1312,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1336,7 +1336,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1360,7 +1360,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1384,7 +1384,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1408,7 +1408,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1432,7 +1432,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1456,7 +1456,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1480,7 +1480,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1504,7 +1504,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1528,7 +1528,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1552,7 +1552,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1576,7 +1576,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1600,7 +1600,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1624,7 +1624,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1648,7 +1648,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1672,7 +1672,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1696,7 +1696,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1720,7 +1720,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1744,7 +1744,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1768,7 +1768,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1792,7 +1792,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1816,7 +1816,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1840,7 +1840,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1864,7 +1864,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1888,7 +1888,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1912,7 +1912,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -1936,7 +1936,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -1960,7 +1960,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -1984,7 +1984,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -2008,7 +2008,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -2032,7 +2032,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -2056,7 +2056,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -2080,7 +2080,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -2104,7 +2104,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -2128,7 +2128,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -2152,7 +2152,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -2176,7 +2176,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -2200,7 +2200,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -2224,7 +2224,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,
@@ -2248,7 +2248,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-blower",
         "equipment": "blower",
@@ -2272,7 +2272,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-kitchen",
         "equipment": null,
@@ -2296,7 +2296,7 @@
         "fixture_id": "demo_video_v1",
         "version": "1"
       },
-      "meter_id": "demo-cabin-meter-1",
+      "meter_id": "demo-house-meter-1",
       "binding": {
         "circuit_id": "circuit-living",
         "equipment": null,

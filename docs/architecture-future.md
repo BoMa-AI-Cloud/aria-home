@@ -1,6 +1,6 @@
 # Architecture — future directions (mostly no code)
 
-Everything on this page is future, except the two optional integrations
+Everything on this page is future, except the three optional integrations
 listed under "Implemented (optional, off by default)". None of the
 future items is implemented, integrated, tested, or promised. Everything
 here and implemented would be built under the same trust rules as the
@@ -28,10 +28,23 @@ temperature goal, not a proven repair cause.
   called; live watts are display only and never enter readiness, warming,
   verification or the evidence pack (watts are not heat). See
   `backend/aria_home/emporia.py`.
+- **SAM 3.1 visual evidence (synthetic images)** — recorded sam-3.1
+  segmentation over synthetic muse-image-1.0 fixtures enters as a visual
+  observation with observed/received times, provenance, and as-of
+  visibility (`GET /api/visual`, `GET /api/visual/image`), shown in the
+  frontend with boxes overlaid and the code's verdict. Live sam-3.1
+  segmentation is a separate opt-in (`ARIA_HOME_VISUAL_LIVE=1` plus
+  `MODEL_API_KEY`). Exactly as the former future item required: visual
+  evidence never by itself sets readiness, an outcome, or a verification
+  stage — it never yields `on_track`, `warming_observed`,
+  `goal_verified` or `arrival_met` — and zero detected objects is no
+  detection, never an all-clear (the recorded frost-pipe miss stays
+  `at_risk`). Images are never sent anywhere; HVAC payloads may carry
+  only the observation line. See `backend/aria_home/visual.py` and
+  `docs/readiness-rules.md`.
 
 ## Possible future inputs
 
-- **SAM 3.1 / Muse Image (Meta image models)** — a future image input (for example a photo of a thermostat display or a nameplate) would enter as one more evidence record with observed/received times, provenance, and as-of visibility. An image reading could support only claims its evidence allows; it could never by itself set readiness, an outcome, or a verification stage, and an unreadable or stale image would fall back to `cannot_tell` / `telemetry_missing` like any other missing source.
 - **Real sensors** — real thermostat, room-sensor, electrical or weather feeds would replace synthetic fixtures only behind the same eligibility, freshness, cadence and conflict rules. Circuit watts would still never prove useful heat. A first read-only step exists (the optional Emporia live-watts panel above, display only, never evidence). Real data would additionally require the deployment prerequisites in [SECURITY.md](../SECURITY.md) (authentication, authorization, tenant isolation, quotas, retention) before any household data is ingested.
 
 ## What does not change

@@ -57,7 +57,7 @@ def test_confirmation_without_effect_on_gap_before_confirmed_at_with_samples():
     scenario = _demo()
     scenario.confirmation = HomeownerConfirmation(
         trip_id="trip-demo-001",
-        property_id="demo-cabin",
+        property_id="demo-house",
         target_temp=68,
         target_unit="F",
         notify_homeowner=True,
@@ -104,7 +104,7 @@ def test_non_material_revision_reuses_confirmation():
     scenario = _demo()
     rev2 = Trip(
         id="trip-demo-001",
-        property_id="demo-cabin",
+        property_id="demo-house",
         title="Owner return (synthetic, title only change)",
         planned_arrival=_at("2026-01-16T18:00:00-05:00"),
         revision=2,

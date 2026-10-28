@@ -12,7 +12,7 @@ from aria_home.verification import verify_recovery
 
 TZ = timezone(timedelta(hours=-5))
 SCENARIOS = Path(__file__).resolve().parent.parent / "scenarios"
-ZONE = "demo-cabin/main"
+ZONE = "demo-house/main"
 
 
 def at(h, m=0, s=0):
@@ -41,8 +41,8 @@ def _raw_pack(now, observed, cadence=300, kind="measurement", source="room_senso
     }
     pack = {
         "at": now.isoformat(),
-        "trip": {"id": "t1", "property_id": "demo-cabin", "planned_arrival": (now + timedelta(hours=2)).isoformat()},
-        "confirmation": {"trip_id": "t1", "property_id": "demo-cabin", "target_temp": 68.0, "target_unit": "F"},
+        "trip": {"id": "t1", "property_id": "demo-house", "planned_arrival": (now + timedelta(hours=2)).isoformat()},
+        "confirmation": {"trip_id": "t1", "property_id": "demo-house", "target_temp": 68.0, "target_unit": "F"},
         "source_statuses": [],
         "metrics": {
             "zone": ZONE,

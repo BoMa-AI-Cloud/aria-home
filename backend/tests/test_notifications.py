@@ -59,7 +59,7 @@ def test_allowlists_and_no_forbidden_keys_via_api(tmp_path, monkeypatch):
     assert homeowner["payload"]["evaluated_at"].startswith("2026-01-16T16:31")
     manager = next(r for r in rows if r["audience"] == "property_manager")
     assert manager["state"] == "simulated_delivered"
-    assert manager["payload"]["property_label"] == "demo-cabin"
+    assert manager["payload"]["property_label"] == "demo-house"
     assert manager["payload"]["requested_action"]
     assert manager["payload"]["access_note"]
 
@@ -107,7 +107,7 @@ def test_hvac_refused_before_1645_and_allowed_after_via_api(tmp_path, monkeypatc
     payload = delivered[0]["payload"]
     _assert_payload_clean(payload)
     assert set(payload) == {"audience", "kind", "property_label", "access_note", "manager_contact_label", "relevant_observations"}
-    assert payload["property_label"] == "demo-cabin"
+    assert payload["property_label"] == "demo-house"
     assert payload["access_note"]
     assert payload["manager_contact_label"]
     assert isinstance(payload["relevant_observations"], list)

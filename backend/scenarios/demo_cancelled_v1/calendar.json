@@ -2,7 +2,7 @@
   "trips": [
     {
       "id": "trip-demo-001",
-      "property_id": "demo-cabin",
+      "property_id": "demo-house",
       "title": "Owner return (synthetic)",
       "planned_arrival": "2026-01-16T18:00:00-05:00",
       "revision": 1,
@@ -12,7 +12,7 @@
     },
     {
       "id": "trip-demo-001",
-      "property_id": "demo-cabin",
+      "property_id": "demo-house",
       "title": "Owner return (synthetic, cancelled)",
       "planned_arrival": "2026-01-16T18:00:00-05:00",
       "revision": 2,
@@ -23,7 +23,7 @@
   ],
   "confirmation": {
     "trip_id": "trip-demo-001",
-    "property_id": "demo-cabin",
+    "property_id": "demo-house",
     "target_temp": 68,
     "target_unit": "F",
     "notify_homeowner": true,
@@ -38,7 +38,7 @@
       "id": "cal-trip-001",
       "source": "calendar",
       "kind": "human_statement",
-      "subject": "demo-cabin",
+      "subject": "demo-house",
       "quantity": "trip_arrival",
       "value": "2026-01-16T18:00:00-05:00",
       "unit": null,

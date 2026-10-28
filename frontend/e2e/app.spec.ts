@@ -341,7 +341,7 @@ test("video scenario shows confirmed plan and permissions at 09:20", async ({ pa
   const time0920 = demoControls.getByRole("button", { name: "09:20" });
   await expect(time0920).toBeEnabled();
   await time0920.click();
-  await expect(plan).toContainText("demo-cabin");
+  await expect(plan).toContainText("demo-house");
   await expect(plan).toContainText("9:00 PM");
   await expect(plan).toContainText("7:45 PM");
   await expect(plan).toContainText("45 min airport-exit/baggage");
@@ -469,4 +469,24 @@ test("scenario times show ET in both browser timezones", async ({ page }) => {
   });
   await expect(investigation).toContainText("4:31 PM ET");
   await expect(page.locator("header .eval-time")).toContainText("4:31 PM ET");
+});
+
+test("visual scenario shows synthetic image with segmentation overlay and verdict", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByLabel("Scenario")
+    .selectOption({ label: "Water detection, low indoor temp (synthetic image)" });
+  const visual = page.locator("section", {
+    has: page.getByRole("heading", { name: "Visual evidence (synthetic image)" }),
+  });
+  await expect(visual).toBeVisible();
+  await expect(visual).toContainText(
+    "Synthetic image (muse-image-1.0) - segmentation by sam-3.1 (recorded)",
+  );
+  await expect(visual.locator("img")).toBeVisible();
+  await expect(visual.locator("svg rect")).toHaveCount(1);
+  await expect(visual.getByText(/Readiness:/)).toContainText("At risk");
+  await expect(visual).toContainText("visual observation: water detected (synthetic image)");
 });

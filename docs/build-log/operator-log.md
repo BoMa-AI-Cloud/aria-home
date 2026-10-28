@@ -93,3 +93,6 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
   SAM results: water puddle 1 object; frost on copper pipe 0 objects (a false negative: the frost is obvious);
   dry floor 0; frost on window 4. Committed the images and raw responses as fixtures (backend/fixtures/visual) and
   queued day10-08 to build the visual evidence source on them.
+- Verified task day10-08 (visual evidence on sam-3.1 recordings): backend 390 passed, e2e 34 passed (re-run by the
+  operator); GET /api/visual/image ignores caller-supplied paths (four traversal attempts all returned the
+  scenario's own fixture); no credential value in the 92 changed text files; no banned claims.

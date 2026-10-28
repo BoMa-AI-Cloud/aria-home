@@ -26,7 +26,7 @@ def test_naive_datetimes_rejected():
                 "id": "r1",
                 "source": "thermostat",
                 "kind": "measurement",
-                "subject": "demo-cabin/main",
+                "subject": "demo-house/main",
                 "quantity": "indoor_temp",
                 "value": 52.0,
                 "unit": "F",

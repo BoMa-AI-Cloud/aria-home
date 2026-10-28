@@ -809,6 +809,47 @@ export function fetchEvents(scenario: string, at: string): Promise<EventsRespons
   return fetchJson<EventsResponse>(`/api/events${query}`);
 }
 
+export interface VisualBox {
+  index: number;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  image_width: number;
+  image_height: number;
+  area_fraction: number;
+}
+
+export interface VisualEvidence {
+  image_id: string;
+  file: string | null;
+  phrase: string;
+  object_count: number;
+  largest_box_fraction: number;
+  boxes: VisualBox[];
+  image_synthetic: boolean;
+  generator: string;
+  model: string;
+  provider_mode: string;
+  observed_at: string;
+  received_at: string;
+  caption: string;
+  image_url: string;
+}
+
+export interface VisualResponse {
+  data_mode: DataMode;
+  scenario: string;
+  at: string;
+  timezone?: string;
+  visual: VisualEvidence | null;
+}
+
+export function fetchVisual(scenario: string, at: string): Promise<VisualResponse> {
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
+  return fetchJson<VisualResponse>(`/api/visual${query}`);
+}
+
 export function fetchNotifications(investigationId?: string | null, at?: string): Promise<NotificationsResponse> {
   const params = new URLSearchParams();
   if (investigationId) params.set("investigation_id", investigationId);

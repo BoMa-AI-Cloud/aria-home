@@ -10,7 +10,7 @@ from aria_home.readiness import compute_readiness
 from aria_home.scenario import load_scenario
 
 SCENARIO_DIR = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
-ZONE = "demo-cabin/main"
+ZONE = "demo-house/main"
 NOW = datetime.fromisoformat("2026-01-16T18:00:00-05:00")
 
 
@@ -34,8 +34,8 @@ def _pack_for_values(values, unit="F", target=68.0, target_unit="F"):
         gap["target_temp"] = (target - 32.0) * 5.0 / 9.0
     return {
         "at": NOW.isoformat(),
-        "trip": {"id": "t1", "property_id": "demo-cabin", "planned_arrival": (NOW + timedelta(hours=2)).isoformat()},
-        "confirmation": {"trip_id": "t1", "property_id": "demo-cabin", "target_temp": target, "target_unit": target_unit},
+        "trip": {"id": "t1", "property_id": "demo-house", "planned_arrival": (NOW + timedelta(hours=2)).isoformat()},
+        "confirmation": {"trip_id": "t1", "property_id": "demo-house", "target_temp": target, "target_unit": target_unit},
         "source_statuses": [],
         "metrics": {"zone": ZONE, "indoor_trend": trend, "target_gap": gap},
         "evidence": [],

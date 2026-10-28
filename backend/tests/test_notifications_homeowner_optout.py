@@ -63,7 +63,7 @@ def test_manager_unaffected_by_homeowner_preference_unit():
 def _confirmation(notify, confirmed_at, manager=True):
     return HomeownerConfirmation(
         trip_id="trip-demo-001",
-        property_id="demo-cabin",
+        property_id="demo-house",
         target_temp=68,
         target_unit="F",
         notify_homeowner=notify,

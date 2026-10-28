@@ -485,7 +485,7 @@ class Store:
             deadline=_parse_dt(row["deadline"]),
             min_samples=target.get("min_samples", 3),
             min_rise_f=target.get("min_rise_f", 2.0),
-            zone=target.get("zone", "demo-cabin/main"),
+            zone=target.get("zone", "demo-house/main"),
             next_check_at=_parse_dt(row["next_check_at"]) if "next_check_at" in row.keys() else None,
             schedule_status=row["schedule_status"] if "schedule_status" in row.keys() and row["schedule_status"] else "scheduled",
             deadline_passed=bool(row["deadline_passed"]) if "deadline_passed" in row.keys() else False,

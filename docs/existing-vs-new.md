@@ -131,6 +131,26 @@ Every file below was created during the event. No code, data, fixtures or assets
 | backend/tests/test_audit3_whatsapp.py | yes (integrations, 2026-10-28) | uncommitted | none |
 | backend/tests/test_audit3_emporia.py | yes (integrations, 2026-10-28) | uncommitted | none |
 | docs/whatsapp-audit.json | yes (integrations, 2026-10-28; generated from the code's WhatsApp channel config and `demo_video_v1` HVAC payload, not hand-typed) | uncommitted | none |
+| backend/aria_home/visual.py | yes (visual evidence, 2026-10-28, approved by Brad) | uncommitted | none |
+| backend/tests/test_visual.py | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/manifest.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/calendar.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/thermostat.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/electrical.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/weather.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_water_low_temp_v1/visual.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/manifest.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/calendar.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/thermostat.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/electrical.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/weather.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_frost_missed_v1/visual.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/manifest.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/calendar.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/thermostat.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/electrical.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/weather.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
+| backend/scenarios/visual_dry_floor_v1/visual.json | yes (visual evidence, 2026-10-28) | uncommitted | none |
 
 New files from the earlier Audit 3 groups (in the working tree, uncommitted): `backend/aria_home/eligibility.py`, `backend/tests/test_audit3_evidence_verification.py`, `backend/tests/test_audit3_group2_identity_persistence.py`, `backend/tests/test_audit3_group3_lifecycle.py`, and the Audit 3 build-log prompt/answer pairs under `docs/build-log/`. Group 4 also edited `docs/evaluation.md`, `docs/submission.md`, `docs/freeze.md`, `README.md`, `backend/requirements.txt` (pytest moved to `requirements-dev.txt`) and this file; the shipped fixtures, scenarios and recorded live-result files were not changed.
 

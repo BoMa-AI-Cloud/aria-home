@@ -5,9 +5,11 @@ import {
   fetchContext,
   fetchEvents,
   fetchFollowUp,
+  fetchInvestigation,
   fetchLivePower,
   fetchNotifications,
   fetchSources,
+  fetchVisual,
   fetchWhatsappStatus,
   RecoveryRequiredError,
   sendHvacWhatsapp,
@@ -33,6 +35,7 @@ import {
   type VerificationHistoryEntry,
   type VerificationResult,
   type VerificationStage,
+  type VisualEvidence,
 } from "./api";
 import "./index.css";
 
@@ -41,6 +44,9 @@ const SCENARIOS = [
   { id: "demo_recovery_v1", label: "Manager report, late warming" },
   { id: "demo_no_followup_v1", label: "No follow-up readings" },
   { id: "demo_video_v1", label: "Trip home, thermostat offline (video)" },
+  { id: "visual_water_low_temp_v1", label: "Water detection, low indoor temp (synthetic image)" },
+  { id: "visual_frost_missed_v1", label: "Frost query missed, low indoor temp (synthetic image)" },
+  { id: "visual_dry_floor_v1", label: "Dry floor, no detection (synthetic image)" },
 ];
 
 const VIDEO_SCENARIO = "demo_video_v1";
@@ -294,8 +300,76 @@ function ReadinessBlock({
   );
 }
 
-function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {
-  const statement = summary.power_context_statement ?? summary.power_context?.statement;
+function VisualEvidencePanel({ scenario, at }: { scenario: string; at: string }) {
+  const [visual, setVisual] = useState<VisualEvidence | null | undefined>(undefined);
+  const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    setVisual(undefined);
+    setReadiness(null);
+    fetchVisual(scenario, at)
+      .then((response) => {
+        if (!live || response.scenario !== scenario) return;
+        setVisual(response.visual);
+      })
+      .catch(() => {
+        if (live) setVisual(null);
+      });
+    fetchInvestigation(at, scenario)
+      .then((response) => {
+        if (live) setReadiness(response.readiness);
+      })
+      .catch(() => {
+        if (live) setReadiness(null);
+      });
+    return () => {
+      live = false;
+    };
+  }, [scenario, at]);
+
+  if (visual === undefined) return <p role="status">Loading visual evidence…</p>;
+  if (visual === null) return <p role="status">No visual evidence at this replay time.</p>;
+  const dims = visual.boxes.length > 0 ? visual.boxes[0] : null;
+  const stroke = dims ? Math.max(4, Math.round(dims.image_width / 250)) : 0;
+  return (
+    <div className="visual-evidence">
+      <p>{visual.caption}</p>
+      <div className="visual-frame" style={{ position: "relative", display: "inline-block", maxWidth: "100%" }}>
+        <img src={visual.image_url} alt={visual.caption} style={{ display: "block", maxWidth: "100%" }} />
+        {dims && (
+          <svg
+            viewBox={`0 0 ${dims.image_width} ${dims.image_height}`}
+            preserveAspectRatio="none"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+            aria-hidden="true"
+          >
+            {visual.boxes.map((box) => (
+              <rect
+                key={box.index}
+                x={box.x1}
+                y={box.y1}
+                width={box.x2 - box.x1}
+                height={box.y2 - box.y1}
+                fill="none"
+                stroke="#ff5a5a"
+                strokeWidth={stroke}
+              />
+            ))}
+          </svg>
+        )}
+      </div>
+      <p role="status">
+        {visual.object_count === 0
+          ? `No detection for ${visual.phrase} (synthetic image); absence of a detection is not an all-clear.`
+          : `${visual.object_count} object${visual.object_count === 1 ? "" : "s"} detected for ${visual.phrase} (synthetic image).`}
+      </p>
+      <ReadinessBlock readiness={readiness} gapLine={null} />
+    </div>
+  );
+}
+
+function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {  const statement = summary.power_context_statement ?? summary.power_context?.statement;
   const limitations = summary.power_context?.limitations ?? [];
   if (!statement && limitations.length === 0) return null;
   return (
@@ -1089,6 +1163,7 @@ const INSET_TARGETS: Record<string, string[]> = {
   investigation: ["investigation"],
   homeowner: ["homeowner"],
   evidence: ["evidence"],
+  visual: ["visual"],
   "not-responding": ["outcome", "investigation"],
   arrival: ["outcome", "homeowner"],
   "evidence-timeline": ["evidence-timeline"],
@@ -1540,6 +1615,12 @@ export default function App() {
           </div>
         )}
       </section>
+      {scenario.startsWith("visual_") && (
+        <section aria-labelledby="visual-heading" className={insetClass("visual")}>
+          <h2 id="visual-heading">Visual evidence (synthetic image)</h2>
+          <VisualEvidencePanel scenario={scenario} at={selectedAt} />
+        </section>
+      )}
       {livePower && livePower.status === "ok" && (
         <section aria-labelledby="live-power-heading">
           <h2 id="live-power-heading">Your real home, right now (live, read-only, Emporia Vue)</h2>

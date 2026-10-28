@@ -1,0 +1,11 @@
+{
+  "id": "visual_water_low_temp_v1",
+  "version": "1",
+  "mode": "synthetic",
+  "description": "Synthetic demo-house scenario: flat low indoor temperature plus a recorded sam-3.1 water-puddle detection over a synthetic floor image.",
+  "author": "ARIA Home (synthetic)",
+  "created": "2026-10-28",
+  "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created.",
+  "start": "2026-01-16T15:00:00-05:00",
+  "timezone": "America/New_York"
+}

@@ -12,7 +12,7 @@ from aria_home.metrics import (
 from aria_home.scenario import load_scenario
 
 SCENARIO_DIR = Path(__file__).resolve().parent.parent / "scenarios" / "demo_v1"
-ZONE = "demo-cabin/main"
+ZONE = "demo-house/main"
 T0 = datetime.fromisoformat("2026-01-16T15:00:00-05:00")
 
 
