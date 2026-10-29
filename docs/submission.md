@@ -40,7 +40,7 @@ opt-in); muse-image-1.0 made the synthetic test images. All application code was
 muse-spark-1.3 through Claude Code, which acted as operator; every prompt and answer, including failed runs, is in
 the public build log. That is my disclosure; the log shows what was recorded.
 
-An independent audit reported 12 defects; all 12 were reproduced, fixed and covered by regression tests.
+An independent audit reported 12 defects; all 12 were reproduced, fixed and covered by regression tests ([defect matrix](audit-3.md)).
 Offline: 17 synthetic cases across 9 scenarios, combined evidence 17/17. Live (muse-spark-1.3): 11 of 17 valid on
 the full run; after a contract fix, the six after-arrival cases were rerun and 5 of 6 were valid. In the visual
 probe sam-3.1 missed obvious frost on a pipe, which is why "no detection" never lowers risk.
