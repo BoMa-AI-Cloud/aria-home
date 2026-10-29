@@ -99,3 +99,12 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
 - Live evaluation (approved: 17 calls, muse-spark-1.3, Meta Model API, snapshot 77cafc9, 90 s, 12000 tokens, no retries): 11 of 17 valid, 6 rejected (all six are after-arrival cases citing an old reading as current), 11 of 11 valid answers agreed with the computed readiness, median 24.5 s. Raw records copied to backend/eval/results-live-77cafc9.json; queued day10-09 to record it.
 - Live rerun of the six after-arrival cases (approved: 6 calls, muse-spark-1.3, Meta Model API, snapshot efdff57 with the inv-v3 contract, 90 s, 12000 tokens, no retries): 5 of 6 valid, all 5 agreeing with arrival_passed; 1 rejected (demo_no_followup_v1@20:31: the answer said 'below target', contradicting the resolved target_gap fact). Two script errors were fixed before any call was made. Raw records: backend/eval/results-live-arrival-efdff57.json.
 - Re-recorded all app screens after day10-12 (8 main + 13 close-up/key clips), regenerated the key-line stills and title cards from them, and rebuilt the demo video as A6 outside the repository: 5400 frames, 180.0 s.
+- Fresh-clone check (2026-10-29) of github.com/BoMa-AI-Cloud/aria-home at a94915a, following the README only: new
+  venv from backend/requirements.lock + requirements-dev.txt, 400 passed with no model key; backend started with
+  the README command in mock mode on 127.0.0.1 (health, provider, metrics, whatsapp/status, live-power all 200;
+  WhatsApp and live power report not configured); frontend npm ci, typecheck and build passed.
+- Re-ran the auditor's probes against HEAD: conflicts give unable_to_verify for both id orders; idle and
+  already-at-target give arrival_met; retry persisted as ok with output; provider mode change makes a new identity;
+  metrics and investigation agree (met); repeated GETs make 0 provider calls; malformed acks 400/403; non-finite
+  values rejected; 67.96/68.04 get different identities. Probe 4 (abandoned claim) is covered by tests because the
+  identity now includes the provider.
