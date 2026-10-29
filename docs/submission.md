@@ -18,15 +18,33 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Licence | **Shown.** MIT [LICENSE](../LICENSE), Copyright (c) 2026 Bradley Allen Wentzel. Public visibility alone would not grant these rights; the licence file does. |
 | Security posture | **Scoped, not "secure".** See [SECURITY.md](../SECURITY.md): local loopback, synthetic data, simulated delivery, no equipment control. It lists what is checked vs not checked and prerequisites for any shared/real-data deployment. No compliance claim is made. |
 
-## 2. Write-up draft
+## 2. Write-up (final text)
 
-An absent homeowner cannot tell whether the home will be ready for their return. An automation starting is not proof the expectation was met.
+I live in Petoskey, Michigan, where the winters are long and cold. As an electrician, I've worked on houses with
+major damage from a fault that nobody caught in time. ARIA Home is built to help notice sooner and get the right
+person moving. It does not repair or control anything.
 
-ARIA Home connects calendar, thermostat, room-sensor, electrical, and weather evidence into one readiness picture. A Meta model explains the situation, but it explains only code-checked facts: each claim cites allowed evidence, values are verified against the evidence pack, and readiness, follow-ups, and outcomes are computed in code, never decided by the model. When something looks wrong, ARIA coordinates scoped simulated notifications with permission gates — the HVAC request carries only property, access, and observations after manager authorization, and acknowledgement is recorded as acknowledged, not resolved. Recovery is verified independently from later sensor readings: reconnection alone closes nothing, warming must be observed, the goal must hold, and arrival is re-checked. This is temperature-goal verification, not proof of a repair cause.
+ARIA Home answers one question for someone travelling home: will my property be ready when I arrive, and if
+something looks wrong, who should respond? It combines trip, thermostat, room-sensor, electrical, weather and
+visual evidence (all synthetic) into one readiness picture. Code decides readiness, follow-ups and outcomes;
+muse-spark-1.3 explains only code-checked facts, and claim checks reject any answer that cites the wrong evidence
+or presents an old reading as current. Electrical activity is never treated as heat, a visual "nothing detected"
+is never treated as all-clear, an acknowledgement is not a resolution, and recovery is verified only from later
+independent temperature readings. This is temperature-goal verification, not proof of a repair.
 
-The app calls only Meta models at runtime (muse-spark-1.3), with claim binding that rejects mismatches. All application code in the repository was written this week by muse-wonder-1.0 and muse-spark-1.3 through Claude Code, which reviewed, tested and pushed it; every prompt and answer is in the public build log. That paragraph is the author's disclosure; the build log shows the prompts and answers that were recorded.
+Notifications are scoped per audience with recorded refusals and stay simulated by default. As an opt-in test,
+the HVAC request was delivered to my own phone through the WhatsApp Cloud API with only its allowed fields.
 
-On 17 builder-labeled synthetic cases across 9 scenarios, combined evidence scored 17/17 fully correct; thermostat-only 12/17; room-sensor-only 3/17; electrical-only and calendar-only 2/17 each. Recovery verification was scored for 5 of the 17 cases (the `demo_video_v1` cases). In the recorded full live run (snapshot 77cafc9, 2026-10-28, exactly 17 calls on muse-spark-1.3 via the Meta Model API under the `inv-v2` contract), 11 of 17 answers were valid and all 11 agreed with the code-computed readiness, which the contract enforces, so that agreement shows contract-following, not independent readiness judgment; the claim checks rejected 6, all six after-arrival cases citing a stale or superseded reading (or old electrical activity) as current. The six after-arrival cases were rerun under the `inv-v3` temperature-at-arrival contract (snapshot efdff57, exactly 6 calls): 5 valid with 5/5 readiness agreement and 1 rejection on a genuine claim-check catch (the answer said "below target" against the resolved target_gap fact). The rerun covers only the six after-arrival cases, so it is not a full re-run and the two runs are cited separately, never merged into one number. Earlier recorded runs are kept in [Evaluation](evaluation.md) with their model ids, provider routes, dates, snapshots and policy versions, and are superseded, not current. Limits: small synthetic sample, no real channels or equipment control, simulated delivery only.
+Meta models: muse-spark-1.3 at runtime; sam-3.1 segments synthetic images (recorded replay by default, live
+opt-in); muse-image-1.0 made the synthetic test images. All application code was written by muse-wonder-1.0 and
+muse-spark-1.3 through Claude Code, which acted as operator; every prompt and answer, including failed runs, is in
+the public build log. That is my disclosure; the log shows what was recorded.
+
+An independent audit reported 12 defects; all 12 were reproduced, fixed and covered by regression tests.
+Offline: 17 synthetic cases across 9 scenarios, combined evidence 17/17. Live (muse-spark-1.3): 11 of 17 valid on
+the full run; after a contract fix, the six after-arrival cases were rerun and 5 of 6 were valid. In the visual
+probe sam-3.1 missed obvious frost on a pipe, which is why "no detection" never lowers risk.
+Limits: small synthetic sample, simulated delivery, no equipment control.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 
