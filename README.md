@@ -163,4 +163,4 @@ Submission: [Submission checklist and write-up](docs/submission.md)
 
 MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Bradley Allen Wentzel. Security scope and reporting: [SECURITY.md](SECURITY.md).
 
-Further reading: [Red-team notes](docs/red-team.md) · [Architecture — future](docs/architecture-future.md) · [Killer-apps analysis (hypothetical)](docs/killer-apps-analysis.md) · [HVAC field audit](docs/fields-audit.json) · [WhatsApp audit](docs/whatsapp-audit.json)
+Further reading: [Judge one-pager](docs/judge-one-pager.md) · [Architecture diagram](docs/architecture.svg) · [Red-team notes](docs/red-team.md) · [Architecture — future](docs/architecture-future.md) · [Killer-apps analysis (hypothetical)](docs/killer-apps-analysis.md) · [HVAC field audit](docs/fields-audit.json) · [WhatsApp audit](docs/whatsapp-audit.json)

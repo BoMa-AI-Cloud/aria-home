@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="Verdana, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1600" height="900" fill="#f7f7f5"/>
+<text x="30" y="38" font-size="24" font-weight="bold" fill="#1a1a1a">ARIA Home architecture</text>
+<text x="30" y="62" font-size="14" fill="#444444">Synthetic evidence only. Code decides status; muse-spark-1.3 explains under contract inv-v3.</text>
+
+<!-- column 1: sources -->
+<rect x="20" y="82" width="370" height="448" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="40" y="110" font-size="16" font-weight="bold" fill="#1a1a1a">1. Synthetic evidence sources</text>
+<text x="40" y="136" font-size="14" fill="#222222">- trip / calendar records</text>
+<text x="40" y="160" font-size="14" fill="#222222">- thermostat readings</text>
+<text x="40" y="184" font-size="14" fill="#222222">- room-sensor readings</text>
+<text x="40" y="208" font-size="14" fill="#222222">- electrical circuit watts</text>
+<text x="40" y="232" font-size="14" fill="#222222">- weather records</text>
+<text x="40" y="256" font-size="14" fill="#222222">- visual: synthetic images,</text>
+<text x="40" y="278" font-size="14" fill="#222222">  segmented by sam-3.1</text>
+<text x="40" y="306" font-size="13" fill="#555555">Replay of recorded sam-3.1</text>
+<text x="40" y="326" font-size="13" fill="#555555">responses is the default.</text>
+<text x="40" y="352" font-size="13" fill="#555555">Images made by muse-image-1.0,</text>
+<text x="40" y="372" font-size="13" fill="#555555">fixtures only, never runtime.</text>
+<text x="40" y="402" font-size="13" fill="#555555">No future data in replay:</text>
+<text x="40" y="422" font-size="13" fill="#555555">records visible only at or after</text>
+<text x="40" y="442" font-size="13" fill="#555555">their received time. All synthetic.</text>
+<text x="40" y="474" font-size="13" fill="#555555">Watts are not heat: only</text>
+<text x="40" y="494" font-size="13" fill="#555555">temperature can show warming.</text>
+
+<!-- arrow 1-2 -->
+<polygon points="390,290 410,290 410,282 424,298 410,314 410,306 390,306" fill="#555555"/>
+
+<!-- column 2: code -->
+<rect x="424" y="82" width="370" height="448" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="444" y="110" font-size="16" font-weight="bold" fill="#1a1a1a">2. Code computes, model does not</text>
+<text x="444" y="136" font-size="14" fill="#222222">- readiness.py decides status:</text>
+<text x="444" y="158" font-size="13" fill="#222222">  on_track / at_risk / cannot_tell</text>
+<text x="444" y="178" font-size="13" fill="#222222">  / arrival_passed</text>
+<text x="444" y="202" font-size="14" fill="#222222">- outcomes.py: follow-up outcomes</text>
+<text x="444" y="224" font-size="13" fill="#222222">  from later measurements only</text>
+<text x="444" y="248" font-size="14" fill="#222222">- verification.py: stages from</text>
+<text x="444" y="270" font-size="13" fill="#222222">  telemetry_missing to arrival_met,</text>
+<text x="444" y="290" font-size="13" fill="#222222">  later readings only</text>
+<text x="444" y="318" font-size="13" fill="#222222">Policy: readiness-policy-v3.</text>
+<text x="444" y="340" font-size="13" fill="#222222">Contract: inv-v3 (temperature</text>
+<text x="444" y="360" font-size="13" fill="#222222">at arrival after arrival).</text>
+<text x="444" y="392" font-size="13" fill="#555555">Ack, visits and reports never set</text>
+<text x="444" y="412" font-size="13" fill="#555555">an outcome or advance a stage.</text>
+<text x="444" y="442" font-size="13" fill="#555555">Visual never yields on_track,</text>
+<text x="444" y="462" font-size="13" fill="#555555">warming, goal_verified, arrival_met.</text>
+<text x="444" y="494" font-size="13" fill="#555555">Zero objects = no detection,</text>
+<text x="444" y="514" font-size="13" fill="#555555">never an all-clear.</text>
+
+<!-- arrow 2-3 -->
+<polygon points="794,290 814,290 814,282 828,298 814,314 814,306 794,306" fill="#555555"/>
+
+<!-- column 3: model -->
+<rect x="828" y="82" width="362" height="448" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="848" y="110" font-size="16" font-weight="bold" fill="#1a1a1a">3. Model explains, checks bind</text>
+<text x="848" y="136" font-size="14" fill="#222222">- muse-spark-1.3 explains the</text>
+<text x="848" y="158" font-size="14" fill="#222222">  code-checked facts (runtime,</text>
+<text x="848" y="180" font-size="14" fill="#222222">  via Meta Model API)</text>
+<text x="848" y="208" font-size="14" fill="#222222">- structured facts[] cite one</text>
+<text x="848" y="230" font-size="14" fill="#222222">  evidence field each</text>
+<text x="848" y="258" font-size="14" fill="#222222">- claim checks reject mismatches:</text>
+<text x="848" y="280" font-size="13" fill="#222222">  stale/superseded as current,</text>
+<text x="848" y="300" font-size="13" fill="#222222">  wrong numbers, banned phrases</text>
+<text x="848" y="328" font-size="13" fill="#555555">Readiness mismatch is rejected;</text>
+<text x="848" y="348" font-size="13" fill="#555555">agreement shows contract-following.</text>
+<text x="848" y="378" font-size="13" fill="#555555">No valid answer: deterministic</text>
+<text x="848" y="398" font-size="13" fill="#555555">code summary is shown instead.</text>
+<text x="848" y="428" font-size="13" fill="#555555">Mock mode is the default;</text>
+<text x="848" y="448" font-size="13" fill="#555555">live needs ARIA_HOME_MODEL_*.</text>
+<text x="848" y="478" font-size="13" fill="#555555">Code by muse-wonder-1.0 and</text>
+<text x="848" y="498" font-size="13" fill="#555555">muse-spark-1.3 (see build log).</text>
+
+<!-- arrow 3-4 -->
+<polygon points="1190,290 1210,290 1210,282 1224,298 1210,314 1210,306 1190,306" fill="#555555"/>
+
+<!-- column 4: UI -->
+<rect x="1224" y="82" width="356" height="448" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="1244" y="110" font-size="16" font-weight="bold" fill="#1a1a1a">4. UI keeps them separate</text>
+<text x="1244" y="136" font-size="14" fill="#222222">- Verified facts (checked</text>
+<text x="1244" y="158" font-size="14" fill="#222222">  against evidence), rendered</text>
+<text x="1244" y="180" font-size="14" fill="#222222">  by code</text>
+<text x="1244" y="208" font-size="14" fill="#222222">- Interpretation (model-written,</text>
+<text x="1244" y="230" font-size="14" fill="#222222">  not verified), shown apart</text>
+<text x="1244" y="258" font-size="13" fill="#555555">Outcome headline follows the</text>
+<text x="1244" y="278" font-size="13" fill="#555555">verification stage, not the</text>
+<text x="1244" y="298" font-size="13" fill="#555555">older follow-up rule.</text>
+<text x="1244" y="328" font-size="13" fill="#555555">Mock answers labeled MOCK,</text>
+<text x="1244" y="348" font-size="13" fill="#555555">never as live inference.</text>
+<text x="1244" y="378" font-size="13" fill="#555555">Simulated timeline with replay</text>
+<text x="1244" y="398" font-size="13" fill="#555555">through arrival; completion report</text>
+<text x="1244" y="418" font-size="13" fill="#555555">is corroboration only.</text>
+<text x="1244" y="448" font-size="13" fill="#555555">Readiness thresholds are fixed</text>
+<text x="1244" y="468" font-size="13" fill="#555555">constants; projection is linear.</text>
+
+<!-- bottom left: notifications -->
+<rect x="20" y="550" width="774" height="230" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="40" y="578" font-size="16" font-weight="bold" fill="#1a1a1a">5. Scoped simulated notifications</text>
+<text x="40" y="604" font-size="14" fill="#222222">- audiences: homeowner, property manager, HVAC company</text>
+<text x="40" y="628" font-size="14" fill="#222222">- each audience has a code-enforced field allowlist</text>
+<text x="40" y="652" font-size="14" fill="#222222">- refusals are recorded; HVAC needs manager authorization</text>
+<text x="40" y="676" font-size="14" fill="#222222">- ack is recorded as its own event, never resolution</text>
+<text x="40" y="700" font-size="13" fill="#555555">Default cards read "Simulated, no message was sent".</text>
+<text x="40" y="722" font-size="13" fill="#555555">Reads and explains only; operates no equipment.</text>
+<text x="40" y="748" font-size="13" fill="#555555">HVAC payload carries at most the observation line.</text>
+
+<!-- bottom right: optional -->
+<rect x="814" y="550" width="766" height="230" rx="10" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="834" y="578" font-size="16" font-weight="bold" fill="#1a1a1a">6. Optional, both off by default</text>
+<text x="834" y="604" font-size="14" fill="#222222">- WhatsApp test delivery: allowed HVAC notice only,</text>
+<text x="834" y="628" font-size="14" fill="#222222">  owner's own test number only, at most once;</text>
+<text x="834" y="652" font-size="13" fill="#555555">  needs WHATSAPP_* plus ARIA_HOME_WHATSAPP_LIVE=1</text>
+<text x="834" y="678" font-size="14" fill="#222222">- Emporia read-only panel: live watts, display only,</text>
+<text x="834" y="702" font-size="14" fill="#222222">  never evidence for readiness or verification;</text>
+<text x="834" y="726" font-size="13" fill="#555555">  needs EMPORIA_* plus ARIA_HOME_EMPORIA_LIVE=1</text>
+<text x="834" y="752" font-size="13" fill="#555555">Live sam-3.1 also opt-in; recorded replay otherwise.</text>
+
+<!-- footer: evaluation -->
+<rect x="20" y="796" width="1560" height="84" rx="10" fill="#eef1ea" stroke="#999999" stroke-width="1.5"/>
+<text x="40" y="822" font-size="14" fill="#222222">Offline (deterministic, no model): 17 cases across 9 scenarios. Combined 17/17; thermostat-only 12; room-only 3; electrical-only 2; calendar-only 2.</text>
+<text x="40" y="846" font-size="13" fill="#444444">Live (operator-run, cited separately, never merged): 77cafc9, inv-v2, 17 calls on muse-spark-1.3: 11 valid (11/11 agreement), 6 rejected.</text>
+<text x="40" y="866" font-size="13" fill="#444444">After-arrival rerun efdff57, inv-v3, 6 calls only: 5 valid (5/5), 1 rejected (claim-check catch). Full detail: docs/evaluation.md.</text>
+</svg>
