@@ -50,10 +50,10 @@ test("c1-opening", async ({ page }) => {
 test("c2-evaluation", async ({ page }) => {
   await page.goto("/cards.html#evaluation");
   await expect(page.getByText("Combined (all sources)")).toBeVisible();
-  await expect(page.getByText("12/12")).toBeVisible();
+  await expect(page.getByText("17/17")).toBeVisible();
   await expect(page.getByText("Thermostat only")).toBeVisible();
-  await expect(page.getByText("7/12")).toBeVisible();
-  await expect(page.getByText("12 builder-labelled synthetic cases. Not a benchmark of real homes.")).toBeVisible();
+  await expect(page.getByText("12/17")).toBeVisible();
+  await expect(page.getByText("17 builder-labelled synthetic cases. Not a benchmark of real homes.")).toBeVisible();
   await page.waitForTimeout(15000);
 });
 
