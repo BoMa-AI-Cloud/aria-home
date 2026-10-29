@@ -108,3 +108,10 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
   metrics and investigation agree (met); repeated GETs make 0 provider calls; malformed acks 400/403; non-finite
   values rejected; 67.96/68.04 get different identities. Probe 4 (abandoned claim) is covered by tests because the
   identity now includes the provider.
+- 2026-10-29: drafted the final write-up and X demo post from the repository docs (private draft for Brad);
+  Brad approved the write-up, and task day10-14 put it into docs/submission.md verbatim after checking every
+  number and model id. That check found the audit claim had no in-repo source, so task day10-15 added
+  docs/audit-3.md (12-row finding matrix; the operator confirmed every test file it names exists). Brad chose the
+  Meta AI music cue, so A6 stays the final video. The X post is drafted, not posted.
+- Updated the build-log task table with the 17 tasks run since the 2026-10-28 backfill (rows use the first line of
+  each saved answer).
