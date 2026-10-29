@@ -4,7 +4,7 @@ Synthetic scenarios, expected labels written by the builder, small sample, not a
 
 The 17 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.
 
-The model investigation contract is `inv-v3`: after the confirmed arrival has passed, the model states the temperature at arrival (`temperature_at_arrival`, the last eligible reading observed and received by arrival) and must not state a `current_temperature`. All recorded live runs below predate this change and used the `inv-v2` contract, which asked for a current temperature even after arrival.
+The model investigation contract is `inv-v3`: after the confirmed arrival has passed, the model states the temperature at arrival (`temperature_at_arrival`, the last eligible reading observed and received by arrival) and must not state a `current_temperature`. The live runs on snapshots 53a06bd, 114be6a and 77cafc9 below used the `inv-v2` contract, which asked for a current temperature even after arrival; the after-arrival rerun on snapshot efdff57 used `inv-v3`.
 
 ## Totals
 
@@ -182,8 +182,9 @@ The model investigation contract is `inv-v3`: after the confirmed arrival has pa
 | 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 12000 tokens | 12 | 1 | 10 (+1 no answer) | 1/1 |
 | 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 2000 tokens | 12 | 0 | 0 (+12 no answer) | — |
 | 2026-10-28 | 77cafc9 | muse-spark-1.3 via the Meta Model API, 12000 tokens | 17 | 11 | 6 | 11/11 |
+| 2026-10-29 | efdff57 | muse-spark-1.3 via the Meta Model API, 12000 tokens (six after-arrival cases only, inv-v3) | 6 | 5 | 1 | 5/5 |
 
-Details per run are in the sections below. Only the latest run reflects the current code; earlier rows are kept for the record and are superseded, not current.
+Details per run are in the sections below. The 77cafc9 17-case run (inv-v2) stays as recorded; the efdff57 rerun covers only the six after-arrival cases under inv-v3 and is not a full re-run. Earlier rows are kept for the record and are superseded, not current.
 
 ## Live model condition (2026-10-26)
 
@@ -255,4 +256,23 @@ Run by the operator, approved by Brad: exactly 17 calls (the 17 eval cases) on m
 | visual_water_low_temp_v1@19:00 | arrival_passed | rejected: stale temperature and electrical readings cited as current, plus a number not in the cited facts |
 | visual_frost_missed_v1@20:31 | arrival_passed | rejected: stale temperature and electrical readings cited as current, plus numbers not in the cited facts |
 
-Honest reading, plainly: readiness agreement is enforced by the contract (the model is told the computed status and a mismatch is rejected), so 11/11 agreement shows the model followed the contract, not that it judged readiness independently. The rejections show the claim checks working: each rejected answer cited a stale or superseded reading (or old electrical activity) as current. After arrival every reading is old by design while the `inv-v2` contract used in this run still asks for a current temperature, so these rejections are at least partly a contract gap, not only a model error (same pattern as the 2026-10-27 run). That gap is fixed by the `inv-v3` contract (temperature at arrival instead of a current temperature after arrival); this run has not been repeated under `inv-v3`. One run per case, synthetic data, small sample. This is not a pass or fail of the product.
+Honest reading, plainly: readiness agreement is enforced by the contract (the model is told the computed status and a mismatch is rejected), so 11/11 agreement shows the model followed the contract, not that it judged readiness independently. The rejections show the claim checks working: each rejected answer cited a stale or superseded reading (or old electrical activity) as current. After arrival every reading is old by design while the `inv-v2` contract used in this run still asks for a current temperature, so these rejections are at least partly a contract gap, not only a model error (same pattern as the 2026-10-27 run). That gap is fixed by the `inv-v3` contract (temperature at arrival instead of a current temperature after arrival); the six after-arrival cases were repeated under `inv-v3` in the rerun below, which is not a full re-run of all 17 cases. One run per case, synthetic data, small sample. This is not a pass or fail of the product.
+
+## Live after-arrival rerun on snapshot efdff57 (inv-v3)
+
+Run by the operator, approved by Brad: exactly 6 calls (only the six after-arrival cases) on muse-spark-1.3 via the Meta Model API against snapshot efdff57 (the `inv-v3` contract change: after arrival, ask for the temperature at arrival instead of a current temperature), 90 s timeout, 12000 output tokens, no retries. Source: `backend/eval/results-live-arrival-efdff57.json`.
+
+| Model | Valid | Rejected | Readiness agreement |
+|---|---|---|---|
+| muse-spark-1.3 via the Meta Model API | 5/6 | 1 | 5/5 |
+
+| Case | Computed readiness | Result |
+|---|---|---|
+| demo_recovery_v1@19:00 | arrival_passed | valid, agreed |
+| demo_recovery_v1@20:31 | arrival_passed | valid, agreed |
+| demo_no_followup_v1@20:31 | arrival_passed | rejected: answer said "below target", contradicting the resolved target_gap fact |
+| demo_video_v1@21:01 | arrival_passed | valid, agreed |
+| visual_water_low_temp_v1@19:00 | arrival_passed | valid, agreed |
+| visual_frost_missed_v1@20:31 | arrival_passed | valid, agreed |
+
+Honest reading, plainly: what changed is the contract, `inv-v2` to `inv-v3` — after arrival the model states the temperature at arrival instead of a current temperature, so the stale-reading-as-current rejections of the 77cafc9 run no longer apply. Five of the six after-arrival cases now validate with readiness agreement (enforced by the contract, so agreement shows contract-following, not independent readiness judgment). The one remaining rejection is a genuine claim-check catch, not a contract gap: the answer said "below target" against the resolved target_gap fact. This rerun covers only the six after-arrival cases, so it is not a full re-run, and the 77cafc9 17-case run (inv-v2) stays as recorded. One run per case, synthetic data, small sample. This is not a pass or fail of the product.
