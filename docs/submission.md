@@ -12,47 +12,51 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Every team member listed (solo) | **Pending** (Brad, submission form) |
 | Meta models only at runtime | **Shown in code for the gated live path.** Runtime calls only muse-spark-1.3 through the Meta Model API behind a gated live provider (`backend/aria_home/provider.py`); mock is the default. This is different evidence from a recorded live run, and different again from a current live call: no current live call is claimed here. Recorded live runs are in [Evaluation](evaluation.md). Baseten Muse Spark Open is evaluation-only, not runtime. |
 | Synthetic data only | **Shown for the shipped fixtures; not a certification.** The shipped thermostat, electrical, weather, calendar and contact records are invented and labelled synthetic, and the UI banner reads "SYNTHETIC DATA - demo scenario, not a real home". Synthetic fixtures do not by themselves certify "no PII / no secrets" in every possible file or environment; `.env` files are git-ignored and `.env.example` holds placeholders only. |
-| Live product or run instructions | **Run instructions Shown; hosted live product Pending.** Run instructions are in README "What judges should click" / "Try it in 5 minutes"; no hosted URL exists (see [Day 9 handoff](day9-handoff.md)). Live-provider support (code), recorded live runs (files), and a current live call (not made for Audit 3) are three different kinds of evidence and are not interchangeable. |
+| Live product or run instructions | **Shown.** Hosted demo at https://aria-home-demo.onrender.com (Render, public demo mode, synthetic data; deployed commit shown in the footer and in `/api/health`); run instructions in README. Verified from outside on 2026-10-30; the overnight check is still to do. |
 | Deadline Nov 4 | **Needs confirmation** (Brad): earlier organizer material said 9 PM ET on November 4; 5 PM ET is Brad's internal target. Submit before the earlier of the two until confirmed. |
 | Optional: Most Viral Project post on X, with its link submitted | **Pending** (Brad) |
 | Licence | **Shown.** MIT [LICENSE](../LICENSE), Copyright (c) 2026 Bradley Allen Wentzel. Public visibility alone would not grant these rights; the licence file does. |
 | Security posture | **Scoped, not "secure".** See [SECURITY.md](../SECURITY.md): local loopback, synthetic data, simulated delivery, no equipment control. It lists what is checked vs not checked and prerequisites for any shared/real-data deployment. No compliance claim is made. |
 
-## 2. Write-up (final text)
+## 2. Write-up (final text; updated 2026-10-30, approved by Brad)
 
-I live in Petoskey, Michigan, where the winters are long and cold. As an electrician, I've worked on houses with
-major damage from a fault that nobody caught in time. ARIA Home is built to help notice sooner and get the right
-person moving. It does not repair or control anything.
+I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering
+what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As
+an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built
+to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical
+or emergency service.
 
 ARIA Home answers one question for an older adult's household: will the home be warm by the warm-by time, and if
-something looks wrong overnight, who should respond? On a synthetic winter night the furnace stops and the
-thermostat stops reporting; an independent room sensor shows the living area cooling toward 52 F. ARIA Home flags
-the risk before the household 07:00 warm-by time, notifies the resident and an adult-child family caregiver under the
-resident's recorded consent, and the caregiver authorizes the simulated HVAC request. It combines the warm-by plan,
-consent, thermostat, room-sensor, electrical, weather (forecast context only, never a decision input) and
-visual evidence (all synthetic) into one readiness picture. Code decides readiness, follow-ups and outcomes;
-muse-spark-1.3 explains only code-checked facts, and claim checks reject any answer that cites the wrong evidence
-or presents an old reading as current. Electrical activity is never treated as heat, a visual "nothing detected"
-is never treated as an all-clear, an acknowledgement is not a resolution, and recovery is verified only from later
-independent temperature readings. This is temperature-goal verification, not proof of a repair. ARIA Home is not
-a medical or emergency service: no health data, no medical terms, no location tracking of the person, no fall or
-activity sensing.
+something looks wrong overnight, who should respond? Try it at https://aria-home-demo.onrender.com (synthetic data,
+no sign-in). On a synthetic winter night the furnace stops and the thermostat goes silent at 1:30; an independent
+room sensor shows the living area falling toward 52 F. At 2:31 code flags it as at risk before the 07:00 warm-by
+time, and ARIA asks the family caregiver: "May I contact the HVAC company?" Only after she approves is the HVAC
+request created, with allowed fields only; if she declines, there is no request and ARIA keeps monitoring.
+Reconnection alone proves nothing: the goal is verified at 6:21 from independent readings held for 30 minutes, and
+the technician's 6:45 voice note counts only as a human report.
 
-Notifications are scoped per audience with recorded refusals and stay simulated by default. As an opt-in test,
-the HVAC request was delivered to my own phone through the WhatsApp Cloud API with only its allowed fields.
+Code decides readiness, verification and who is told; Meta models explain and review, never decide. The app has
+three pages: House (the verdict and who knows), Reasoning (ARIA's view, a live map of how each decision is made,
+with the recorded model answers) and Integrations. Messages are simulated in the hosted demo. As an opt-in test,
+the permission request and the HVAC notice can go to my own phone through the WhatsApp Cloud API. Two other
+owner-only integrations are off in the demo: a read-only Emporia energy panel and a Nest camera snapshot of my
+mechanical room.
 
-Meta models: muse-spark-1.3 at runtime; sam-3.1 segmentation over synthetic images is replay-only recorded responses (no live call, no opt-in); muse-image-1.0 made the synthetic test images. All application code was written by muse-wonder-1.0 and
-muse-spark-1.3 through Claude Code, which acted as operator; every prompt and answer, including failed runs, is in
-the public build log. That is my disclosure; the log shows what was recorded.
+Meta models: muse-spark-1.3 explains the code-checked facts at each step under a contract that rejects mismatched
+claims, and watches overnight for anomalies that code then confirms. muse-wonder-1.0 gives a recorded second
+review of each explanation; in a control test it flagged a deliberately falsified reading. sam-3.1 reads the
+synthetic camera frames (recorded); it missed frost, and the miss is shown, which is why "no detection" never lowers
+risk. muse-voice-transcribe-1.0 turns the technician's voice note into text, and muse-image-1.0 made the synthetic
+frames. The application code was written by muse-spark-1.3 and muse-wonder-1.0 through Claude Code as operator;
+while the Model API was unavailable for a few hours, Meta AI in the web chat drafted some code that the operator
+applied and retested. Every prompt and answer is in the public build log.
 
-An independent audit reported 12 defects; all 12 were reproduced, fixed and covered by regression tests ([defect matrix](audit-3.md)).
-Offline: 22 synthetic cases across 10 scenarios, combined evidence 22/22. The five `care_home_v1` night cases score
-readiness and verification from independent room readings up to the 07:00 warm-by time. Live (muse-spark-1.3): 11 of 17 valid on
-the full run; after a contract fix, the six after-arrival cases were rerun and 5 of 6 were valid. Both live runs
-predate the care story and used the trip-home scenarios; they are kept verbatim, not re-scored. In the visual
-probe sam-3.1 missed obvious frost on a pipe, which is why "no detection" never lowers risk — the care night frames
-carry the same recorded misses.
-Limits: small synthetic sample, simulated delivery, no equipment control.
+Outside audits reported 12, 10 and 7 defects; each was reproduced and repaired with a regression test, and the
+Audit 4 repairs were red-proofed. All ten care-story steps have recorded muse-spark-1.3 answers that passed the
+contract checks, each with a muse-wonder-1.0 review. Offline: 22 synthetic cases across 10 scenarios, combined
+evidence 22/22. Live (muse-spark-1.3, older trip-home scenarios): 11 of 17 valid on the full run, then 5 of 6 on the
+after-arrival rerun; kept verbatim, not re-scored. Limits: small synthetic sample, simulated delivery, no equipment
+control.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 

@@ -9,7 +9,14 @@ that pack, and notes are capped at 200 characters.
 A review never changes readiness, verification, permissions, or validity,
 and "no_issues" is not verification. Only a recorded review whose case
 (scenario id, evaluated time, input revision) matches the displayed answer
-is ever shown, and only beside that answer.
+is ever shown, and only beside that answer. A review is additionally bound
+to the exact answer it reviewed: answer_digest is the sha256 of the
+canonical JSON of the reviewed answer's output, and serving a review
+requires its answer_digest to equal the digest of the answer actually
+displayed. A mismatch shows no review and says "review does not match this
+answer". Reviews recorded before answer binding carry no answer_digest and
+are shown labelled as legacy, never with a fabricated digest. A matching
+review is a bounded check, not proof the narrative is true.
 
 The live request below is implemented for a Responses-compatible API
 (POST https://api.meta.ai/v1/responses, header "Authorization: Bearer
@@ -20,6 +27,7 @@ backend/eval/reviews-*.json and are matched exactly like recorded answers.
 """
 
 import glob
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -54,6 +62,19 @@ Do not re-investigate the home and do not change any status. Reply with JSON onl
 "evidence_ids": ["<ids from the pack only>"], "note": "<at most 200 characters>"}]}. \
 A "no_issues" verdict is not verification of the home; it only means you found no \
 issue in the answer. Cite evidence references and concise conclusions only."""
+
+REVIEW_MISMATCH_MESSAGE = "review does not match this answer"
+
+
+def answer_digest(output):
+    """Bind a review to the exact answer it reviewed.
+
+    sha256 of the canonical JSON of the reviewed answer's output (sorted
+    keys, no whitespace). Key order in the stored file does not matter;
+    any content change does.
+    """
+    canonical = json.dumps(output, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def reviews_dir(env=None):
@@ -126,6 +147,11 @@ def parse_review(output, evidence_ids):
     return {"verdict": verdict, "issues": normalized}, []
 
 
+_REASONING_ITEM_TYPES = frozenset({"reasoning", "thinking", "redacted_thinking"})
+_REASONING_BLOCK_TYPES = frozenset({"reasoning", "thinking", "redacted_thinking", "reasoning_content"})
+_TEXT_BLOCK_TYPES = frozenset({"text", "output_text"})
+
+
 def _candidate_texts(data):
     if isinstance(data, str):
         yield data
@@ -147,13 +173,19 @@ def _candidate_texts(data):
         for item in output:
             if not isinstance(item, dict):
                 continue
+            if item.get("type") in _REASONING_ITEM_TYPES:
+                continue
             content = item.get("content")
             if isinstance(content, list):
-                parts.extend(
-                    block.get("text")
-                    for block in content
-                    if isinstance(block, dict) and isinstance(block.get("text"), str)
-                )
+                for block in content:
+                    if not isinstance(block, dict):
+                        continue
+                    if block.get("type") in _REASONING_BLOCK_TYPES:
+                        continue
+                    if block.get("type") not in _TEXT_BLOCK_TYPES:
+                        continue
+                    if isinstance(block.get("text"), str):
+                        parts.append(block["text"])
             elif isinstance(content, str):
                 parts.append(content)
         if parts:
@@ -376,16 +408,24 @@ def review_provenance(entry, validation_reasons):
         "reviewed_model_id": entry.get("reviewed_model_id"),
         "reviewed_input_revision": entry.get("input_revision"),
         "reviewed_at": entry.get("evaluated_at_utc"),
+        "answer_digest": entry.get("answer_digest"),
         "validation": {"passed": not validation_reasons, "reasons": list(validation_reasons)},
     }
 
 
-def recorded_review_for(entries, scenario_id, evaluated_at_utc, input_revision, evidence_ids):
+def recorded_review_for(entries, scenario_id, evaluated_at_utc, input_revision, evidence_ids, answer_output=None):
     """Return the recorded review for a displayed answer, or None.
 
     The review output is re-validated against the current evidence pack. An
     invalid recording is kept and returned with its reasons so the UI can
     show it as invalid; it still changes nothing.
+
+    When answer_output (the displayed answer's output) is given, the
+    review's answer_digest must equal the digest of that output, otherwise
+    no review is shown and the reasons say "review does not match this
+    answer". A recorded review without answer_digest predates answer
+    binding: no digest is fabricated for it; it is returned flagged with
+    answer_bound False so the UI can label it as legacy.
     """
     match = find_recorded_review(entries, scenario_id, evaluated_at_utc, input_revision)
     if match is None:
@@ -399,10 +439,20 @@ def recorded_review_for(entries, scenario_id, evaluated_at_utc, input_revision, 
             reasons.append(f"law {violation['law']}: {violation['reason']}")
         if reasons:
             review = None
+    entry_digest = entry.get("answer_digest")
+    bound = isinstance(entry_digest, str) and bool(entry_digest)
+    mismatch = False
+    if answer_output is not None and bound and answer_digest(answer_output) != entry_digest:
+        review = None
+        reasons.append(REVIEW_MISMATCH_MESSAGE)
+        mismatch = True
     return {
         "review": review,
         "raw_output": entry.get("review"),
         "provenance": review_provenance(entry, reasons),
+        "answer_digest": entry_digest if bound else None,
+        "answer_bound": bound,
+        "answer_mismatch": mismatch,
     }
 
 
@@ -414,11 +464,13 @@ __all__ = [
     "REVIEW_CONTRACT_VERSION",
     "REVIEW_ISSUE_KINDS",
     "REVIEW_MAX_OUTPUT_TOKENS",
+    "REVIEW_MISMATCH_MESSAGE",
     "REVIEW_MODEL_ID",
     "REVIEW_PROVIDER_ROUTE",
     "REVIEW_SYSTEM_PROMPT",
     "REVIEW_URL",
     "REVIEW_VERDICTS",
+    "answer_digest",
     "build_review_request",
     "find_recorded_review",
     "load_recorded_reviews",

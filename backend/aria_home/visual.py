@@ -110,13 +110,22 @@ def extract_sam_text(response):
             return ""
     if not isinstance(response, dict):
         return ""
+    parts = []
     for message in response.get("output") or []:
         if not isinstance(message, dict):
             continue
+        if message.get("type") in ("reasoning", "thinking", "redacted_thinking"):
+            continue
         for block in message.get("content") or []:
-            if isinstance(block, dict) and isinstance(block.get("text"), str):
-                return block["text"]
-    return ""
+            if not isinstance(block, dict):
+                continue
+            if block.get("type") in ("reasoning", "thinking", "redacted_thinking", "reasoning_content"):
+                continue
+            if block.get("type") not in ("text", "output_text"):
+                continue
+            if isinstance(block.get("text"), str):
+                parts.append(block["text"])
+    return "".join(parts)
 
 
 def largest_box_fraction(boxes):

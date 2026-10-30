@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 from flask import Flask, g, has_request_context, jsonify, request, send_file
 
 from aria_home import public_demo
-from aria_home.recorded import annotate_public_result, public_investigation
+from aria_home.recorded import annotate_public_result, find_recorded, load_recorded_answers, public_investigation
 from aria_home.review import load_recorded_reviews, recorded_review_for
 from aria_home.transcribe import human_report_for
 from aria_home.watcher import load_correction_records, load_recorded_watchers, public_watcher
@@ -54,7 +54,7 @@ def release_version(base_dir: Path | None = None) -> dict:
     return {"commit": "unknown", "source": "not stamped"}
 
 
-def _recorded_review_for_display(scn, at, pack):
+def _recorded_review_for_display(scn, at, pack, answer_output=None):
     try:
         identity = inference_identity(scn, at)
     except Exception:
@@ -64,8 +64,15 @@ def _recorded_review_for_display(scn, at, pack):
     except Exception:
         return None
     evidence_ids = pack.get("evidence_ids") if isinstance(pack, dict) else None
+    if answer_output is None:
+        try:
+            match = find_recorded(load_recorded_answers(), scn.manifest.id, identity["evaluated_at_utc"], identity["input_revision"])
+            if match is not None:
+                answer_output = (match.get("answer") or {}).get("output")
+        except Exception:
+            answer_output = None
     try:
-        return recorded_review_for(entries, scn.manifest.id, identity["evaluated_at_utc"], identity["input_revision"], evidence_ids or [])
+        return recorded_review_for(entries, scn.manifest.id, identity["evaluated_at_utc"], identity["input_revision"], evidence_ids or [], answer_output=answer_output)
     except Exception:
         return None
 
@@ -231,7 +238,7 @@ def create_app():
 
     @app.get("/api/trace")
     def trace_endpoint():
-        from aria_home.trace import build_trace
+        from aria_home.trace import UnknownInvestigation, build_trace, investigation_trace_inputs
 
         scn = _load_named_scenario(request.args.get("scenario"))
         if scn is None:
@@ -239,7 +246,20 @@ def create_app():
         at, error = _parse_at(request.args.get("at"), scn.manifest.start + timedelta(hours=3))
         if error:
             return error
-        result = build_trace(scn, at)
+        investigation_id = request.args.get("investigation_id") or None
+        store = _get_store()
+        if investigation_id is not None:
+            inputs = investigation_trace_inputs(store, scn, investigation_id, at)
+            if inputs is None:
+                if store.get_investigation(investigation_id) is None:
+                    return jsonify({"error": "follow-up not found", "data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone}), 404
+                investigation_id = None
+            elif at < inputs["follow_up"].created_at:
+                investigation_id = None
+        try:
+            result = build_trace(scn, at, investigation_id=investigation_id, store=store)
+        except UnknownInvestigation:
+            return jsonify({"error": "follow-up not found", "data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone}), 404
         result.update({"data_mode": "synthetic", "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "recorded_only": True})
         return jsonify(result)
 
@@ -774,9 +794,12 @@ def create_app():
                 decision = {"decision": "approved", "decided_at": scripted.available_at.isoformat(), "actor": "family_caregiver"}
                 source = "scenario event (the recorded story)"
         created_at = datetime.fromisoformat(str(alert["created_at"]).replace("Z", "+00:00"))
+        # The permission text is shown at the replay moment ARIA asks, so it is
+        # built from evidence visible at `at` (not from the alert creation time).
+        asked_at = at if at >= created_at else created_at
         return {
             "notification_id": alert["id"],
-            "text": caregiver_permission_text(scn, created_at),
+            "text": caregiver_permission_text(scn, asked_at),
             "requested_at": alert["created_at"],
             "status": decision["decision"] if decision else "waiting",
             "decided_at": decision["decided_at"] if decision else None,
@@ -806,14 +829,17 @@ def create_app():
         if row_before and row_before.get("last_evaluated_at"):
             latest_before = datetime.fromisoformat(str(row_before["last_evaluated_at"]).replace("Z", "+00:00"))
         is_rewind = latest_before is not None and at < latest_before
-        outcome = evaluate_outcome(follow_up, scn.records, at)
+        from aria_home.trace import investigation_trace_inputs
+
+        inputs = investigation_trace_inputs(store, scn, investigation_id, at)
+        outcome = evaluate_outcome(inputs["follow_up"], scn.records, at)
         if not is_rewind:
             store.record_outcome(investigation_id, outcome)
         outcome_payload = outcome.model_dump(mode="json")
         payload = {"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id, at=at, outcome=outcome), "supporting_ids": outcome.supporting_ids, "history": store.list_outcomes(investigation_id, at=at)}
         verification = None
         if any(r.source is SourceKind.room_sensor for r in scn.records):
-            verification = verify_recovery(scn, follow_up, at)
+            verification = inputs["verification"]
             latest = verification.get("latest_reading_used")
             latest_payload = None
             if isinstance(latest, dict):
@@ -853,7 +879,7 @@ def create_app():
             stored_output = investigation_row["output"] if investigation_row else None
             pseudo = {"output": stored_output} if stored_output else None
             readiness_for_hvac = {"status": "cannot_tell", "reasons": list(verification["reasons"]) if verification else []}
-            caregiver_decision = store.get_caregiver_decision(investigation_id, at=at)
+            caregiver_decision = inputs["caregiver_decision"]
             hvac_row = create_hvac_notification(store, scn, investigation_id, pseudo, readiness_for_hvac, at, verification=verification, caregiver_decision=caregiver_decision)
             if scn.manifest.id == "care_home_v1":
                 create_caregiver_updates(store, scn, investigation_id, hvac_row, verification, at)
@@ -963,6 +989,7 @@ def create_app():
         if existing.get("audience") != "hvac_company" and not is_permission:
             return jsonify({"error": "only the hvac_company notice and the caregiver permission request can be sent via WhatsApp", "reason": "wrong_audience", "data_mode": "synthetic"}), 409
         raw_at = request.args.get("at")
+        replay_at = None
         if raw_at is None:
             try:
                 body = request.get_json(force=False, silent=True)
@@ -974,6 +1001,7 @@ def create_app():
             at, error = _parse_at(raw_at, None)
             if error:
                 return error
+            replay_at = at
             try:
                 created_dt = datetime.fromisoformat(str(existing.get("created_at")).replace("Z", "+00:00"))
             except ValueError:
@@ -988,7 +1016,10 @@ def create_app():
                 inv_row = store.get_investigation(existing["investigation_id"])
                 perm_scn = _load_named_scenario(inv_row["scenario"] if inv_row else None) or scenario
                 created_dt = datetime.fromisoformat(str(existing["created_at"]).replace("Z", "+00:00"))
-                result = attempt_caregiver_permission_whatsapp(store, existing, caregiver_permission_text(perm_scn, created_dt))
+                # WhatsApp text mirrors the on-screen request: the replay moment
+                # ARIA asks, using only evidence visible then.
+                shown_at = replay_at if replay_at is not None and replay_at >= created_dt else created_dt
+                result = attempt_caregiver_permission_whatsapp(store, existing, caregiver_permission_text(perm_scn, shown_at))
             else:
                 result = attempt_hvac_whatsapp_delivery(store, existing)
         except Exception as exc:
@@ -1002,7 +1033,8 @@ def create_app():
         body = request.get_json(force=False, silent=True)
         if not isinstance(body, dict):
             return jsonify({"error": "request body must be a JSON object", "data_mode": "synthetic"}), 400
-        choice = {"approve": "approved", "decline": "declined"}.get(body.get("decision"))
+        raw_choice = body.get("decision")
+        choice = {"approve": "approved", "decline": "declined"}.get(raw_choice) if isinstance(raw_choice, str) else None
         if choice is None:
             return jsonify({"error": "decision must be 'approve' or 'decline'", "data_mode": "synthetic"}), 400
         raw_at = body.get("at")
@@ -1080,15 +1112,15 @@ def create_app():
                 created_dt = None
             if created_dt is not None and at < created_dt:
                 return jsonify({"error": "acknowledgement time must not be earlier than the notification creation time", "data_mode": "synthetic"}), 400
-        ack = store.record_ack(notification_id, actor, at)
-        if ack is None:
-            return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
-        updated = store.get_notification(notification_id)
-        inv_row = store.get_investigation(updated["investigation_id"]) if updated else None
+        inv_row = store.get_investigation(existing["investigation_id"])
         ack_scenario = inv_row["scenario"] if inv_row else scenario.manifest.id
         ack_scn = _load_named_scenario(ack_scenario) or scenario
         if public and at_given and not public_demo.checkpoint_ok(at, ack_scn.manifest.id):
             return jsonify({"error": "at is not an allowlisted replay time for this scenario", "data_mode": "synthetic", "scenario": ack_scn.manifest.id, "at": at.isoformat(), "timezone": ack_scn.manifest.timezone}), 400
+        ack = store.record_ack(notification_id, actor, at)
+        if ack is None:
+            return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
+        updated = store.get_notification(notification_id)
         return jsonify({"data_mode": "synthetic", "scenario": ack_scn.manifest.id, "at": at.isoformat(), "timezone": ack_scn.manifest.timezone, "message": "acknowledged, not resolved", "acknowledgement": "acknowledged, not resolved", "notification": _notification_api(updated), "ack": ack, "acks": updated["acks"] if updated else []})
 
     DIST_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
@@ -1115,14 +1147,13 @@ def create_app():
                         return jsonify({"error": "request body must be valid JSON", "data_mode": "synthetic"}), 400
             if request.path == "/api/health":
                 return None
-            session_id = request.cookies.get(public_demo.SESSION_COOKIE)
-            if not public_demo.valid_session_id(session_id):
-                session_id = public_demo.new_session_id()
+            admitted = public_demo.admit_session(public_demo.sessions_dir(), request.cookies.get(public_demo.SESSION_COOKIE))
+            if admitted["busy"]:
+                return jsonify({"error": "demo is at capacity; try again in a few minutes", "data_mode": "synthetic"}), 503
+            if admitted["new"]:
                 g.public_session_new = True
-                public_demo.sweep_sessions(public_demo.sessions_dir())
-            g.public_session_id = session_id
-            g.public_session_path = public_demo.session_db_path(public_demo.sessions_dir(), session_id)
-            public_demo.touch_session(g.public_session_path)
+            g.public_session_id = admitted["session_id"]
+            g.public_session_path = admitted["path"]
             raw_at = request.args.get("at")
             if request.path.startswith("/api/"):
                 named = request.args.get("scenario")

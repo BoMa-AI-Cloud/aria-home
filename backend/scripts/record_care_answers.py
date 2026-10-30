@@ -35,6 +35,7 @@ from aria_home.review import (  # noqa: E402
     REVIEW_CONTRACT_VERSION,
     REVIEW_MODEL_ID,
     REVIEW_PROVIDER_ROUTE,
+    answer_digest,
     request_live_review,
     reviews_dir,
 )
@@ -199,6 +200,8 @@ def _missing_plan(plan, recorded_base, reviews_base):
             accepted[key] = answer
     reviewed = set()
     for review in _load_existing_reviews(reviews_base):
+        if not review.get("answer_digest"):
+            continue
         key = _key_of(review)
         if key is not None:
             reviewed.add(key)
@@ -322,6 +325,9 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
                 "model_id": REVIEW_MODEL_ID,
                 "review_contract_version": REVIEW_CONTRACT_VERSION,
                 "reviewed_model_id": ANSWER_MODEL_ID,
+                "reviewed_prompt_version": PROMPT_VERSION,
+                "reviewed_readiness_policy_version": READINESS_POLICY_VERSION,
+                "answer_digest": answer_digest(output),
                 "provider_route": REVIEW_PROVIDER_ROUTE,
                 "recorded_at": recorded_stamp,
                 "review": live["review"],

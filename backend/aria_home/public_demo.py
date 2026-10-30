@@ -12,6 +12,7 @@ import os
 import re
 import secrets
 import tempfile
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -32,6 +33,12 @@ MAX_BODY_BYTES = 4096
 SESSION_COOKIE = "aria_demo_session"
 SESSION_IDLE_S = 2 * 60 * 60
 MAX_SESSIONS = 500
+# Total disk budget for all session stores (data plus SQLite sidecars). A fresh
+# session store is tens of kilobytes, so 500 sessions stay far below this; the
+# budget bounds disk use even if individual stores grow.
+MAX_SESSION_BYTES = 64 * 1024 * 1024
+
+_admission_lock = threading.Lock()
 
 _SESSION_ID_RE = re.compile(r"[A-Za-z0-9_-]{32,128}\Z")
 
@@ -138,6 +145,13 @@ def touch_session(path):
 
 
 def sweep_sessions(directory, idle_seconds=SESSION_IDLE_S, max_sessions=MAX_SESSIONS, now=None):
+    """Remove only sessions idle past the expiry; never evict live ones.
+
+    The session cap and disk budget are enforced at admission time (503 when
+    full), not here, so a sweep can never delete a visitor who merely paused.
+    `max_sessions` is kept for caller compatibility and ignored.
+    """
+    _ = max_sessions
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     current = time.time() if now is None else now
@@ -155,11 +169,72 @@ def sweep_sessions(directory, idle_seconds=SESSION_IDLE_S, max_sessions=MAX_SESS
             destroy_session(path)
             files.remove(path)
             removed_idle += 1
-    evicted = 0
-    while len(files) > max_sessions:
-        destroy_session(files.pop(0))
-        evicted += 1
-    return {"removed_idle": removed_idle, "evicted": evicted, "remaining": len(files)}
+    return {"removed_idle": removed_idle, "evicted": 0, "remaining": len(files)}
+
+
+def _disk_bytes(directory):
+    total = 0
+    for path in Path(directory).glob("sess-*.db*"):
+        try:
+            if path.is_file():
+                total += path.stat().st_size
+        except OSError:
+            continue
+    return total
+
+
+def admit_session(
+    directory,
+    session_id,
+    idle_seconds=SESSION_IDLE_S,
+    max_sessions=MAX_SESSIONS,
+    max_bytes=MAX_SESSION_BYTES,
+    now=None,
+):
+    """Admit one visitor, returning {"session_id", "path", "new", "busy"}.
+
+    A cookie the server did not issue has no store file, so it is treated as
+    absent: a new id is issued and nothing is ever created under the client's
+    chosen id. Expiry is checked before any touch. A new id is admitted only
+    after sweeping expired (2-hour idle) sessions; past the session cap or
+    disk budget the visitor is turned away busy with nothing allocated — idle
+    sessions are never evicted, so a visitor who paused keeps their session.
+    """
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    current = time.time() if now is None else now
+    with _admission_lock:
+        if valid_session_id(session_id):
+            path = session_db_path(directory, session_id)
+            if path.is_file():
+                try:
+                    idle = current - path.stat().st_mtime
+                except OSError:
+                    idle = None
+                if idle is not None and idle <= idle_seconds:
+                    touch_session(path)
+                    return {"session_id": session_id, "path": path, "new": False, "busy": False}
+                destroy_session(path)
+        sweep_sessions(directory, idle_seconds=idle_seconds, max_sessions=max_sessions, now=current)
+        entries = []
+        for candidate in directory.glob("sess-*.db"):
+            try:
+                if candidate.is_file():
+                    entries.append((candidate.stat().st_mtime, candidate))
+            except OSError:
+                continue
+        entries.sort(key=lambda item: (item[0], item[1].name))
+        total = _disk_bytes(directory)
+        if len(entries) >= max_sessions or total >= max_bytes:
+            return {"session_id": None, "path": None, "new": False, "busy": True}
+        fresh_id = new_session_id()
+        fresh_path = session_db_path(directory, fresh_id)
+        try:
+            fresh_path.touch(exist_ok=False)
+            os.utime(fresh_path, (current, current))
+        except OSError:
+            pass
+        return {"session_id": fresh_id, "path": fresh_path, "new": True, "busy": False}
 
 
 def parsed_checkpoints(scenario_id):

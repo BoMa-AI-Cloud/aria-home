@@ -225,8 +225,7 @@ The six synthetic home-camera frames attached to `care_home_v1` (`backend/fixtur
 
 ## Watcher correction rates (recorded runs only)
 
-No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs), after-correction pass rate n/a (0 runs).
-Once the operator records an approved batch through `aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as separate measures, computed from `backend/eval/corrections-*.json`.
+Recorded runs: 1; first-pass rejections: 1 (rate 1.00); passes after correction: 1 (rate 1.00).
 
 ## Reading this
 
@@ -328,16 +327,33 @@ Run by the operator, approved by Brad: exactly 6 calls (only the six after-arriv
 
 Honest reading, plainly: what changed is the contract, `inv-v2` to `inv-v3` — after arrival the model states the temperature at arrival instead of a current temperature, so the stale-reading-as-current rejections of the 77cafc9 run no longer apply. Five of the six after-arrival cases now validate with readiness agreement (enforced by the contract, so agreement shows contract-following, not independent readiness judgment). The one remaining rejection is a genuine claim-check catch, not a contract gap: the answer said "below target" against the resolved target_gap fact. This rerun covers only the six after-arrival cases, so it is not a full re-run, and the 77cafc9 17-case run (inv-v2) stays as recorded. One run per case, synthetic data, small sample. This is not a pass or fail of the product.
 
-## Second review and transcription (placeholder, 2026-10-29)
+## Second review (ten bound reviews)
 
-No muse-wonder-1.0 review and no muse-voice-transcribe-1.0 transcription has been recorded yet: the code that
-will display them is built offline (day11-06), and the approved paid calls run after it. When recorded, reviews
-(`backend/eval/reviews-*.json`, review-v1) are scored only on contract validity (known verdict, known issue kinds,
-evidence ids restricted to the pack, notes of at most 200 characters) and on whether they flag the planted
-unsupported claim; they never change a readiness, verification, or outcome result. Transcriptions
-(`backend/eval/transcripts-*.json`) are scored only on whether the resulting `human_report` record carries the
-expected statement (HVAC completion, observed 2026-01-16T20:40-05:00) without entering any measurement source list,
-eligibility, verification stage, or notification payload. Until then this section stays a placeholder.
+Ten muse-wonder-1.0 reviews are recorded, one per `care_home_v1` checkpoint
+(`backend/eval/reviews-care-2026-10-30-1.json`, review-v1), each carrying the
+`answer_digest` (sha256 of the canonical JSON of the reviewed answer's output)
+of the exact answer it reviewed; all ten verdicts are no_issues. The earlier
+ten unbound reviews (`backend/eval/reviews-care-2026-10-30.json`, no
+`answer_digest`) stay in the repo for the record and are not served while a
+bound review exists for the checkpoint: serving a bound review requires its
+digest to equal the digest of the displayed answer, and a mismatch shows no
+review and says the review does not match the answer. As a control, a
+deliberately falsified answer (room temperature changed to 71 F) was reviewed
+and returned issues_found / contradiction citing room-care-1630 (52.0 F).
+Reviews are scored only on contract validity (known verdict, known issue kinds,
+evidence ids restricted to the pack, notes of at most 200 characters) and on
+whether they flag the planted unsupported claim; they never change a readiness,
+verification, or outcome result, and a matching review is a bounded check, not
+proof the narrative is true.
+
+## Transcription (placeholder, 2026-10-29)
+
+No muse-voice-transcribe-1.0 transcription has been recorded yet.
+Transcriptions (`backend/eval/transcripts-*.json`) are scored only on whether
+the resulting `human_report` record carries the expected statement (HVAC
+completion, observed 2026-01-16T20:40-05:00) without entering any measurement
+source list, eligibility, verification stage, or notification payload. Until
+then this section stays a placeholder.
 
 ## Watcher correction rates (placeholder, 2026-10-29)
 

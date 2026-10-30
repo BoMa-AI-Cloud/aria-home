@@ -258,10 +258,13 @@ def test_retention_eviction(tmp_path):
         path.write_bytes(b"x")
         os.utime(path, (now - index, now - index))
     result = public_demo.sweep_sessions(directory, idle_seconds=10**9, max_sessions=3, now=now)
-    assert result["remaining"] == 3
-    assert result["evicted"] == 3
-    assert not (directory / "sess-4.db").exists()
-    assert (directory / "sess-0.db").exists()
+    assert result == {"removed_idle": 0, "evicted": 0, "remaining": 6}
+    for index in range(5):
+        assert (directory / f"sess-{index}.db").exists()
+    assert (directory / "sess-fresh.db").exists()
+    admitted = public_demo.admit_session(directory, None, max_sessions=3, now=now)
+    assert admitted == {"session_id": None, "path": None, "new": False, "busy": True}
+    assert len(list(directory.glob("sess-*.db"))) == 6
 
 
 def test_zero_outbound_http_across_full_replay(public_env, monkeypatch):

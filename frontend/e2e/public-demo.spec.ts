@@ -80,7 +80,7 @@ test("guided story completes from first checkpoint to warm-by time", async ({ pa
   const checkpoints = await startStory(page);
   const story = page.locator(".story-panel");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await expect(story).toContainText("older adult lives alone");
   await stepNext(page, checkpoints, 1);
@@ -158,7 +158,7 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
   expect(fieldsLine).toContain("relevant_observations");
   expect(await delivered.innerText()).not.toContain("itinerary");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   const before = await outcome.locator(".outcome-status").innerText();
   const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
@@ -169,6 +169,27 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
     await stepNext(page, checkpoints, index);
   }
   await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
+});
+
+test("completion report arrives after verification and ack changes no outcome", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  const at0621 = checkpoints.findIndex((checkpoint) => checkpoint.includes("06:21"));
+  expect(at0621).toBeGreaterThan(0);
+  for (let index = 1; index <= 4; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Recovery so far" }),
+  });
+  await expect.poll(async () => outcome.locator(".outcome-status").innerText()).not.toBe("");
+  const before = await outcome.locator(".outcome-status").innerText();
+  const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
+  await caregiver.getByRole("button", { name: "Acknowledge (simulated)" }).click();
+  await expect(caregiver).toContainText("Acknowledged, not resolved");
+  await expect(outcome.locator(".outcome-status")).toContainText(before.trim());
+  for (let index = 5; index <= at0621; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
 });
 
 test("two visitors are isolated and reset touches only the caller", async ({
@@ -217,12 +238,13 @@ test("rewind reveals no later state", async ({ page }) => {
   await page.getByRole("button", { name: "Rewind to start" }).click();
   await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   const timeline = page.locator("section", {
     has: page.getByRole("heading", { name: "Simulated timeline" }),
   });
   await expect(outcome.locator(".outcome-status")).not.toContainText("Warm-by expectation met");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(timeline).not.toContainText("HVAC completion report");
   await expect(page.locator("body")).not.toContainText("Acknowledged, not resolved");
 });
@@ -236,7 +258,7 @@ test("rapid step changes settle on the last step", async ({ page }) => {
     `Step 4 of ${checkpoints.length}`,
   );
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await expect(outcome.locator(".outcome-status")).toContainText("Thermostat telemetry missing");
   await expect(outcome.locator(".outcome-status")).not.toContainText("Warm-by expectation met");
@@ -310,4 +332,185 @@ test("landing shows the running version", async ({ page }) => {
   const expected = commit === "unknown" ? "Version unknown" : `Version ${commit.slice(0, 7)}`;
   await page.goto("/");
   await expect(page.getByTestId("version-line")).toHaveText(expected);
+});
+
+test("landing loads with no console errors and no failed requests", async ({ page }) => {
+  const consoleErrors: string[] = [];
+  const badResponses: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`);
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("button", { name: "Start the warm-by story" }),
+  ).toBeVisible();
+  await expect(page.getByTestId("version-line")).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  expect(consoleErrors).toEqual([]);
+  expect(badResponses).toEqual([]);
+});
+
+test("guided story runs with no console errors and no failed requests", async ({ page }) => {
+  const consoleErrors: string[] = [];
+  const badResponses: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`);
+  });
+  const checkpoints = await startStory(page);
+  for (let index = 1; index < checkpoints.length; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".story-complete")).toBeVisible();
+  await expect(
+    page.locator("section", { has: page.getByRole("heading", { name: "Recovery so far" }) })
+      .locator(".outcome-status"),
+  ).toContainText("Warm-by expectation met");
+  expect(consoleErrors).toEqual([]);
+  expect(badResponses).toEqual([]);
+});
+
+test("three tabs show house, reasoning and integrations", async ({ page }) => {
+  await startStory(page);
+  const tabs = page.getByRole("navigation", { name: "Pages" });
+  await expect(tabs.getByRole("button", { name: "House" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("heading", { name: "The house right now" })).toBeVisible();
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
+  await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
+  await expect(tabs.getByRole("button", { name: "Reasoning" })).toHaveAttribute("aria-current", "page");
+  await tabs.getByRole("button", { name: "Integrations" }).click();
+  await expect(page.getByRole("heading", { name: "Integrations" })).toBeVisible();
+  await expect(tabs.getByRole("button", { name: "Integrations" })).toHaveAttribute("aria-current", "page");
+});
+
+test("house verdict follows the replay time", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 3; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".verdict-headline")).toContainText("may not be warm by 7:00");
+  for (let index = 4; index < checkpoints.length; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".verdict-headline")).toContainText("expectation was met");
+});
+
+test("page has no horizontal scroll at 375px", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  const expectNoScroll = async () => {
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  };
+  await page.goto("/");
+  await expectNoScroll();
+  const checkpoints = await startStory(page);
+  await expectNoScroll();
+  const tabs = page.getByRole("navigation", { name: "Pages" });
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
+  await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
+  await expectNoScroll();
+  await tabs.getByRole("button", { name: "Integrations" }).click();
+  await expect(page.getByRole("heading", { name: "Integrations" })).toBeVisible();
+  await expectNoScroll();
+  await tabs.getByRole("button", { name: "House" }).click();
+  for (let index = 1; index < checkpoints.length; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expectNoScroll();
+});
+
+test("house at 02:31 has no legacy chrome and reasoning stays compact", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 3; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".banner")).toHaveCount(0);
+  await expect(page.locator("main h1")).toHaveCount(1);
+  await expect(page.locator(".verdict-headline")).toBeVisible();
+  const emptyHeadings = await page.evaluate(() => {
+    const visible = [...document.querySelectorAll("main h1, main h2, main h3, main h4")].filter(
+      (element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none";
+      },
+    );
+    return visible
+      .filter((element) => (element.textContent ?? "").trim().length === 0)
+      .map((element) => element.tagName);
+  });
+  expect(emptyHeadings).toEqual([]);
+  const permission = page.getByTestId("caregiver-permission");
+  await expect(permission).toContainText("52 F");
+  await expect(permission).toContainText("01:30");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
+  await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
+  await expect(page.getByTestId("trace-map")).toBeVisible();
+  await expect(page.locator(".checks-summary")).toContainText("checks:");
+  const height = await page.evaluate(
+    () => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight),
+  );
+  expect(height).toBeLessThan(4500);
+});
+
+test("reasoning at 02:31 and 07:01 and laws render with no page errors", async ({ page }) => {
+  const pageErrors: string[] = [];
+  const consoleErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(String(error)));
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  const checkpoints = await startStory(page);
+  const tabs = page.getByRole("navigation", { name: "Pages" });
+  const openReasoningLaws = async () => {
+    await tabs.getByRole("button", { name: "Reasoning" }).click();
+    await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
+    await expect(page.getByTestId("trace-map")).toBeVisible();
+    await page.locator("summary", { hasText: /ARIA.*Laws/ }).first().click();
+    const laws = page.locator("section[aria-labelledby='laws-heading']");
+    await expect(laws).toContainText("Watcher observations");
+    await expect(laws).toContainText("Corrections");
+    await expect(laws).toContainText("Original:");
+    await expect(page.locator("body")).not.toContainText("This section could not be shown");
+  };
+  const at0231 = checkpoints.findIndex((checkpoint) => checkpoint.includes("02:31"));
+  expect(at0231).toBeGreaterThan(0);
+  for (let index = 1; index <= at0231; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await openReasoningLaws();
+  await tabs.getByRole("button", { name: "House" }).click();
+  const at0701 = checkpoints.findIndex((checkpoint) => checkpoint.includes("07:01"));
+  expect(at0701).toBeGreaterThan(at0231);
+  for (let index = at0231 + 1; index <= at0701; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await openReasoningLaws();
+  expect(pageErrors).toEqual([]);
+  expect(consoleErrors).toEqual([]);
+});
+
+test("no request leaves the page origin", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (request) => {
+    const url = request.url();
+    if (url.startsWith("data:") || url.startsWith("blob:")) return;
+    if (!url.startsWith("http://127.0.0.1")) external.push(url);
+  });
+  const checkpoints = await startStory(page);
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
+  await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
+  for (let index = 1; index < checkpoints.length; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  expect(external).toEqual([]);
 });

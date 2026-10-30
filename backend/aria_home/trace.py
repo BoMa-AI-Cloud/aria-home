@@ -39,6 +39,31 @@ from .watcher import (
 
 TRACE_VERSION = "trace-v1"
 
+SCRIPTED_BASIS = "scripted story, no visitor decisions"
+
+
+class UnknownInvestigation(ValueError):
+    """The trace was asked for an investigation with no stored follow-up."""
+
+
+def investigation_trace_inputs(store, scenario, investigation_id, at):
+    """The follow-up/verification/notice inputs for one stored investigation.
+
+    Shared by the follow-up view and the trace so both use the investigation's
+    real follow-up (never a fresh one anchored at the replay time) and the
+    effective caregiver decision as of the replay time. Returns None when the
+    investigation has no stored follow-up in this store.
+    """
+    follow_up = store.get_follow_up(investigation_id)
+    if follow_up is None:
+        return None
+    return {
+        "follow_up": follow_up,
+        "verification": verify_recovery(scenario, follow_up, at),
+        "caregiver_decision": store.get_caregiver_decision(investigation_id, at=at),
+    }
+
+
 TEMP_UNITS = frozenset({"F", "C"})
 POWER_UNITS = frozenset({"W"})
 CONFLICT_QUANTITIES = ("indoor_temp", "circuit_power")
@@ -303,7 +328,7 @@ def _permission_trace(scenario, at, events, decisions, caregiver_decision=None):
     }
 
 
-def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries=None, transcript_entries=None, caregiver_decision=None):
+def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries=None, transcript_entries=None, caregiver_decision=None, investigation_id=None, store=None):
     pack = build_evidence_pack(scenario, at)
     identity = inference_identity(scenario, at)
     visible = visible_records(scenario.records, at)
@@ -324,14 +349,26 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     check_rows = _freshness_checks(source_traces) + _conflict_checks(visible, at) + _units_checks(visible) + _law_checks(pack, at, recorded_outputs)
 
     readiness = pack.get("readiness") if isinstance(pack.get("readiness"), dict) else {}
-    try:
-        followup = follow_up_for(scenario, identity["investigation_id"], at)
-    except ValueError as exc:
-        followup, verification, timeline = None, {"available": False, "reason": str(exc)}, []
-    else:
-        verification = _serialize_verification(verify_recovery(scenario, followup, at))
+    basis = SCRIPTED_BASIS
+    if investigation_id is not None:
+        inputs = investigation_trace_inputs(store, scenario, investigation_id, at) if store is not None else None
+        if inputs is None:
+            raise UnknownInvestigation(f"no stored follow-up for investigation {investigation_id}")
+        followup = inputs["follow_up"]
+        caregiver_decision = inputs["caregiver_decision"]
+        basis = f"visitor investigation {investigation_id}"
+        verification = _serialize_verification(inputs["verification"])
         verification["available"] = True
         timeline = _jsonable(build_evidence_timeline(scenario, followup, at))
+    else:
+        try:
+            followup = follow_up_for(scenario, identity["investigation_id"], at)
+        except ValueError as exc:
+            followup, verification, timeline = None, {"available": False, "reason": str(exc)}, []
+        else:
+            verification = _serialize_verification(verify_recovery(scenario, followup, at))
+            verification["available"] = True
+            timeline = _jsonable(build_evidence_timeline(scenario, followup, at))
 
     watcher = _watcher_detail(scenario, at, pack, identity, watcher_entries)
     watcher_summary = public_watcher(scenario, at)
@@ -352,7 +389,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     events = events_as_of(scenario, at)
     verification_for_notif = {key: value for key, value in verification.items() if key != "available"} if verification.get("available") else None
     decisions = decide_notifications(investigation, readiness, verification_for_notif, context, events, at, scenario, identity["investigation_id"])
-    decisions = list(decisions) + [decide_hvac_notification(investigation, readiness, verification_for_notif, context, events, at, scenario, identity["investigation_id"])]
+    decisions = list(decisions) + [decide_hvac_notification(investigation, readiness, verification_for_notif, context, events, at, scenario, investigation_id or identity["investigation_id"], caregiver_decision=caregiver_decision)]
     permission = _permission_trace(scenario, at, events, decisions, caregiver_decision)
     notices = [{"audience": item["audience"], "kind": item["kind"], "allowed": item["allowed"], "reason": item.get("reason"), "payload_keys": sorted((item.get("payload") or {}).keys())} for item in decisions]
 
@@ -388,6 +425,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     return {
         "trace_version": TRACE_VERSION,
         "computed_by": "deterministic code",
+        "basis": basis,
         "scenario": scenario.manifest.id,
         "at": at.isoformat(),
         "input_revision": identity["input_revision"],
@@ -407,4 +445,4 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     }
 
 
-__all__ = ["TRACE_VERSION", "build_trace"]
+__all__ = ["TRACE_VERSION", "SCRIPTED_BASIS", "UnknownInvestigation", "build_trace", "investigation_trace_inputs"]

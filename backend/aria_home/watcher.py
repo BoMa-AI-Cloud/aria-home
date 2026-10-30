@@ -50,6 +50,53 @@ WINDOW_HOURS = 3
 MAX_LEDGER_EXAMPLES = 5
 CORRECTIONS_GLOB = "corrections-*.json"
 NO_RECORDED_WATCHER_LABEL = "No recorded watcher run for this snapshot"
+NO_TEXT_REASON = "no text block in reply (thinking only)"
+VERIFIED_WATCHER_RESULTS = ("confirmed", "corrected and verified")
+
+
+def is_provider_error_rejection(entry):
+    if not isinstance(entry, dict):
+        return False
+    if (entry.get("final_result") or entry.get("status")) != "rejected":
+        return False
+    failed = entry.get("failed_checks")
+    if not isinstance(failed, list) or not failed:
+        return False
+    return all(
+        isinstance(check, str) and check.startswith("provider error:")
+        for check in failed
+    )
+
+
+def is_unreadable_rejection(entry):
+    if not isinstance(entry, dict):
+        return False
+    if (entry.get("final_result") or entry.get("status")) != "rejected":
+        return False
+    failed = entry.get("failed_checks")
+    if not isinstance(failed, list) or not failed:
+        return False
+    return all(
+        check == NO_TEXT_REASON or (isinstance(check, str) and check.startswith("invalid JSON"))
+        for check in failed
+    )
+
+
+def _messages_text(body):
+    content = body.get("content") if isinstance(body, dict) else None
+    if not isinstance(content, list):
+        return ""
+    return "".join(
+        block.get("text")
+        for block in content
+        if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str)
+    )
+
+
+def _parse_watcher_text(text):
+    if text is None or (isinstance(text, str) and not text.strip()):
+        return None, [NO_TEXT_REASON]
+    return parse_watcher_output(text)
 
 WATCHER_SYSTEM_PROMPT = """You are the ARIA Home anomaly watcher (prompt version watch-v1).
 You receive an as-of window of all visible evidence for one home (room, thermostat, circuits, weather, visual).
@@ -276,17 +323,42 @@ def verify_watcher_output(parsed, pack, at, registry=None):
     return reasons
 
 
+def _provider_error_of(result):
+    if isinstance(result, dict):
+        error = result.get("error")
+        status = result.get("status")
+        reply_model = result.get("model") or result.get("reply_model")
+    else:
+        error = getattr(result, "error", None)
+        status = getattr(result, "status", None)
+        reply_model = getattr(result, "answered_model", None)
+    if not error or error == NO_TEXT_REASON or error == "no_text":
+        return None
+    return {"error": error, "status": status, "reply_model": reply_model}
+
+
+def provider_error_reason(detail):
+    reason = f"provider error: {detail['error']}"
+    if detail["error"] == "bad_response" and isinstance(detail.get("status"), int):
+        reason += f" (HTTP {detail['status']})"
+    if detail["error"] == "model_mismatch" and detail.get("reply_model"):
+        reason += f" (reply model {detail['reply_model']!r})"
+    return reason
+
+
 def _generate_text(provider, prompt):
     result = provider.generate(prompt, max_tokens=WATCHER_MAX_TOKENS)
     if isinstance(result, dict):
         text = result.get("text")
+        if text is None and isinstance(result.get("content"), list):
+            text = _messages_text(result) or None
         model_id = result.get("answered_model") or result.get("requested_model")
         mode = result.get("mode")
     else:
         text = getattr(result, "text", None)
         model_id = getattr(result, "answered_model", None) or getattr(result, "requested_model", None)
         mode = getattr(result, "mode", None)
-    return text, model_id or WATCHER_MODEL_ID, mode or "mock"
+    return text, model_id or WATCHER_MODEL_ID, mode or "mock", _provider_error_of(result)
 
 
 def _availability_of(pack, source):
@@ -314,8 +386,10 @@ def run_watcher(scenario, at, provider, corrections=(), registry=None):
     pack = build_evidence_pack(scenario, at)
     identity = watcher_identity(scenario, at)
     prompt = build_watcher_prompt(pack, registry, corrections)
-    first_text, model_id, mode = _generate_text(provider, prompt)
-    parsed, reasons = parse_watcher_output(first_text or "")
+    first_text, model_id, mode, first_error = _generate_text(provider, prompt)
+    parsed, reasons = _parse_watcher_text(first_text)
+    if first_error is not None:
+        reasons = [provider_error_reason(first_error), *(r for r in reasons if r != NO_TEXT_REASON)]
     failed_checks = list(reasons)
     if parsed is not None:
         failed_checks.extend(verify_watcher_output(parsed, pack, at, registry))
@@ -325,8 +399,10 @@ def run_watcher(scenario, at, provider, corrections=(), registry=None):
         revision_text = None
     else:
         revision_prompt = build_revision_prompt(first_text or "", failed_checks, pack)
-        revision_text, model_id, mode = _generate_text(provider, revision_prompt)
-        revised, revision_reasons = parse_watcher_output(revision_text or "")
+        revision_text, model_id, mode, revision_error = _generate_text(provider, revision_prompt)
+        revised, revision_reasons = _parse_watcher_text(revision_text)
+        if revision_error is not None:
+            revision_reasons = [provider_error_reason(revision_error), *(r for r in revision_reasons if r != NO_TEXT_REASON)]
         revision_checks = list(revision_reasons)
         if revised is not None:
             revision_checks.extend(verify_watcher_output(revised, pack, at, registry))
@@ -412,21 +488,17 @@ def request_live_watcher(prompt, *, env=None, max_tokens=WATCHER_MAX_TOKENS, tim
     if response.status_code in (401, 403):
         return {"ok": False, "error": "auth", "text": None}
     if not 200 <= response.status_code <= 299:
-        return {"ok": False, "error": "bad_response", "text": None}
+        return {"ok": False, "error": "bad_response", "status": response.status_code, "text": None}
     try:
         body = response.json()
     except ValueError:
-        return {"ok": False, "error": "bad_response", "text": None}
+        return {"ok": False, "error": "bad_response", "status": response.status_code, "text": None}
     if not isinstance(body, dict) or body.get("model") != model_id:
-        return {"ok": False, "error": "model_mismatch", "text": None}
-    parts = [
-        block["text"]
-        for block in body.get("content") or []
-        if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str)
-    ]
+        return {"ok": False, "error": "model_mismatch", "model": body.get("model") if isinstance(body, dict) else None, "status": response.status_code, "text": None}
+    parts = _messages_text(body)
     if not parts:
-        return {"ok": False, "error": "no_text", "text": None}
-    return {"ok": True, "error": None, "text": "".join(parts)}
+        return {"ok": False, "error": NO_TEXT_REASON, "text": None}
+    return {"ok": True, "error": None, "text": parts}
 
 
 def _watcher_entries(payload, source):
@@ -458,29 +530,58 @@ def load_recorded_watchers(directory=None):
     return entries
 
 
-def find_recorded_watcher(entries, scenario_id, evaluated_at_utc, input_revision, laws_version=None):
+def _matches_watcher_identity(entry, scenario_id, wanted_at, input_revision, laws_version):
+    try:
+        entry_at = laws_module._parse_time(entry.get("evaluated_at_utc") or entry.get("recorded_at"))
+        entry_at = entry_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    except (TypeError, ValueError, AttributeError):
+        return False
+    return (
+        entry.get("scenario_id") == scenario_id
+        and entry_at == wanted_at
+        and entry.get("input_revision") == input_revision
+        and (laws_version is None or entry.get("laws_version", laws_version) == laws_version)
+        and entry.get("watcher_prompt_version", WATCHER_PROMPT_VERSION) == WATCHER_PROMPT_VERSION
+    )
+
+
+def find_all_recorded_watchers(entries, scenario_id, evaluated_at_utc, input_revision, laws_version=None):
     try:
         wanted_at = laws_module._parse_time(evaluated_at_utc).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
     except (TypeError, ValueError, AttributeError):
+        return []
+    return [
+        item for item in entries
+        if isinstance(item.get("entry"), dict)
+        and _matches_watcher_identity(item["entry"], scenario_id, wanted_at, input_revision, laws_version)
+    ]
+
+
+def _recorded_at_or_min(entry):
+    try:
+        return laws_module._parse_time(entry.get("recorded_at")).astimezone(timezone.utc)
+    except (TypeError, ValueError, AttributeError):
+        return datetime.min.replace(tzinfo=timezone.utc)
+
+
+def newest_recorded_watcher(matches):
+    best, best_key = None, None
+    for position, item in enumerate(matches or []):
+        key = (_recorded_at_or_min(item["entry"]), position)
+        if best_key is None or key > best_key:
+            best, best_key = item, key
+    return best
+
+
+def find_recorded_watcher(entries, scenario_id, evaluated_at_utc, input_revision, laws_version=None):
+    matches = find_all_recorded_watchers(entries, scenario_id, evaluated_at_utc, input_revision, laws_version)
+    if not matches:
         return None
-    for item in entries:
-        entry = item.get("entry")
-        if not isinstance(entry, dict):
-            continue
-        try:
-            entry_at = laws_module._parse_time(entry.get("evaluated_at_utc") or entry.get("recorded_at"))
-            entry_at = entry_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        except (TypeError, ValueError, AttributeError):
-            continue
-        if (
-            entry.get("scenario_id") == scenario_id
-            and entry_at == wanted_at
-            and entry.get("input_revision") == input_revision
-            and (laws_version is None or entry.get("laws_version", laws_version) == laws_version)
-            and entry.get("watcher_prompt_version", WATCHER_PROMPT_VERSION) == WATCHER_PROMPT_VERSION
-        ):
-            return item
-    return None
+    verified = [
+        item for item in matches
+        if (item["entry"].get("final_result") or item["entry"].get("status")) in VERIFIED_WATCHER_RESULTS
+    ]
+    return newest_recorded_watcher(verified or matches)
 
 
 def watcher_provenance(entry, validation_reasons):
@@ -562,10 +663,15 @@ __all__ = [
     "build_watcher_prompt",
     "code_detections",
     "corrections_dir",
+    "find_all_recorded_watchers",
     "find_recorded_watcher",
+    "is_provider_error_rejection",
+    "is_unreadable_rejection",
     "load_correction_records",
     "load_recorded_watchers",
+    "newest_recorded_watcher",
     "parse_watcher_output",
+    "provider_error_reason",
     "public_watcher",
     "request_live_watcher",
     "run_watcher",

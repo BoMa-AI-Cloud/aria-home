@@ -53,14 +53,15 @@ jobs:
       - name: Alternate-port config (isolated 15173/15000 proxy check)
         working-directory: frontend
         run: npm run test:e2e:alt-ports
-      - name: npm audit (reporting only, does not fail on advisories)
-        if: always()
-        continue-on-error: true
+      - name: "Public demo e2e"
+        working-directory: frontend
+        run: npm run test:e2e:public-demo
+      # Dependency audits fail the build on advisories: a reported advisory
+      # must be triaged (upgrade, pin, or document) before the change lands.
+      - name: "npm audit (fails on advisories)"
         working-directory: frontend
         run: npm audit --omit=dev
-      - name: pip-audit (reporting only, does not fail on advisories)
-        if: always()
-        continue-on-error: true
+      - name: "pip-audit (fails on advisories)"
         working-directory: backend
         run: |
           pip install pip-audit

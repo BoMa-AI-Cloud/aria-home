@@ -48,6 +48,7 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   const evidence = page.locator("section", {
     has: page.getByRole("heading", { name: "Evidence sources" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toBeVisible();
   await expect(evidence).toBeVisible();
   const investigationBox = await investigation.boundingBox();
@@ -56,26 +57,28 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   expect(evidenceBox).not.toBeNull();
   expect(investigationBox!.y + investigationBox!.height).toBeLessThanOrEqual(evidenceBox!.y);
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   const demoControls = page.locator(".demo-controls");
   const time0231 = demoControls.getByRole("button", { name: "02:31" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
   await expect(page.locator("header .eval-time")).toContainText("2:31 AM ET");
 
-  await expect(page.locator(".card")).toHaveCount(6);
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
+  await expect(page.locator(".evidence-table tbody tr")).toHaveCount(6);
   for (const source of SOURCES) {
-    const card = page.locator(`article[aria-label="${source} source"]`);
-    await expect(card).toHaveCount(1);
-    await expect(card.getByText(/status:/i)).toBeVisible();
+    const row = page.locator(`tr[data-source="${source}"]`);
+    await expect(row).toHaveCount(1);
+    await expect(row.getByText(/status:/i)).toBeVisible();
   }
 
-  await expect(page.locator('article[aria-label="thermostat source"]')).toContainText(
+  await expect(page.locator('tr[data-source="thermostat"]')).toContainText(
     "newest record is stale",
   );
-  await expect(page.locator('article[aria-label="room_sensor source"]')).toContainText(
+  await expect(page.locator('tr[data-source="room_sensor"]')).toContainText(
     "52 F",
   );
-  await expect(page.locator('article[aria-label="weather source"]')).toContainText(
+  await expect(page.locator('tr[data-source="weather"]')).toContainText(
     "Forecast, not an on-property measurement",
   );
 
@@ -90,8 +93,10 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
   ).toBeVisible();
   await expect(investigation.locator(".interpretation")).toContainText("not verified");
   await expect(investigation.locator(".mock-label")).toContainText(/mock/i);
+  await investigation.locator("summary", { hasText: "One question" }).click();
   await expect(investigation.getByRole("heading", { name: "One question for you" })).toBeVisible();
   await expect(investigation).toContainText("Who should respond first");
+  await investigation.locator("summary", { hasText: "Power context" }).click();
   await expect(investigation).toContainText("weighs against complete property power loss");
   await expect(investigation).toContainText("MOCK - example answer, not live inference");
   await expect(page.locator("body")).not.toContainText("0.0342857");
@@ -113,7 +118,7 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
   await expect(demoControls).toContainText("Demo controls");
 
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await expect(outcome).toBeVisible();
 
@@ -132,6 +137,7 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
     "Readings after the deadline are not counted toward this follow-up.",
   );
   const historyItems = outcome.locator(".outcome-history li");
+  await outcome.locator("summary", { hasText: "History" }).click();
   await expect(historyItems.first()).toBeVisible();
   expect(await historyItems.count()).toBeGreaterThanOrEqual(2);
   await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
@@ -155,7 +161,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
 
   const demoControls = page.locator(".demo-controls");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   const timeline = page.locator("section", {
     has: page.getByRole("heading", { name: "Simulated timeline" }),
@@ -175,6 +181,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText("Evaluation time:");
   await expect(investigation).toContainText("2:31 AM");
   await expect(investigation).not.toContainText("06:55");
@@ -184,11 +191,15 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   await expect(page.locator("body")).toContainText("Confirmation request");
   await expect(page.locator("body")).toContainText("fields sent:");
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   const hvacRequest = timeline.locator("article", { hasText: "HVAC request" });
   await expect(hvacRequest).toHaveCount(0);
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "04:21" }).click();
   await expect(headline).toContainText("Thermostat reporting restored");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(hvacRequest).toHaveCount(1);
   await expect(hvacRequest).toContainText("property");
   await expect(hvacRequest).toContainText("access_note");
@@ -199,6 +210,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   const authorized = timeline.locator("article", { hasText: "Caregiver authorized HVAC contact" });
   await expect(authorized).toHaveCount(1);
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "04:51" }).click();
   await expect(headline).toContainText("Warming observed");
   await expect(headline).not.toContainText("Temperature goal verified");
@@ -211,19 +223,26 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   const evidenceTimeline = page.locator("section", {
     has: page.getByRole("heading", { name: "Evidence timeline" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(4);
   await expect(evidenceTimeline).not.toContainText("HVAC completion report available");
   await expect(evidenceTimeline).not.toContainText("Corroboration only");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   const report = timeline.locator("article", { hasText: "HVAC completion report" });
   await expect(report).toHaveCount(0);
   await expect(timeline).not.toContainText("Corroboration only");
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "06:45" }).click();
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(report).toHaveCount(1);
   await expect(report).toContainText("Corroboration only, does not set the outcome");
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "07:01" }).click();
   await expect(headline).toContainText("Warm-by expectation met");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(7);
   expect(
     (await evidenceTimeline.locator(".evidence-timeline-label").allTextContents()).map((t) => t.trim()),
@@ -248,6 +267,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   await expect(reportRow).toContainText("6:45 AM ET");
   await expect(evidenceTimeline.locator(".evidence-timeline-entry").first()).toContainText("4:20 AM ET");
   await expect(evidenceTimeline.locator(".evidence-timeline-entry").last()).toContainText("7:00 AM ET");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await expect(outcome).toContainText("Latest reading used: observed");
   await expect(outcome.locator(".stage-times")).not.toContainText("6:40 AM");
   await expect(outcome).not.toContainText("6:40 AM");
@@ -256,6 +276,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   await expect(page.locator("body")).not.toContainText("None");
   await expect(page.locator("body")).not.toContainText("Email_flight_confirmation");
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   const eventCards = timeline.locator(".event-card");
   const count = await eventCards.count();
   expect(count).toBeGreaterThan(0);
@@ -278,10 +299,10 @@ test("care scenario shows scoped simulated notifications and resident update", a
 
   const demoControls = page.locator(".demo-controls");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   const notifications = page.locator("section", {
-    has: page.getByRole("heading", { name: "Notifications (simulated delivery)" }),
+    has: page.getByRole("heading", { name: "Who knows" }),
   });
   await expect(notifications).toBeVisible();
 
@@ -363,10 +384,9 @@ test("care scenario shows scoped simulated notifications and resident update", a
 
 test("care scenario shows warm-by plan and consent at 19:20", async ({ page }) => {
   await page.goto("/");
-  const plan = page.locator("section", {
-    has: page.getByRole("heading", { name: "Confirmed plan and permissions" }),
-  });
+  const plan = page.locator(".plan-row");
   await expect(plan).toBeVisible();
+  await plan.locator("summary").click();
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
   await expect(plan).toContainText("Not yet confirmed");
   const demoControls = page.locator(".demo-controls");
@@ -387,15 +407,21 @@ test("care scenario shows warm-by plan and consent at 19:20", async ({ page }) =
 
 test("without inset the full page still renders all panels", async ({ page }) => {
   await page.goto("/");
+  const tabs = page.getByRole("navigation", { name: "Pages" });
   for (const heading of [
-    "Confirmed plan and permissions",
+    "The house right now",
+    "Who knows",
+    "Recovery so far",
+  ]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(page.locator(".plan-row")).toBeVisible();
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
+  for (const heading of [
     "Investigation",
-    "Outcome",
     "Evidence timeline",
-    "Notifications (simulated delivery)",
-    "Homeowner update",
-    "Simulated timeline",
     "Evidence sources",
+    "Simulated timeline",
   ]) {
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
   }
@@ -404,15 +430,21 @@ test("without inset the full page still renders all panels", async ({ page }) =>
 
 test("without key the full page still renders all panels", async ({ page }) => {
   await page.goto("/");
+  const tabs = page.getByRole("navigation", { name: "Pages" });
   for (const heading of [
-    "Confirmed plan and permissions",
+    "The house right now",
+    "Who knows",
+    "Recovery so far",
+  ]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(page.locator(".plan-row")).toBeVisible();
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
+  for (const heading of [
     "Investigation",
-    "Outcome",
     "Evidence timeline",
-    "Notifications (simulated delivery)",
-    "Homeowner update",
-    "Simulated timeline",
     "Evidence sources",
+    "Simulated timeline",
   ]) {
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
   }
@@ -426,16 +458,20 @@ test("keyboard replay to 07:01 shows warm-by expectation met", async ({ page }) 
   const scenario = page.getByLabel("Scenario");
   const replay0701 = page.getByRole("button", { name: "Replay to 07:01" });
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
 
-  await page.keyboard.press("Tab");
+  for (let i = 0; i < 30; i += 1) {
+    if (await scenario.evaluate((element) => document.activeElement === element)) break;
+    await page.keyboard.press("Tab");
+  }
   await expect(scenario).toBeFocused();
   await expect(scenario).toHaveValue("care_home_v1");
 
   await expect(replay0701).toBeEnabled({ timeout: 60_000 });
   await expect(scenario).toBeFocused();
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = 0; i < 30; i += 1) {
+    if (await replay0701.evaluate((element) => document.activeElement === element)) break;
     await page.keyboard.press("Tab");
   }
   await expect(replay0701).toBeFocused();
@@ -452,22 +488,26 @@ test("source cards follow scenario, replay advance and rewind in ET", async ({ p
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
-  const thermostat = page.locator('article[aria-label="thermostat source"]');
+  const thermostat = page.locator('tr[data-source="thermostat"]');
   await expect(headerTime).toContainText("6:00 PM ET");
   const initialCard = await thermostat.innerText();
 
   await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
   await expect(headerTime).toContainText("4:31 PM ET");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText("4:31 PM ET");
   await expect(thermostat).not.toHaveText(initialCard);
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   const demoControls = page.locator(".demo-controls");
   await demoControls.getByRole("button", { name: "18:21" }).click();
   await expect(headerTime).toContainText("6:21 PM ET");
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText(/Historical investigation/);
   const advancedCard = await thermostat.innerText();
   expect(advancedCard).not.toEqual(initialCard);
 
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "16:31" }).click();
   await expect(headerTime).toContainText("4:31 PM ET");
 });
@@ -476,7 +516,7 @@ test("rapid replay selections end on the last selection", async ({ page }) => {
   await page.goto("/");
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
   const demoControls = page.locator(".demo-controls");
@@ -494,6 +534,7 @@ test("scenario times show ET in both browser timezones", async ({ page }) => {
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText("4:31 PM ET");
   await expect(page.locator("header .eval-time")).toContainText("4:31 PM ET");
 });
@@ -505,6 +546,7 @@ test("visual scenario shows synthetic image with segmentation overlay and verdic
   await page
     .getByLabel("Scenario")
     .selectOption({ label: "Water detection, low indoor temp (synthetic image)" });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   const visual = page.locator("section", {
     has: page.getByRole("heading", { name: "Visual evidence (synthetic image)" }),
   });
@@ -526,12 +568,14 @@ test("care scenario shows camera frames with recorded misses", async ({ page }) 
 
   await page.goto("/");
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
+  const tabs = page.getByRole("navigation", { name: "Pages" });
   const visual = page.locator("section", {
     has: page.getByRole("heading", { name: "Visual evidence (synthetic image)" }),
   });
   const demoControls = page.locator(".demo-controls");
 
   await demoControls.getByRole("button", { name: "02:31" }).click();
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
   await expect(visual).toBeVisible();
   await expect(visual).toContainText(
     "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)",
@@ -541,7 +585,9 @@ test("care scenario shows camera frames with recorded misses", async ({ page }) 
   await expect(visual).toContainText("Missed by the model");
   await expect(visual.getByText(/Readiness:/)).toContainText("At risk");
 
+  await tabs.getByRole("button", { name: "House" }).click();
   await demoControls.getByRole("button", { name: "07:01" }).click();
+  await tabs.getByRole("button", { name: "Reasoning" }).click();
   await expect(visual.locator("img")).toBeVisible();
   await expect(visual.locator("svg rect")).toHaveCount(0);
   await expect(visual).not.toContainText("Missed by the model");

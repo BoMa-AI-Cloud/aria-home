@@ -11,12 +11,17 @@ from aria_home.investigator import build_evidence_pack
 from aria_home.scenario import load_scenario
 from aria_home.watcher import (
     NO_RECORDED_WATCHER_LABEL,
+    NO_TEXT_REASON,
     WATCHER_PROMPT_VERSION,
     build_revision_prompt,
     build_watcher_prompt,
     code_detections,
+    find_all_recorded_watchers,
     find_recorded_watcher,
+    is_unreadable_rejection,
     load_correction_records,
+    load_recorded_watchers,
+    newest_recorded_watcher,
     parse_watcher_output,
     public_watcher,
     request_live_watcher,
@@ -208,3 +213,73 @@ def test_verify_applies_active_laws():
     at = datetime.fromisoformat("2026-01-17T07:00:00-05:00")
     parsed = {"observations": []}
     assert verify_watcher_output(parsed, pack, at) == []
+
+
+def _watcher_entry(identity, *, status, recorded_at, failed_checks=()):
+    return {"scenario_id": identity["scenario_id"], "evaluated_at_utc": identity["evaluated_at_utc"],
+            "input_revision": identity["input_revision"], "laws_version": identity["laws_version"],
+            "watcher_prompt_version": WATCHER_PROMPT_VERSION, "model_id": "muse-spark-1.3",
+            "provider_route": "mock", "recorded_at": recorded_at,
+            "status": status, "final_result": status, "failed_checks": list(failed_checks),
+            "output": {"observations": []}}
+
+
+def _find_args(identity):
+    return (identity["scenario_id"], identity["evaluated_at_utc"], identity["input_revision"], identity["laws_version"])
+
+
+def test_find_serves_newest_verified_when_identity_repeats():
+    identity = watcher_identity(_care(), AT)
+    entries = [
+        {"entry": _watcher_entry(identity, status="confirmed", recorded_at="2026-10-30T19:00:00+00:00"), "source": "a"},
+        {"entry": _watcher_entry(identity, status="corrected and verified", recorded_at="2026-10-30T19:01:00+00:00"), "source": "b"},
+        {"entry": _watcher_entry(identity, status="confirmed", recorded_at="2026-10-30T19:02:00+00:00"), "source": "c"},
+    ]
+    assert find_recorded_watcher(entries, *_find_args(identity))["source"] == "c"
+    assert newest_recorded_watcher(find_all_recorded_watchers(entries, *_find_args(identity)))["source"] == "c"
+
+
+def test_find_prefers_verified_over_newer_real_rejection():
+    identity = watcher_identity(_care(), AT)
+    entries = [
+        {"entry": _watcher_entry(identity, status="confirmed", recorded_at="2026-10-30T19:00:00+00:00"), "source": "verified"},
+        {"entry": _watcher_entry(identity, status="rejected", recorded_at="2026-10-30T19:05:00+00:00",
+                                 failed_checks=["observation value does not match evidence room-care-1630"]), "source": "rejected"},
+    ]
+    assert find_recorded_watcher(entries, *_find_args(identity))["source"] == "verified"
+
+
+def test_unreadable_rejection_never_hides_readable_entry():
+    identity = watcher_identity(_care(), AT)
+    for failed in (["invalid JSON: Expecting value: line 1 column 1 (char 0)"], [NO_TEXT_REASON]):
+        assert is_unreadable_rejection({"final_result": "rejected", "failed_checks": failed}) is True
+        entries = [
+            {"entry": _watcher_entry(identity, status="rejected", recorded_at="2026-10-30T19:05:00+00:00",
+                                     failed_checks=failed), "source": "unreadable"},
+            {"entry": _watcher_entry(identity, status="confirmed", recorded_at="2026-10-30T19:00:00+00:00"), "source": "readable"},
+        ]
+        assert find_recorded_watcher(entries, *_find_args(identity))["source"] == "readable"
+        assert find_recorded_watcher(list(reversed(entries)), *_find_args(identity))["source"] == "readable"
+
+
+def test_real_code_check_rejection_is_not_unreadable_and_still_served():
+    identity = watcher_identity(_care(), AT)
+    failed = ["observation value does not match evidence room-care-1630: 71.0 != 52.0 (tolerance 0.15)"]
+    assert is_unreadable_rejection({"final_result": "rejected", "failed_checks": failed}) is False
+    assert is_unreadable_rejection({"final_result": "rejected", "failed_checks": failed + ["invalid JSON: x"]}) is False
+    assert is_unreadable_rejection({"final_result": "confirmed", "failed_checks": []}) is False
+    entries = [{"entry": _watcher_entry(identity, status="rejected", recorded_at="2026-10-30T19:05:00+00:00",
+                                        failed_checks=failed), "source": "only"}]
+    assert find_recorded_watcher(entries, *_find_args(identity))["source"] == "only"
+
+
+def test_load_recorded_watchers_aggregates_repeat_identities(tmp_path):
+    identity = watcher_identity(_care(), AT)
+    unreadable = _watcher_entry(identity, status="rejected", recorded_at="2026-10-30T19:05:00+00:00",
+                                failed_checks=["invalid JSON: Expecting value: line 1 column 1 (char 0)"])
+    readable = _watcher_entry(identity, status="confirmed", recorded_at="2026-10-30T19:06:00+00:00")
+    (tmp_path / "watchers-a.json").write_text(json.dumps({"watchers": [unreadable]}), encoding="utf-8")
+    (tmp_path / "watchers-b.json").write_text(json.dumps({"watchers": [readable]}), encoding="utf-8")
+    entries = load_recorded_watchers(tmp_path)
+    assert len(entries) == 2
+    assert find_recorded_watcher(entries, *_find_args(identity))["entry"] == readable

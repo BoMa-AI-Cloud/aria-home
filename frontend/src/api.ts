@@ -351,6 +351,7 @@ export interface RecordedReviewProvenance {
   reviewed_model_id: string | null;
   reviewed_input_revision: string | null;
   reviewed_at: string | null;
+  answer_digest?: string | null;
   validation: { passed: boolean; reasons: string[] };
 }
 
@@ -358,6 +359,9 @@ export interface RecordedReview {
   review: { verdict: string; issues: RecordedReviewIssue[] } | null;
   raw_output: unknown;
   provenance: RecordedReviewProvenance;
+  answer_digest?: string | null;
+  answer_bound?: boolean;
+  answer_mismatch?: boolean;
 }
 
 export interface HumanReportProvenance {
@@ -1125,6 +1129,8 @@ export interface WatcherCodeDetection {
   claim: string;
   evidence_ids: string[];
   values: Record<string, unknown>;
+  rule?: string;
+  detail?: string;
 }
 
 export interface WatcherProvenance {
@@ -1154,15 +1160,22 @@ export function fetchWatcher(scenario: string, at: string): Promise<WatcherRespo
   return fetchJson<WatcherResponse>(`/api/watcher${query}`);
 }
 
+export interface WatcherCorrectionObservation {
+  kind: string;
+  claim: string;
+  evidence_ids: string[];
+  values: Record<string, unknown>;
+}
+
 export interface CorrectionRecord {
   scenario_id: string;
   evaluated_at_utc: string;
   input_revision: string;
   laws_version: string;
   watcher_prompt_version: string;
-  original_claim: string | null;
+  original_claim: WatcherCorrectionObservation[] | null;
   failed_checks: string[];
-  revision_claim: string | null;
+  revision_claim: WatcherCorrectionObservation[] | null;
   final_result: string;
 }
 
@@ -1228,6 +1241,7 @@ export interface TraceResponse {
   timezone?: string;
   trace_version: string;
   computed_by: string;
+  basis: string;
   input_revision: string;
   evaluated_at_utc: string;
   as_of_note: string;
@@ -1262,7 +1276,8 @@ export interface TraceResponse {
   steps: TraceStep[];
 }
 
-export function fetchTrace(scenario: string, at: string): Promise<TraceResponse> {
-  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
+export function fetchTrace(scenario: string, at: string, investigationId?: string | null): Promise<TraceResponse> {
+  const id = investigationId ? `&investigation_id=${encodeURIComponent(investigationId)}` : "";
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}${id}`;
   return fetchJson<TraceResponse>(`/api/trace${query}`);
 }

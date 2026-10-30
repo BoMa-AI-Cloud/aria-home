@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ackNotification,
   decideCaregiverPermission,
@@ -33,6 +33,7 @@ import {
   type CreateInvestigationResponse,
   type EvidenceTimelineEntry,
   type HumanReportPayload,
+  type IndoorTrend,
   type InvestigationResponse,
   type InvestigationSummary,
   type LawsResponse,
@@ -340,21 +341,25 @@ function ReadinessBlock({
         {gapLine ? `. ${gapLine}.` : "."}
       </p>
       {readiness.reasons.length > 0 && (
-        <ul>
-          {readiness.reasons.map((reason) => (
-            <li key={reason}>{reason}</li>
-          ))}
-        </ul>
+        <details className="readiness-details">
+          <summary>Reasons ({readiness.reasons.length})</summary>
+          <ul>
+            {readiness.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
+        </details>
       )}
     </div>
   );
 }
 
-function VisualEvidencePanel({ scenario, at }: { scenario: string; at: string }) {
+function VisualEvidencePanel({ scenario, at, enabled = true }: { scenario: string; at: string; enabled?: boolean }) {
   const [visual, setVisual] = useState<VisualEvidence | null | undefined>(undefined);
   const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
     let live = true;
     setVisual(undefined);
     setReadiness(null);
@@ -376,7 +381,7 @@ function VisualEvidencePanel({ scenario, at }: { scenario: string; at: string })
     return () => {
       live = false;
     };
-  }, [scenario, at]);
+  }, [scenario, at, enabled]);
 
   if (visual === undefined) return <p role="status">Loading visual evidence…</p>;
   if (visual === null) return <p role="status">No visual evidence at this replay time.</p>;
@@ -386,7 +391,7 @@ function VisualEvidencePanel({ scenario, at }: { scenario: string; at: string })
     <div className="visual-evidence">
       <p>{visual.caption}</p>
       <div className="visual-frame" style={{ position: "relative", display: "inline-block", maxWidth: "100%" }}>
-        <img src={visual.image_url} alt={visual.caption} style={{ display: "block", maxWidth: "100%" }} />
+        <img src={visual.image_url} alt={visual.caption} style={{ display: "block", width: "100%", maxWidth: "480px", height: "auto" }} />
         {dims && (
           <svg
             viewBox={`0 0 ${dims.image_width} ${dims.image_height}`}
@@ -430,14 +435,14 @@ function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {  co
       <h3>Power context</h3>
       {statement && <p>{statement}</p>}
       {limitations.length > 0 && (
-        <>
-          <p className="power-context-label">Limitations:</p>
+        <details className="limits-details">
+          <summary>Limitations ({limitations.length})</summary>
           <ul>
             {limitations.map((limitation) => (
               <li key={limitation}>{limitation}</li>
             ))}
           </ul>
-        </>
+        </details>
       )}
     </div>
   );
@@ -647,11 +652,14 @@ function InvestigationSection({
         {output.verified_facts.length === 0 ? (
           <p>No verified facts reported.</p>
         ) : (
-          <ul>
-            {output.verified_facts.map((fact) => (
-              <li key={fact}>{fact}</li>
-            ))}
-          </ul>
+          <details className="facts-details">
+            <summary>Facts ({output.verified_facts.length})</summary>
+            <ul>
+              {output.verified_facts.map((fact) => (
+                <li key={fact}>{fact}</li>
+              ))}
+            </ul>
+          </details>
         )}
       </div>
 
@@ -661,81 +669,99 @@ function InvestigationSection({
         <h3>Interpretation (model-written, not verified)</h3>
         <p>{output.interpretation}</p>
         {output.limitations.length > 0 && (
-          <>
-            <p className="power-context-label">Limitations:</p>
+          <details className="limits-details">
+            <summary>Limitations ({output.limitations.length})</summary>
             <ul>
               {output.limitations.map((limitation) => (
                 <li key={limitation}>{limitation}</li>
               ))}
             </ul>
-          </>
+          </details>
         )}
       </div>
 
-      <div className="investigation-block possible-explanations">
-        <h3>Possible explanations (not confirmed)</h3>
-        {output.hypotheses.length === 0 ? (
-          <p>No hypotheses reported.</p>
-        ) : (
-          <ul className="hypotheses">
-            {output.hypotheses.map((hypothesis, index) => (
-              <li key={`${hypothesis.text}-${index}`}>
-                <p className="hypothesis-label">{hypothesis.text}</p>
-                {hypothesis.supporting_ids.length > 0 && (
-                  <p>
-                    Supporting:{" "}
-                    {hypothesis.supporting_ids.map((id) => (
-                      <span key={id} className="chip">
-                        {id}
-                      </span>
-                    ))}
-                  </p>
-                )}
-                {hypothesis.conflicting_ids.length > 0 && (
-                  <p>
-                    Conflicting:{" "}
-                    {hypothesis.conflicting_ids.map((id) => (
-                      <span key={id} className="chip">
-                        {id}
-                      </span>
-                    ))}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <details className="investigation-details">
+        <summary>Possible explanations (not confirmed)</summary>
+        <div className="investigation-block possible-explanations">
+          {output.hypotheses.length === 0 ? (
+            <p>No hypotheses reported.</p>
+          ) : (
+            <ul className="hypotheses">
+              {output.hypotheses.map((hypothesis, index) => (
+                <li key={`${hypothesis.text}-${index}`}>
+                  <p className="hypothesis-label">{hypothesis.text}</p>
+                  {hypothesis.supporting_ids.length > 0 && (
+                    <p>
+                      Supporting:{" "}
+                      {hypothesis.supporting_ids.map((id) => (
+                        <span key={id} className="chip">
+                          {id}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                  {hypothesis.conflicting_ids.length > 0 && (
+                    <p>
+                      Conflicting:{" "}
+                      {hypothesis.conflicting_ids.map((id) => (
+                        <span key={id} className="chip">
+                          {id}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </details>
 
       <ContextNotes flags={flags} deadlinePassed={deadlinePassed} scheduleStatus={scheduleStatus} />
 
-      <h3>What we don&apos;t know</h3>
-      {output.unknowns.length === 0 ? (
-        <p>Nothing listed.</p>
-      ) : (
-        <ul>
-          {output.unknowns.map((unknown) => (
-            <li key={unknown}>{unknown}</li>
-          ))}
-        </ul>
-      )}
+      <details className="investigation-details">
+        <summary>What we don&apos;t know</summary>
+        {output.unknowns.length === 0 ? (
+          <p>Nothing listed.</p>
+        ) : (
+          <ul>
+            {output.unknowns.map((unknown) => (
+              <li key={unknown}>{unknown}</li>
+            ))}
+          </ul>
+        )}
+      </details>
 
-      <h3>One question for you</h3>
-      <p>{output.clarification}</p>
+      <details className="investigation-details">
+        <summary>One question for you</summary>
+        <h3>One question for you</h3>
+        <p>{output.clarification}</p>
+      </details>
 
-      <h3>Next check</h3>
-      <p>
-        {output.follow_up.observation}
-        {output.follow_up.when ? ` (${formatTimestamp(output.follow_up.when)})` : ""}
-      </p>
+      <details className="investigation-details">
+        <summary>Next check</summary>
+        <h3>Next check</h3>
+        <p>
+          {output.follow_up.observation}
+          {output.follow_up.when ? ` (${formatTimestamp(output.follow_up.when)})` : ""}
+        </p>
+      </details>
 
-      <PowerContextBlock summary={data.summary} />
+      <details className="investigation-details">
+        <summary>Power context</summary>
+        <PowerContextBlock summary={data.summary} />
+      </details>
 
       <p className="provenance">
         Provider mode: {data.provider_mode ?? "unknown"}, model: {data.model_id ?? "unknown"},
         prompt version: {data.prompt_version}
       </p>
-      {data.recorded_review && <RecordedReviewBlock recordedReview={data.recorded_review} />}
+      {data.recorded_review && (
+        <details className="recorded-review-details">
+          <summary>Second review (recorded)</summary>
+          <RecordedReviewBlock recordedReview={data.recorded_review} />
+        </details>
+      )}
     </>
   );
 }
@@ -847,8 +873,9 @@ function OutcomeSection({
         </div>
       </dl>
       {outcome.note && <p className="outcome-note">{outcome.note}</p>}
-      <h3>History</h3>
-      {verification ? (
+      <details className="history-details">
+        <summary>History</summary>
+        {verification ? (
         verificationHistory.length === 0 ? (
           <p>No replay steps yet.</p>
         ) : (
@@ -876,6 +903,7 @@ function OutcomeSection({
           ))}
         </ul>
       )}
+      </details>
     </div>
   );
 }
@@ -883,47 +911,59 @@ function OutcomeSection({
 function EvidenceTimelineSection({ entries }: { entries: EvidenceTimelineEntry[] }) {
   if (entries.length === 0) return <p>No evidence timeline entries yet.</p>;
   return (
-    <ol className="evidence-timeline">
-      {entries.map((entry) => (
-        <li key={entry.kind} className="evidence-timeline-entry">
-          <p className="evidence-timeline-label">{entry.label}</p>
-          {entry.corroboration_only && <p className="corroboration-only">Corroboration only</p>}
-          <dl className="card-facts">
-            <div>
-              <dt>Observed</dt>
-              <dd>
-                <time dateTime={entry.observed_at}>{formatTimestamp(entry.observed_at)}</time>
-              </dd>
-            </div>
-            <div>
-              <dt>Received / available</dt>
-              <dd>
-                <time dateTime={entry.received_at}>{formatTimestamp(entry.received_at)}</time>
-              </dd>
-            </div>
-            <div>
-              <dt>First known (evaluation)</dt>
-              <dd>
-                <time dateTime={entry.first_known_at}>{formatTimestamp(entry.first_known_at)}</time>
-              </dd>
-            </div>
-          </dl>
-          <p className="supporting-ids">Supporting records: {entry.supporting_ids.join(", ")}</p>
-        </li>
-      ))}
-    </ol>
+    <details className="evidence-details">
+      <summary>Show all {entries.length} entries</summary>
+      <ol className="evidence-timeline">
+        {entries.map((entry) => (
+          <li key={entry.kind} className="evidence-timeline-entry">
+            <p className="evidence-timeline-label">{entry.label}</p>
+            {entry.corroboration_only && <p className="corroboration-only">Corroboration only</p>}
+            <details className="evidence-details">
+              <summary>Entry details</summary>
+              <dl className="card-facts">
+                <div>
+                  <dt>Observed</dt>
+                  <dd>
+                    <time dateTime={entry.observed_at}>{formatTimestamp(entry.observed_at)}</time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Received / available</dt>
+                  <dd>
+                    <time dateTime={entry.received_at}>{formatTimestamp(entry.received_at)}</time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>First known (evaluation)</dt>
+                  <dd>
+                    <time dateTime={entry.first_known_at}>{formatTimestamp(entry.first_known_at)}</time>
+                  </dd>
+                </div>
+              </dl>
+              <p className="supporting-ids">Supporting records: {entry.supporting_ids.join(", ")}</p>
+            </details>
+          </li>
+        ))}
+      </ol>
+    </details>
   );
 }
 
 function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedReview }) {
   const { review, provenance } = recordedReview;
+  const legacy = recordedReview.answer_bound === false;
+  const mismatch = recordedReview.answer_mismatch === true;
   return (
     <div className="investigation-block recorded-review">
-      <h3>Second review (muse-wonder-1.0, recorded)</h3>
+      {legacy && (
+        <p role="note">Review recorded before answer binding (legacy, not bound to this exact answer)</p>
+      )}
+      {mismatch && <p role="note">Review does not match this answer — no review shown.</p>}
       {review ? (
         <>
-          <p>
-            Verdict: <strong>{review.verdict === "no_issues" ? "No issues found" : "Issues found"}</strong>
+          <p className="review-verdict-line">
+            <strong>Second review (muse-wonder-1.0, recorded):</strong>{" "}
+            {review.verdict === "no_issues" ? "no issues found" : "issues found"}
             {review.verdict === "no_issues" && " — not verification of the home."}
           </p>
           {review.issues.length > 0 && (
@@ -937,7 +977,7 @@ function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedRevie
           )}
         </>
       ) : (
-        <p role="note">The recorded review is invalid and changes nothing.</p>
+        !mismatch && <p role="note">The recorded review is invalid and changes nothing.</p>
       )}
       <p className="provenance">
         Model: {provenance.model_id} — route {provenance.provider_route}, recorded{" "}
@@ -945,7 +985,7 @@ function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedRevie
         {provenance.reviewed_at ?? "unknown"}. Validation:{" "}
         {provenance.validation.passed ? "passed" : `failed — ${provenance.validation.reasons.join("; ")}`}
       </p>
-      <p className="corroboration-only">A review never changes readiness, verification, or the answer.</p>
+      <p className="corroboration-only">A matching review is a bounded check, not proof the narrative is true. A review never changes readiness, verification, or the answer.</p>
     </div>
   );
 }
@@ -979,58 +1019,55 @@ function HumanReportSection({ report }: { report: HumanReportPayload | null }) {
   );
 }
 
-function SourceCard({ status }: { status: SourceStatus }) {
-  const missing = status.availability === "missing" || status.newest_observed_at === null;
-  const newestValue =
-    status.newest_value === null || status.newest_value === undefined
-      ? null
-      : `${Number.isInteger(status.newest_value) ? String(status.newest_value) : String(status.newest_value)}${status.newest_unit ? ` ${status.newest_unit}` : ""}`;
+function EvidenceSourcesTable({ sources }: { sources: SourceStatus[] }) {
+  const ordered = SOURCE_ORDER.map((source) => sources.find((s) => s.source === source)).filter(
+    (status): status is SourceStatus => status !== undefined,
+  );
   return (
-    <article className={`card availability-${status.availability}`} aria-label={`${status.source} source`}>
-      <h3 className="card-title">{status.source}</h3>
-      <p className="availability">
-        <span className="dot" aria-hidden="true" />
-        <span>
-          Status: <strong>{AVAILABILITY_LABEL[status.availability]}</strong>
-        </span>
-      </p>
-      <dl className="card-facts">
-        <div>
-          <dt>Records</dt>
-          <dd>{missing ? "No reading" : status.record_count}</dd>
-        </div>
-        <div>
-          <dt>Newest observed</dt>
-          <dd>{formatTimestamp(status.newest_observed_at)}</dd>
-        </div>
-        {newestValue !== null && (
-          <div>
-            <dt>Newest value</dt>
-            <dd>{newestValue}</dd>
-          </div>
-        )}
-        <div>
-          <dt>Age at evaluation time</dt>
-          <dd>{formatAge(status.age_s)}</dd>
-        </div>
-      </dl>
-      {(status.missing_count ?? 0) > 0 && (
-        <p className="missing-readings">Missing readings: {status.missing_count}</p>
-      )}
-      {status.source === "weather" && !missing && (
-        <p className="forecast-note">Forecast, not an on-property measurement.</p>
-      )}
-      {status.source === "human_report" && (
-        <p className="forecast-note">Human report, not a sensor measurement.</p>
-      )}
-      {status.notes.length > 0 && (
-        <ul className="notes">
-          {status.notes.map((note) => (
-            <li key={note}>{note}</li>
-          ))}
-        </ul>
-      )}
-    </article>
+    <div className="evidence-table-wrap">
+      <table className="evidence-table">
+        <thead>
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Status</th>
+            <th scope="col">Latest reading</th>
+            <th scope="col">Freshness</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ordered.map((status) => {
+            const missing = status.availability === "missing" || status.newest_observed_at === null;
+            const newestValue =
+              status.newest_value === null || status.newest_value === undefined
+                ? null
+                : `${status.newest_value}${status.newest_unit ? ` ${status.newest_unit}` : ""}`;
+            return (
+              <tr key={status.source} data-source={status.source} className={`availability-${status.availability}`}>
+                <td>{status.source}</td>
+                <td>
+                  <span className="dot" aria-hidden="true" /> Status:{" "}
+                  <strong>{AVAILABILITY_LABEL[status.availability]}</strong>
+                </td>
+                <td>{newestValue ?? "No reading"}</td>
+                <td>
+                  newest observed {formatTimestamp(status.newest_observed_at)}, age{" "}
+                  {formatAge(status.age_s)}
+                  {(status.missing_count ?? 0) > 0 ? ` (Missing readings: ${status.missing_count})` : ""}
+                  {status.source === "weather" && !missing ? " Forecast, not an on-property measurement." : ""}
+                  {status.source === "human_report" ? " Human report, not a sensor measurement." : ""}
+                  {status.notes.length > 0 && (
+                    <details className="source-notes-details">
+                      <summary>Notes ({status.notes.length})</summary>
+                      <p>{status.notes.join("; ")}</p>
+                    </details>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -1054,6 +1091,53 @@ function formatPayloadValue(value: unknown): string {
     return value;
   }
   return String(value);
+}
+
+function formatWatcherValue(value: unknown): string {
+  if (value === null || value === undefined) return "—";
+  if (typeof value === "string") return value === "" ? "—" : value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "none";
+    return value.map((item) => formatWatcherValue(item)).join("; ");
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (typeof record.kind === "string" && "claim" in record) {
+      const evidence = Array.isArray(record.evidence_ids)
+        ? ` (${record.evidence_ids.map((id) => String(id)).join(", ") || "none"})`
+        : "";
+      return `${record.kind}: ${formatWatcherValue(record.claim)}${evidence}`;
+    }
+    if (typeof record.rule === "string" && "detail" in record) {
+      return `${record.rule}: ${formatWatcherValue(record.detail)}`;
+    }
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+class SectionBoundary extends Component<{ name: string; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <p role="alert" className="error">
+          This section could not be shown ({this.props.name}).
+        </p>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function PayloadFacts({ payload }: { payload: Record<string, unknown> }) {
@@ -1085,8 +1169,10 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
       {events.length === 0 ? (
         <p>No simulated events visible.</p>
       ) : (
-        <div className="event-cards">
-          {events.map((event) => (
+        <details className="events-details">
+          <summary>Show all {events.length} simulated events</summary>
+          <div className="event-cards">
+            {events.map((event) => (
             <article key={event.id} className="event-card" aria-label={`${eventKindLabel(event.kind)} event`}>
               <h3 className="card-title">{eventKindLabel(event.kind)}</h3>
               <p className="simulated-tag">SIMULATED</p>
@@ -1111,7 +1197,8 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
               <PayloadFacts payload={event.payload} />
             </article>
           ))}
-        </div>
+          </div>
+        </details>
       )}
     </>
   );
@@ -1197,14 +1284,14 @@ function CaregiverPermissionCard({
       <p className="permission-note">{permission.note}</p>
       {permission.status === "waiting" && (
         <div className="permission-actions">
-          <button type="button" onClick={() => onDecide("approve")} disabled={deciding}>
+          <button type="button" className="btn-primary" onClick={() => onDecide("approve")} disabled={deciding}>
             Approve (as the caregiver)
           </button>
-          <button type="button" onClick={() => onDecide("decline")} disabled={deciding}>
+          <button type="button" className="ghost-button" onClick={() => onDecide("decline")} disabled={deciding}>
             Decline (as the caregiver)
           </button>
           {whatsappConfigured && (
-            <button type="button" onClick={onSendWhatsapp} disabled={sending}>
+            <button type="button" className="ghost-button" onClick={onSendWhatsapp} disabled={sending}>
               Send this request to my test phone (WhatsApp)
             </button>
           )}
@@ -1239,10 +1326,10 @@ function LiveCameraPanel() {
         One frame on request from the owner&rsquo;s Nest camera. It is never evidence for the synthetic story&rsquo;s readiness or verification.
       </p>
       <div className="permission-actions">
-        <button type="button" onClick={() => take(false)} disabled={busy}>
+        <button type="button" className="ghost-button" onClick={() => take(false)} disabled={busy}>
           Take one snapshot
         </button>
-        <button type="button" onClick={() => take(true)} disabled={busy}>
+        <button type="button" className="ghost-button" onClick={() => take(true)} disabled={busy}>
           Take one snapshot and send it to sam-3.1
         </button>
       </div>
@@ -1280,96 +1367,6 @@ function LiveCameraPanel() {
   );
 }
 
-function NotificationsSection({
-  notifications,
-  error,
-  onAck,
-  ackingId,
-  whatsappConfigured,
-  onSendWhatsapp,
-  sendingWhatsappId,
-}: {
-  notifications: Notification[];
-  error: string | null;
-  onAck: (notification: Notification) => void;
-  ackingId: string | null;
-  whatsappConfigured: boolean;
-  onSendWhatsapp: (notification: Notification) => void;
-  sendingWhatsappId: string | null;
-}) {
-  if (error) {
-    return (
-      <p role="alert" className="error">
-        Notifications not reachable
-      </p>
-    );
-  }
-  if (notifications.length === 0)
-    return (
-      <div className="notification-cards" aria-live="polite">
-        <p>No notifications yet.</p>
-      </div>
-    );
-  return (
-    <div className="notification-cards" aria-live="polite">
-      {notifications.map((notification) => {
-        const audienceLabel =
-          NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience;
-        const acks = notification.acks ?? [];
-        const ack = acks.length > 0 ? acks[acks.length - 1] : null;
-        return (
-          <article
-            key={notification.id}
-            className="notification-card"
-            aria-label={notification.kind.startsWith("caregiver_update_") ? `${audienceLabel} update` : `${audienceLabel} notification`}
-          >
-            <h3 className="card-title">{audienceLabel}</h3>
-            <p className="notification-state">{notificationStateInWords(notification)}</p>
-            <p>
-              Created:{" "}
-              <time dateTime={notification.created_at}>
-                {formatTimestamp(notification.created_at)}
-              </time>
-            </p>
-            <p>
-              {whatsappLine(notification.whatsapp)}
-            </p>
-            <PayloadFacts payload={notification.payload} />
-            {notification.audience === "hvac_company" &&
-              notification.state === "simulated_delivered" &&
-              whatsappConfigured && (
-                <button
-                  type="button"
-                  onClick={() => onSendWhatsapp(notification)}
-                  disabled={sendingWhatsappId === notification.id}
-                >
-                  Send to my test phone (WhatsApp)
-                </button>
-              )}
-            {ack ? (
-              <p className="notification-ack">
-                Acknowledged, not resolved —{" "}
-                <time dateTime={ack.acknowledged_at}>{formatTimestamp(ack.acknowledged_at)}</time>
-              </p>
-            ) : (notification.audience === "property_manager" ||
-                notification.audience === "family_caregiver") &&
-              !notification.kind.startsWith("caregiver_update_") &&
-              notification.state === "simulated_delivered" ? (
-              <button
-                type="button"
-                onClick={() => onAck(notification)}
-                disabled={ackingId === notification.id}
-              >
-                Acknowledge (simulated)
-              </button>
-            ) : null}
-          </article>
-        );
-      })}
-    </div>
-  );
-}
-
 function formatTargetTemp(value: number): string {
   return Number.isInteger(value) ? String(value) : String(value);
 }
@@ -1379,11 +1376,13 @@ function HomeownerUpdateCard({
   targetTemp,
   targetUnit,
   verifiedFacts,
+  sectionClassName,
 }: {
   verification: VerificationResult | null;
   targetTemp: number | null;
   targetUnit: string | null;
   verifiedFacts: string[];
+  sectionClassName?: string;
 }) {
   if (!verification || verification.stage !== "arrival_met" || targetTemp === null) return null;
   const unit = targetUnit ?? "F";
@@ -1393,15 +1392,18 @@ function HomeownerUpdateCard({
     verification.reasons.some((reason) => reason.includes(tempLabel) || reason.includes(String(targetTemp)));
   if (!factsSupport && verification.supporting_ids.length === 0) return null;
   return (
-    <article className="homeowner-update-card" aria-label="Homeowner update">
-      <p className="homeowner-update">
-        Your home reached and held {tempLabel} before the warm-by time
-      </p>
-      <p>
-        Evaluation time:{" "}
-        <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
-      </p>
-    </article>
+    <section aria-labelledby="homeowner-update-heading" className={sectionClassName}>
+      <h2 id="homeowner-update-heading">Homeowner update</h2>
+      <article className="homeowner-update-card" aria-label="Homeowner update">
+        <p className="homeowner-update">
+          Your home reached and held {tempLabel} before the warm-by time
+        </p>
+        <p>
+          Evaluation time:{" "}
+          <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
+        </p>
+      </article>
+    </section>
   );
 }
 
@@ -1516,7 +1518,7 @@ const MODEL_CONTRIBUTIONS = [
   {
     model: "muse-wonder-1.0 (second review)",
     role: "Recorded structured second review of a displayed muse-spark-1.3 answer",
-    status: "Shown only beside the matching answer; never changes readiness, verification, or validity",
+    status: "Bound to the exact displayed answer; legacy reviews are labelled unbound; never changes readiness, verification, or validity",
   },
   {
     model: "muse-voice-transcribe-1.0 (human report)",
@@ -1537,13 +1539,14 @@ const MODEL_CONTRIBUTIONS = [
 
 const NO_RECORDED_LABEL = "No recorded model response for this snapshot";
 
-function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBack: () => void }) {
+function LawsView({ scenario, at, onBack, active }: { scenario: string; at: string; onBack: () => void; active: boolean }) {
   const [laws, setLaws] = useState<LawsResponse | null>(null);
   const [watcher, setWatcher] = useState<WatcherResponse | null>(null);
   const [corrections, setCorrections] = useState<CorrectionsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
     setError(null);
     Promise.all([fetchLaws(), fetchWatcher(scenario, at), fetchCorrections()])
@@ -1559,7 +1562,7 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
     return () => {
       cancelled = true;
     };
-  }, [scenario, at]);
+  }, [scenario, at, active]);
 
   return (
     <section aria-labelledby="laws-heading">
@@ -1568,7 +1571,7 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
         Every model output is checked by code. A violation rejects the output and names the law. Proposed
         laws never enforce.
       </p>
-      <button type="button" onClick={onBack}>
+      <button type="button" className="ghost-button" onClick={onBack}>
         Back to investigation
       </button>
       {error && (
@@ -1580,28 +1583,33 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
         <p role="status">Loading laws…</p>
       ) : (
         <>
-          <h3>Model laws (version {laws.version})</h3>
-          <ul>
-            {laws.model_laws.map((law) => (
-              <li key={law.id}>
-                <strong>{law.id}</strong> — {law.statement} [{law.status}
-                {law.status === "proposed" ? ", never enforced" : ""}
-                ; rejected {law.rejected_recorded} recorded output{law.rejected_recorded === 1 ? "" : "s"}]
-              </li>
-            ))}
-          </ul>
-          <h3>Process laws</h3>
-          <ul>
-            {laws.process_laws.map((law) => (
-              <li key={law.id}>
-                <strong>{law.id}</strong> — {law.statement} (stage: {law.stage}; check:{" "}
-                {law.check_status})
-              </li>
-            ))}
-          </ul>
+          <details className="laws-details">
+            <summary>Model laws (version {laws.version}, {laws.model_laws.length})</summary>
+            <ul className="laws-compact">
+              {laws.model_laws.map((law) => (
+                <li key={law.id}>
+                  <strong>{law.id}</strong> — {law.statement} [{law.status}
+                  {law.status === "proposed" ? ", never enforced" : ""}
+                  ; rejected {law.rejected_recorded} recorded output{law.rejected_recorded === 1 ? "" : "s"}]
+                </li>
+              ))}
+            </ul>
+          </details>
+          <details className="laws-details">
+            <summary>Process laws ({laws.process_laws.length})</summary>
+            <ul className="laws-compact">
+              {laws.process_laws.map((law) => (
+                <li key={law.id}>
+                  <strong>{law.id}</strong> — {law.statement} (stage: {law.stage}; check:{" "}
+                  {law.check_status})
+                </li>
+              ))}
+            </ul>
+          </details>
         </>
       )}
-      <h3>Watcher observations (recorded only)</h3>
+      <details className="laws-details">
+        <summary>Watcher observations (recorded only)</summary>
       {!watcher ? (
         <p role="status">Loading watcher…</p>
       ) : (
@@ -1612,10 +1620,9 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
           ) : (
             <ul>
               {watcher.model_observations.map((observation, index) => (
-                <li key={`${observation.kind}-${index}`}>
-                  {observation.kind}: {observation.claim} [{observation.status}
-                  {observation.notice ? ` — ${observation.notice}` : ""}; evidence:{" "}
-                  {observation.evidence_ids.join(", ") || "none"}]
+                <li key={`${String(observation.kind)}-${index}`}>
+                  {formatWatcherValue(observation)} [{formatWatcherValue(observation.status)}
+                  {observation.notice ? ` — ${formatWatcherValue(observation.notice)}` : ""}]
                 </li>
               ))}
             </ul>
@@ -1625,9 +1632,9 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
               <h4>Code detections (independent of the model)</h4>
               <ul>
                 {watcher.code_detections.map((detection, index) => (
-                  <li key={`${detection.kind}-${index}`}>
-                    {detection.kind}: {detection.claim} [evidence:{" "}
-                    {detection.evidence_ids.join(", ") || "none"}]
+                  <li key={`${formatWatcherValue(detection.kind ?? detection.rule)}-${index}`}>
+                    {formatWatcherValue(detection.kind ?? detection.rule ?? "code detection")}:{" "}
+                    {formatWatcherValue(detection.claim ?? detection.detail ?? "—")}
                   </li>
                 ))}
               </ul>
@@ -1647,7 +1654,9 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
           )}
         </>
       )}
-      <h3>Corrections</h3>
+      </details>
+      <details className="laws-details">
+        <summary>Corrections</summary>
       {!corrections ? (
         <p role="status">Loading corrections…</p>
       ) : corrections.corrections.length === 0 ? (
@@ -1656,14 +1665,15 @@ function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBa
         <ul>
           {corrections.corrections.map((record: CorrectionRecord, index: number) => (
             <li key={`${record.scenario_id}-${record.evaluated_at_utc}-${index}`}>
-              {record.scenario_id} at {record.evaluated_at_utc}: {record.final_result}. Original:{" "}
-              {record.original_claim ?? "—"}. Failed checks: {record.failed_checks.join("; ") || "none"}.
-              Revision: {record.revision_claim ?? "—"}. The ledger below is shown to the model as
+              {record.scenario_id} at {record.evaluated_at_utc}: {formatWatcherValue(record.final_result)}. Original:{" "}
+              {formatWatcherValue(record.original_claim)}. Failed checks: {formatWatcherValue(record.failed_checks)}.
+              Revision: {formatWatcherValue(record.revision_claim)}. The ledger below is shown to the model as
               in-context examples only; the model itself is not retrained.
             </li>
           ))}
         </ul>
       )}
+      </details>
     </section>
   );
 }
@@ -1894,17 +1904,18 @@ function traceEdgePath(nodes: TraceMapNode[], from: string, to: string): string 
   return `M ${x1} ${y1} C ${x1 + mid} ${y1}, ${x2 - mid} ${y2}, ${x2} ${y2}`;
 }
 
-function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: string; at: string; times: Array<{ label: string; at: string }>; onSelectAt: (at: string) => void; onBack: () => void }) {
+function TraceView({ scenario, at, times, onSelectAt, onBack, active, investigationId }: { scenario: string; at: string; times: Array<{ label: string; at: string }>; onSelectAt: (at: string) => void; onBack: () => void; active: boolean; investigationId: string | null }) {
   const [trace, setTrace] = useState<TraceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ title: string; state: string; detail: string } | null>(null);
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
     setError(null);
     setTrace(null);
     setSelected(null);
-    fetchTrace(scenario, at)
+    fetchTrace(scenario, at, investigationId)
       .then((response) => {
         if (cancelled) return;
         if (Date.parse(response.at) !== Date.parse(at)) return;
@@ -1916,19 +1927,33 @@ function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: stri
     return () => {
       cancelled = true;
     };
-  }, [scenario, at]);
+  }, [scenario, at, active, investigationId]);
 
   const layout = trace ? buildTraceLayout(trace) : null;
 
   return (
     <section aria-labelledby="trace-heading">
       <h2 id="trace-heading">ARIA&rsquo;s view</h2>
-      <p>
-        A live map of how each decision is made at this replay moment, drawn only from the trace: sources on the
-        left, code checks next, the code-computed decision, then notices. Violet is the model (watcher); everything
-        else is code. Only evidence received by this time is shown.
-      </p>
-      <button type="button" onClick={onBack}>
+      <details className="trace-about-details">
+        <summary>About this map</summary>
+        <p>
+          A live map of how each decision is made at this replay moment, drawn only from the trace: sources on the
+          left, code checks next, the code-computed decision, then notices. Violet is the model (watcher); everything
+          else is code. Only evidence received by this time is shown.
+        </p>
+        <ul className="trace-legend" aria-label="Map legend">
+          <li><span className="trace-swatch trace-swatch-pass" /> passing streak glows</li>
+          <li><span className="trace-swatch trace-swatch-stale" /> stale or quiet, grey dashed</li>
+          <li><span className="trace-swatch trace-swatch-fail" /> failed check stops here</li>
+          <li><span className="trace-swatch trace-swatch-model" /> violet is the model, the rest is code</li>
+          <li><span className="trace-swatch trace-swatch-quiet" /> no detection, never safe</li>
+          <li><span className="trace-swatch trace-swatch-permission" /> teal is the caregiver&rsquo;s permission</li>
+        </ul>
+      </details>
+      {!investigationId && (
+        <p>Showing the recorded story; your own choices appear once you start an investigation.</p>
+      )}
+      <button type="button" className="ghost-button" onClick={onBack}>
         Back
       </button>
       <div className="trace-times" role="group" aria-label="Trace replay time">
@@ -1936,6 +1961,7 @@ function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: stri
           <button
             key={time.at}
             type="button"
+            className="ghost-button"
             onClick={() => onSelectAt(time.at)}
             aria-pressed={at === time.at}
             aria-label={`Trace at ${time.label}`}
@@ -1953,14 +1979,6 @@ function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: stri
         <p role="status">Loading ARIA&rsquo;s view…</p>
       ) : (
         <>
-          <ul className="trace-legend" aria-label="Map legend">
-            <li><span className="trace-swatch trace-swatch-pass" /> passing streak glows</li>
-            <li><span className="trace-swatch trace-swatch-stale" /> stale or quiet, grey dashed</li>
-            <li><span className="trace-swatch trace-swatch-fail" /> failed check stops here</li>
-            <li><span className="trace-swatch trace-swatch-model" /> violet is the model, the rest is code</li>
-            <li><span className="trace-swatch trace-swatch-quiet" /> no detection, never safe</li>
-            <li><span className="trace-swatch trace-swatch-permission" /> teal is the caregiver&rsquo;s permission</li>
-          </ul>
           <div className="trace-map-wrap">
             <svg data-testid="trace-map" viewBox={`0 0 1200 ${layout?.height ?? 220}`} role="img" aria-label={`ARIA's view map at ${at}`}>
               {layout?.edges.map((edge) => (
@@ -2020,9 +2038,10 @@ function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: stri
               <p>Select a node or streak to see the reading, check, or result.</p>
             )}
           </div>
-          <h3>Steps in order</h3>
-          <ol className="trace-steps">
-            {trace.steps.map((step) => (
+          <details className="trace-steps-details">
+            <summary>Show all {trace.steps.length} steps</summary>
+            <ol className="trace-steps">
+              {trace.steps.map((step) => (
               <li
                 key={step.seq}
                 data-state={traceNodeState(step.state)}
@@ -2039,7 +2058,8 @@ function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: stri
                 {step.label} — {step.detail}
               </li>
             ))}
-          </ol>
+            </ol>
+          </details>
         </>
       )}
     </section>
@@ -2064,6 +2084,699 @@ function VersionLine({ commit }: { commit: string | null }) {
     <p className="version-line" data-testid="version-line">
       Version {short}
     </p>
+  );
+}
+
+type HousePage = "house" | "reasoning" | "integrations";
+
+const PAGE_LABEL: Record<HousePage, string> = {
+  house: "House",
+  reasoning: "Reasoning",
+  integrations: "Integrations",
+};
+
+type StatusTone = "ok" | "watch" | "risk" | "unknown";
+
+function formatLongTime(value: string | null): string {
+  if (!value) return "No replay time";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const weekday = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, weekday: "long" }).format(date);
+  const day = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, day: "numeric" }).format(date);
+  const month = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, month: "long" }).format(date);
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone: PROPERTY_TIMEZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+  return `${weekday} ${day} ${month}, ${time}, ET`;
+}
+
+interface Verdict {
+  headline: string;
+  tone: StatusTone;
+}
+
+function buildVerdict(
+  readiness: ReadinessResult | null,
+  verification: VerificationResult | null,
+  targetTemp: number | null,
+  targetUnit: string | null,
+): Verdict | null {
+  if (!readiness && !verification) return null;
+  if (verification?.stage === "arrival_met") {
+    return { headline: "The house was warm by 7:00 — the expectation was met.", tone: "ok" };
+  }
+  if (verification?.stage === "goal_verified") {
+    const goal = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "its goal";
+    return { headline: `The house reached ${goal} and held it — the goal is verified.`, tone: "ok" };
+  }
+  if (readiness?.status === "on_track") {
+    return { headline: "The house is on track to be warm by 7:00.", tone: "ok" };
+  }
+  if (readiness?.status === "at_risk") {
+    return { headline: "The house is cooling. It may not be warm by 7:00.", tone: "risk" };
+  }
+  if (readiness?.status === "arrival_passed") {
+    return { headline: "The warm-by time has passed.", tone: "watch" };
+  }
+  return { headline: "ARIA can't tell yet.", tone: "unknown" };
+}
+
+function availabilityTone(availability: Availability): StatusTone {
+  if (availability === "available") return "ok";
+  if (availability === "stale") return "watch";
+  if (availability === "invalid" || availability === "conflicting") return "risk";
+  return "unknown";
+}
+
+function sourceByKind(sources: SourceStatus[] | undefined, kind: SourceKind): SourceStatus | null {
+  return sources?.find((status) => status.source === kind) ?? null;
+}
+
+function buildLead(
+  sources: SourceStatus[] | undefined,
+  trend: IndoorTrend | null,
+): string | null {
+  const parts: string[] = [];
+  const room = sourceByKind(sources, "room_sensor");
+  if (room && room.newest_value !== null && room.newest_value !== undefined) {
+    const unit = room.newest_unit ? ` ${room.newest_unit}` : "";
+    let roomPart = `Living room ${room.newest_value}${unit}`;
+    const rate = trend?.rate_per_hour;
+    if (typeof rate === "number" && trend?.sufficient) {
+      if (rate < 0) roomPart += ` and falling ${Math.abs(Math.round(rate * 10) / 10)} F an hour`;
+      else if (rate > 0) roomPart += ` and rising ${Math.round(rate * 10) / 10} F an hour`;
+    }
+    parts.push(roomPart);
+  }
+  const thermostat = sourceByKind(sources, "thermostat");
+  if (thermostat && thermostat.availability !== "available") {
+    parts.push(
+      thermostat.newest_observed_at
+        ? `the thermostat has been silent since ${shortTimeLabel(thermostat.newest_observed_at)}`
+        : "the thermostat is not reporting",
+    );
+  }
+  if (parts.length === 0) return null;
+  return `${parts.join("; ")}.`;
+}
+
+function gapCalloutFor(sources: SourceStatus[] | undefined): string | null {
+  const thermostat = sourceByKind(sources, "thermostat");
+  if (thermostat && thermostat.availability !== "available") {
+    return thermostat.newest_observed_at
+      ? `Thermostat not reporting since ${shortTimeLabel(thermostat.newest_observed_at)}`
+      : "Thermostat not reporting";
+  }
+  const room = sourceByKind(sources, "room_sensor");
+  if (room && room.availability !== "available") {
+    return "Room sensor not reporting";
+  }
+  return null;
+}
+
+function CameraTile({ scenario, at, enabled }: { scenario: string; at: string; enabled: boolean }) {
+  const [visual, setVisual] = useState<VisualEvidence | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (!enabled) {
+      setVisual(null);
+      return;
+    }
+    let live = true;
+    setVisual(undefined);
+    fetchVisual(scenario, at)
+      .then((response) => {
+        if (!live || response.scenario !== scenario) return;
+        setVisual(response.visual);
+      })
+      .catch(() => {
+        if (live) setVisual(null);
+      });
+    return () => {
+      live = false;
+    };
+  }, [scenario, at, enabled]);
+
+  if (visual === undefined) {
+    return (
+      <>
+        <p className="tile-value">Loading camera…</p>
+        <p className="tile-sub">synthetic frame</p>
+      </>
+    );
+  }
+  if (visual === null) {
+    return (
+      <>
+        <p className="tile-value">No frame</p>
+        <p className="tile-sub">no synthetic frame at this time</p>
+      </>
+    );
+  }
+  return (
+    <>
+      <p className="tile-value">{visual.object_count === 0 ? "Nothing found" : `${visual.object_count} found`}</p>
+      <p className="tile-sub">
+        {visual.caption}
+        {visual.object_count === 0 ? " — no detection is not an all-clear." : ""}
+      </p>
+    </>
+  );
+}
+
+function GlanceTiles({
+  sources,
+  trend,
+  targetTemp,
+  targetUnit,
+  plannedArrival,
+  verdictTone,
+  scenario,
+  at,
+  visualEnabled,
+}: {
+  sources: SourceStatus[] | undefined;
+  trend: IndoorTrend | null;
+  targetTemp: number | null;
+  targetUnit: string | null;
+  plannedArrival: string | null;
+  verdictTone: StatusTone;
+  scenario: string;
+  at: string;
+  visualEnabled: boolean;
+}) {
+  const room = sourceByKind(sources, "room_sensor");
+  const thermostat = sourceByKind(sources, "thermostat");
+  const insideValue =
+    room && room.newest_value !== null && room.newest_value !== undefined
+      ? `${room.newest_value}${room.newest_unit ? ` ${room.newest_unit}` : ""}`
+      : "No reading";
+  const rate = trend?.rate_per_hour;
+  const insideTrend =
+    typeof rate === "number" && trend?.sufficient
+      ? rate < 0
+        ? "falling"
+        : rate > 0
+          ? "rising"
+          : "steady"
+      : "trend unknown";
+  const targetLabel = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "the goal";
+  const arrivalLabel = plannedArrival ? shortTimeLabel(plannedArrival) : "the warm-by time";
+  const thermostatState =
+    !thermostat || thermostat.availability === "available"
+      ? { word: "Reporting", tone: "ok" as StatusTone, sub: "thermostat" }
+      : {
+          word: "Silent",
+          tone: "risk" as StatusTone,
+          sub: thermostat.newest_observed_at
+            ? `thermostat, silent since ${shortTimeLabel(thermostat.newest_observed_at)}`
+            : "thermostat",
+        };
+  return (
+    <section aria-labelledby="house-now-heading">
+      <h2 id="house-now-heading">The house right now</h2>
+      <ul className="tiles">
+        <li className="tile">
+          <p className="tile-title">
+            <span className={`status-dot status-dot-${room ? availabilityTone(room.availability) : "unknown"}`} aria-hidden="true" />
+            Inside
+          </p>
+          <p className="tile-value">{insideValue}</p>
+          <p className="tile-sub">
+            room sensor · {insideTrend}
+          </p>
+        </li>
+        <li className="tile">
+          <p className="tile-title">
+            <span className={`status-dot status-dot-${verdictTone}`} aria-hidden="true" />
+            Warm-by
+          </p>
+          <p className="tile-value">
+            {targetLabel} by {arrivalLabel}
+          </p>
+          <p className="tile-sub">warm-by expectation</p>
+        </li>
+        <li className="tile">
+          <p className="tile-title">
+            <span className={`status-dot status-dot-${thermostatState.tone}`} aria-hidden="true" />
+            Furnace and thermostat
+          </p>
+          <p className="tile-value">{thermostatState.word}</p>
+          <p className="tile-sub">{thermostatState.sub}</p>
+        </li>
+        <li className="tile">
+          <p className="tile-title">
+            <span className="status-dot status-dot-unknown" aria-hidden="true" />
+            Camera
+          </p>
+          <CameraTile scenario={scenario} at={at} enabled={visualEnabled} />
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+function NoticeArticle({
+  notification,
+  onAck,
+  ackingId,
+  whatsappConfigured,
+  onSendWhatsapp,
+  sendingWhatsappId,
+}: {
+  notification: Notification;
+  onAck: (notification: Notification) => void;
+  ackingId: string | null;
+  whatsappConfigured: boolean;
+  onSendWhatsapp: (notification: Notification) => void;
+  sendingWhatsappId: string | null;
+}) {
+  const audienceLabel =
+    NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience;
+  const acks = notification.acks ?? [];
+  const ack = acks.length > 0 ? acks[acks.length - 1] : null;
+  return (
+    <article
+      className="notification-card"
+      aria-label={notification.kind.startsWith("caregiver_update_") ? `${audienceLabel} update` : `${audienceLabel} notification`}
+    >
+      <h3 className="card-title">{audienceLabel}</h3>
+      <p className="notification-state">{notificationStateInWords(notification)}</p>
+      <p>
+        Created:{" "}
+        <time dateTime={notification.created_at}>
+          {formatTimestamp(notification.created_at)}
+        </time>
+      </p>
+      <p>
+        {whatsappLine(notification.whatsapp)}
+      </p>
+      <PayloadFacts payload={notification.payload} />
+      {notification.audience === "hvac_company" &&
+        notification.state === "simulated_delivered" &&
+        whatsappConfigured && (
+          <button
+            type="button"
+            className="ghost-button"
+            onClick={() => onSendWhatsapp(notification)}
+            disabled={sendingWhatsappId === notification.id}
+          >
+            Send to my test phone (WhatsApp)
+          </button>
+        )}
+      {ack ? (
+        <p className="notification-ack">
+          Acknowledged, not resolved —{" "}
+          <time dateTime={ack.acknowledged_at}>{formatTimestamp(ack.acknowledged_at)}</time>
+        </p>
+      ) : (notification.audience === "property_manager" ||
+          notification.audience === "family_caregiver") &&
+        !notification.kind.startsWith("caregiver_update_") &&
+        notification.state === "simulated_delivered" ? (
+        <button
+          type="button"
+          className="ghost-button"
+          onClick={() => onAck(notification)}
+          disabled={ackingId === notification.id}
+        >
+          Acknowledge (simulated)
+        </button>
+      ) : null}
+    </article>
+  );
+}
+
+function KnowRow({
+  tone,
+  title,
+  meta,
+  children,
+}: {
+  tone: StatusTone;
+  title: string;
+  meta: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(true);
+  return (
+    <li className="know-row">
+      <span className={`status-dot status-dot-${tone}`} aria-hidden="true" />
+      <div className="know-row-body">
+        <button
+          type="button"
+          className="know-row-toggle"
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span className="know-row-title">{title}</span>
+          <span className="know-row-meta">{meta}</span>
+        </button>
+        {open && <div className="know-row-detail">{children}</div>}
+      </div>
+    </li>
+  );
+}
+
+function WhoKnows({
+  permission,
+  onDecide,
+  deciding,
+  whatsappConfigured,
+  onSendWhatsapp,
+  sending,
+  notifications,
+  notificationsError,
+  onAck,
+  ackingId,
+  onSendWhatsappFor,
+  sendingWhatsappId,
+  homeownerReady,
+  sectionClassName,
+}: {
+  permission: CaregiverPermission | null;
+  onDecide: (decision: "approve" | "decline") => void;
+  deciding: boolean;
+  whatsappConfigured: boolean;
+  onSendWhatsapp: () => void;
+  sending: boolean;
+  notifications: Notification[];
+  notificationsError: string | null;
+  onAck: (notification: Notification) => void;
+  ackingId: string | null;
+  onSendWhatsappFor: (notification: Notification) => void;
+  sendingWhatsappId: string | null;
+  homeownerReady: boolean;
+  sectionClassName?: string;
+}) {
+  const caregiverNotices = notifications.filter((item) => item.audience === "family_caregiver");
+  const hvacNotices = notifications.filter((item) => item.audience === "hvac_company");
+  const homeownerNotices = notifications.filter((item) => item.audience === "homeowner");
+  const managerNotices = notifications.filter((item) => item.audience === "property_manager");
+  const articleProps = { onAck, ackingId, whatsappConfigured, onSendWhatsapp: onSendWhatsappFor, sendingWhatsappId };
+  return (
+    <section aria-labelledby="who-knows-heading" className={sectionClassName}>
+      <p className="section-label">Notices</p>
+      <h2 id="who-knows-heading">Who knows</h2>
+      {notificationsError && (
+        <p role="alert" className="error">
+          Notifications not reachable
+        </p>
+      )}
+      {!permission && notifications.length === 0 && !notificationsError ? (
+        <p>No notices visible at this step.</p>
+      ) : (
+      <ul className="know-rows">
+        {permission && (
+          <KnowRow
+            tone={permission.status === "approved" ? "ok" : permission.status === "declined" ? "risk" : "watch"}
+            title="Family caregiver"
+            meta={
+              permission.status === "waiting"
+                ? "Asked — waiting for her answer"
+                : permission.status === "approved"
+                  ? "Approved HVAC contact"
+                  : "Declined HVAC contact"
+            }
+          >
+            <CaregiverPermissionCard
+              permission={permission}
+              onDecide={onDecide}
+              deciding={deciding}
+              whatsappConfigured={whatsappConfigured}
+              onSendWhatsapp={onSendWhatsapp}
+              sending={sending}
+            />
+            {caregiverNotices.map((notification) => (
+              <NoticeArticle key={notification.id} notification={notification} {...articleProps} />
+            ))}
+          </KnowRow>
+        )}
+        {(hvacNotices.length > 0 || !permission) && (
+          <KnowRow
+            tone={
+              hvacNotices.some((item) => item.state === "simulated_delivered")
+                ? "ok"
+                : hvacNotices.some((item) => item.state === "refused")
+                  ? "risk"
+                  : "unknown"
+            }
+            title="HVAC company"
+            meta={
+              hvacNotices.some((item) => item.state === "simulated_delivered")
+                ? `Simulated request sent — fields sent: ${Object.keys(
+                  hvacNotices.find((item) => item.state === "simulated_delivered")?.payload ?? {},
+                ).join(", ")}`
+                : hvacNotices.length > 0
+                  ? `No request sent: ${refusalReasonInWords(hvacNotices[0])}`
+                  : "No HVAC request at this time"
+            }
+          >
+            {hvacNotices.length === 0 ? (
+              <p>No HVAC request at this time.</p>
+            ) : (
+              hvacNotices.map((notification) => (
+                <NoticeArticle key={notification.id} notification={notification} {...articleProps} />
+              ))
+            )}
+          </KnowRow>
+        )}
+        <KnowRow
+          tone={homeownerReady ? "ok" : "unknown"}
+          title="Resident and homeowner update"
+          meta={
+            homeownerReady
+              ? "Warm-by expectation met — see the homeowner update below."
+              : "No homeowner update at this step."
+          }
+        >
+          {homeownerNotices.length === 0 ? (
+            <p>No homeowner update at this step.</p>
+          ) : (
+            homeownerNotices.map((notification) => (
+              <NoticeArticle key={notification.id} notification={notification} {...articleProps} />
+            ))
+          )}
+        </KnowRow>
+        {managerNotices.map((notification) => (
+          <KnowRow key={notification.id} tone="unknown" title="Property manager" meta={notificationStateInWords(notification)}>
+            <NoticeArticle notification={notification} {...articleProps} />
+          </KnowRow>
+        ))}
+      </ul>
+      )}
+    </section>
+  );
+}
+
+function CodeChecks({ scenario, at, active }: { scenario: string; at: string; active: boolean }) {
+  const [trace, setTrace] = useState<TraceResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    let cancelled = false;
+    setError(null);
+    setTrace(null);
+    fetchTrace(scenario, at)
+      .then((response) => {
+        if (cancelled) return;
+        if (Date.parse(response.at) !== Date.parse(at)) return;
+        setTrace(response);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Code checks are not reachable");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scenario, at, active]);
+
+  return (
+    <section aria-labelledby="code-checks-heading">
+      {!(trace && trace.checks.length > 0) && (
+        <>
+          <p className="section-label">Code checks</p>
+          <h2 id="code-checks-heading">Freshness, conflicts, units and Laws</h2>
+        </>
+      )}
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {!trace && !error && <p role="status">Loading code checks…</p>}
+      {trace && trace.checks.length === 0 && <p>No code checks ran at this time.</p>}
+      {trace && trace.checks.length > 0 && (
+        <details className="checks-details">
+          <summary>Show all {trace.checks.length} checks</summary>
+          <h2 id="code-checks-heading">Freshness, conflicts, units and Laws</h2>
+          <p className="checks-summary" role="status">
+            {trace.checks.length} checks: {trace.checks.filter((check) => check.passed === true).length}{" "}
+            passed, {trace.checks.filter((check) => check.passed === false).length} failed,{" "}
+            {trace.checks.filter((check) => check.passed !== true && check.passed !== false).length} not
+            run
+          </p>
+          <details className="checks-details">
+            <summary>
+              Failed ({trace.checks.filter((check) => check.passed === false).length})
+            </summary>
+            <ul className="know-rows">
+              {trace.checks
+                .filter((check) => check.passed === false)
+                .map((check, index) => (
+                  <li key={`${check.check}-${check.target}-${index}`} className="know-row">
+                    <span className="status-dot status-dot-risk" aria-hidden="true" />
+                    <div className="know-row-body">
+                      <p className="know-row-title">
+                        {check.check} on {check.target} — failed
+                      </p>
+                      <p className="know-row-meta">{check.reason}</p>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </details>
+          {trace.checks.some((check) => check.passed === true) && (
+            <details className="checks-details">
+              <summary>
+                Passed ({trace.checks.filter((check) => check.passed === true).length})
+              </summary>
+              <ul className="know-rows">
+                {trace.checks
+                  .filter((check) => check.passed === true)
+                  .map((check, index) => (
+                    <li key={`${check.check}-${check.target}-${index}`} className="know-row">
+                      <span className="status-dot status-dot-ok" aria-hidden="true" />
+                      <div className="know-row-body">
+                        <p className="know-row-title">
+                          {check.check} on {check.target} — passed
+                        </p>
+                        <p className="know-row-meta">{check.reason}</p>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
+          {trace.checks.some((check) => check.passed !== true && check.passed !== false) && (
+            <details className="checks-details">
+              <summary>
+                Not run ({trace.checks.filter((check) => check.passed !== true && check.passed !== false).length})
+              </summary>
+              <ul className="know-rows">
+                {trace.checks
+                  .filter((check) => check.passed !== true && check.passed !== false)
+                  .map((check, index) => (
+                    <li key={`${check.check}-${check.target}-${index}`} className="know-row">
+                      <span className="status-dot status-dot-unknown" aria-hidden="true" />
+                      <div className="know-row-body">
+                        <p className="know-row-title">
+                          {check.check} on {check.target} — not run
+                        </p>
+                        <p className="know-row-meta">{check.reason}</p>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
+        </details>
+      )}
+    </section>
+  );
+}
+
+function AppHeader({
+  page,
+  onPage,
+  showNav,
+  pillText,
+  pillTone,
+  times,
+  selectedAt,
+  onStep,
+  canStep,
+  theme,
+  onToggleTheme,
+}: {
+  page: HousePage;
+  onPage: (next: HousePage) => void;
+  showNav: boolean;
+  pillText: string;
+  pillTone: StatusTone;
+  times: Array<{ label: string; at: string }>;
+  selectedAt: string;
+  onStep: (at: string) => void;
+  canStep: boolean;
+  theme: "light" | "dark";
+  onToggleTheme: () => void;
+}) {
+  const index = times.findIndex((time) => Date.parse(time.at) === Date.parse(selectedAt));
+  const canBack = canStep && index > 0;
+  const canNext = canStep && index >= 0 && index < times.length - 1;
+  return (
+    <>
+      <header className="site-header">
+        <div className="site-header-left">
+          <span className="wordmark">ARIA Home</span>
+          {showNav && (
+            <nav className="tabs" aria-label="Pages">
+              {(Object.keys(PAGE_LABEL) as HousePage[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onPage(key)}
+                  aria-current={page === key ? "page" : undefined}
+                >
+                  {PAGE_LABEL[key]}
+                </button>
+              ))}
+            </nav>
+          )}
+        </div>
+        <div className="site-header-right">
+          <p className="status-pill">
+            <span className={`status-dot status-dot-${pillTone}`} aria-hidden="true" />
+            {pillText}
+          </p>
+          {showNav && (
+            <div className="stepper" role="group" aria-label="Replay time">
+              <button
+                type="button"
+                onClick={() => index > 0 && onStep(times[index - 1].at)}
+                disabled={!canBack}
+                aria-label="Go back one replay step"
+              >
+                Back
+              </button>
+              <span className="eval-time" role="status">
+                {shortTimeLabel(selectedAt)}
+              </span>
+              <button
+                type="button"
+                onClick={() => index >= 0 && index < times.length - 1 && onStep(times[index + 1].at)}
+                disabled={!canNext}
+                aria-label="Go forward one replay step"
+              >
+                Next
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === "dark" ? "Light" : "Dark"}
+          </button>
+        </div>
+      </header>
+      <p className="disclosure-strip">{PUBLIC_DISCLOSURE}</p>
+    </>
   );
 }
 
@@ -2112,8 +2825,19 @@ export default function App() {
   const [version, setVersion] = useState<string | null>(null);
   const [storyCheckpoints, setStoryCheckpoints] = useState<string[]>([]);
   const [view, setView] = useState<"landing" | "story" | "free" | "laws" | "trace" | null>(null);
+  const [page, setPage] = useState<HousePage>("house");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    try {
+      const stored = window.localStorage.getItem("aria-home-theme");
+      if (stored === "light" || stored === "dark") return stored;
+    } catch {
+      // storage unavailable; fall through to the OS preference
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
   const [storyIndex, setStoryIndex] = useState(0);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [lawsOpen, setLawsOpen] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
   const sourcesTokenRef = useRef(0);
@@ -2122,6 +2846,7 @@ export default function App() {
   const replayTokenRef = useRef(0);
   const eventsTokenRef = useRef(0);
   const noFollowUpIds = useRef<Set<string>>(new Set());
+  const createdAtRef = useRef<string | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -2159,9 +2884,11 @@ export default function App() {
     if (publicMode !== true) return;
     if (scenario !== STORY_SCENARIO || storyCheckpoints.length === 0) return;
     setStoryIndex((current) => Math.min(current, storyCheckpoints.length - 1));
-  }, [publicMode, scenario, storyCheckpoints]);
+    if (!storyCheckpoints.includes(selectedAt)) setSelectedAt(storyCheckpoints[0]);
+  }, [publicMode, scenario, storyCheckpoints, selectedAt]);
 
   useEffect(() => {
+    if (publicMode !== false && scenario === STORY_SCENARIO && !storyCheckpoints.includes(selectedAt)) return;
     const token = ++sourcesTokenRef.current;
     setSourcesLoading(true);
     setError(null);
@@ -2178,9 +2905,10 @@ export default function App() {
         setError("Backend not reachable");
         setSourcesLoading(false);
       });
-  }, [scenario, selectedAt]);
+  }, [scenario, selectedAt, publicMode, storyCheckpoints]);
 
   useEffect(() => {
+    if (publicMode !== false && scenario === STORY_SCENARIO && !storyCheckpoints.includes(selectedAt)) return;
     const token = ++contextTokenRef.current;
     setContextError(null);
     fetchContext(scenario, selectedAt)
@@ -2194,7 +2922,7 @@ export default function App() {
         if (token !== contextTokenRef.current) return;
         setContextError("Confirmed plan not reachable");
       });
-  }, [scenario, selectedAt]);
+  }, [scenario, selectedAt, publicMode, storyCheckpoints]);
 
   useEffect(() => {
     if (publicMode === null) return;
@@ -2236,6 +2964,7 @@ export default function App() {
         if (response.scenario !== scenario) return;
         setCreatedInvestigation(response);
         setInvestigationId(response.investigation_id);
+        createdAtRef.current = startAt;
         setOutcome(response.outcome);
         setHistory([]);
         if (response.notifications) setNotifications(response.notifications);
@@ -2315,6 +3044,7 @@ export default function App() {
   }, [scenario, replayAt]);
 
   useEffect(() => {
+    if (publicMode !== false) return;
     let live = true;
     fetchLivePower().then((response) => {
       if (live) setLivePower(response);
@@ -2328,7 +3058,7 @@ export default function App() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [publicMode]);
 
   function handleScenarioChange(nextScenario: string) {
     replayTokenRef.current += 1;
@@ -2378,18 +3108,40 @@ export default function App() {
       .catch(() => {
         if (token === replayTokenRef.current && eventsToken === eventsTokenRef.current) setEvents([]);
       });
-    const createdWithoutFollowUp = noFollowUpIds.current.has(investigationId);
+    const createdWithoutFollowUp =
+      noFollowUpIds.current.has(investigationId) ||
+      (createdInvestigation !== null &&
+        createdInvestigation.investigation_id === investigationId &&
+        createdInvestigation.follow_up === null);
+    const createdAt = createdAtRef.current;
+    const reuseAllowed =
+      !createdWithoutFollowUp &&
+      (createdAt === null ||
+        Number.isNaN(Date.parse(createdAt)) ||
+        Number.isNaN(Date.parse(at)) ||
+        Date.parse(at) >= Date.parse(createdAt));
     const createFresh = () => createInvestigation(scenario, at).then((created) => {
       if (token !== replayTokenRef.current) return null;
-      noFollowUpIds.current.delete(created.investigation_id);
+      if (created.follow_up === null) {
+        noFollowUpIds.current.add(created.investigation_id);
+      } else {
+        noFollowUpIds.current.delete(created.investigation_id);
+      }
+      createdAtRef.current = at;
       setCreatedInvestigation(created);
       setInvestigationId(created.investigation_id);
       if (created.notifications) setNotifications(created.notifications);
+      if (created.follow_up === null) {
+        setOutcome(created.outcome);
+        setReplayAt(at);
+        setReplayLoading(false);
+        return null;
+      }
       return fetchFollowUp(created.investigation_id, at);
     });
-    const followUpRequest = createdWithoutFollowUp
-      ? createFresh()
-      : fetchFollowUp(investigationId, at).catch(() => createFresh());
+    const followUpRequest = reuseAllowed
+      ? fetchFollowUp(investigationId, at).catch(() => createFresh())
+      : createFresh();
     followUpRequest
       .then((response) => {
         if (response === null) return;
@@ -2447,6 +3199,7 @@ export default function App() {
     }
     setStoryIndex(0);
     setEvidenceOpen(false);
+    setPage("house");
     setView("story");
   }
 
@@ -2459,17 +3212,21 @@ export default function App() {
 
   function exploreFreely() {
     setEvidenceOpen(false);
+    setPage("house");
     setView("free");
   }
 
   function openLaws() {
     setEvidenceOpen(false);
-    setView("laws");
+    setLawsOpen(true);
+    setPage("reasoning");
+    if (view === "landing") setView("free");
   }
 
   function openTrace() {
     setEvidenceOpen(false);
-    setView("trace");
+    setPage("reasoning");
+    if (view === "landing") setView("free");
   }
 
   function backToLanding() {
@@ -2568,57 +3325,178 @@ export default function App() {
   const storyTitle = STORY_STEP_TITLES[Math.min(storyIndex, STORY_STEP_TITLES.length - 1)] ?? "";
   const storyGuidance = STORY_STEP_GUIDANCE[Math.min(storyIndex, STORY_STEP_GUIDANCE.length - 1)] ?? "";
   const deterministicReadiness =
-    createdInvestigation?.readiness ?? displayInvestigation?.summary.readiness ?? null;
+    createdInvestigation?.readiness ?? displayInvestigation?.summary?.readiness ?? null;
   const recordedProvenance =
     (createdInvestigation?.investigation as unknown as
       | { recorded_provenance?: Record<string, unknown> }
       | null
       | undefined)?.recorded_provenance ?? null;
-  const hvacDelivered = visibleNotifications.find(
-    (notification) =>
-      notification.audience === "hvac_company" && notification.state === "simulated_delivered",
-  );
-  const refusedNotifications = visibleNotifications.filter(
-    (notification) => notification.state === "refused",
-  );
+  const replayTimes =
+    scenario === VIDEO_SCENARIO
+      ? VIDEO_REPLAY_TIMES
+      : scenario === CARE_SCENARIO
+        ? CARE_REPLAY_TIMES
+        : REPLAY_TIMES;
+  const stepperTimes =
+    inStory && storyCheckpoints.length > 0
+      ? storyCheckpoints.map((at) => ({ label: at.slice(11, 16), at }))
+      : replayTimes;
+  const verdict = !replayLoading || deterministicReadiness || verification
+    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit)
+    : null;
+  const trend = displayInvestigation?.summary?.metrics?.indoor_trend ?? null;
+  const gapTarget = displayInvestigation?.summary?.metrics?.target_gap ?? null;
+  const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
+  const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
+  const plannedArrival = contextData?.planned_arrival ?? null;
+  const lead = buildLead(data?.sources, trend);
+  const gapCallout = gapCalloutFor(data?.sources);
+  const visualEnabled =
+    publicMode === false || scenario !== STORY_SCENARIO || storyCheckpoints.includes(selectedAt);
+  const reasoningReady = visualEnabled;
+  const traceInvestigationId = (() => {
+    if (investigationId === null || replayAt === null) return null;
+    if (Number.isNaN(Date.parse(selectedAt)) || Number.isNaN(Date.parse(replayAt))) return null;
+    if (Date.parse(selectedAt) !== Date.parse(replayAt)) return null;
+    if (noFollowUpIds.current.has(investigationId)) return null;
+    if (
+      createdInvestigation !== null &&
+      createdInvestigation.investigation_id === investigationId &&
+      createdInvestigation.follow_up === null
+    )
+      return null;
+    const createdAt = createdAtRef.current;
+    if (
+      createdAt !== null &&
+      !Number.isNaN(Date.parse(createdAt)) &&
+      Date.parse(selectedAt) < Date.parse(createdAt)
+    )
+      return null;
+    return investigationId;
+  })();
+  const pillText =
+    scenario === STORY_SCENARIO
+      ? "Synthetic demo · demo-house, Petoskey"
+      : `Synthetic demo · ${scenario}`;
+  const homeownerReady = verification?.stage === "arrival_met" && followUpTargetTemp !== null;
+
+  const integrationRows: Array<{ name: string; status: string; tone: StatusTone; note: string }> = [
+    whatsappConfigured || publicMode !== true
+      ? {
+          name: "WhatsApp",
+          status: publicMode === true ? "Simulated" : whatsappConfigured ? "Configured" : "Off",
+          tone: publicMode === true || !whatsappConfigured ? "unknown" : "ok",
+          note: publicMode === true
+            ? "Caregiver permission and HVAC notice; simulated in this demo; real only on the owner's test number when opted in"
+            : "Caregiver permission and HVAC notice",
+        }
+      : {
+          name: "WhatsApp",
+          status: "Off",
+          tone: "unknown",
+          note: "Caregiver permission and HVAC notice",
+        },
+    {
+      name: "Emporia energy",
+      status: publicMode === true ? "Off" : livePower?.status === "ok" ? "Live" : "Off",
+      tone: publicMode === true || livePower?.status !== "ok" ? "unknown" : "ok",
+      note:
+        publicMode === true
+          ? "Off in this demo"
+          : livePower?.status === "ok"
+            ? `${livePower.source} — read-only, display only`
+            : "Not connected",
+    },
+    {
+      name: "Nest camera",
+      status: publicMode === true ? "Off" : cameraConfigured ? "On" : "Off",
+      tone: publicMode === true || !cameraConfigured ? "unknown" : "ok",
+      note:
+        publicMode === true
+          ? "Owner's mechanical room; off in this demo"
+          : "Owner's mechanical room",
+    },
+    {
+      name: "Synthetic camera frames",
+      status: "Recorded",
+      tone: "unknown",
+      note: "Recorded sam-3.1 segmentation of the synthetic frames",
+    },
+    ...(["room_sensor", "thermostat", "weather", "calendar"] as SourceKind[]).map((kind) => {
+      const status = sourceByKind(data?.sources, kind);
+      return {
+        name: kind === "room_sensor" ? "Room sensor" : kind === "thermostat" ? "Thermostat" : kind === "weather" ? "Weather" : "Calendar",
+        status: status ? AVAILABILITY_LABEL[status.availability] : "Unknown",
+        tone: status ? availabilityTone(status.availability) : ("unknown" as StatusTone),
+        note:
+          kind === "weather"
+            ? "Forecast, not an on-property measurement."
+            : status?.notes[0] ?? (status ? `newest observed ${formatTimestamp(status.newest_observed_at)}` : "no readings"),
+      };
+    }),
+  ];
 
   useEffect(() => {
-    if (!evidenceOpen) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setEvidenceOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [evidenceOpen]);
+    document.documentElement.dataset.theme = theme;
+    try {
+      window.localStorage.setItem("aria-home-theme", theme);
+    } catch {
+      // storage unavailable; the choice still applies for this session
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    if (!inset || insetPanels.length === 0) return;
+    if (INSET_TARGETS[inset]?.includes("investigation") || inset === "evidence-timeline") {
+      setPage("reasoning");
+    } else {
+      setPage("house");
+    }
+  }, []);
 
   if (publicMode === true && (view === "landing" || view === null)) {
     return (
       <div className="page public-landing">
-        <p className="banner" role="status">
-          SYNTHETIC DATA - demo scenario, not a real home
-        </p>
+        <AppHeader
+          page="house"
+          onPage={() => undefined}
+          showNav={false}
+          pillText="Synthetic demo · demo-house, Petoskey"
+          pillTone="unknown"
+          times={[]}
+          selectedAt={storyCheckpoints[0] ?? CARE_START_AT}
+          onStep={() => undefined}
+          canStep={false}
+          theme={theme}
+          onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
+        />
         <main>
-          <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
-          <p>ARIA Home watches a synthetic winter night and gets the right person moving when something looks wrong.</p>
-          <p className="brad-hook">{BRAD_HOOK}</p>
-          <p className="disclosure">{PUBLIC_DISCLOSURE}</p>
-          <div className="landing-actions">
-            <button type="button" onClick={startStory} autoFocus>
-              Start the warm-by story
-            </button>
-            <button type="button" onClick={exploreFreely}>
-              Explore the app freely
-            </button>
-          </div>
-          <div className="session-controls">
-            <button type="button" onClick={handleResetSession} disabled={resetting}>
-              {resetting ? "Resetting…" : "Reset my session"}
-            </button>
-            {resetError && (
-              <p role="alert" className="error">
-                {resetError}
-              </p>
-            )}
+          <div className="landing-letter">
+            <p className="landing-eyebrow">A demo for the Meta AI hackathon</p>
+            <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
+            <p>ARIA Home watches a synthetic winter night and gets the right person moving when something looks wrong.</p>
+            <blockquote className="brad-hook">{BRAD_HOOK}</blockquote>
+            <div className="household-card">
+              <p>demo-house · Petoskey, Michigan · synthetic · warm-by 68 F at 7:00 · caregiver: her daughter</p>
+            </div>
+            <div className="landing-actions">
+              <button type="button" className="btn-primary" onClick={startStory} autoFocus>
+                Start the warm-by story
+              </button>
+              <button type="button" className="link-button" onClick={exploreFreely}>
+                Explore the app freely
+              </button>
+            </div>
+            <div className="session-controls">
+              <button type="button" className="link-button" onClick={handleResetSession} disabled={resetting}>
+                {resetting ? "Resetting…" : "Reset my session"}
+              </button>
+              {resetError && (
+                <p role="alert" className="error">
+                  {resetError}
+                </p>
+              )}
+            </div>
           </div>
         </main>
         <VersionLine commit={version} />
@@ -2628,115 +3506,79 @@ export default function App() {
 
   return (
     <div className={`page${inset && insetPanels.length ? ` inset-active inset-${inset}` : ""}${keyCaption ? ` key-active key-${keyName}` : ""}`}>
-      {publicMode === true && (
-        <div className="public-bar" role="navigation" aria-label="Demo session">
-          <p className="disclosure">{PUBLIC_DISCLOSURE}</p>
-          <div className="session-controls">
-            {view !== "landing" && (
-              <button type="button" onClick={backToLanding}>
-                Back to start
-              </button>
-            )}
-            <button type="button" onClick={() => setEvidenceOpen((open) => !open)} aria-expanded={evidenceOpen}>
-              {evidenceOpen ? "Close evidence" : "Explore evidence"}
-            </button>
-            {view !== "landing" && (
-              <button type="button" onClick={openLaws}>
-                ARIA&rsquo;s Laws
-              </button>
-            )}
-            {view !== "landing" && (
-              <button type="button" onClick={openTrace}>
-                ARIA&rsquo;s view
-              </button>
-            )}
-            <button type="button" onClick={handleResetSession} disabled={resetting}>
-              {resetting ? "Resetting…" : "Reset my session"}
-            </button>
-          </div>
-          {resetError && (
-            <p role="alert" className="error">
-              {resetError}
-            </p>
-          )}
-        </div>
+      <AppHeader
+        page={page}
+        onPage={setPage}
+        showNav={view !== "landing"}
+        pillText={pillText}
+        pillTone={verdict?.tone ?? "unknown"}
+        times={stepperTimes}
+        selectedAt={selectedAt}
+        onStep={handleReplayTime}
+        canStep={investigationId !== null}
+        theme={theme}
+        onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
+      />
+      <main>
+      {data && publicMode !== true && (
+        <p className="banner" role="status" hidden={page !== "house"}>
+          {data.data_mode.toUpperCase()} DATA - demo scenario, not a real home{" "}
+          <span className="banner-mode">(data mode: {data.data_mode})</span>
+        </p>
       )}
-      {view === "laws" && (
-        <LawsView
-          scenario={scenario}
-          at={selectedAt}
-          onBack={() => setView(publicMode === true && storyCheckpoints.length > 0 ? "story" : "free")}
-        />
+
+      {publicMode !== true && (
+        <header hidden={page !== "house"}>
+          <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
+        </header>
       )}
-      {view === "trace" && (
-        <TraceView
-          scenario={scenario}
-          at={selectedAt}
-          times={scenario === VIDEO_SCENARIO ? VIDEO_REPLAY_TIMES : scenario === CARE_SCENARIO ? CARE_REPLAY_TIMES : REPLAY_TIMES}
-          onSelectAt={handleReplayTime}
-          onBack={() => setView(publicMode === true && storyCheckpoints.length > 0 ? "story" : "free")}
-        />
-      )}
+      <div className="letter-block" hidden={page !== "house"}>
+        <p className="verdict-eyebrow">{formatLongTime(selectedAt)}</p>
+        {verdict ? (
+          <>
+            <h1 className="verdict-headline">{verdict.headline}</h1>
+            {lead && <p className="verdict-lead">{lead}</p>}
+            {gapCallout && (
+              <div className="gap-callout" role="note">
+                <span className="status-dot status-dot-watch" aria-hidden="true" />
+                <p>{gapCallout}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <p role="status">Checking the house…</p>
+        )}
+      </div>
       {inStory && (
-        <section aria-labelledby="story-heading" className="story-panel">
+        <section aria-labelledby="story-heading" className="story-panel" hidden={page !== "house"}>
+          <p className="story-eyebrow">
+            Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} —{" "}
+            {storyTitle}
+          </p>
           <h2 id="story-heading">The warm-by story</h2>
           <p className="story-progress" role="status">
             Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} —{" "}
             {storyTitle} at {storyAt ? shortTimeLabel(storyAt) : "…"}
           </p>
           <p>{storyGuidance}</p>
-          {verification ? (
-            <p className="story-live">
-              Now showing: {VERIFICATION_LABEL[verification.stage]} (computed by code).
+          {evidenceTimeline.length > 0 && (
+            <p className="story-known-line">
+              Known at this step:{" "}
+              {evidenceTimeline
+                .map(
+                  (entry) =>
+                    `${entry.label} — observed ${formatTimestamp(entry.observed_at)}, first known ${formatTimestamp(entry.first_known_at)}${entry.corroboration_only ? " (corroboration only)" : ""}`,
+                )
+                .join("; ")}
             </p>
-          ) : replayLoading ? (
-            <p role="status">Loading this step…</p>
-          ) : null}
-          {deterministicReadiness && (
-            <p className="story-live">
-              Readiness: {READINESS_LABEL[deterministicReadiness.status]} (computed by code).
-            </p>
-          )}
-          <div className="story-known">
-            <h3>What was observed and when it became known</h3>
-            {evidenceTimeline.length === 0 ? (
-              <p>{replayLoading ? "Loading evidence…" : "No evidence entries known at this step."}</p>
-            ) : (
-              <ul>
-                {evidenceTimeline.map((entry) => (
-                  <li key={entry.kind}>
-                    {entry.label} — observed{" "}
-                    <time dateTime={entry.observed_at}>{formatTimestamp(entry.observed_at)}</time>,
-                    first known{" "}
-                    <time dateTime={entry.first_known_at}>{formatTimestamp(entry.first_known_at)}</time>
-                    {entry.corroboration_only ? " (corroboration only)" : ""}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          {hvacDelivered && (
-            <p className="story-live">
-              HVAC notice fields sent: {Object.keys(hvacDelivered.payload).join(", ")} (from the
-              simulated payload, not a summary).
-            </p>
-          )}
-          {refusedNotifications.length > 0 && (
-            <ul className="story-refusals">
-              {refusedNotifications.map((notification) => (
-                <li key={notification.id}>
-                  {NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience} notice
-                  refused: {refusalReasonInWords(notification)}
-                </li>
-              ))}
-            </ul>
           )}
           <div className="story-nav">
-            <button type="button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId}>
+            <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId}>
               Rewind to start
             </button>
             <button
               type="button"
+              className="ghost-button"
               onClick={() => stepTo(storyIndex - 1)}
               disabled={storyIndex === 0 || !investigationId}
             >
@@ -2744,12 +3586,13 @@ export default function App() {
             </button>
             <button
               type="button"
+              className="btn-primary"
               onClick={() => stepTo(storyIndex + 1)}
               disabled={storyIndex >= storyCheckpoints.length - 1 || !investigationId}
             >
               {storyIndex >= storyCheckpoints.length - 1 ? "Story complete" : "Next"}
             </button>
-            <button type="button" onClick={openTrace} disabled={!investigationId}>
+            <button type="button" className="ghost-button" onClick={openTrace} disabled={!investigationId}>
               See ARIA&rsquo;s view of this step
             </button>
           </div>
@@ -2762,10 +3605,17 @@ export default function App() {
         </section>
       )}
       {evidenceOpen && publicMode === true && (
-        <aside aria-label="Explore evidence" className="evidence-drawer">
+        <aside
+          aria-label="Explore evidence"
+          className="evidence-drawer"
+          hidden={page !== "house"}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setEvidenceOpen(false);
+          }}
+        >
           <div className="drawer-head">
             <h2>Explore evidence</h2>
-            <button type="button" onClick={() => setEvidenceOpen(false)} autoFocus>
+            <button type="button" className="ghost-button" onClick={() => setEvidenceOpen(false)} autoFocus>
               Close evidence
             </button>
           </div>
@@ -2888,7 +3738,8 @@ export default function App() {
           </section>
         </aside>
       )}
-      <section className="demo-controls" aria-label="Demo controls">
+      {publicMode !== true && (
+      <section className="demo-controls" aria-label="Demo controls" hidden={page !== "house"}>
         <p className="demo-controls-title">Demo controls (synthetic replay)</p>
         <label className="demo-scenario">
           Scenario{" "}
@@ -2909,6 +3760,7 @@ export default function App() {
             <button
               key={time.at}
               type="button"
+              className="ghost-button"
               onClick={() => handleReplayTime(time.at)}
               disabled={!investigationId}
               aria-pressed={selectedAt === time.at}
@@ -2918,42 +3770,86 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button type="button" onClick={openLaws}>
+        <button type="button" className="ghost-button" onClick={openLaws}>
           ARIA&rsquo;s Laws
         </button>
-        <button type="button" onClick={openTrace}>
+        <button type="button" className="ghost-button" onClick={openTrace}>
           ARIA&rsquo;s view
         </button>
       </section>
-      <main>
-      {data && (
-        <p className="banner" role="status">
-          {data.data_mode.toUpperCase()} DATA - demo scenario, not a real home{" "}
-          <span className="banner-mode">(data mode: {data.data_mode})</span>
-        </p>
+      )}
+      <div hidden={page !== "house"}>
+        <GlanceTiles
+          sources={data?.sources}
+          trend={trend}
+          targetTemp={warmByTargetTemp}
+          targetUnit={warmByTargetUnit}
+          plannedArrival={plannedArrival}
+          verdictTone={verdict?.tone ?? "unknown"}
+          scenario={scenario}
+          at={selectedAt}
+          visualEnabled={visualEnabled}
+        />
+      </div>
+      <div hidden={page !== "house"}>
+        <WhoKnows
+          permission={caregiverPermission}
+          onDecide={handleCaregiverDecision}
+          deciding={decidingPermission}
+          whatsappConfigured={whatsappConfigured}
+          onSendWhatsapp={() => {
+            const alert = notifications.find((item) => item.id === caregiverPermission?.notification_id);
+            if (alert) handleSendWhatsapp(alert);
+          }}
+          sending={sendingWhatsappId === caregiverPermission?.notification_id}
+          notifications={visibleNotifications}
+          notificationsError={notificationsError}
+          onAck={handleAck}
+          ackingId={ackingId}
+          onSendWhatsappFor={handleSendWhatsapp}
+          sendingWhatsappId={sendingWhatsappId}
+          homeownerReady={homeownerReady}
+          sectionClassName={insetClass("notifications")}
+        />
+      </div>
+
+      {reasoningReady && (
+      <div hidden={page !== "reasoning"}>
+        <SectionBoundary name="ARIA's view" key={`trace-${selectedAt}`}>
+        <TraceView
+          scenario={scenario}
+          at={selectedAt}
+          times={replayTimes}
+          onSelectAt={handleReplayTime}
+          onBack={() => setPage("house")}
+          active={page === "reasoning"}
+          investigationId={traceInvestigationId}
+        />
+        </SectionBoundary>
+      </div>
+      )}
+      {reasoningReady && (
+      <div hidden={page !== "reasoning"}>
+        <SectionBoundary name="Code checks" key={`checks-${selectedAt}`}>
+        <CodeChecks scenario={scenario} at={selectedAt} active={page === "reasoning"} />
+        </SectionBoundary>
+      </div>
       )}
 
-      <header>
-        <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
-        {data && (
-          <p className="eval-time">
-            Scenario evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
-          </p>
-        )}
-      </header>
-
-      <section aria-labelledby="confirmed-plan-heading" className={insetClass("plan")}>
-        <h2 id="confirmed-plan-heading">Confirmed plan and permissions</h2>
-        <ConfirmedPlanSection data={contextData} error={contextError} />
-      </section>
-
-      <section aria-labelledby="investigation-heading" className={insetClass("investigation")}>
+      <section aria-labelledby="investigation-heading" className={insetClass("investigation")} hidden={page !== "reasoning"}>
+        <SectionBoundary name="Investigation" key={`investigation-${selectedAt}`}>
+        <p className="section-label">What the model said</p>
         <h2 id="investigation-heading">Investigation</h2>
+        {publicMode === true && displayInvestigation?.provider_mode === "recorded" && (
+          <p>Recorded model response — recorded, not live.</p>
+        )}
         <InvestigationSection data={displayInvestigation} error={investigationError} created={createdInvestigation} replayAt={selectedAt} />
+        </SectionBoundary>
       </section>
 
-      <section aria-labelledby="outcome-heading" className={insetClass("outcome")}>
-        <h2 id="outcome-heading">Outcome</h2>
+      <section aria-labelledby="outcome-heading" className={insetClass("outcome")} hidden={page !== "house"}>
+        <p className="section-label">Recovery</p>
+        <h2 id="outcome-heading">Recovery so far</h2>
         <OutcomeSection
           outcome={outcome}
           history={history}
@@ -2965,6 +3861,7 @@ export default function App() {
           verification={verification}
           notScheduled={
             outcome === null &&
+            !replayLoading &&
             createdInvestigation !== null &&
             createdInvestigation.follow_up === null &&
             createdInvestigation.schedule_status === "not_scheduled"
@@ -2972,54 +3869,80 @@ export default function App() {
         />
       </section>
 
-      <section aria-labelledby="evidence-timeline-heading" className={insetClass("evidence-timeline")}>
+      <section aria-labelledby="evidence-timeline-heading" className={insetClass("evidence-timeline")} hidden={page !== "reasoning"}>
+        <SectionBoundary name="Evidence timeline" key={`evidence-timeline-${selectedAt}`}>
+        <p className="section-label">Evidence timeline</p>
         <h2 id="evidence-timeline-heading">Evidence timeline</h2>
         <EvidenceTimelineSection entries={evidenceTimeline} />
+        <p className="section-label">Human reports</p>
         <HumanReportSection report={humanReport} />
+        </SectionBoundary>
       </section>
 
-      <section aria-labelledby="notifications-heading" className={insetClass("notifications")}>
-        <h2 id="notifications-heading">Notifications (simulated delivery)</h2>
-        {caregiverPermission && (
-          <CaregiverPermissionCard
-            permission={caregiverPermission}
-            onDecide={handleCaregiverDecision}
-            deciding={decidingPermission}
-            whatsappConfigured={whatsappConfigured}
-            onSendWhatsapp={() => {
-              const alert = notifications.find((item) => item.id === caregiverPermission.notification_id);
-              if (alert) handleSendWhatsapp(alert);
-            }}
-            sending={sendingWhatsappId === caregiverPermission.notification_id}
-          />
-        )}
-        <NotificationsSection
-          notifications={visibleNotifications}
-          error={notificationsError}
-          onAck={handleAck}
-          ackingId={ackingId}
-          whatsappConfigured={whatsappConfigured}
-          onSendWhatsapp={handleSendWhatsapp}
-          sendingWhatsappId={sendingWhatsappId}
-        />
-      </section>
-
-      <section aria-labelledby="homeowner-update-heading" className={insetClass("homeowner")}>
-        <h2 id="homeowner-update-heading">Homeowner update</h2>
+      <div hidden={page !== "house"}>
         <HomeownerUpdateCard
           verification={verification}
           targetTemp={followUpTargetTemp}
           targetUnit={followUpUnit}
           verifiedFacts={verifiedFacts}
+          sectionClassName={insetClass("homeowner")}
         />
-      </section>
+      </div>
 
-      <section aria-labelledby="timeline-heading" className={insetClass("timeline")}>
+      <section aria-labelledby="timeline-heading" className={insetClass("timeline")} hidden={page !== "reasoning"}>
+        <SectionBoundary name="Simulated timeline" key={`timeline-${selectedAt}`}>
+        <p className="section-label">Simulated events</p>
         <h2 id="timeline-heading">Simulated timeline</h2>
         <SimulatedTimeline events={events} replayAt={replayAt} />
+        </SectionBoundary>
       </section>
 
-      <section aria-labelledby="evidence-heading" className={insetClass("evidence")}>
+      <section aria-labelledby="confirmed-plan-heading" className={insetClass("plan")} hidden={page !== "house"}>
+        <details className="plan-row">
+          <summary id="confirmed-plan-heading">The plan</summary>
+          <ConfirmedPlanSection data={contextData} error={contextError} />
+        </details>
+      </section>
+
+      {inStory && storyIndex < storyCheckpoints.length - 1 && (
+        <div className="bottom-nav" hidden={page !== "house"}>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => stepTo(storyIndex + 1)}
+            disabled={!investigationId}
+            aria-label="Next step"
+          >
+            Next
+          </button>
+        </div>
+      )}
+      <div className="house-footer-controls" hidden={page !== "house"}>
+        {publicMode === true && view !== "landing" && (
+          <button type="button" className="ghost-button" onClick={backToLanding}>
+            Back to start
+          </button>
+        )}
+        {publicMode === true && (
+          <button type="button" className="ghost-button" onClick={() => setEvidenceOpen((open) => !open)} aria-expanded={evidenceOpen}>
+            {evidenceOpen ? "Close evidence" : "Explore evidence"}
+          </button>
+        )}
+        {publicMode === true && (
+          <button type="button" className="ghost-button" onClick={handleResetSession} disabled={resetting}>
+            {resetting ? "Resetting…" : "Reset my session"}
+          </button>
+        )}
+        {resetError && (
+          <p role="alert" className="error">
+            {resetError}
+          </p>
+        )}
+      </div>
+
+      <section aria-labelledby="evidence-heading" className={insetClass("evidence")} hidden={page !== "reasoning"}>
+        <SectionBoundary name="Evidence sources" key={`evidence-${selectedAt}`}>
+        <p className="section-label">Sources</p>
         <h2 id="evidence-heading">Evidence sources</h2>
         {sourcesLoading && data && (
           <p role="status" className="stale-evidence">
@@ -3035,28 +3958,77 @@ export default function App() {
         )}
         {data && data.sources.length === 0 && <p role="status">No evidence sources reported.</p>}
         {data && data.sources.length > 0 && (
-          <div className="cards">
-            {SOURCE_ORDER.map((source) => {
-              const status = data.sources.find((s) => s.source === source);
-              return status ? <SourceCard key={source} status={status} /> : null;
-            })}
-          </div>
+          <EvidenceSourcesTable sources={data.sources} />
         )}
+        </SectionBoundary>
       </section>
       {(scenario.startsWith("visual_") || scenario === CARE_SCENARIO) && (
-        <section aria-labelledby="visual-heading" className={insetClass("visual")}>
+        <section aria-labelledby="visual-heading" className={insetClass("visual")} hidden={page !== "reasoning"}>
+          <SectionBoundary name="Visual evidence" key={`visual-${selectedAt}`}>
           <h2 id="visual-heading">Visual evidence (synthetic image)</h2>
-          <VisualEvidencePanel scenario={scenario} at={selectedAt} />
+          <VisualEvidencePanel
+            scenario={scenario}
+            at={selectedAt}
+            enabled={visualEnabled}
+          />
+          </SectionBoundary>
         </section>
       )}
+      {reasoningReady && (
+      <div hidden={page !== "reasoning"}>
+        <SectionBoundary name="ARIA's Laws" key={`laws-${selectedAt}`}>
+        <details
+          className="laws-details"
+          open={lawsOpen}
+          onToggle={(event) => setLawsOpen(event.currentTarget.open)}
+        >
+          <summary>ARIA&rsquo;s Laws</summary>
+          <LawsView
+            scenario={scenario}
+            at={selectedAt}
+            onBack={() => setPage("house")}
+            active={page === "reasoning"}
+          />
+        </details>
+        </SectionBoundary>
+      </div>
+      )}
+      <section aria-labelledby="integrations-heading" hidden={page !== "integrations"}>
+        <p className="section-label">What ARIA is connected to</p>
+        <h2 id="integrations-heading">Integrations</h2>
+        <ul className="int-rows">
+          {integrationRows.map((row) => (
+            <li key={row.name} className="int-row">
+              <span className={`status-dot status-dot-${row.tone}`} aria-hidden="true" />
+              <div className="int-row-body">
+                <p className="int-row-title">{row.name}</p>
+                <p className="int-row-meta">{row.note}</p>
+              </div>
+              <span className="int-row-status">{row.status}</span>
+            </li>
+          ))}
+        </ul>
+        <h3>Meta models</h3>
+        <p>Model answers decide nothing — readiness, verification and notices are computed by code.</p>
+        <ul className="models-list">
+          {MODEL_CONTRIBUTIONS.map((item) => (
+            <li key={item.model}>
+              <span className="model-name">{item.model}</span>
+              <p>
+                {item.role}. {item.status}.
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
       {livePower && livePower.status === "ok" && (
-        <section aria-labelledby="live-power-heading">
+        <section aria-labelledby="live-power-heading" hidden={page !== "integrations" || publicMode !== false}>
           <h2 id="live-power-heading">Your real home, right now (live, read-only, Emporia Vue)</h2>
           <LivePowerPanel data={livePower} />
         </section>
       )}
       {cameraConfigured && (
-        <section aria-labelledby="live-camera-heading">
+        <section aria-labelledby="live-camera-heading" hidden={page !== "integrations" || publicMode !== false}>
           <h2 id="live-camera-heading">Live camera (owner&rsquo;s mechanical room)</h2>
           <LiveCameraPanel />
         </section>

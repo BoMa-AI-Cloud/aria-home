@@ -4,8 +4,8 @@ This document describes scope and limits. It does not claim the project is secur
 
 ## Supported scope
 
-- Local development on loopback (127.0.0.1): backend on port 5000, frontend on port 5173.
-- Synthetic fixture data only; notifications are simulated delivery ("Simulated, no message was sent") unless the optional WhatsApp test delivery is explicitly opted in (see below).
+- Local development on loopback (127.0.0.1): backend on port 5000, frontend on port 5173. The one exception is the hosted synthetic-only public demo: no keys, no live flags, recorded answers only.
+- Synthetic fixture data only; notifications are simulated delivery ("Simulated, no message was sent") unless explicitly opted in: the optional WhatsApp test delivery, the Emporia live-watts panel, or the owner-only Nest camera snapshot (all off by default, none present in the public demo).
 - No equipment control: the app reads and explains; it never operates a thermostat, scene, or other device. The Emporia integration calls only pyemvue read methods (login, device list, current usage); nothing in the repository calls any method that changes a device or outlet.
 - Mock inference is the default. Live inference is gated by environment variables and is off in CI.
 - Optional integrations are off by default and stay synthetic in the demo, tests and CI with no credentials:

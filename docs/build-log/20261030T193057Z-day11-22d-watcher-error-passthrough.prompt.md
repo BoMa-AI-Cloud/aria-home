@@ -1,0 +1,12 @@
+ARIA Home: never record a watcher failure as a different failure (approved by Brad, 2026-10-30). DO THE WORK NOW in this turn. IMPORTANT: a message without a tool call ends your turn, so never write a status or plan sentence on its own; keep editing and running commands until the done-condition holds. No live calls, no installs, no git, no network beyond 127.0.0.1. Tests use fakes only. Do not weaken any test. Keep all working-tree changes; never edit any file under backend/eval/. Shell starts in C:\aria-home. Run `cd backend && python -m pytest -q` exactly (one per call, no pipes). Do not end your turn until it passes with zero failures.
+
+Real result: re-recording 02:31 and 02:45 with `--max-tokens 16000 --timeout-s 300` recorded both as rejected with "no text block in reply (thinking only)". But a direct diagnostic call at 02:31 (same prompt, 4096 tokens) returned HTTP 200 with a redacted_thinking block followed by a text block holding a valid observation. The cause: backend/scripts/record_care_watcher.py _LiveWatcherProvider.generate returns only live.get("text") and drops live["error"], so request_live_watcher's real error ("timeout", "server_error", "auth", "bad_response", "model_mismatch") becomes text None, which run_watcher then reports as NO_TEXT_REASON.
+
+Fix the class:
+1. _LiveWatcherProvider.generate passes the error through (e.g. result["error"]), and run_watcher / _generate_text record failed_checks with the real reason ("provider error: model_mismatch (reply model 'X')" etc.). NO_TEXT_REASON is used only when the reply really had no text block. For model_mismatch include the reply's model id (not secret) in the reason; for bad_response include the HTTP status.
+2. Check request_live_watcher's model check: compare the reply's model id to the requested one the way aria_home/provider.py does for muse-spark-1.3 (if the provider accepts a dated or suffixed model id, accept the same here); do not loosen it beyond what provider.py accepts.
+3. Sweep: any other recorder or adapter that turns an error into an empty-text result (scripts/record_care_answers.py, review.py, transcribe.py, visual.py) must keep the real reason.
+4. --only-missing treats these provider-error rejections like unreadable ones (re-recordable); a real code-check rejection still is not.
+5. Tests with fakes: each error kind is recorded with its own reason, never as "thinking only"; a reply model id that provider.py accepts passes here too.
+Final answer: files changed, tests added, and the REAL pytest line.
+

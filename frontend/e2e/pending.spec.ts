@@ -32,6 +32,7 @@ test("slow inference with a concurrent polling caller shows the eventual result"
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation.getByText(MOCK)).toBeVisible({ timeout: 60_000 });
   const result = await poller;
   expect(result.status).toBe(200);
@@ -46,6 +47,7 @@ test("server failure surfaces an unavailable explanation", async ({ page }, test
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText("ARIA's explanation is unavailable", { timeout: 60_000 });
 });
 
@@ -53,7 +55,7 @@ test("expired lease surfaces recovery_required distinctly", async ({ page }, tes
   const at = uniqueAt(testInfo, 2);
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}&e2e_lease_s=1&e2e_delay_s=4`);
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await expect(outcome).toContainText("Inference recovery required", { timeout: 60_000 });
 });
@@ -67,8 +69,9 @@ test("scenario change while pending keeps the current context", async ({ page },
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
+  await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation.getByText(/MOCK - example answer, not live inference|Provider mode: recorded/)).toBeVisible({ timeout: 60_000 });
-  await expect(page.getByLabel("Scenario")).toHaveValue("care_home_v1");
+  await expect(page.getByLabel("Scenario", { exact: true })).toHaveValue("care_home_v1");
   await expect(page.locator("body")).not.toContainText("Follow-up not reachable");
 });
 
@@ -80,7 +83,7 @@ test("rapid replay changes end on the last selection with no stale overwrite", a
   await expect(demoControls.getByRole("button", { name: "19:03" })).toBeEnabled({ timeout: 60_000 });
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
-    has: page.getByRole("heading", { name: "Outcome" }),
+    has: page.getByRole("heading", { name: "Recovery so far" }),
   });
   await demoControls.getByRole("button", { name: "04:51" }).click();
   await demoControls.getByRole("button", { name: "06:21" }).click();

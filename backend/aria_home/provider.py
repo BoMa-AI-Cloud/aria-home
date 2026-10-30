@@ -458,7 +458,9 @@ class MetaProvider:
         parts = [
             block["text"]
             for block in content
-            if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str)
+            if isinstance(block, dict)
+            and block.get("type") in ("text", "output_text")
+            and isinstance(block.get("text"), str)
         ]
         if not parts:
             input_tokens, output_tokens = usage_tokens()
@@ -782,11 +784,11 @@ class BasetenProvider:
                     parts.append(block)
                 elif isinstance(block, dict):
                     btype = block.get("type")
-                    if btype in ("reasoning", "thinking", "reasoning_content"):
+                    if btype in ("reasoning", "thinking", "redacted_thinking", "reasoning_content"):
                         if "reasoning" not in block_types:
                             block_types.append("reasoning")
                         continue
-                    if isinstance(block.get("text"), str):
+                    if isinstance(block.get("text"), str) and btype in ("text", "output_text", None):
                         parts.append(block["text"])
                     elif isinstance(block.get("content"), str) and btype in ("text", "output_text", None):
                         parts.append(block["content"])

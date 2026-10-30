@@ -1,36 +1,55 @@
-# ARIA Home — judge one-pager
+# ARIA Home
 
-## Problem
+Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?
 
-I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical or emergency service.
+**Demo:** https://aria-home-demo.onrender.com (interactive, synthetic data, no sign-in)
+
+## The problem
+
+> "I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time."
+
+ARIA Home is built to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical or emergency service.
 
 ## What it does
 
-Answers one question for an older adult's household: will the home be warm by the warm-by time, and if something looks wrong overnight, who should respond? Code computes readiness (`on_track`, `at_risk`, `cannot_tell`, `arrival_passed`), follow-up outcomes from later measurements only, and recovery verification stages (`telemetry_missing` to `arrival_met`, shown as "Warm-by expectation met"). A model investigation explains the code-checked facts. The UI keeps verified facts (rendered by code) apart from interpretation (model-written, not verified). Notifications are simulated and scoped; acknowledgement never resolves anything. The resident's consent is recorded in the fixture: the resident sees everything, the family caregiver sees home status and observations, the HVAC company sees property, access note and observations only. See [Architecture diagram](architecture.svg).
+It watches independent sources (room sensor, thermostat, electrical activity, calendar, weather, a camera) against a household's warm-by plan: 68 F by 7:00. In the synthetic story the furnace stops and the thermostat goes silent at 1:30. The room sensor shows the room falling to 52 F, and at 2:31 code flags "at risk before 7:00". ARIA asks the family caregiver, "May I contact the HVAC company?" Only after she approves is a simulated HVAC request sent, with allowed fields only. Warming is seen at 4:51, and the goal is verified at 6:21 from independent readings held for 30 minutes. The technician's voice note at 6:45 counts only as a human report. At 7:01: "Warm-by expectation met".
 
-## How Meta models are used
+Code decides readiness, verification and who is told; models explain and review, never decide. Every number cites the evidence it came from, replay never shows future data, and every message is simulated.
 
-- **muse-spark-1.3** (runtime): explains code-checked facts under contract **inv-v3**; claim checks reject mismatches. Mock mode is the default; live runs go through the Meta Model API behind a gated provider.
-- **sam-3.1** (visual evidence): the synthetic images carry recorded segmentation; the app is replay-only and never calls sam-3.1 at runtime.
-- **muse-image-1.0**: only to create the synthetic fixture images; never called at runtime.
-- All code was written by **muse-wonder-1.0** and **muse-spark-1.3**; every prompt and answer is in `docs/build-log/`.
+## Try it in two minutes
 
-## Safety rules
+1. Open the demo and press **Start the warm-by story**.
+2. Step through the 10 steps with **Next**. The **House** tab shows the verdict, the house right now, and who knows.
+3. At 2:31, press **Approve** or **Decline** on the caregiver's permission request. Decline means no HVAC request, and ARIA keeps monitoring.
+4. Open **Reasoning** to see ARIA's view: sources, code checks, where the model contributes, the recorded model answer and its second review.
+5. Open **Integrations** for what ARIA connects to and which Meta model does what.
+6. **Reset my session** clears only your own session.
 
-Synthetic data only; simulated delivery (cards read "Simulated, no message was sent"); per-audience field allowlists with refusals recorded; HVAC requests only after a caregiver authorization event; acknowledgement, visits and the completion report never set outcomes; no future data in replay; watts never prove heat; recovery means the monitored temperature goal, not a proven repair. No health data, no medical terms, no location tracking of the person, no fall or activity sensing.
+## Where Meta models help
 
-## Evaluation (from docs/evaluation.md)
+| Model | What it does here | What it never does |
+|---|---|---|
+| muse-spark-1.3 | Explains the code-checked facts at each step under a strict contract (claims checked against evidence; mismatches rejected); also watches for overnight anomalies, each confirmed by code. The hosted demo shows recorded runs, labelled with their provenance. | Decide readiness, verification or who is told |
+| muse-wonder-1.0 | A structured second review of each recorded answer. In a control test it flagged a deliberately falsified temperature, citing the real reading. | Change any result |
+| sam-3.1 | Segments the synthetic camera frames (recorded). It found the blank thermostat display and missed the frost; the miss is shown as a miss. | Count as an all-clear when it finds nothing |
+| muse-voice-transcribe-1.0 | Turns the technician's synthetic voice note into a text report. | Count as a measurement |
+| muse-image-1.0 | Generated the synthetic camera frames, offline. | Run in the demo |
 
-Builder-labeled cases on synthetic data; a small sample, not a benchmark of real homes. Offline (deterministic, no model): **22 cases across 10 scenarios** — combined 22/22 fully correct; thermostat-only 12; room-sensor-only 4; electrical-only 2; calendar-only 2. Single-source shortfalls fall back to unsupported answers rather than asserting the opposite. Live (operator-run, approved by Brad), cited separately and never merged: the 17-case run on snapshot 77cafc9 (inv-v2, muse-spark-1.3 via the Meta Model API) gave 11 valid with 11/11 readiness agreement and 6 rejected (stale or superseded readings cited as current); the after-arrival rerun on snapshot efdff57 (inv-v3, only the six after-arrival cases) gave 5 valid with 5/5 agreement and 1 rejected on a genuine claim-check catch. Both live runs predate the care story and used the trip-home scenarios; they are kept verbatim, not re-scored. Readiness agreement is enforced by the contract, so it shows contract-following, not independent judgment. Earlier runs are kept in docs/evaluation.md and are superseded, not current.
+The application code was written with muse-spark-1.3 and muse-wonder-1.0; every prompt and answer is in the repository's build log.
 
-## How to run in 5 minutes
+## Measured results
 
-Python 3.12 and Node 22. Terminal 1: `cd backend`, make a venv, `pip install -r requirements.lock`, `pip install -r requirements-optional.lock`, `pip install -r requirements-dev.lock`, then `python -m flask --app aria_home.app:create_app run --port 5000`. Terminal 2: `cd frontend`, `npm ci`, `npm run dev`. Open the port-5173 page. Tests: `cd backend && python -m pytest -q`.
+- Offline, 22 builder-labelled synthetic cases across 10 scenarios: combined evidence 22/22 fully correct. Any single source alone does far worse (thermostat 12/22, room sensor 4/22, electrical 2/22, calendar 2/22), which is why ARIA uses independent sources.
+- All 10 care-story steps have recorded muse-spark-1.3 answers that passed the contract checks, and a muse-wonder-1.0 review each.
+- Live runs on earlier trip-home scenarios: 11/11 and 5/5 valid answers agreed with code; the claim check caught the rest. That agreement shows contract-following, not independent judgment.
+- These are synthetic regression results, not real-world accuracy.
 
-## What to click
+## Limits
 
-1. Start the backend (port 5000) and frontend (port 5173) as above. 2. On port 5173, in "Demo controls (synthetic replay)", set "Scenario" to "Winter night, older adult at home (guided story)". 3. Click the replay buttons in order: 19:20, 02:31, 02:45, 04:21, 04:51, 06:21, 06:45, 07:01. 4. At 02:45, check the HVAC company card under "Notifications (simulated delivery)" and its "fields sent:" line; click "Acknowledge (simulated)" on the family caregiver card and confirm the Outcome headline does not change. At 06:45, find the "HVAC completion report" card — it appears only after the 06:21 verification, as corroboration only.
+- Synthetic data and simulated messages; no equipment control.
+- A small, builder-labelled evaluation.
+- Fixed thresholds and a linear projection; allowlists reviewed by hand.
+- Optional real paths (WhatsApp to the owner's own number, a read-only Emporia energy panel, an owner-only Nest camera snapshot) are off in the hosted demo.
+- Not a medical or emergency service.
 
-## Known limits
-
-Synthetic data and simulated messages throughout; the app controls no equipment and is not a medical or emergency service. Room-sensor and blower mappings are assumptions; thresholds are fixed constants and projection is linear. Allowlists are hand-reviewed. The sample is small (22 offline cases, live runs on the older trip-home scenarios only) and agreement reflects contract-following. The claim check is bounded, not a semantic verifier. WhatsApp test delivery and the Emporia read-only panel are implemented but off by default; visual segmentation is replay-only recorded responses, never a live call.
+Code, build log, tests and audit records: https://github.com/BoMa-AI-Cloud/aria-home
