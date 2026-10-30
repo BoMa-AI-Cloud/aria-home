@@ -237,3 +237,158 @@ def test_app_serves_recorded_answer_and_review(tmp_path, monkeypatch):
     assert body["investigation"]["recorded_provenance"]["model_id"] == "muse-spark-1.3"
     assert body["investigation"]["recorded_review"]["review"] == {"verdict": "no_issues", "issues": []}
     assert SENTINEL_KEY not in json.dumps(body)
+
+
+def _review_post_with_timeout(calls):
+    def post(url, headers, body, timeout_s):
+        calls.append(timeout_s)
+        return 200, {"verdict": "no_issues", "issues": []}
+    return post
+
+
+def _run_timeout(argv_extra, tmp_path, monkeypatch, expected):
+    monkeypatch.setattr(rca, "CHECKPOINTS", {CARE: tuple(REAL_POINTS[:1])})
+    provider = FakeLiveProvider()
+    seen = []
+    lines = []
+    recorded = tmp_path / f"recorded-{expected}"
+    reviews = tmp_path / f"reviews-{expected}"
+    rc = rca.main(
+        ["--live", "--max-calls", "2", "--code-snapshot", "s",
+         "--recorded-dir", str(recorded), "--reviews-dir", str(reviews),
+         "--date", "2026-10-30", *argv_extra],
+        provider=provider, http_post=_review_post_with_timeout(seen),
+        env=_env(), out=lines.append, now=FIXED_NOW,
+    )
+    return rc, provider, seen
+
+
+def test_recording_timeout_defaults_to_180s(tmp_path, monkeypatch):
+    rc, provider, seen = _run_timeout([], tmp_path, monkeypatch, 180)
+    assert rc == 0
+    assert provider.timeout_s == 180.0
+    assert seen == [180.0]
+
+
+def test_recording_timeout_override_reaches_both_seams(tmp_path, monkeypatch):
+    rc, provider, seen = _run_timeout(["--timeout-s", "42"], tmp_path, monkeypatch, 42)
+    assert rc == 0
+    assert provider.timeout_s == 42.0
+    assert seen == [42.0]
+
+
+def test_bad_review_response_reports_scrubbed_status_and_detail(tmp_path, monkeypatch):
+    monkeypatch.setattr(rca, "CHECKPOINTS", {CARE: tuple(REAL_POINTS[:1])})
+    provider = FakeLiveProvider()
+    long_message = f"invalid payload, key {SENTINEL_KEY} rejected; " + "x" * 500
+
+    def post(url, headers, body, timeout_s):
+        return 400, {"error": {"message": long_message}}
+
+    lines = []
+    rc = rca.main(
+        ["--live", "--max-calls", "2", "--code-snapshot", "s",
+         "--recorded-dir", str(tmp_path / "recorded"), "--reviews-dir", str(tmp_path / "reviews"),
+         "--date", "2026-10-30"],
+        provider=provider, http_post=post, env=_env(), out=lines.append, now=FIXED_NOW,
+    )
+    assert rc == 0
+    text = "\n".join(lines)
+    assert "review not recorded" in text
+    assert "400" in text
+    assert "[redacted]" in text
+    assert SENTINEL_KEY not in text
+
+
+def test_send_review_request_failure_carries_status_and_scrubbed_detail():
+    from aria_home.review import build_review_request, send_review_request
+
+    request = build_review_request({"answer": 1}, {"evidence_ids": []})
+    long_message = f"bad request {SENTINEL_KEY} " + "y" * 500
+
+    def post(url, headers, body, timeout_s):
+        return 400, {"error": {"message": long_message}}
+
+    sent = send_review_request(request, SENTINEL_KEY, http_post=post)
+    assert sent["ok"] is False
+    assert sent["error"] == "bad_response"
+    assert sent["status"] == 400
+    assert SENTINEL_KEY not in sent["detail"]
+    assert "[redacted]" in sent["detail"]
+    assert len(sent["detail"]) <= 300
+
+
+def _seed_mixed_answers():
+    from aria_home.scenario import load_scenario
+
+    scn = load_scenario(rca.SCENARIOS_DIR / CARE)
+    seed = []
+    for index, point in enumerate(REAL_POINTS):
+        identity = inference_identity(scn, datetime.fromisoformat(point))
+        base = {
+            "scenario_id": CARE,
+            "evaluated_at_utc": identity["evaluated_at_utc"],
+            "input_revision": identity["input_revision"],
+            "model_id": "muse-spark-1.3",
+            "provider_route": "meta live via Meta Model API",
+            "prompt_version": "inv-v3",
+            "readiness_policy_version": identity["readiness_policy_version"],
+            "code_snapshot": "seed",
+            "recorded_at": "2026-10-29T12:00:00+00:00",
+        }
+        if index == 0:
+            seed.append({**base, "status": "accepted", "output": {}})
+        else:
+            seed.append({**base, "status": "rejected", "rejection_reasons": ["old"], "output": {"raw_text": ""}})
+    return seed
+
+
+def _run_only_missing(tmp_path, provider, review_calls, max_calls):
+    lines = []
+    recorded = tmp_path / "recorded"
+    reviews = tmp_path / "reviews"
+    rc = rca.main(
+        ["--live", "--only-missing", "--max-calls", str(max_calls), "--code-snapshot", "s",
+         "--recorded-dir", str(recorded), "--reviews-dir", str(reviews),
+         "--date", "2026-10-30"],
+        provider=provider, http_post=_review_post(review_calls),
+        env=_env(), out=lines.append, now=FIXED_NOW,
+    )
+    return rc, "\n".join(lines)
+
+
+def test_only_missing_plans_nine_answers_plus_ten_reviews(tmp_path):
+    recorded = tmp_path / "recorded"
+    recorded.mkdir()
+    (recorded / "care-2026-10-29.json").write_text(json.dumps({"answers": _seed_mixed_answers()}), encoding="utf-8")
+    (tmp_path / "reviews").mkdir()
+    provider = FakeLiveProvider()
+    review_calls = []
+    rc, text = _run_only_missing(tmp_path, provider, review_calls, 18)
+    assert rc == 2
+    assert provider.calls == 0
+    assert review_calls == []
+    assert "planned 19 calls exceed --max-calls 18" in text
+
+
+def test_only_missing_records_nine_answers_and_ten_reviews(tmp_path):
+    recorded = tmp_path / "recorded"
+    recorded.mkdir()
+    (recorded / "care-2026-10-29.json").write_text(json.dumps({"answers": _seed_mixed_answers()}), encoding="utf-8")
+    (tmp_path / "reviews").mkdir()
+    provider = FakeLiveProvider()
+    review_calls = []
+    rc, text = _run_only_missing(tmp_path, provider, review_calls, 19)
+    assert rc == 0
+    assert provider.calls == 9
+    assert len(review_calls) == 10
+    assert "model calls made: 19" in text
+
+
+def test_only_missing_dry_run_reports_exact_remaining():
+    lines = []
+    rc = rca.main(["--only-missing"], out=lines.append, now=FIXED_NOW)
+    assert rc == 0
+    text = "\n".join(lines)
+    print("\n" + text)
+    assert "only-missing:" in text

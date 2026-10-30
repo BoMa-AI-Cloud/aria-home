@@ -44,6 +44,7 @@ CARE_SCENARIO_ID = "care_home_v1"
 ANSWER_MODEL_ID = "muse-spark-1.3"
 ANSWER_PROVIDER_ROUTE = "meta live via Meta Model API"
 SCENARIOS_DIR = BACKEND_DIR / "scenarios"
+RECORDING_TIMEOUT_S = 180.0
 
 
 class _Capture:
@@ -125,6 +126,110 @@ def _recorded_at_str(now):
     return _utc_now(now).astimezone(timezone.utc).isoformat()
 
 
+def _norm_time(value):
+    return datetime.fromisoformat(str(value).replace("Z", "+00:00")).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _answer_items(payload):
+    if isinstance(payload, dict) and isinstance(payload.get("answers"), list):
+        return payload["answers"]
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and isinstance(payload.get("output"), dict):
+        return [payload]
+    return []
+
+
+def _review_items(payload):
+    if isinstance(payload, dict) and isinstance(payload.get("reviews"), list):
+        return payload["reviews"]
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and isinstance(payload.get("review"), dict):
+        return [payload]
+    return []
+
+
+def _load_existing_answers(recorded_base):
+    answers = []
+    base = Path(recorded_base)
+    if base.is_dir():
+        for path in sorted(base.glob("care-*.json")):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            for item in _answer_items(payload):
+                if isinstance(item, dict):
+                    answers.append(item)
+    return answers
+
+
+def _load_existing_reviews(reviews_base):
+    reviews = []
+    base = Path(reviews_base)
+    if base.is_dir():
+        for path in sorted(base.glob("reviews-*.json")):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            for item in _review_items(payload):
+                if isinstance(item, dict):
+                    reviews.append(item)
+    return reviews
+
+
+def _key_of(entry):
+    try:
+        at = _norm_time(entry.get("evaluated_at_utc"))
+    except (TypeError, ValueError, AttributeError):
+        return None
+    return (entry.get("scenario_id"), at, entry.get("input_revision"))
+
+
+def _missing_plan(plan, recorded_base, reviews_base):
+    existing = _load_existing_answers(recorded_base)
+    accepted = {}
+    for answer in existing:
+        if answer.get("status") != "accepted":
+            continue
+        key = _key_of(answer)
+        if key is not None and key not in accepted:
+            accepted[key] = answer
+    reviewed = set()
+    for review in _load_existing_reviews(reviews_base):
+        key = _key_of(review)
+        if key is not None:
+            reviewed.add(key)
+    flags = []
+    for item in plan:
+        key = (CARE_SCENARIO_ID, _norm_time(item["identity"]["evaluated_at_utc"]), item["identity"]["input_revision"])
+        has_answer = key in accepted
+        has_review = key in reviewed
+        if has_answer and has_review:
+            flags.append({"item": item, "key": key, "need_answer": False, "need_review": False, "prior": accepted[key]})
+        elif has_answer:
+            flags.append({"item": item, "key": key, "need_answer": False, "need_review": True, "prior": accepted[key]})
+        else:
+            flags.append({"item": item, "key": key, "need_answer": True, "need_review": True, "prior": None})
+    return flags
+
+
+def _apply_recording_timeout(inner, timeout_s):
+    try:
+        inner.timeout_s = timeout_s
+    except (AttributeError, TypeError):
+        pass
+    config = getattr(inner, "config", None)
+    if config is not None and hasattr(config, "timeout_s"):
+        try:
+            object.__setattr__(config, "timeout_s", timeout_s)
+        except (AttributeError, TypeError):
+            pass
+    return inner
+
+
 def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=None):
     out = out or print
     source_env = _env_dict(env)
@@ -135,6 +240,8 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
     parser.add_argument("--date", default=None, help="UTC date override for output file names (YYYY-MM-DD)")
     parser.add_argument("--recorded-dir", default=None)
     parser.add_argument("--reviews-dir", default=None)
+    parser.add_argument("--timeout-s", type=float, default=RECORDING_TIMEOUT_S)
+    parser.add_argument("--only-missing", action="store_true")
     args = parser.parse_args(argv)
 
     scenario = load_scenario(SCENARIOS_DIR / CARE_SCENARIO_ID)
@@ -144,7 +251,18 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
     date_str = args.date or _utc_now(now).astimezone(timezone.utc).date().isoformat()
     answers_path = _answer_paths(plan, recorded_base, date_str)
     reviews_path = _reviews_path(reviews_base, date_str)
-    planned_total = 2 * len(plan)
+    if args.only_missing:
+        flags = _missing_plan(plan, recorded_base, reviews_base)
+        need_answers = sum(1 for f in flags if f["need_answer"])
+        need_reviews = sum(1 for f in flags if f["need_review"])
+        skipped = sum(1 for f in flags if not f["need_answer"] and not f["need_review"])
+        planned_total = need_answers + need_reviews
+    else:
+        flags = None
+        need_answers = len(plan)
+        need_reviews = len(plan)
+        skipped = 0
+        planned_total = 2 * len(plan)
 
     def emit(text):
         out(_redact(str(text), source_env))
@@ -153,7 +271,9 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
         emit(f"{CARE_SCENARIO_ID} checkpoints ({len(plan)}):")
         for item in plan:
             emit(f"- {item['at_str']}")
-        emit(f"planned calls: up to {planned_total} ({len(plan)} {ANSWER_MODEL_ID} answers + up to {len(plan)} {REVIEW_MODEL_ID} reviews)")
+        emit(f"planned calls: up to {planned_total} ({need_answers} {ANSWER_MODEL_ID} answers + up to {need_reviews} {REVIEW_MODEL_ID} reviews)")
+        if args.only_missing:
+            emit(f"only-missing: skipped {skipped} recorded answer(s); {need_answers} answer(s) and {need_reviews} review(s) still needed")
         emit(f"answers output: {answers_path}")
         emit(f"reviews output: {reviews_path}")
         emit("dry run: no model calls made (use --live --max-calls N --code-snapshot HEAD to record)")
@@ -170,7 +290,7 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
         emit("live recording refused: MODEL_API_KEY is not set")
         return 2
     if provider is None:
-        config = replace(ProviderConfig.from_env(source_env), model_id=ANSWER_MODEL_ID)
+        config = replace(ProviderConfig.from_env(source_env), model_id=ANSWER_MODEL_ID, timeout_s=args.timeout_s)
         missing = config.missing_settings()
         if missing:
             emit(f"live recording refused: provider not configured (missing: {', '.join(missing)})")
@@ -179,19 +299,39 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
         if getattr(provider, "mode", None) != "live":
             emit("live recording refused: provider is not live (check ARIA_HOME_MODEL_ENABLED)")
             return 2
+    else:
+        _apply_recording_timeout(provider, args.timeout_s)
     if planned_total > args.max_calls:
         emit(f"live recording refused: planned {planned_total} calls exceed --max-calls {args.max_calls}")
         return 2
 
     provider = _Capture(provider)
+    _apply_recording_timeout(provider, args.timeout_s)
     recorded_stamp = _recorded_at_str(now)
     answers, reviews = [], []
     calls = 0
     skipped_reviews = 0
-    for item in plan:
-        if calls >= args.max_calls:
-            break
-        result = investigate(scenario, item["at"], provider=provider)
+
+    def _record_review(item, output):
+        live = request_live_review(output, item["pack"], env=source_env, http_post=http_post, timeout_s=args.timeout_s)
+        if live.get("ok") and live.get("validation", {}).get("passed") and live.get("review") is not None:
+            reviews.append({
+                "scenario_id": CARE_SCENARIO_ID,
+                "evaluated_at_utc": item["identity"]["evaluated_at_utc"],
+                "input_revision": item["identity"]["input_revision"],
+                "model_id": REVIEW_MODEL_ID,
+                "review_contract_version": REVIEW_CONTRACT_VERSION,
+                "reviewed_model_id": ANSWER_MODEL_ID,
+                "provider_route": REVIEW_PROVIDER_ROUTE,
+                "recorded_at": recorded_stamp,
+                "review": live["review"],
+            })
+        else:
+            reason = live.get("error") or "; ".join(live.get("validation", {}).get("reasons", ()))
+            emit(f"review not recorded for {item['at_str']}: {reason or 'unknown'} (status={live.get('status')}, detail={live.get('detail', '')})")
+
+    def _handle_answer(item, result):
+        nonlocal calls, skipped_reviews
         calls += 1
         identity = item["identity"]
         if result.status == "ok" and result.output is not None:
@@ -211,24 +351,9 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
             })
             if calls >= args.max_calls:
                 skipped_reviews += 1
-                continue
-            live = request_live_review(output, item["pack"], env=source_env, http_post=http_post)
+                return
+            _record_review(item, output)
             calls += 1
-            if live.get("ok") and live.get("validation", {}).get("passed") and live.get("review") is not None:
-                reviews.append({
-                    "scenario_id": CARE_SCENARIO_ID,
-                    "evaluated_at_utc": identity["evaluated_at_utc"],
-                    "input_revision": identity["input_revision"],
-                    "model_id": REVIEW_MODEL_ID,
-                    "review_contract_version": REVIEW_CONTRACT_VERSION,
-                    "reviewed_model_id": ANSWER_MODEL_ID,
-                    "provider_route": REVIEW_PROVIDER_ROUTE,
-                    "recorded_at": recorded_stamp,
-                    "review": live["review"],
-                })
-            else:
-                reason = live.get("error") or "; ".join(live.get("validation", {}).get("reasons", ()))
-                emit(f"review not recorded for {item['at_str']}: {reason or 'unknown'}")
         else:
             answers.append({
                 "scenario_id": CARE_SCENARIO_ID,
@@ -244,6 +369,27 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
                 "rejection_reasons": list(result.reasons),
                 "output": _rejected_output(provider.last_text),
             })
+
+    if flags is not None:
+        for flag in flags:
+            item = flag["item"]
+            if not flag["need_answer"]:
+                if not flag["need_review"]:
+                    continue
+                if calls >= args.max_calls:
+                    skipped_reviews += 1
+                    continue
+                _record_review(item, flag["prior"].get("output"))
+                calls += 1
+                continue
+            if calls >= args.max_calls:
+                break
+            _handle_answer(item, investigate(scenario, item["at"], provider=provider))
+    else:
+        for item in plan:
+            if calls >= args.max_calls:
+                break
+            _handle_answer(item, investigate(scenario, item["at"], provider=provider))
 
     answers_target = _unique_path(answers_path)
     answers_target.parent.mkdir(parents=True, exist_ok=True)

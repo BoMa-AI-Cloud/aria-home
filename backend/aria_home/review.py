@@ -196,6 +196,37 @@ def build_review_request(answer_output, evidence_pack, model_id=REVIEW_MODEL_ID)
     }
 
 
+def _scrub_api_key(text, api_key):
+    if not isinstance(text, str):
+        text = "" if text is None else str(text)
+    if isinstance(api_key, str) and api_key.strip():
+        text = text.replace(api_key.strip(), "[redacted]")
+        if api_key != api_key.strip():
+            text = text.replace(api_key, "[redacted]")
+    return text
+
+
+def _response_detail(data, api_key):
+    if data is None:
+        return ""
+    if isinstance(data, str):
+        return _scrub_api_key(data, api_key)[:300]
+    if isinstance(data, dict):
+        err = data.get("error")
+        if isinstance(err, dict) and isinstance(err.get("message"), str):
+            return _scrub_api_key(err["message"], api_key)[:300]
+        if isinstance(err, str):
+            return _scrub_api_key(err, api_key)[:300]
+        if isinstance(data.get("message"), str):
+            return _scrub_api_key(data["message"], api_key)[:300]
+        try:
+            text = json.dumps(data, default=str)
+        except (TypeError, ValueError):
+            text = str(data)
+        return _scrub_api_key(text, api_key)[:300]
+    return _scrub_api_key(str(data), api_key)[:300]
+
+
 def _default_http_post(url, headers, body, timeout_s):
     with httpx.Client(timeout=timeout_s) as client:
         response = client.post(url, headers=headers, json=body)
@@ -217,17 +248,17 @@ def send_review_request(request, api_key, timeout_s=DEFAULT_TIMEOUT_S, http_post
             timeout_s,
         )
     except httpx.TimeoutException:
-        return {"ok": False, "error": "timeout"}
+        return {"ok": False, "error": "timeout", "status": None, "detail": ""}
     except httpx.HTTPError:
-        return {"ok": False, "error": "server_error"}
+        return {"ok": False, "error": "server_error", "status": None, "detail": ""}
     if status in (401, 403):
-        return {"ok": False, "error": "auth"}
+        return {"ok": False, "error": "auth", "status": status, "detail": _response_detail(data, api_key)}
     if status == 429:
-        return {"ok": False, "error": "rate_limited"}
+        return {"ok": False, "error": "rate_limited", "status": status, "detail": _response_detail(data, api_key)}
     if status is None or not 200 <= status <= 299:
-        return {"ok": False, "error": "bad_response"}
+        return {"ok": False, "error": "bad_response", "status": status, "detail": _response_detail(data, api_key)}
     if not isinstance(data, (dict, str)):
-        return {"ok": False, "error": "bad_response"}
+        return {"ok": False, "error": "bad_response", "status": status, "detail": _response_detail(data, api_key)}
     return {"ok": True, "status": status, "data": data}
 
 
@@ -246,7 +277,7 @@ def request_live_review(answer_output, evidence_pack, *, env=None, http_post=Non
         return {"ok": False, "error": "model_mismatch", "review": None, "validation": {"passed": False, "reasons": [str(exc)]}}
     sent = send_review_request(request, api_key, timeout_s=timeout_s, http_post=http_post)
     if not sent.get("ok"):
-        return {"ok": False, "error": sent.get("error"), "review": None, "validation": {"passed": False, "reasons": [f"review request failed: {sent.get('error')}"]}}
+        return {"ok": False, "error": sent.get("error"), "review": None, "status": sent.get("status"), "detail": sent.get("detail", ""), "validation": {"passed": False, "reasons": [f"review request failed: {sent.get('error')}"]}}
     review, reasons = parse_review_response(sent.get("data"), (evidence_pack or {}).get("evidence_ids") or [])
     return {
         "ok": True,
