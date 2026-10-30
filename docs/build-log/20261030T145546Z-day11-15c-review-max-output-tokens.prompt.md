@@ -1,0 +1,10 @@
+ARIA Home: fix the muse-wonder-1.0 review request (approved by Brad, 2026-10-30). DO THE WORK NOW in this turn. IMPORTANT: a message without a tool call ends your turn, so never write a status or plan sentence on its own; keep editing and running commands until the done-condition holds. No live calls, no installs, no git, no network beyond 127.0.0.1. Tests use fakes only. Do not weaken any test. Keep all working-tree changes; do not touch backend/eval/recorded/. Shell starts in C:\aria-home. Do not end your turn until `cd backend && python -m pytest -q` passes.
+
+Real output from the operator's live run on commit 24c152e (10 review calls, all refused):
+`review not recorded for 2026-01-17T07:01:00-05:00: bad_response (status=400, detail=unknown parameter `max_tokens`)`
+
+muse-wonder-1.0 is called on the Responses API (POST https://api.meta.ai/v1/responses), which takes `max_output_tokens`, not `max_tokens` (the Messages API used by muse-spark-1.3 and the watcher keeps `max_tokens`; do not change those). Fix aria_home/review.py build_review_request to send `max_output_tokens` and never `max_tokens`. Check that parse_review_response reads the Responses API output shape (output[].content[].text with type "output_text", and the convenience field output_text if present) and add that shape if it is missing. Add a test that builds the review request and asserts `max_output_tokens` is present and `max_tokens` absent, and a test that a Responses-API-shaped fake response parses into a review. Then sweep the class: every other request body in backend/aria_home that goes to /v1/responses (visual.py sam-3.1, any other) must not carry `max_tokens`; add one test that asserts this for each such builder.
+
+Also correct README.md: remove the sentence saying backend/eval/recorded/ is uncommitted and the hosted app shows the fallback labels; the recorded care answers are now committed, so say that the hosted app serves the recorded muse-spark-1.3 answers for the ten care checkpoints and the labelled fallback anywhere else.
+Final answer: files changed, tests added, and the REAL pytest line.
+

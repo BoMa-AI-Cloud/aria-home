@@ -393,3 +393,41 @@ def test_recorded_review_helper_matches_exact_case_only():
     assert recorded_review_for([good], VIDEO, "2026-01-16T21:52:00+00:00", identity["input_revision"], ids) is None
     assert recorded_review_for([good], VIDEO, identity["evaluated_at_utc"], "other-revision", ids) is None
     assert recorded_review_for([good], "demo_v1", identity["evaluated_at_utc"], identity["input_revision"], ids) is None
+
+
+def test_review_request_uses_max_output_tokens():
+    import json as _json
+
+    from aria_home.review import REVIEW_URL, build_review_request
+
+    request = build_review_request({"answer": 1}, {"evidence_ids": []})
+    assert request["url"] == REVIEW_URL
+    assert request["url"].endswith("/v1/responses")
+    assert request["body"]["max_output_tokens"] == 512
+    assert "max_tokens" not in request["body"]
+    _json.dumps(request["body"])
+
+
+def test_review_response_parses_output_text_blocks():
+    import json as _json
+
+    from aria_home.review import parse_review_response
+
+    _, _, ids = _pack_ids()
+    review_json = _json.dumps({"verdict": "no_issues", "issues": []})
+    data = {"output": [{"content": [{"type": "output_text", "text": review_json}]}]}
+    parsed, reasons = parse_review_response(data, ids)
+    assert reasons == []
+    assert parsed == {"verdict": "no_issues", "issues": []}
+
+
+def test_review_response_parses_output_text_field():
+    import json as _json
+
+    from aria_home.review import parse_review_response
+
+    _, _, ids = _pack_ids()
+    data = {"output_text": _json.dumps({"verdict": "no_issues", "issues": []})}
+    parsed, reasons = parse_review_response(data, ids)
+    assert reasons == []
+    assert parsed == {"verdict": "no_issues", "issues": []}

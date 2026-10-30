@@ -134,6 +134,9 @@ def _candidate_texts(data):
     if isinstance(data.get("verdict"), str):
         yield json.dumps(data)
         return
+    text = data.get("output_text")
+    if isinstance(text, str):
+        yield text
     text = data.get("text")
     if isinstance(text, str):
         yield text
@@ -187,7 +190,7 @@ def build_review_request(answer_output, evidence_pack, model_id=REVIEW_MODEL_ID)
         "url": REVIEW_URL,
         "body": {
             "model": model_id,
-            "max_tokens": DEFAULT_MAX_TOKENS,
+            "max_output_tokens": DEFAULT_MAX_TOKENS,
             "input": [
                 {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},

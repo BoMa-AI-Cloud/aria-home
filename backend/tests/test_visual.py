@@ -399,3 +399,11 @@ def test_care_api_visual_caption_image_and_gating():
 
     evening = client.get("/api/visual?scenario=care_home_v1&at=2026-01-16T19:20:00-05:00")
     assert evening.get_json()["visual"] is None
+
+
+def test_sam_live_request_carries_no_max_tokens():
+    provider = SamLiveProvider(config=VisualConfig.from_env({"ARIA_HOME_VISUAL_LIVE": "1", "MODEL_API_KEY": "test-key"}))
+    request = provider.build_request(b"fake-image-bytes", "water puddle")
+    assert request["url"].endswith("/v1/responses")
+    assert "max_tokens" not in request["body"]
+    assert "max_output_tokens" not in request["body"]
