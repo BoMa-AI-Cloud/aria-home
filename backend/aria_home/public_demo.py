@@ -19,6 +19,7 @@ from pathlib import Path
 
 PUBLIC_DEMO_ENV = "ARIA_HOME_PUBLIC_DEMO"
 SESSIONS_DIR_ENV = "ARIA_HOME_PUBLIC_DEMO_DIR"
+MAX_BYTES_ENV = "ARIA_HOME_PUBLIC_DEMO_MAX_BYTES"
 
 LIVE_FLAGS = (
     "ARIA_HOME_MODEL_ENABLED",
@@ -33,10 +34,15 @@ MAX_BODY_BYTES = 4096
 SESSION_COOKIE = "aria_demo_session"
 SESSION_IDLE_S = 2 * 60 * 60
 MAX_SESSIONS = 500
-# Total disk budget for all session stores (data plus SQLite sidecars). A fresh
-# session store is tens of kilobytes, so 500 sessions stay far below this; the
-# budget bounds disk use even if individual stores grow.
-MAX_SESSION_BYTES = 64 * 1024 * 1024
+# Total disk budget for all session stores (data plus SQLite sidecars). At the
+# measured ~0.73 MB per investigated session, 500 sessions use ~365 MB, so the
+# 512 MiB default leaves the 500-session cap as the binding limit. A 64 MiB
+# bound filled after 93 sessions on judging-day-like traffic, turning judges
+# away with 503; the larger default plus the env override below fixes that.
+# Overridable with ARIA_HOME_PUBLIC_DEMO_MAX_BYTES (bytes); invalid or empty
+# values fall back to this default, never to unlimited.
+DEFAULT_MAX_SESSION_BYTES = 512 * 1024 * 1024
+MAX_SESSION_BYTES = DEFAULT_MAX_SESSION_BYTES
 
 _admission_lock = threading.Lock()
 
@@ -109,6 +115,24 @@ def sessions_dir(env=None):
     if raw:
         return Path(raw).expanduser()
     return Path(tempfile.gettempdir()) / "aria-home-public-demo"
+
+
+def max_session_bytes(env=None):
+    source = os.environ if env is None else env
+    get = source.get if hasattr(source, "get") else lambda k, d=None: getattr(source, k, d)
+    raw = get(MAX_BYTES_ENV)
+    if raw is None:
+        return DEFAULT_MAX_SESSION_BYTES
+    text = str(raw).strip()
+    if not text:
+        return DEFAULT_MAX_SESSION_BYTES
+    try:
+        value = int(text, 10)
+    except (TypeError, ValueError):
+        return DEFAULT_MAX_SESSION_BYTES
+    if value <= 0:
+        return DEFAULT_MAX_SESSION_BYTES
+    return value
 
 
 def new_session_id():
@@ -188,7 +212,7 @@ def admit_session(
     session_id,
     idle_seconds=SESSION_IDLE_S,
     max_sessions=MAX_SESSIONS,
-    max_bytes=MAX_SESSION_BYTES,
+    max_bytes=None,
     now=None,
 ):
     """Admit one visitor, returning {"session_id", "path", "new", "busy"}.
@@ -202,6 +226,8 @@ def admit_session(
     """
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
+    if max_bytes is None:
+        max_bytes = max_session_bytes()
     current = time.time() if now is None else now
     with _admission_lock:
         if valid_session_id(session_id):

@@ -42,6 +42,7 @@ SCRUB_VARS = [
     "ARIA_HOME_BASETEN_ENABLED",
     "BASETEN_API_KEY",
     "ARIA_HOME_INVESTIGATION_MAX_TOKENS",
+    "ARIA_HOME_PUBLIC_DEMO_MAX_BYTES",
 ]
 
 
@@ -402,3 +403,35 @@ def test_public_caregiver_decision_is_session_scoped_and_simulated(public_env):
     assert client.post(f"/api/notifications/{notification_id}/whatsapp").status_code == 404
     other = _create().test_client()
     assert other.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "decline", "at": "2026-01-17T02:31:00-05:00"}).status_code == 404
+
+
+def test_disk_bound_default_is_512mib(public_env, monkeypatch):
+    monkeypatch.delenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", raising=False)
+    assert public_demo.DEFAULT_MAX_SESSION_BYTES == 512 * 1024 * 1024
+    assert public_demo.MAX_SESSION_BYTES == 512 * 1024 * 1024
+    assert public_demo.max_session_bytes() == 512 * 1024 * 1024
+
+
+def test_disk_bound_env_override(monkeypatch):
+    monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", str(1024))
+    assert public_demo.max_session_bytes() == 1024
+    monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", str(512 * 1024 * 1024))
+    assert public_demo.max_session_bytes() == 512 * 1024 * 1024
+
+
+def test_disk_bound_invalid_falls_back_to_default(monkeypatch):
+    for bad in ("", "   ", "0", "-5", "abc", "1.5", "unlimited"):
+        monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", bad)
+        assert public_demo.max_session_bytes() == public_demo.DEFAULT_MAX_SESSION_BYTES, bad
+    monkeypatch.delenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", raising=False)
+    assert public_demo.max_session_bytes() == public_demo.DEFAULT_MAX_SESSION_BYTES
+
+
+def test_disk_bound_env_enforced_at_admission(monkeypatch, tmp_path):
+    directory = tmp_path / "sessions"
+    directory.mkdir()
+    monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO_MAX_BYTES", "10")
+    (directory / "sess-big.db").write_bytes(b"x" * 20)
+    admitted = public_demo.admit_session(directory, None)
+    assert admitted == {"session_id": None, "path": None, "new": False, "busy": True}
+    assert len(list(directory.glob("sess-*.db"))) == 1

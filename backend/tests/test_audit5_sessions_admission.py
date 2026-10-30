@@ -27,6 +27,7 @@ def public_env(monkeypatch, tmp_path):
         "ARIA_HOME_NEST_LIVE",
         "ARIA_HOME_E2E_HOOKS",
         "ARIA_HOME_DB_PATH",
+        "ARIA_HOME_PUBLIC_DEMO_MAX_BYTES",
     ):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO", "1")

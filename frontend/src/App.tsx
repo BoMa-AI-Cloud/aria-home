@@ -2374,7 +2374,11 @@ function NoticeArticle({
       <p>
         {whatsappLine(notification.whatsapp)}
       </p>
-      <PayloadFacts payload={notification.payload} />
+      <details className="notice-message-details">
+        <summary>Show the simulated message</summary>
+        <h4 className="notice-facts-heading">Facts when this notice was created ({shortTimeLabel(notification.created_at)})</h4>
+        <PayloadFacts payload={notification.payload} />
+      </details>
       {notification.audience === "hvac_company" &&
         notification.state === "simulated_delivered" &&
         whatsappConfigured && (
@@ -3551,15 +3555,11 @@ export default function App() {
       </div>
       {inStory && (
         <section aria-labelledby="story-heading" className="story-panel" hidden={page !== "house"}>
-          <p className="story-eyebrow">
-            Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} —{" "}
-            {storyTitle}
+          <p className="story-eyebrow story-progress" role="status">
+            Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} ·{" "}
+            {storyAt ? shortTimeLabel(storyAt) : "…"}
           </p>
-          <h2 id="story-heading">The warm-by story</h2>
-          <p className="story-progress" role="status">
-            Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} —{" "}
-            {storyTitle} at {storyAt ? shortTimeLabel(storyAt) : "…"}
-          </p>
+          <h2 id="story-heading" aria-label={`Step ${Math.min(storyIndex + 1, storyCheckpoints.length)} of ${storyCheckpoints.length} — ${storyTitle} (The warm-by story)`}>{storyTitle}</h2>
           <p>{storyGuidance}</p>
           {evidenceTimeline.length > 0 && (
             <p className="story-known-line">

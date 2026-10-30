@@ -1,0 +1,16 @@
+=== a2995fd
+RESULT F1 map verification vs follow-up at 06:21: follow-up=goal_verified map=unable_to_verify -> DISAGREE
+RESULT F2 map after an in-app decline: follow-up permission=declined map permission=approved map HVAC allowed=[True]
+RESULT F3 502 forged cookies: status counts={200: 502} session files created=502 bytes=366002176 (cap 500)
+RESULT F4 off-checkpoint ack 02:32: HTTP 400, acks stored afterwards=1
+RESULT F7 malformed decision values: []->500, {}->500, null->400, 5->400, true->400
+RESULT F5 original answer: recorded answer served=True; wonder review shown=True; mismatch note=False
+RESULT F5 tampered answer: recorded answer served=False; wonder review shown=False; mismatch note=False
+=== 247cdb5
+RESULT F1 map verification vs follow-up at 06:21: follow-up=goal_verified map=goal_verified -> AGREE
+RESULT F2 map after an in-app decline: follow-up permission=declined map permission=declined map HVAC allowed=[False]
+RESULT F3 502 forged cookies: status counts={200: 93, 503: 409} session files created=93 bytes=67805184 (cap 500)
+RESULT F4 off-checkpoint ack 02:32: HTTP 400, acks stored afterwards=0
+RESULT F7 malformed decision values: []->400, {}->400, null->400, 5->400, true->400
+RESULT F5 original answer: recorded answer served=True; wonder review shown=True; mismatch note=False
+RESULT F5 tampered answer: recorded answer served=False; wonder review shown=False; mismatch note=False

@@ -151,6 +151,7 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
     hasText: "Simulated delivery",
   });
   await expect(delivered).toHaveCount(1);
+  await delivered.getByText("Show the simulated message").click();
   const fieldsLine = await delivered.locator(".fields-sent").innerText();
   expect(fieldsLine).toContain("property_label");
   expect(fieldsLine).toContain("access_note");
@@ -169,6 +170,17 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
     await stepNext(page, checkpoints, index);
   }
   await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
+});
+
+test("notice facts are labelled with their creation time at 02:31", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 3; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
+  await expect(caregiver).toHaveCount(1);
+  await caregiver.getByText("Show the simulated message").click();
+  await expect(caregiver).toContainText("Facts when this notice was created (2:31 AM ET)");
 });
 
 test("completion report arrives after verification and ack changes no outcome", async ({ page }) => {

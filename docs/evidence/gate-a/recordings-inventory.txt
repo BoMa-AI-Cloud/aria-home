@@ -1,0 +1,11 @@
+19:03  recorded answer=True  bound review=True  watcher=none
+19:15  recorded answer=True  bound review=True  watcher=none
+19:20  recorded answer=True  bound review=True  watcher=['confirmed', 'confirmed']
+02:31  recorded answer=True  bound review=True  watcher=['confirmed']
+02:45  recorded answer=True  bound review=True  watcher=['confirmed']
+04:21  recorded answer=True  bound review=True  watcher=['confirmed']
+04:51  recorded answer=True  bound review=True  watcher=['confirmed']
+06:21  recorded answer=True  bound review=True  watcher=none
+06:45  recorded answer=True  bound review=True  watcher=none
+07:01  recorded answer=True  bound review=True  watcher=none
+TOTAL answers 10 / 10 | bound reviews 10 | watcher runs with observations 5

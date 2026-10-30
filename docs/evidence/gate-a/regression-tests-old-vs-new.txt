@@ -1,0 +1,18 @@
+== tests/test_audit5_permission_text.py: 1 failed, 1 passed in 2.77s
+E       assert '54 F' in "ARIA Home (synthetic scenario): your mother's home is cooling (52 F, furnace quiet since 01:30). May I contact the HVAC company? Approve or decline in ARIA Home."
+== tests/test_audit5_review_binding.py: 7 failed in 3.75s
+E       AssertionError: assert 'up to 1 (0 muse-spark-1.3 answers + up to 1 muse-wonder-1.0 reviews)' in 'care_home_v1 checkpoints (1):\n- 2026-01-16T19:03:00-05:00\nplanned calls: up to 0 (0 muse-spark-1.3 answers + up to ...\\reviews-care-2026-10-30.json\ndry run: no model calls made (use --live --max-calls N --code-snapshot HEAD to record)'
+E       AssertionError: assert None is False
+E       AssertionError: assert {'issues': [], 'verdict': 'no_issues'} is None
+== tests/test_audit5_sessions_admission.py: 9 failed, 5 passed in 17.93s
+E           AssertionError: []
+E           assert 500 == 400
+E       AssertionError: assert 'aria_demo_session=' in ''
+== tests/test_audit5_trace_parity.py: 7 failed, 2 passed in 7.71s
+E           AssertionError: 2026-01-17T04:21:00-05:00
+E           assert 'unable_to_verify' == 'reporting_restored'
+E       AssertionError: assert 'approved' == 'declined'
+== tests/test_audit5_permission_text.py: 2 passed in 1.98s
+== tests/test_audit5_review_binding.py: 7 passed in 3.10s
+== tests/test_audit5_sessions_admission.py: 14 passed in 47.62s
+== tests/test_audit5_trace_parity.py: 9 passed in 8.36s

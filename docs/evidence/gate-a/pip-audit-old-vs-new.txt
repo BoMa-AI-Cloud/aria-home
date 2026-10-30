@@ -1,0 +1,13 @@
+=== pip-audit on a2995fd locks
+Found 7 known vulnerabilities in 4 packages
+Name     Version   ID              Fix Versions
+-------- --------- --------------- ------------
+werkzeug 3.1.8     PYSEC-2026-4312 3.1.9
+anyio    4.13.0    PYSEC-2026-4025 4.14.2
+anyio    4.13.0    PYSEC-2026-4024 4.14.2
+certifi  2026.2.25 PYSEC-2026-4320 2026.10.18
+certifi  2026.2.25 PYSEC-2026-4320 2026.10.18
+idna     3.11      PYSEC-2026-215  3.15
+idna     3.11      PYSEC-2026-215  3.15
+=== pip-audit on 247cdb5 locks
+No known vulnerabilities found
