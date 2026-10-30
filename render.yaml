@@ -1,0 +1,22 @@
+# Render Blueprint for the ARIA Home public demo (synthetic data only).
+# Deploy only when the operator triggers a specific commit (autoDeploy: false).
+services:
+  - type: web
+    name: aria-home-demo
+    runtime: python
+    plan: starter
+    region: ohio
+    branch: main
+    autoDeploy: false
+    buildCommand: pip install -r backend/requirements.lock && cd frontend && npm ci && npm run build && cd .. && printf '%s\n' "$RENDER_GIT_COMMIT" > backend/RELEASE_COMMIT
+    startCommand: cd backend && waitress-serve --listen=0.0.0.0:$PORT --threads=8 --call aria_home.app:create_app
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: NODE_VERSION
+        value: "22"
+      - key: ARIA_HOME_PUBLIC_DEMO
+        value: "1"
+      - key: ARIA_HOME_PUBLIC_DEMO_DIR
+        value: /tmp/aria-home-sessions

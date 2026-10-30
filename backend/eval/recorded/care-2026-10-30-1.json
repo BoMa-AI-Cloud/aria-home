@@ -1,0 +1,842 @@
+{
+  "answers": [
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T00:03:00Z",
+      "input_revision": "2c30dc0e9bd0bc0fbe2a1ddac1fe75778dd5596bcb083b4caa0e0a9392a0d9eb",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 54.1,
+            "unit": "F",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-living",
+            "field": "max_w",
+            "value": 160.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 54.1 F (at 19:00)",
+          "Electrical activity 5.0 W",
+          "Electrical activity 450.0 W",
+          "Electrical activity 160.0 W"
+        ],
+        "interpretation": "Readiness cannot be assessed because trip verification is missing and no verified target temperature is available, so gap cannot be computed. Available indoor and circuit observations give context only and do not establish readiness for arrival.",
+        "hypotheses": [
+          {
+            "text": "Possible: The cooling pattern alongside idle reports and quiet blower activity might reflect limited heating input during the window, though other explanations remain possible.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "tstat-care-state-0900",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Fresh activity on other monitored circuits might suggest some electrical supply remains at the property, though heating supply status remains unknown.",
+            "supporting_ids": [
+              "power:context",
+              "metric:circuit_activity:circuit-kitchen",
+              "metric:circuit_activity:circuit-living"
+            ],
+            "conflicting_ids": [
+              "metric:circuit_activity:circuit-blower"
+            ]
+          }
+        ],
+        "unknowns": [
+          "verified target temperature for arrival",
+          "whether the planned trip will proceed as listed",
+          "heating equipment operating status and heating binding",
+          "future indoor trajectory before arrival"
+        ],
+        "clarification": "What indoor temperature should be ready by the planned morning arrival time?",
+        "follow_up": {
+          "observation": "Re-observe indoor temperature trend and blower and other circuit activity",
+          "when": "2026-01-16T19:33:00-05:00",
+          "next_check_at": "2026-01-16T19:33:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "cannot_tell",
+        "limitations": [
+          "synthetic data mode limits real-world use",
+          "no verified target temperature available for gap assessment",
+          "branch readings show activity only and do not show heating supply status"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T00:15:00Z",
+      "input_revision": "c31e824d45bbb039ee784282a0890c682a1a12a4c9611cdddad2f58f28af5382",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 54.0,
+            "unit": "F",
+            "at": "2026-01-16T19:10:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 54.0 F (at 19:10)",
+          "Electrical activity 450.0 W",
+          "Electrical activity 5.0 W"
+        ],
+        "interpretation": "The computed readiness is cannot tell because the trip remains not yet verified and no verified target temperature is available, so a gap to target cannot be evaluated. Available indoor and circuit observations exist but without a verified target they do not establish readiness, and responsibility for response cannot be assigned from the available evidence alone.",
+        "hypotheses": [
+          {
+            "text": "Possible: The observed indoor trend might suggest heating is not yet adding warmth, but this remains only a possibility and is not established from the evidence alone.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Fresh activity on other monitored circuits might weigh against a complete loss of supply, but heating supply remains unknown and this is only a possibility.",
+            "supporting_ids": [
+              "power:context",
+              "metric:circuit_activity:circuit-kitchen"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the planned arrival time is verified",
+          "What verified target temperature applies at arrival",
+          "What gap to target applies",
+          "Whether the property will meet target by arrival",
+          "Who should respond if something looks wrong"
+        ],
+        "clarification": "Could you verify the planned arrival and the desired warm-by temperature for this property?",
+        "follow_up": {
+          "observation": "Re-observe indoor temperature trend and check for a verified target temperature and trip verification",
+          "when": "2026-01-16T19:45:00-05:00",
+          "next_check_at": "2026-01-16T19:45:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "cannot_tell",
+        "limitations": [
+          "No verified target temperature available so gap cannot be evaluated",
+          "Trip verification is missing",
+          "Electrical activity shows activity only and not useful heat",
+          "Heating equipment supply and function remain unknown"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T00:20:00Z",
+      "input_revision": "fc5fc15db6ac64e33178666d647845341c43f3f2cc88652cee8661aecce7d85a",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 54.0,
+            "unit": "F",
+            "at": "2026-01-16T19:15:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -14.0,
+            "unit": "F",
+            "at": "2026-01-16T19:15:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "equipment_function",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "active",
+            "value": "not_observed",
+            "unit": null,
+            "at": "2026-01-16T19:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 54.0 F (at 19:15)",
+          "Target 68.0 F",
+          "14.0 F below target",
+          "Electrical activity 5.0 W",
+          "Electrical activity 450.0 W",
+          "Equipment function not observed"
+        ],
+        "interpretation": "The indoor reading is below the target with a declining pattern over the window, so code computes readiness as at_risk for the planned arrival. Activity on other monitored circuits weighs against complete loss during the window, while the candidate heating circuit shows quiet levels and heating delivery remains unclear. With manager authorization present, manager review and response appears appropriate, and citation here is not proof of cause.",
+        "hypotheses": [
+          {
+            "text": "Possible: The indoor level might remain below target by the planned arrival if the current pattern continues, but this is tentative and not proof.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:target_gap"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Quiet levels on the candidate circuit might suggest heating output is not being delivered during this window, but electrical activity alone cannot show useful heat and this is only a possibility.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": [
+              "metric:circuit_activity:circuit-kitchen"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Whether heating equipment will operate or deliver heat before the planned arrival",
+          "True binding of monitored circuits to heating equipment",
+          "Whether supply issues not visible on branch readings exist",
+          "Future indoor and outdoor conditions after the evaluation time"
+        ],
+        "clarification": "Has the manager been notified and is an on-site check planned before the planned arrival?",
+        "follow_up": {
+          "observation": "Observe the next fresh indoor temperature reading and fresh activity on the candidate heating circuit and other monitored circuits",
+          "when": "2026-01-16T19:50:00-05:00",
+          "next_check_at": "2026-01-16T19:50:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Branch readings show electrical activity only and not useful heat",
+          "Breaker or equipment supply problems are not observable from branch readings",
+          "A lost service leg cannot be excluded",
+          "Conditions outside the observed window are not covered"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T07:31:00Z",
+      "input_revision": "6be29aa6a286de52c48eb9c23a443bd9170671b97e3e8abb6bcd4a5fba819c5f",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1630",
+            "field": "value",
+            "value": 52.0,
+            "unit": "F",
+            "at": "2026-01-17T02:30:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -16.0,
+            "unit": "F",
+            "at": "2026-01-17T02:30:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 550.0,
+            "unit": "W",
+            "at": "2026-01-17T02:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 52.0 F (at 02:30)",
+          "Target 68.0 F",
+          "16.0 F below target",
+          "Electrical activity 550.0 W"
+        ],
+        "interpretation": "The computed readiness is at_risk, which means the warm-by expectation is not on track for the planned arrival and needs attention rather than being treated as a guaranteed miss. Thermostat telemetry is stale so the room sensor is used as the indoor source. The gap is large relative to the small-gap threshold and the recent trend points downward, so the target may not be reached by arrival. The synthetic frost image showed no detection, and absence of a detection is not an all-clear. If something looks wrong, the authorized manager should respond and keep the homeowner notified per the existing authorization.",
+        "hypotheses": [
+          {
+            "text": "Possible: Indoor temperature might remain below the warm-by expectation by arrival if the recent downward drift continues, though this is only a possibility and the cited readings are not proof of cause.",
+            "supporting_ids": [
+              "room-care-1630",
+              "metric:target_gap"
+            ],
+            "conflicting_ids": [
+              "metric:circuit_activity:circuit-blower"
+            ]
+          },
+          {
+            "text": "Possible: Recent activity on the blower circuit might reflect heating equipment trying to operate, but electrical activity alone does not show useful heat, so the heating outcome remains uncertain.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": [
+              "metric:target_gap"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Whether heating is delivering useful heat to the space",
+          "Why thermostat telemetry stopped updating while room sensor continues",
+          "What indoor conditions will be closer to arrival"
+        ],
+        "clarification": "Is on-site access available for someone to check the heating system before arrival?",
+        "follow_up": {
+          "observation": "Observe room sensor indoor temperature and target gap trend",
+          "when": "2026-01-17T03:01:00-05:00",
+          "next_check_at": "2026-01-17T03:01:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Thermostat telemetry is stale; room sensor is used as indoor source",
+          "Synthetic frost image with no detection is not an all-clear",
+          "Branch circuit activity shows electrical activity only and does not show useful heat",
+          "Projection to arrival is not a guaranteed prediction"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T07:45:00Z",
+      "input_revision": "6915a1c4e846f96b73a38175bb05b9f18e2b9a96242b283836c68811e8fdebe3",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 52.0,
+            "unit": "F",
+            "at": "2026-01-17T02:40:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -16.0,
+            "unit": "F",
+            "at": "2026-01-17T02:40:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 550.0,
+            "unit": "W",
+            "at": "2026-01-17T02:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 52.0 F (at 02:40)",
+          "Target 68.0 F",
+          "16.0 F below target",
+          "Electrical activity 550.0 W"
+        ],
+        "interpretation": "Status is at_risk, meaning available evidence weighs against reaching target by planned arrival and manager attention is appropriate. Thermostat telemetry is stale so room sensor is in use. Visual check showed no detection for the requested phrase and absence of detection is not an all-clear. Electrical activity is noted but such activity alone does not show useful heat, and heating binding remains unknown. Continued monitoring is appropriate rather than assuming recovery.",
+        "hypotheses": [
+          {
+            "text": "Possible: Room readings remaining low while blower circuit shows activity might reflect heat not reaching the sensed space, but other explanations remain possible and citation is not proof.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Stale thermostat telemetry alongside available room-sensor data might reflect a communication or sensing gap rather than room conditions, but this remains only a possibility.",
+            "supporting_ids": [
+              "source:thermostat",
+              "source:room_sensor"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether heating equipment is producing useful heat in the sensed space",
+          "Thermostat setpoint and control state during period of stale telemetry",
+          "Meaning of absent visual detection in synthetic image",
+          "Whether target will be reached by planned arrival and who will be on site"
+        ],
+        "clarification": "Who is available to visit the property on site before planned arrival if readings remain low?",
+        "follow_up": {
+          "observation": "Observe next fresh room-sensor indoor temperature reading and updated target gap.",
+          "when": "2026-01-17T03:15:00-05:00",
+          "next_check_at": "2026-01-17T03:15:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Data mode is synthetic, limiting real-world applicability",
+          "Thermostat telemetry is stale, so room sensor is used as proxy",
+          "Electrical activity alone does not show useful heat",
+          "Absence of visual detection is not an all-clear",
+          "Branch readings cannot exclude lost leg or breaker-level issues"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T09:21:00Z",
+      "input_revision": "d92c66bae6847553ca548df46c193ac7870073bcbf1214dd5f1c05221a6cda5c",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 52.0,
+            "unit": "F",
+            "at": "2026-01-17T04:20:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -16.0,
+            "unit": "F",
+            "at": "2026-01-17T04:20:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 580.0,
+            "unit": "W",
+            "at": "2026-01-17T04:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 52.0 F (at 04:20)",
+          "Target 68.0 F",
+          "16.0 F below target",
+          "Electrical activity 580.0 W"
+        ],
+        "interpretation": "Readiness is at risk because the latest indoor level sits below the agreed target with a negative gap and the recent trend shows little upward movement toward arrival. Fresh activity on monitored circuits weighs against total loss during the window, but activity alone does not show useful heat in the space. With arrival still ahead, the pattern suggests the target may not be reached in time. If something looks wrong, the manager-authorized responder should attend on site and keep the homeowner notified under the existing notification authorization.",
+        "hypotheses": [
+          {
+            "text": "Possible: The space may remain below the agreed target by arrival if little warming occurs through the morning, leaving the property not ready for the resident; this is only a possibility and citation is not proof of cause.",
+            "supporting_ids": [
+              "metric:target_gap",
+              "metric:indoor_trend"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Blower circuit activity may reflect an attempt to move air while indoor levels stay flat, suggesting heat is not reaching the space as expected; this is only a possibility and citation is not proof of cause.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower",
+              "metric:indoor_trend"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether useful heat is reaching the space despite electrical activity",
+          "Heating equipment binding and supply beyond branch activity",
+          "Whether the indoor trend will change before arrival"
+        ],
+        "clarification": "Who is available to visit the property before arrival if the indoor level does not rise?",
+        "follow_up": {
+          "observation": "Observe the next fresh indoor temperature reading and gap trend before arrival.",
+          "when": "2026-01-17T04:51:00-05:00",
+          "next_check_at": "2026-01-17T04:51:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Branch readings cannot show breaker or equipment supply problems beyond observed activity",
+          "Interruptions outside the window are not covered",
+          "Heating binding remains unknown"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T09:51:00Z",
+      "input_revision": "ceb8bb1d5556e90b59000c61dabe99212b8b706a0dd1584063735deb4b14bdaa",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 54.5,
+            "unit": "F",
+            "at": "2026-01-17T04:50:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -13.5,
+            "unit": "F",
+            "at": "2026-01-17T04:50:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": "2026-01-17T04:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 54.5 F (at 04:50)",
+          "Target 68.0 F",
+          "13.5 F below target",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "The computed status reflects that the indoor reading remains below the target by more than a small amount and the rise seen over recent hours leaves limited time before the planned arrival, so the target may not be reached in time and this is not a guaranteed prediction. A recent visual check showed no detection, which is not an all-clear. Fresh activity on other monitored circuits weighs against complete loss during the window, but does not show useful heat is being delivered, and several supply and equipment aspects remain unobserved. The on-site manager remains the appropriate responder for checks while the homeowner is away.",
+        "hypotheses": [
+          {
+            "text": "Possible: The indoor level might still be rising, but the remaining time before arrival might be insufficient to close the gap.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:target_gap"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Activity on the blower circuit might suggest equipment is energized, but might not indicate useful heat is reaching the space.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the heating system is delivering useful heat to the space",
+          "Whether the target schedule will change before arrival",
+          "Whether conditions elsewhere in the property differ from the single image view"
+        ],
+        "clarification": "Has anyone adjusted the thermostat schedule or checked the heating system operation this morning?",
+        "follow_up": {
+          "observation": "Observe the next fresh indoor temperature reading and target gap before the planned arrival.",
+          "when": "2026-01-17T05:21:00-05:00",
+          "next_check_at": "2026-01-17T05:21:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Data are synthetic for evaluation",
+          "Absence of visual detection is not an all-clear",
+          "Branch readings show activity only and cannot show useful heat",
+          "Projection of arrival readiness is not guaranteed"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T11:21:00Z",
+      "input_revision": "ce2a5ced07d314c88a0a6a49ec78974b295625ac2c864bdb13c67d5f3d2e8e10",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 68.0,
+            "unit": "F",
+            "at": "2026-01-17T06:20:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 0.0,
+            "unit": "F",
+            "at": "2026-01-17T06:20:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": "2026-01-17T06:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 68.0 F (at 06:20)",
+          "Target 68.0 F",
+          "At target (0.0 F)",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "Evaluation is before the planned arrival and the latest fresh indoor reading meets the target, which aligns with the on_track status. Electrical activity in the window weighs against complete loss during that window but does not show useful heat. If conditions were to change before arrival, the manager would be the responder to check on site, with homeowner notification as authorized.",
+        "hypotheses": [
+          {
+            "text": "Possible: The indoor rise toward the target might coincide with recent electrical activity, though activity alone is not proof of useful heat and citation is not proof of cause.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether indoor temperature will remain near target until arrival",
+          "Whether monitored circuit activity reflects useful heat delivery",
+          "Heating equipment binding and backup configuration"
+        ],
+        "clarification": "If temperature slips before arrival, who should visit the property to check?",
+        "follow_up": {
+          "observation": "Recheck indoor temperature and target gap for hold near target",
+          "when": "2026-01-17T06:51:00-05:00",
+          "next_check_at": "2026-01-17T06:51:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Branch readings cannot show breaker or equipment supply issues",
+          "A lost service leg cannot be excluded from branch readings",
+          "Activity outside the window is not covered"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T11:45:00Z",
+      "input_revision": "7a8106a95ab30e80b976fcbfd0b2e17f1941859b6855c906b4e1d8ae9b4757c1",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v3",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "24c152e",
+      "recorded_at": "2026-10-30T14:50:55.180389+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 68.4,
+            "unit": "F",
+            "at": "2026-01-17T06:40:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 0.4,
+            "unit": "F",
+            "at": "2026-01-17T06:40:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": "2026-01-17T06:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 68.4 F (at 06:40)",
+          "Target 68.0 F",
+          "0.4 F above target",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "The computed readiness is on track because the verified current condition already satisfies the agreed expectation, so no urgent response is indicated before arrival and routine monitoring remains appropriate with the property manager as contact if conditions change.",
+        "hypotheses": [
+          {
+            "text": "Possible: The warmth level might reflect ongoing heating operation coinciding with observed electrical activity, though activity alone does not prove useful heat.",
+            "supporting_ids": [
+              "metric:indoor_trend",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether indoor temperature will remain at target until arrival",
+          "Heating equipment mapping for monitored circuits",
+          "Conditions outside the monitored zone and window"
+        ],
+        "clarification": "Has the arrival time or temperature expectation changed?",
+        "follow_up": {
+          "observation": "Observe next fresh indoor temperature reading to verify target is maintained",
+          "when": "2026-01-17T07:15:00-05:00",
+          "next_check_at": "2026-01-17T07:15:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Branch readings show electrical activity only and do not prove useful heat",
+          "Partial service or equipment supply issues are not observable from available data"
+        ]
+      }
+    }
+  ]
+}

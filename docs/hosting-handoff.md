@@ -1,6 +1,7 @@
-# Hosting handoff (proposal, not deployed)
+# Hosting handoff (decision recorded, not yet deployed)
 
-Written 2026-10-29 by the operator for Brad's approval. Nothing here has been deployed. The README's hosted link stays
+Written 2026-10-29 by the operator for Brad's approval. Decision 2026-10-30: Brad approved the Render paid Starter
+("we will do the render paid starter"). Nothing here has been deployed yet. The README's hosted link stays
 "Pending deployment" until a deployment is approved, done, and tested in a clean browser (release process stages
 11-15).
 
@@ -27,6 +28,8 @@ Render's paid Starter instance for the judging period only, then downgrade or de
 cold start may leave; the paid tier removes that, and one service avoids a split frontend/backend. If Brad prefers $0,
 Render free is the fallback, with the README noting that the first load can take up to a minute.
 
+Decision 2026-10-30: Brad approved the paid Starter ("we will do the render paid starter").
+
 ## Exposure and data
 
 - Public: the synthetic demo only. No real household data, no credentials, no real messages or sensors.
@@ -34,15 +37,20 @@ Render free is the fallback, with the README noting that the first load can take
 - Not built for real deployments: authentication, authorization, tenant isolation, quotas and retention controls (see
   SECURITY.md).
 
-## Steps after approval
+## Deploy (Render paid Starter, approved 2026-10-30)
 
-1. Brad creates the account and approves connecting the GitHub repository.
-2. Build command `cd frontend && npm ci && npm run build`; start command runs the backend in public-demo mode with debug
-   off and ARIA_HOME_RELEASE_COMMIT set to the deployed commit.
-3. Verify: /api/health returns 200 and the deployed commit; a clean browser outside this laptop completes the guided
-   story; two browsers stay isolated; no request leaves for Meta, WhatsApp, Emporia or Google.
+1. Brad creates the Render account (with a card) and approves connecting the GitHub repository.
+2. Create the web service from the `render.yaml` blueprint at the repo root (service `aria-home-demo`, Python runtime,
+   Starter plan, Ohio region, branch `main`, `autoDeploy: false`). The blueprint's build command installs
+   `backend/requirements.lock` (which pins `waitress`, the production WSGI server), builds the frontend, and writes
+   `$RENDER_GIT_COMMIT` to `backend/RELEASE_COMMIT`; the start command serves the created app with waitress on `$PORT`.
+   Deploy by triggering the approved commit from the Render dashboard — never by pushing to `main` alone.
+3. Verify: `GET /api/health` at the public URL returns 200 with `version.commit` equal to the deployed commit
+   (source `file`); a clean browser outside this laptop completes the guided story; two browsers stay isolated;
+   no request leaves for Meta, WhatsApp, Emporia or Google.
 4. Overnight check (health plus one guided story) before marking it verified; then put the URL in the README.
-5. Rollback: redeploy the previous commit from the provider's dashboard, or suspend the service.
+5. Rollback: redeploy the previous commit from the Render dashboard (deploys list), or suspend the service. Because
+   `autoDeploy` is off, rolling back is one dashboard action and no push can re-deploy by accident.
 
 ## Exact approval needed
 
