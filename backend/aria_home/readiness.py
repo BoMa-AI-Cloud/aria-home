@@ -1,7 +1,7 @@
 import math
 from datetime import datetime
 
-from .eligibility import freshness_limit_s, is_measurement_eligible, measurement_conflict_groups
+from .eligibility import freshness_limit_s, is_measurement_eligible, unresolved_conflict_groups
 
 MIN_SAMPLES = 3
 MIN_COVERAGE = 0.5
@@ -12,7 +12,7 @@ MIN_RISE_F = 1.0
 MIN_RATE_PER_HOUR_F = 0.5
 PROJECTION_MARGIN_F = 0.5
 ARRIVAL_TIME_MARGIN_S = 1800.0
-READINESS_POLICY_VERSION = "readiness-policy-v3"
+READINESS_POLICY_VERSION = "readiness-policy-v4"
 TARGET_GAP_TOLERANCE_F = 0.0
 
 THRESHOLDS = {
@@ -231,17 +231,18 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         item for item in indoor_evidence
         if is_measurement_eligible(item, quantity="indoor_temp", zone=zone if zone and item.get("subject") is not None else None, require_value=False)
     ]
-    indoor_conflicts = measurement_conflict_groups(
-        indoor_evidence,
-        quantity="indoor_temp",
-        zone=zone if zone else None,
-    ) if indoor_evidence else []
     has_room_sensor = any(
         item.get("source") == "room_sensor"
         for item in eligible_indoor
     ) or (not indoor_evidence and bool(room_status and _num(room_status.get("record_count"))))
     indoor_source = "room_sensor" if has_room_sensor else "thermostat"
-    indoor_conflicts = [item for item in indoor_conflicts if item["source"] == indoor_source]
+    indoor_conflicts = unresolved_conflict_groups(
+        indoor_evidence,
+        "indoor_temp",
+        now_dt,
+        zone if zone else None,
+        sources={indoor_source},
+    ) if indoor_evidence else []
     indoor_status = room_status if has_room_sensor else thermostat_status
     availability = indoor_status.get("availability") if indoor_status else None
     thermostat_availability = thermostat_status.get("availability") if thermostat_status else None

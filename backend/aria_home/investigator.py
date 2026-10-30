@@ -11,14 +11,14 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 
 from .clock import ensure_aware
 from .contracts import SourceKind
-from .eligibility import circuit_records, eligible_records, freshness_limit_s, indoor_records, is_current_record, is_fresh, is_measurement_eligible, latest_eligible, measurement_conflict_groups
+from .eligibility import circuit_records, current_pool, eligible_records, freshness_limit_s, indoor_records, is_current_record, is_fresh, is_measurement_eligible, latest_eligible, measurement_conflict_groups, unresolved_after
 from .evidence import source_status
 from .metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
 from .power_context import BANNED_PHRASES, power_context
 from .provider import get_provider, normalized_provider_identity
 from .readiness import READINESS_POLICY_VERSION, STALE_READING_AGE_S, compute_readiness
 from .scheduling import MAX_FOLLOW_UP_DELAY, MIN_FOLLOW_UP_DELAY, compute_follow_up_schedule, compute_next_check_at, validate_follow_up_time
-from .scenario import context_as_of, visible_records
+from .scenario import context_as_of, visible_records, visual_as_of
 
 PROMPT_VERSION = "inv-v3"
 INPUT_REVISION_VERSION = "input-revision-v2"
@@ -193,12 +193,18 @@ def _round_pack(value, key=None):
 
 
 def _visible_visual(visual, at):
-    if not isinstance(visual, dict):
-        return None
-    received = _parse_time(visual.get("received_at"))
-    if received is not None and received > at:
-        return None
-    return visual
+    items = visual if isinstance(visual, list) else [visual]
+    best = None
+    best_received = None
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        received = _parse_time(item.get("received_at"))
+        if received is not None and received > at:
+            continue
+        if best is None or (received is not None and (best_received is None or received > best_received)):
+            best, best_received = item, received
+    return best
 
 
 def _build_unrounded_evidence_pack(scenario, at) -> dict:
@@ -206,7 +212,7 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
     start = at - timedelta(hours=3)
     visible = visible_records(scenario.records, at)
     mode = scenario.manifest.mode
-    statuses = [source_status(s, visible, at, mode=mode) for s in SourceKind]
+    statuses = [source_status(s, visible, at, mode=mode) for s in SourceKind if s is not SourceKind.human_report]
     zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
     zone = zones[0] if zones else "demo-house/main"
     trend = temperature_trend(visible, zone, start, at, at) if zones else temperature_trend([], zone, start, at, at)
@@ -240,7 +246,7 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
         c = ctx.confirmation
         confirmation = {"trip_id": c.trip_id, "property_id": c.property_id, "target_temp": c.target_temp, "target_unit": c.target_unit, "notify_homeowner": c.notify_homeowner, "manager_authorized": c.manager_authorized, "confirmed_at": c.confirmed_at.isoformat(), "revision_id": c.revision_id, "trip_revision": c.trip_revision, "trip_revision_id": c.trip_revision_id}
         evidence.append({"id": "confirmation:current", "type": "confirmation", "data": confirmation})
-    pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": _visible_visual(getattr(scenario, "visual", None), at)}
+    pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": visual_as_of(scenario, at)}
     readiness = compute_readiness(pack, at, flags=dict(ctx.flags))
     pack["readiness"] = dict(readiness)
     pack["canonical_readiness"] = dict(readiness)
@@ -629,6 +635,9 @@ def _current_claim_reason(fact, item, pack):
             latest_at = _parse_time(latest.get("observed_at") if isinstance(latest, dict) else getattr(latest, "observed_at", None))
             if latest_at is not None and last_at < latest_at:
                 return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: superseded reading is not eligible as a current claim; only the latest eligible fresh reading is current (older readings are historical only)"
+        pool = current_pool(records, "indoor_temp", now, zone=zone)
+        if unresolved_after(records, "indoor_temp", now, zone, last_at, pool=pool):
+            return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: newer relevant evidence is unresolved, conflicting or invalid; only the latest eligible fresh reading is current (older readings are historical only)"
     if claim in {"electrical_activity", "equipment_function"}:
         circuit_id = item.get("circuit_id") or (fact.evidence_id.split("metric:circuit_activity:", 1)[1] if fact.evidence_id.startswith("metric:circuit_activity:") else None)
         if circuit_id:
@@ -638,6 +647,8 @@ def _current_claim_reason(fact, item, pack):
                 latest_at = _parse_time(latest.get("observed_at") if isinstance(latest, dict) else getattr(latest, "observed_at", None))
                 if latest_at is not None and last_at < latest_at:
                     return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: superseded reading is not eligible as a current claim; only the latest eligible fresh reading is current (older readings are historical only)"
+                if unresolved_after(pool, "circuit_power", now, None, last_at, pool=pool):
+                    return f"fact {claim} is not a current eligible measurement from evidence {fact.evidence_id}: newer relevant evidence is unresolved, conflicting or invalid; only the latest eligible fresh reading is current (older readings are historical only)"
     return None
 
 
@@ -890,6 +901,12 @@ def investigate(scenario, at, provider=None, max_tokens=None) -> Investigation:
             reason = "provider error: no text returned"
         return Investigation(status="unavailable", reasons=[reason, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)
     reasons = validate(text, pack)
+    parsed_for_laws, _ = _parse_output(text)
+    if parsed_for_laws is not None:
+        from .laws import check_output as _check_laws
+
+        for violation in _check_laws(parsed_for_laws, pack):
+            reasons.append(f"law {violation['law']}: {violation['reason']}")
     non_timing_reasons = [r for r in reasons if not _is_follow_up_timing_reason(r)]
     if non_timing_reasons:
         return Investigation(status="rejected", reasons=[*non_timing_reasons, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)

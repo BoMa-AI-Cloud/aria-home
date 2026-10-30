@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:alt-ports": "playwright test -c playwright.alt.config.ts --project=utc -g \"synthetic evidence overview\"",
+    "test:e2e:public-demo": "playwright test -c playwright.public-demo.config.ts",
     "record:demo": "playwright test -c playwright.record.config.ts --project=chrome && playwright test -c playwright.record.config.ts --project=insets && playwright test -c playwright.record.config.ts --project=keys",
     "record:insets": "playwright test -c playwright.record.config.ts --project=insets",
     "record:keys": "playwright test -c playwright.record.config.ts --project=keys",

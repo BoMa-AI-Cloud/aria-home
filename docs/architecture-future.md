@@ -21,6 +21,24 @@ temperature goal, not a proven repair cause.
   variables. Delivery still never changes readiness, outcome or
   verification. See `backend/aria_home/whatsapp.py` and
   `docs/whatsapp-audit.json` (generated from the code).
+- **Caregiver permission before HVAC (care story)** — after ARIA confirms
+  the home is at risk, the family caregiver is asked "May I contact the HVAC
+  company?" with the room temperature and the time the furnace went quiet,
+  both read from evidence visible at that moment. Approve or Decline in the
+  app records a once-only caregiver decision (actor family_caregiver,
+  replay-visible); the HVAC request is created only after approval, and a
+  decline blocks it while ARIA keeps monitoring. The same request can be
+  sent once to the owner's test number on WhatsApp (standing in for the
+  caregiver) through the explicit opt-in POST. The caregiver then gets
+  simulated "HVAC contacted" and "Temperature goal verified" updates. The
+  decision never changes readiness or verification. See
+  `backend/aria_home/notifications.py` and `backend/tests/test_caregiver_permission*.py`.
+- **Nest camera snapshot (owner only)** — one frame on request from the
+  owner's Nest Cam Indoor in the mechanical room, through the Smart Device
+  Management API (stream started, one frame grabbed with ffmpeg, stream
+  always stopped). Optionally sent to sam-3.1, with that upload disclosed.
+  Shown in its own panel; never evidence for the synthetic scenario. See
+  `backend/aria_home/nest.py` and `backend/scripts/nest_auth.py`.
 - **Emporia Vue live panel** — a small read-only frontend panel showing
   the owner's real per-circuit watts (`GET /api/live-power`, cached 60 s,
   source "live-read-only (owner's home)"), shown only when explicitly
@@ -32,9 +50,9 @@ temperature goal, not a proven repair cause.
   segmentation over synthetic muse-image-1.0 fixtures enters as a visual
   observation with observed/received times, provenance, and as-of
   visibility (`GET /api/visual`, `GET /api/visual/image`), shown in the
-  frontend with boxes overlaid and the code's verdict. Live sam-3.1
-  segmentation is a separate opt-in (`ARIA_HOME_VISUAL_LIVE=1` plus
-  `MODEL_API_KEY`). Exactly as the former future item required: visual
+  frontend with boxes overlaid and the code's verdict. The app is
+  replay-only: it never constructs the `SamLiveProvider` reference
+  adapter, so setting `ARIA_HOME_VISUAL_LIVE=1` changes nothing. Exactly as the former future item required: visual
   evidence never by itself sets readiness, an outcome, or a verification
   stage — it never yields `on_track`, `warming_observed`,
   `goal_verified` or `arrival_met` — and zero detected objects is no
@@ -52,3 +70,14 @@ temperature goal, not a proven repair cause.
 - The code-vs-model split (see README "Code vs model"): code decides; the model explains checked facts.
 - "Verified recovery" keeps meaning verified recovery of the monitored temperature goal.
 - No future integration operates equipment. ARIA Home notices sooner and helps get the right person moving; it does not repair or control anything.
+
+## Extension point: inbound WhatsApp reply (not built)
+
+Today the caregiver answers in the app. A later step could accept her
+answer as a WhatsApp reply: a webhook that takes a YES or NO only when the
+request carries a valid Meta signature (X-Hub-Signature-256 over the raw
+body with the app secret), only from the configured test number, only as a
+reply to the one permission message ARIA sent, and only once, recording the
+same caregiver decision the in-app buttons record. Anything else is
+refused and logged. Nothing of this exists in code: there is no webhook
+route, no app secret variable and no public endpoint.

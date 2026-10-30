@@ -1,0 +1,13 @@
+Model: muse-spark-1.3
+Turns: 85
+
+Group A done. `418 passed in 69.38s (0:01:09)`.
+
+Demo sequence holds unchanged: 18:21 reporting restored, 18:51 warming observed, 19:51 not yet verified, 20:21 goal verified, 21:01 arrival met. Policy bumped to `readiness-policy-v4`.
+
+1. **P1 same-ID contradiction** — Root cause: id-keyed pre-dedup in `eligible_records` and `_dedup` kept whichever same-id copy came first, so insertion order decided arrival_met vs goal_not_maintained. Fix: one conflict policy — group by (source, subject, quantity, observed_at) after C→F normalization (1e-9); identical duplicates collapse to one canonical record; incompatible same-id records are conflicts, never order/id-resolved; only unresolved conflicts (no later eligible reading in scope supersedes) block. Changed: `eligibility.py`, `evidence.py` (`source_status`), `verification.py`, `readiness.py`, `investigator.py`. Tests: `test_audit4_group_a.py` (both insertion orders, id-order permutations, hold-interval conflict, identical-collapse, zone/window scoping, API variant) + real identical-duplicate assertion replacing the `or True` in `test_audit3_evidence_verification.py`. Limitation: near-identical values still conflict rather than average.
+2. **P2 current fallback** — Root cause: no check that newer evidence invalidated an older "current" reading. Fix: `eligibility.unresolved_after` — current only if latest eligible + fresh with no newer relevant visible unresolved/conflicting/invalid record; shared by `latest_current`, `is_current_record`, investigator metric path. Tests: `validate()` rejection (record + metric cites), resolved-by-later, stale, delayed-receipt, other-zone cases. Limitation: scoping trusts record metadata.
+3. **P2 backdated first_known_at** — Root cause: timeline used single-record receipt times. Fix: `first_known_at` = max receipt over ALL supporting evidence per entry (+ arrival instant for arrival entries); `observed_at` preserved; future-knowledge entries filtered. Tests: late first/middle/endpoint receipts, out-of-order, rewind, delayed-arrival variant. Limitation: trusts recorded `received_at`.
+4. **P2 wrong-zone thermostat gate** — Root cause: gate ignored zone scope. Fix: zone-scoped thermostat gate (both occurrences); kept as liveness signal, no causal claims; equipment claims stay supporting-only. Tests: wrong-zone → `telemetry_missing`, wrong-property binding ignored, no-causal-claim reasons on pristine arrival_met. Limitation: liveness is a proxy, not proof of in-zone sensing.
+
+Docs: `readiness-rules.md` (conflict/current/knowledge-time/thermostat-gate prose, v4 stamps), `audit-4.md` rows 1–4 updated.

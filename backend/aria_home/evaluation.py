@@ -38,6 +38,11 @@ CASES = (
     ("demo_video_v1", "2026-01-16T18:51:00-05:00"),
     ("demo_video_v1", "2026-01-16T20:21:00-05:00"),
     ("demo_video_v1", "2026-01-16T21:01:00-05:00"),
+    ("care_home_v1", "2026-01-17T02:31:00-05:00"),
+    ("care_home_v1", "2026-01-17T04:21:00-05:00"),
+    ("care_home_v1", "2026-01-17T04:51:00-05:00"),
+    ("care_home_v1", "2026-01-17T06:21:00-05:00"),
+    ("care_home_v1", "2026-01-17T07:01:00-05:00"),
     ("visual_water_low_temp_v1", "2026-01-16T18:00:00-05:00"),
     ("visual_frost_missed_v1", "2026-01-16T18:00:00-05:00"),
     ("visual_dry_floor_v1", "2026-01-16T18:00:00-05:00"),
@@ -61,6 +66,7 @@ FOLLOWUP_CREATED_AT = {
     "demo_revised_v1": "2026-01-16T18:00:00-05:00",
     "demo_cancelled_v1": "2026-01-16T18:00:00-05:00",
     "demo_video_v1": "2026-01-16T16:31:00-05:00",
+    "care_home_v1": "2026-01-17T02:31:00-05:00",
 }
 
 WARMING_STAGES = ("warming_observed", "goal_verified", "arrival_met")
@@ -84,7 +90,7 @@ def _filtered(scenario, condition):
     kept = CONDITION_SOURCES[condition]
     if kept is None:
         return scenario
-    return replace(scenario, records=[r for r in scenario.records if r.source.value == kept], visual=None)
+    return replace(scenario, records=[r for r in scenario.records if r.source.value == kept], visual=None, visuals=[])
 
 
 def _followup(scenario):
@@ -248,15 +254,14 @@ def _highlights(rows):
                         "detail": f"{condition} cannot support the {claim} claim that combined supports at {cid}.",
                     })
     for row in rows:
-        if row["case_id"] == "demo_video_v1@16:31" and row["condition"] == "electrical_only" and row["claims"]["electrical_activity"]:
+        if row["condition"] == "electrical_only" and row["claims"]["electrical_activity"] and row["case_id"] in ("demo_video_v1@16:31", "care_home_v1@02:31"):
             highlights.append({
                 "case_id": row["case_id"],
                 "condition": "electrical_only",
                 "kind": "unsupported_claim",
                 "claim": "useful_heat",
-                "detail": "electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.",
+                "detail": f"electrical_only at {row['case_id']} can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.",
             })
-            break
     return highlights
 
 
@@ -344,6 +349,71 @@ def _got_label(row):
     return label
 
 
+CARE_VISUAL_NOTES = (
+    ("care/care-v1-window-frost", "frost", "missed (frost on every pane)"),
+    ("care/care-v2-furnace-off", "indicator light", "unclear (small indicator)"),
+    ("care/care-v3-thermostat-blank", "blank display", "yes"),
+    ("care/care-v4-pipe-frost", "frost", "missed"),
+    ("care/care-v5-dry-floor", "water puddle", "yes (negative control)"),
+    ("care/care-v6-warm-morning", "frost", "yes (no frost present)"),
+)
+
+
+def _care_visual_rows():
+    from .visual import ReplayVisualProvider, extract_sam_text, parse_sam_text
+
+    provider = ReplayVisualProvider()
+    rows = []
+    for image_id, phrase, note in CARE_VISUAL_NOTES:
+        raw = provider.recording_path(image_id).read_text(encoding="utf-8")
+        count = len(parse_sam_text(extract_sam_text(raw)))
+        rows.append((image_id.rsplit("/", 1)[-1], phrase, count, note))
+    return rows
+
+
+def watcher_correction_rates(directory=None):
+    """First-pass rejection rate and after-correction pass rate from recordings.
+
+    Computed from backend/eval/corrections-*.json records only. No watcher
+    runs have been recorded yet, so this currently reports zero runs and says
+    so; the rates are placeholders until the operator records an approved
+    batch through this code.
+    """
+    import glob as _glob
+
+    directory = Path(directory) if directory is not None else EVAL_DIR
+    records = []
+    for path in sorted(_glob.glob(str(directory / "corrections-*.json"))):
+        try:
+            payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(payload, dict) and isinstance(payload.get("records"), list):
+            records.extend(r for r in payload["records"] if isinstance(r, dict))
+        elif isinstance(payload, dict) and "final_result" in payload:
+            records.append(payload)
+    if not records:
+        return {
+            "recorded_runs": 0,
+            "first_pass_rejections": 0,
+            "first_pass_rejection_rate": None,
+            "after_correction_passes": 0,
+            "after_correction_pass_rate": None,
+            "note": "none recorded yet: no watcher runs have been recorded, so both rates are placeholders",
+        }
+    rejected_first = sum(1 for r in records if (r.get("failed_checks") or []))
+    passed_after = sum(1 for r in records if r.get("final_result") in ("confirmed", "corrected and verified"))
+    total = len(records)
+    return {
+        "recorded_runs": total,
+        "first_pass_rejections": rejected_first,
+        "first_pass_rejection_rate": rejected_first / total,
+        "after_correction_passes": passed_after,
+        "after_correction_pass_rate": passed_after / total,
+        "note": "computed from recorded correction records only",
+    }
+
+
 def render_markdown(results):
     totals = results["totals"]
     case_count = len({(r["scenario"], r["at"]) for r in results["rows"]}) or len(totals.get("combined", {}).get("cases", 0))
@@ -352,7 +422,7 @@ def render_markdown(results):
         "",
         "Synthetic scenarios, expected labels written by the builder, small sample, not a benchmark of real homes.",
         "",
-        f"The {case_count} cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.",
+        f"The {case_count} cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` and `care_home_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.",
         "",
         "The model investigation contract is `inv-v3`: after the confirmed arrival has passed, the model states the temperature at arrival (`temperature_at_arrival`, the last eligible reading observed and received by arrival) and must not state a `current_temperature`. The live runs on snapshots 53a06bd, 114be6a and 77cafc9 below used the `inv-v2` contract, which asked for a current temperature even after arrival; the after-arrival rerun on snapshot efdff57 used `inv-v3`.",
         "",
@@ -381,10 +451,38 @@ def render_markdown(results):
         lines.append("- None.")
     lines += [
         "",
+        "## Care camera fixtures (recorded replay)",
+        "",
+        "The six synthetic home-camera frames attached to `care_home_v1` (`backend/fixtures/visual/care/`, generated by muse-image-1.0; each `*.sam.txt` is the recorded raw sam-3.1 response for that image and phrase, replayed here and by tests, never a live call). Night frames attach during the cooling, the morning frames after recovery; at any replay time the visible frame is the latest one with `received_at <= now`. Zero objects is no detection, never an all-clear: the two recorded frost misses stay `at_risk` and are shown as \"missed by the model\" in the evidence drawer.",
+        "",
+        "| Image | Phrase | sam-3.1 objects | Correct? |",
+        "|---|---|---|---|",
+    ]
+    for image, phrase, count, note in _care_visual_rows():
+        lines.append(f"| {image} | {phrase} | {count} | {note} |")
+    lines += [
+        "",
+        "## Watcher correction rates (recorded runs only)",
+        "",
+    ]
+    rates = watcher_correction_rates()
+    if rates["recorded_runs"] == 0:
+        lines += [
+            "No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs), after-correction pass rate n/a (0 runs).",
+            "Once the operator records an approved batch through `aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as separate measures, computed from `backend/eval/corrections-*.json`.",
+        ]
+    else:
+        lines.append(
+            f"Recorded runs: {rates['recorded_runs']}; first-pass rejections: {rates['first_pass_rejections']} "
+            f"(rate {rates['first_pass_rejection_rate']:.2f}); passes after correction: {rates['after_correction_passes']} "
+            f"(rate {rates['after_correction_pass_rate']:.2f})."
+        )
+    lines += [
+        "",
         "## Reading this",
         "",
         "- Combined matches every expected readiness label and every scored verification stage; the single-source conditions do not, mostly by falling back to `cannot_tell` / `telemetry_missing` / `unable_to_verify` (unsupported), not by asserting the opposite readiness.",
-        "- Thermostat-only during the `demo_video_v1` outage (16:31) cannot support a warming or even a current-temperature claim: its last reading is 15:30, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.",
+        "- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (02:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is hours old, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.",
         "- Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.",
         "- A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.",
         "",

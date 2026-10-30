@@ -10,7 +10,7 @@ from aria_home.investigator import build_evidence_pack
 from aria_home.notifications import build_payload
 from aria_home.outcomes import follow_up_for
 from aria_home.readiness import compute_readiness
-from aria_home.scenario import context_as_of, load_scenario
+from aria_home.scenario import context_as_of, load_scenario, visual_as_of
 from aria_home.verification import verify_recovery
 from aria_home.visual import (
     FIXTURES_DIR,
@@ -259,7 +259,7 @@ def test_api_visual_metadata_image_and_gating():
     visual = body["visual"]
     assert visual["image_id"] == "v1-water-floor"
     assert len(visual["boxes"]) == 1
-    assert visual["caption"] == "Synthetic image (muse-image-1.0) - segmentation by sam-3.1 (recorded)"
+    assert visual["caption"] == "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)"
     assert visual["image_url"].startswith("/api/visual/image?")
     assert "base64" not in resp.get_data(as_text=True)
 
@@ -277,3 +277,125 @@ def test_api_visual_metadata_image_and_gating():
     assert none.get_json()["visual"] is None
     unknown = client.get("/api/visual?scenario=no_such_scenario")
     assert unknown.status_code == 404
+
+
+CARE_SPECS = (
+    ("care/care-v1-window-frost", "frost"),
+    ("care/care-v2-furnace-off", "indicator light"),
+    ("care/care-v3-thermostat-blank", "blank display"),
+    ("care/care-v4-pipe-frost", "frost"),
+    ("care/care-v5-dry-floor", "water puddle"),
+    ("care/care-v6-warm-morning", "frost"),
+)
+
+CARE_CAPTION = "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)"
+
+
+def test_care_recordings_replay_counts():
+    provider = ReplayVisualProvider()
+    counts = [
+        provider.observe(
+            image_id,
+            phrase,
+            observed_at="2026-01-17T02:30:00-05:00",
+            received_at="2026-01-17T02:30:30-05:00",
+            file=f"{image_id}.webp",
+        ).object_count
+        for image_id, phrase in CARE_SPECS
+    ]
+    assert counts == [0, 0, 1, 0, 0, 0]
+
+
+def _care_visual_at(stamp):
+    scenario = load_scenario(SCENARIOS / "care_home_v1")
+    return visual_as_of(scenario, datetime.fromisoformat(stamp))
+
+
+def test_care_frames_visible_at_story_times():
+    assert _care_visual_at("2026-01-16T19:20:00-05:00") is None
+    assert _care_visual_at("2026-01-17T02:31:00-05:00")["image_id"] == "care/care-v1-window-frost"
+    assert _care_visual_at("2026-01-17T02:45:00-05:00")["image_id"] == "care/care-v2-furnace-off"
+    assert _care_visual_at("2026-01-17T04:21:00-05:00")["image_id"] == "care/care-v3-thermostat-blank"
+    assert _care_visual_at("2026-01-17T04:51:00-05:00")["image_id"] == "care/care-v4-pipe-frost"
+    assert _care_visual_at("2026-01-17T06:21:00-05:00")["image_id"] == "care/care-v5-dry-floor"
+    assert _care_visual_at("2026-01-17T06:45:00-05:00")["image_id"] == "care/care-v6-warm-morning"
+    assert _care_visual_at("2026-01-17T07:01:00-05:00")["image_id"] == "care/care-v6-warm-morning"
+
+
+def test_care_misses_flagged_and_keep_at_risk():
+    scenario = load_scenario(SCENARIOS / "care_home_v1")
+    assert len(scenario.visuals) == 6
+    assert scenario.visual is None
+    for stamp in ("2026-01-17T02:31:00-05:00", "2026-01-17T04:51:00-05:00"):
+        at = datetime.fromisoformat(stamp)
+        pack = build_evidence_pack(scenario, at)
+        assert pack["visual_evidence"]["known_miss"] is True
+        assert pack["visual_evidence"]["object_count"] == 0
+        result = compute_readiness(pack, at)
+        assert result["status"] == "at_risk"
+        assert no_detection_line("frost") in result["reasons"]
+
+
+def test_care_visual_never_decides_or_verifies():
+    scenario = load_scenario(SCENARIOS / "care_home_v1")
+    expected = {
+        "2026-01-17T02:31:00-05:00": ("at_risk", "telemetry_missing"),
+        "2026-01-17T04:21:00-05:00": ("at_risk", "reporting_restored"),
+        "2026-01-17T04:51:00-05:00": ("at_risk", "warming_observed"),
+        "2026-01-17T06:21:00-05:00": ("on_track", "goal_verified"),
+        "2026-01-17T07:01:00-05:00": ("arrival_passed", "arrival_met"),
+    }
+    created = datetime.fromisoformat("2026-01-17T02:31:00-05:00")
+    followup = follow_up_for(scenario, "inv-care-visual", created)
+    for stamp, (status, stage) in expected.items():
+        at = datetime.fromisoformat(stamp)
+        assert compute_readiness(build_evidence_pack(scenario, at), at)["status"] == status
+        assert verify_recovery(scenario, followup, at)["stage"] == stage
+    late = datetime.fromisoformat("2026-01-17T06:21:00-05:00")
+    stripped = replace(scenario, records=[r for r in scenario.records if r.quantity != "indoor_temp"])
+    assert stripped.visuals
+    assert compute_readiness(build_evidence_pack(stripped, late), late)["status"] != "on_track"
+
+
+def test_care_hvac_payload_carries_line_not_image():
+    scenario = load_scenario(SCENARIOS / "care_home_v1")
+    at = datetime.fromisoformat("2026-01-17T02:45:00-05:00")
+    result = compute_readiness(build_evidence_pack(scenario, at), at)
+    payload = build_payload(
+        "hvac_company",
+        readiness=result,
+        context=context_as_of(scenario, at),
+        events=[],
+        now=at,
+        scenario=scenario,
+    )
+    assert any("visual observation" in line for line in payload["relevant_observations"])
+    dumped = json.dumps(payload)
+    for token in ("webp", "base64", "data:image", "image_url", "mask", "box;x1"):
+        assert token not in dumped
+
+
+def test_care_api_visual_caption_image_and_gating():
+    client = create_app().test_client()
+    resp = client.get("/api/visual?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00")
+    assert resp.status_code == 200
+    visual = resp.get_json()["visual"]
+    assert visual["image_id"] == "care/care-v1-window-frost"
+    assert visual["object_count"] == 0
+    assert visual["known_miss"] is True
+    assert visual["caption"] == CARE_CAPTION
+    assert visual["image_url"].startswith("/api/visual/image?")
+    assert "base64" not in resp.get_data(as_text=True)
+
+    image = client.get(visual["image_url"])
+    assert image.status_code == 200
+    assert image.content_type == "image/webp"
+    assert image.data == (FIXTURES_DIR / "care" / "care-v1-window-frost.webp").read_bytes()
+
+    morning = client.get("/api/visual?scenario=care_home_v1&at=2026-01-17T07:01:00-05:00").get_json()["visual"]
+    assert morning["image_id"] == "care/care-v6-warm-morning"
+    assert "known_miss" not in morning
+    assert client.get(morning["image_url"]).status_code == 200
+
+    evening = client.get("/api/visual?scenario=care_home_v1&at=2026-01-16T19:20:00-05:00")
+    assert evening.get_json()["visual"] is None

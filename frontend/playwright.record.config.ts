@@ -59,7 +59,7 @@ export default defineConfig({
   projects: [
     {
       name: "chrome",
-      testMatch: "**/demo.record.ts",
+      testMatch: "**/{demo,trace}.record.ts",
       use: { channel: "chrome", headless: true },
     },
     {

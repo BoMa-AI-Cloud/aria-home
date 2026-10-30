@@ -179,11 +179,11 @@ def test_endpoints_agree_before_and_after_confirmation(monkeypatch, tmp_path):
     client = create_app().test_client()
 
     before = "2026-01-16T14:15:00-05:00"
-    metrics = client.get(f"/api/metrics?at={before}").get_json()
+    metrics = client.get(f"/api/metrics?scenario=demo_v1&at={before}").get_json()
     assert metrics["confirmation"] is None
     assert metrics["target_gap"] is None
     assert metrics["computed_readiness"] == "cannot_tell"
-    investigation = client.get(f"/api/investigation?at={before}").get_json()
+    investigation = client.get(f"/api/investigation?scenario=demo_v1&at={before}").get_json()
     assert investigation["readiness"]["status"] == "cannot_tell"
     assert investigation["evidence_pack"]["confirmation"] is None
     assert investigation["evidence_pack"]["metrics"]["target_gap"] is None
@@ -195,11 +195,11 @@ def test_endpoints_agree_before_and_after_confirmation(monkeypatch, tmp_path):
     assert payload["flag"] == "trip_unconfirmed"
 
     after = "2026-01-16T18:00:00-05:00"
-    metrics = client.get(f"/api/metrics?at={after}").get_json()
+    metrics = client.get(f"/api/metrics?scenario=demo_v1&at={after}").get_json()
     assert metrics["confirmation"] is not None
     assert metrics["target_gap"]["gap"] == pytest.approx(-15.9)
     assert metrics["computed_readiness"] == "at_risk"
-    investigation = client.get(f"/api/investigation?at={after}").get_json()
+    investigation = client.get(f"/api/investigation?scenario=demo_v1&at={after}").get_json()
     assert investigation["readiness"]["status"] == "at_risk"
     assert investigation["evidence_pack"]["metrics"]["target_gap"]["gap"] == -15.9
     created = client.post(f"/api/investigations?scenario=demo_v1&at={after}")

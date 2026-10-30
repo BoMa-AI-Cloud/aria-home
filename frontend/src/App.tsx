@@ -1,45 +1,67 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ackNotification,
+  decideCaregiverPermission,
   createInvestigation,
   fetchContext,
+  fetchCorrections,
   fetchEvents,
   fetchFollowUp,
+  fetchHealth,
   fetchInvestigation,
+  fetchLaws,
   fetchLivePower,
+  fetchCameraConfigured,
+  takeCameraSnapshot,
   fetchNotifications,
+  fetchScenarios,
   fetchSources,
+  fetchTrace,
   fetchVisual,
+  fetchWatcher,
   fetchWhatsappStatus,
+  resetPublicSession,
   RecoveryRequiredError,
   sendHvacWhatsapp,
   type Availability,
+  type CameraSnapshotResponse,
+  type CaregiverPermission,
   type ContextFlags,
   type ContextResponse,
+  type CorrectionRecord,
+  type CorrectionsResponse,
   type CreateInvestigationResponse,
   type EvidenceTimelineEntry,
+  type HumanReportPayload,
   type InvestigationResponse,
   type InvestigationSummary,
+  type LawsResponse,
   type LivePowerResponse,
   type Notification,
   type NotificationAudience,
+  type NotificationWhatsapp,
   type OutcomeHistoryEntry,
   type OutcomeResult,
   type OutcomeStatus,
   type Readiness,
   type ReadinessResult,
+  type RecordedReview,
   type ScenarioEvent,
   type SourceKind,
   type SourceStatus,
   type SourcesResponse,
+  type TraceCheck,
+  type TraceResponse,
   type VerificationHistoryEntry,
   type VerificationResult,
   type VerificationStage,
   type VisualEvidence,
+  type WatcherResponse,
 } from "./api";
 import "./index.css";
 
 const SCENARIOS = [
+  { id: "care_home_v1", label: "Winter night, older adult at home (guided story)" },
   { id: "demo_v1", label: "No recovery" },
   { id: "demo_recovery_v1", label: "Manager report, late warming" },
   { id: "demo_no_followup_v1", label: "No follow-up readings" },
@@ -51,6 +73,9 @@ const SCENARIOS = [
 
 const VIDEO_SCENARIO = "demo_video_v1";
 const VIDEO_START_AT = "2026-01-16T16:31:00-05:00";
+
+const CARE_SCENARIO = "care_home_v1";
+const CARE_START_AT = "2026-01-16T19:03:00-05:00";
 
 const REPLAY_START_AT = "2026-01-16T18:00:00-05:00";
 
@@ -74,13 +99,26 @@ const VIDEO_REPLAY_TIMES = [
   "21:01",
 ].map((label) => ({ label, at: `2026-01-16T${label}:00-05:00` }));
 
+const CARE_REPLAY_TIMES = [
+  { day: "2026-01-16", label: "19:03" },
+  { day: "2026-01-16", label: "19:15" },
+  { day: "2026-01-16", label: "19:20" },
+  { day: "2026-01-17", label: "02:31" },
+  { day: "2026-01-17", label: "02:45" },
+  { day: "2026-01-17", label: "04:21" },
+  { day: "2026-01-17", label: "04:51" },
+  { day: "2026-01-17", label: "06:21" },
+  { day: "2026-01-17", label: "06:45" },
+  { day: "2026-01-17", label: "07:01" },
+].map(({ day, label }) => ({ label, at: `${day}T${label}:00-05:00` }));
+
 const VERIFICATION_LABEL: Record<VerificationStage, string> = {
   telemetry_missing: "Thermostat telemetry missing",
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
   goal_verified: "Temperature goal verified",
   goal_not_maintained: "Temperature goal no longer maintained",
-  arrival_met: "Arrival expectation met",
+  arrival_met: "Warm-by expectation met",
   unable_to_verify: "Unable to verify",
 };
 
@@ -106,7 +144,7 @@ const OUTCOME_LABEL: Record<OutcomeStatus, string> = {
   unable_to_verify: "Unable to verify: not enough readings",
 };
 
-const SOURCE_ORDER: SourceKind[] = ["calendar", "thermostat", "electrical", "weather"];
+const SOURCE_ORDER: SourceKind[] = ["calendar", "thermostat", "room_sensor", "electrical", "weather", "human_report"];
 
 const AVAILABILITY_LABEL: Record<Availability, string> = {
   available: "Available",
@@ -120,7 +158,7 @@ const READINESS_LABEL: Record<Readiness, string> = {
   on_track: "On track",
   at_risk: "At risk",
   cannot_tell: "Cannot tell",
-  arrival_passed: "Arrival passed",
+  arrival_passed: "Warm-by time passed",
 };
 
 function formatAge(age_s: number | null): string {
@@ -136,7 +174,9 @@ function formatAge(age_s: number | null): string {
 const PROPERTY_TIMEZONE = "America/New_York";
 
 function startAtForScenario(scenarioId: string): string {
-  return scenarioId === VIDEO_SCENARIO ? VIDEO_START_AT : REPLAY_START_AT;
+  if (scenarioId === VIDEO_SCENARIO) return VIDEO_START_AT;
+  if (scenarioId === CARE_SCENARIO) return CARE_START_AT;
+  return REPLAY_START_AT;
 }
 
 function formatTimestamp(value: string | null): string {
@@ -165,13 +205,13 @@ const PAYLOAD_LABELS: Record<string, string> = {
   verified_facts: "Verified facts",
   what_was_done: "What was done",
   evaluated_at: "Evaluated at",
-  planned_arrival: "Planned arrival",
+  planned_arrival: "Warm-by time",
   property_label: "Property",
   property: "Property",
   requested_action: "Requested action",
   access_note: "Access note",
-  manager_contact_label: "Manager contact",
-  manager_contact: "Manager contact",
+  manager_contact_label: "Contact on file",
+  manager_contact: "Contact on file",
   relevant_observations: "Relevant observations",
   observations: "Observations",
   label: "Label",
@@ -183,6 +223,9 @@ const PAYLOAD_LABELS: Record<string, string> = {
   location: "Location",
   visit_end: "Visit end",
   reported_to_manager_at: "Reported to manager at",
+  reported_to_caregiver_at: "Reported to caregiver at",
+  caregiver_alert: "Caregiver alert",
+  caregiver_hvac_authorized: "Caregiver authorized HVAC contact",
 };
 
 const EVENT_KIND_LABELS: Record<string, string> = {
@@ -195,6 +238,8 @@ const EVENT_KIND_LABELS: Record<string, string> = {
   location_unavailable: "Location unavailable",
   manager_alert: "Manager alert",
   manager_hvac_authorized: "Manager HVAC authorized",
+  caregiver_alert: "Caregiver alert",
+  caregiver_hvac_authorized: "Caregiver authorized HVAC contact",
   hvac_request: "HVAC request",
   service_visit: "Service visit",
   hvac_completion_report: "HVAC completion report",
@@ -203,20 +248,25 @@ const EVENT_KIND_LABELS: Record<string, string> = {
 const VALUE_LABELS: Record<string, string> = {
   homeowner: "Homeowner",
   property_manager: "Property manager",
+  family_caregiver: "Family caregiver",
   hvac_company: "HVAC company",
   investigation_update: "Investigation update",
   manager_alert: "Manager alert",
+  caregiver_alert: "Caregiver alert",
+  caregiver_update_hvac_contacted: "Caregiver update: HVAC contacted",
+  caregiver_update_goal_verified: "Caregiver update: temperature goal verified",
+  informational: "For information",
   hvac_request: "HVAC request",
   on_track: "On track",
   at_risk: "At risk",
   cannot_tell: "Cannot tell",
-  arrival_passed: "Arrival passed",
+  arrival_passed: "Warm-by time passed",
   telemetry_missing: "Thermostat telemetry missing",
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
   goal_verified: "Temperature goal verified",
   goal_not_maintained: "Temperature goal no longer maintained",
-  arrival_met: "Arrival expectation met",
+  arrival_met: "Warm-by expectation met",
   unable_to_verify: "Unable to verify",
 };
 
@@ -256,12 +306,12 @@ function ContextNotes({
   scheduleStatus: string | null;
 }) {
   const notes: string[] = [];
-  if (flags?.trip_cancelled) notes.push("Context note: Trip cancelled.");
-  if (flags?.trip_unconfirmed) notes.push("Context note: Trip or confirmation unconfirmed.");
+  if (flags?.trip_cancelled) notes.push("Context note: Warm-by plan cancelled.");
+  if (flags?.trip_unconfirmed) notes.push("Context note: Warm-by plan or confirmation unconfirmed.");
   if (flags?.confirmation_outdated)
-    notes.push("Context note: Outdated confirmation — confirmation is outdated for the current trip.");
+    notes.push("Context note: Outdated confirmation — confirmation is outdated for the current warm-by plan.");
   if (flags?.trip_mismatched)
-    notes.push("Context note: Trip and confirmation mismatch — they do not match.");
+    notes.push("Context note: Warm-by plan and confirmation mismatch — they do not match.");
   if (deadlinePassed) notes.push("Context note: Follow-up deadline passed (deadline_passed).");
   if (scheduleStatus) notes.push(`Follow-up schedule status: ${scheduleStatus}.`);
   if (notes.length === 0) return null;
@@ -364,6 +414,9 @@ function VisualEvidencePanel({ scenario, at }: { scenario: string; at: string })
           ? `No detection for ${visual.phrase} (synthetic image); absence of a detection is not an all-clear.`
           : `${visual.object_count} object${visual.object_count === 1 ? "" : "s"} detected for ${visual.phrase} (synthetic image).`}
       </p>
+      {visual.object_count === 0 && visual.known_miss === true && (
+        <p role="status">Missed by the model: this frame shows the condition, but the recorded segmentation found no object.</p>
+      )}
       <ReadinessBlock readiness={readiness} gapLine={null} />
     </div>
   );
@@ -404,10 +457,10 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
     return (
       <div className="confirmed-plan">
         <p className="confirmed-plan-status">
-          {flags?.confirmation_outdated ? "Confirmation outdated" : flags?.trip_cancelled ? "Trip cancelled" : flags?.trip_mismatched ? "Trip and confirmation do not match" : "Not yet confirmed"}
+          {flags?.confirmation_outdated ? "Confirmation outdated" : flags?.trip_cancelled ? "Warm-by plan cancelled" : flags?.trip_mismatched ? "Warm-by plan and confirmation do not match" : "Not yet confirmed"}
         </p>
         {data.reason_in_words && data.reason_in_words !== "Not yet confirmed" && <p>{data.reason_in_words}</p>}
-        {flags?.confirmation_outdated && <p>Confirmation outdated for the current trip — the confirmed plan no longer matches the current trip revision.</p>}
+        {flags?.confirmation_outdated && <p>Confirmation outdated for the current warm-by plan — the confirmed plan no longer matches the current revision.</p>}
         <p>
           Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
         </p>
@@ -427,7 +480,7 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
         </div>
         {data.planned_arrival && (
           <div>
-            <dt>Planned arrival</dt>
+            <dt>Warm-by time</dt>
             <dd>
               <time dateTime={data.planned_arrival}>{formatTimestamp(data.planned_arrival)}</time>
             </dd>
@@ -458,8 +511,8 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
           <dd>{data.notify_homeowner ? "Yes — notify homeowner" : "No — do not notify homeowner"}</dd>
         </div>
         <div className="key-plan-row">
-          <dt>Manager coordination</dt>
-          <dd>{data.manager_authorized ? "Manager coordination allowed" : "Manager coordination not allowed"}</dd>
+          <dt>{data.scenario === "care_home_v1" ? "Caregiver coordination" : "Manager coordination"}</dt>
+          <dd>{data.manager_authorized ? `${data.scenario === "care_home_v1" ? "Caregiver" : "Manager"} coordination allowed` : `${data.scenario === "care_home_v1" ? "Caregiver" : "Manager"} coordination not allowed`}</dd>
         </div>
         {data.confirmed_at && (
           <div className="key-plan-row">
@@ -476,7 +529,7 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
           </div>
         )}
       </dl>
-      {allowances.length > 0 && <p>Arrival times and allowances are scenario estimates, not live travel claims.</p>}
+      {allowances.length > 0 && <p>Planned times and allowances are scenario estimates, not live claims.</p>}
       {data.arrival_plan?.derivation && <p>{data.arrival_plan.derivation}</p>}
       <p>
         Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
@@ -682,6 +735,7 @@ function InvestigationSection({
         Provider mode: {data.provider_mode ?? "unknown"}, model: {data.model_id ?? "unknown"},
         prompt version: {data.prompt_version}
       </p>
+      {data.recorded_review && <RecordedReviewBlock recordedReview={data.recorded_review} />}
     </>
   );
 }
@@ -695,6 +749,7 @@ function OutcomeSection({
   error,
   loading,
   verification,
+  notScheduled,
 }: {
   outcome: OutcomeResult | null;
   history: OutcomeHistoryEntry[];
@@ -704,9 +759,17 @@ function OutcomeSection({
   error: string | null;
   loading: boolean;
   verification: VerificationResult | null;
+  notScheduled: boolean;
 }) {
-  if (!outcome && !error) return <p role="status">Loading outcome…</p>;
   if (!outcome) {
+    if (notScheduled) {
+      return (
+        <p className="outcome-status" aria-live="polite">
+          Status: <strong>No follow-up scheduled yet</strong>
+        </p>
+      );
+    }
+    if (!error) return <p role="status">Loading outcome…</p>;
     return (
       <p role="alert" className="error">
         {error ?? "Follow-up not reachable"}
@@ -852,8 +915,76 @@ function EvidenceTimelineSection({ entries }: { entries: EvidenceTimelineEntry[]
   );
 }
 
+function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedReview }) {
+  const { review, provenance } = recordedReview;
+  return (
+    <div className="investigation-block recorded-review">
+      <h3>Second review (muse-wonder-1.0, recorded)</h3>
+      {review ? (
+        <>
+          <p>
+            Verdict: <strong>{review.verdict === "no_issues" ? "No issues found" : "Issues found"}</strong>
+            {review.verdict === "no_issues" && " — not verification of the home."}
+          </p>
+          {review.issues.length > 0 && (
+            <ul>
+              {review.issues.map((issue, index) => (
+                <li key={`${issue.kind}-${index}`}>
+                  {issue.kind} — {issue.note} (evidence: {issue.evidence_ids.join(", ") || "none"})
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ) : (
+        <p role="note">The recorded review is invalid and changes nothing.</p>
+      )}
+      <p className="provenance">
+        Model: {provenance.model_id} — route {provenance.provider_route}, recorded{" "}
+        {provenance.recorded_at ?? "unknown"}, reviewing {provenance.reviewed_model_id ?? "unknown"} at{" "}
+        {provenance.reviewed_at ?? "unknown"}. Validation:{" "}
+        {provenance.validation.passed ? "passed" : `failed — ${provenance.validation.reasons.join("; ")}`}
+      </p>
+      <p className="corroboration-only">A review never changes readiness, verification, or the answer.</p>
+    </div>
+  );
+}
+
+function HumanReportSection({ report }: { report: HumanReportPayload | null }) {
+  if (!report) return null;
+  return (
+    <div className="investigation-block human-report">
+      <h3>Technician voice-note report</h3>
+      <p>{report.transcript}</p>
+      <p className="corroboration-only">Human report, not a sensor measurement. Corroboration only.</p>
+      <dl className="card-facts">
+        <div>
+          <dt>Observed</dt>
+          <dd>
+            <time dateTime={report.observed_at}>{formatTimestamp(report.observed_at)}</time>
+          </dd>
+        </div>
+        <div>
+          <dt>Received</dt>
+          <dd>
+            <time dateTime={report.received_at}>{formatTimestamp(report.received_at)}</time>
+          </dd>
+        </div>
+      </dl>
+      <p className="provenance">
+        Model: {report.provenance.model_id} — route {report.provenance.provider_route}, recorded{" "}
+        {report.provenance.recorded_at ?? "unknown"}, audio fixture {report.provenance.audio_fixture}.
+      </p>
+    </div>
+  );
+}
+
 function SourceCard({ status }: { status: SourceStatus }) {
   const missing = status.availability === "missing" || status.newest_observed_at === null;
+  const newestValue =
+    status.newest_value === null || status.newest_value === undefined
+      ? null
+      : `${Number.isInteger(status.newest_value) ? String(status.newest_value) : String(status.newest_value)}${status.newest_unit ? ` ${status.newest_unit}` : ""}`;
   return (
     <article className={`card availability-${status.availability}`} aria-label={`${status.source} source`}>
       <h3 className="card-title">{status.source}</h3>
@@ -872,6 +1003,12 @@ function SourceCard({ status }: { status: SourceStatus }) {
           <dt>Newest observed</dt>
           <dd>{formatTimestamp(status.newest_observed_at)}</dd>
         </div>
+        {newestValue !== null && (
+          <div>
+            <dt>Newest value</dt>
+            <dd>{newestValue}</dd>
+          </div>
+        )}
         <div>
           <dt>Age at evaluation time</dt>
           <dd>{formatAge(status.age_s)}</dd>
@@ -882,6 +1019,9 @@ function SourceCard({ status }: { status: SourceStatus }) {
       )}
       {status.source === "weather" && !missing && (
         <p className="forecast-note">Forecast, not an on-property measurement.</p>
+      )}
+      {status.source === "human_report" && (
+        <p className="forecast-note">Human report, not a sensor measurement.</p>
       )}
       {status.notes.length > 0 && (
         <ul className="notes">
@@ -980,12 +1120,16 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
 const NOTIFICATION_AUDIENCE_LABEL: Record<NotificationAudience, string> = {
   homeowner: "Homeowner",
   property_manager: "Property manager",
+  family_caregiver: "Family caregiver",
   hvac_company: "HVAC company",
 };
 
 const REFUSAL_REASON_LABEL: Record<string, string> = {
   manager_not_authorized: "property manager not authorized",
   manager_hvac_not_authorized: "manager has not authorized HVAC contact",
+  caregiver_not_authorized: "family caregiver not authorized",
+  caregiver_hvac_not_authorized: "caregiver has not authorized HVAC contact",
+  caregiver_declined: "the caregiver declined HVAC contact",
 };
 
 function refusalReasonInWords(notification: Notification): string {
@@ -993,11 +1137,147 @@ function refusalReasonInWords(notification: Notification): string {
   return REFUSAL_REASON_LABEL[reason] ?? reason.replace(/_/g, " ");
 }
 
+function whatsappLine(whatsapp: NotificationWhatsapp | null | undefined): string {
+  const state = whatsapp?.state ?? "";
+  if (state === "accepted_by_api") {
+    const id = whatsapp?.message_id ? ` (message id ${whatsapp.message_id})` : "";
+    return `Accepted by the WhatsApp API${id}; delivery to the handset is not confirmed`;
+  }
+  if (state.startsWith("unknown:")) {
+    return `Delivery unknown (${state.slice("unknown:".length)}); check the test phone manually — the app never resends`;
+  }
+  if (state.startsWith("failed:")) {
+    return `Delivery failed (${state.slice("failed:".length)}); the notice stays simulated`;
+  }
+  return "Simulated, no message was sent";
+}
+
 function notificationStateInWords(notification: Notification): string {
   if (notification.state === "refused") return `Refused: ${refusalReasonInWords(notification)}`;
   if (notification.state === "simulated_delivered") return "Simulated delivery";
   if (notification.state === "queued") return "Simulated delivery";
   return notification.state.replace(/_/g, " ");
+}
+
+function CaregiverPermissionCard({
+  permission,
+  onDecide,
+  deciding,
+  whatsappConfigured,
+  onSendWhatsapp,
+  sending,
+}: {
+  permission: CaregiverPermission;
+  onDecide: (decision: "approve" | "decline") => void;
+  deciding: boolean;
+  whatsappConfigured: boolean;
+  onSendWhatsapp: () => void;
+  sending: boolean;
+}) {
+  const statusLine =
+    permission.status === "waiting"
+      ? "Waiting for the caregiver's answer. ARIA will not contact the HVAC company until she approves."
+      : permission.status === "approved"
+        ? "Approved by the caregiver. Only now may ARIA contact the HVAC company."
+        : "Declined by the caregiver. No HVAC request; ARIA keeps monitoring and its own alerts continue.";
+  return (
+    <article className="caregiver-permission-card" aria-label="Caregiver permission" data-testid="caregiver-permission">
+      <h3 className="card-title">Permission request to the family caregiver</h3>
+      <blockquote className="permission-text">{permission.text}</blockquote>
+      <p className={`permission-status permission-${permission.status}`} role="status">
+        {statusLine}
+        {permission.decided_at && (
+          <>
+            {" "}
+            <time dateTime={permission.decided_at}>{formatTimestamp(permission.decided_at)}</time>
+          </>
+        )}
+        {permission.source && <span className="permission-source"> ({permission.source})</span>}
+      </p>
+      <p className="permission-note">{permission.note}</p>
+      {permission.status === "waiting" && (
+        <div className="permission-actions">
+          <button type="button" onClick={() => onDecide("approve")} disabled={deciding}>
+            Approve (as the caregiver)
+          </button>
+          <button type="button" onClick={() => onDecide("decline")} disabled={deciding}>
+            Decline (as the caregiver)
+          </button>
+          {whatsappConfigured && (
+            <button type="button" onClick={onSendWhatsapp} disabled={sending}>
+              Send this request to my test phone (WhatsApp)
+            </button>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
+function LiveCameraPanel() {
+  const [snapshot, setSnapshot] = useState<CameraSnapshotResponse | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function take(segment: boolean) {
+    setBusy(true);
+    setError(null);
+    takeCameraSnapshot(segment)
+      .then((response) => {
+        setSnapshot(response);
+        setBusy(false);
+      })
+      .catch(() => {
+        setError("Camera not reachable");
+        setBusy(false);
+      });
+  }
+
+  return (
+    <div className="live-camera-panel" data-testid="live-camera">
+      <p className="live-camera-note">
+        One frame on request from the owner&rsquo;s Nest camera. It is never evidence for the synthetic story&rsquo;s readiness or verification.
+      </p>
+      <div className="permission-actions">
+        <button type="button" onClick={() => take(false)} disabled={busy}>
+          Take one snapshot
+        </button>
+        <button type="button" onClick={() => take(true)} disabled={busy}>
+          Take one snapshot and send it to sam-3.1
+        </button>
+      </div>
+      <p className="live-camera-note">The second button uploads that one real image to Meta&rsquo;s sam-3.1 to look for frost, a water puddle and an indicator light.</p>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {snapshot && (
+        <div className="live-camera-result" role="status">
+          <p>
+            {snapshot.camera.status === "ok" ? "Snapshot taken" : `Snapshot not taken: ${snapshot.camera.status}`}
+            {snapshot.camera.device_display_name ? ` (${snapshot.camera.device_display_name})` : ""} at{" "}
+            <time dateTime={snapshot.camera.captured_at}>{formatTimestamp(snapshot.camera.captured_at)}</time>
+          </p>
+          {snapshot.image_url && <img src={snapshot.image_url} alt="Latest frame from the owner's mechanical-room camera" className="live-camera-image" />}
+          {snapshot.segmentation && (
+            <div>
+              <p>
+                <strong>{snapshot.segmentation.disclosure ?? snapshot.segmentation.reason}</strong>
+              </p>
+              <ul>
+                {(snapshot.segmentation.results ?? []).map((item) => (
+                  <li key={item.phrase}>
+                    {item.phrase}: {item.status === "ok" ? `${item.count} found${item.note ? ` (${item.note})` : ""}` : `failed (${item.error ?? "error"})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function NotificationsSection({
@@ -1041,7 +1321,7 @@ function NotificationsSection({
           <article
             key={notification.id}
             className="notification-card"
-            aria-label={`${audienceLabel} notification`}
+            aria-label={notification.kind.startsWith("caregiver_update_") ? `${audienceLabel} update` : `${audienceLabel} notification`}
           >
             <h3 className="card-title">{audienceLabel}</h3>
             <p className="notification-state">{notificationStateInWords(notification)}</p>
@@ -1052,9 +1332,7 @@ function NotificationsSection({
               </time>
             </p>
             <p>
-              {notification.whatsapp?.state === "delivered_to_test_number"
-                ? "Sent to the owner's test number on WhatsApp (stands in for the HVAC company)"
-                : "Simulated, no message was sent"}
+              {whatsappLine(notification.whatsapp)}
             </p>
             <PayloadFacts payload={notification.payload} />
             {notification.audience === "hvac_company" &&
@@ -1073,7 +1351,9 @@ function NotificationsSection({
                 Acknowledged, not resolved —{" "}
                 <time dateTime={ack.acknowledged_at}>{formatTimestamp(ack.acknowledged_at)}</time>
               </p>
-            ) : notification.audience === "property_manager" &&
+            ) : (notification.audience === "property_manager" ||
+                notification.audience === "family_caregiver") &&
+              !notification.kind.startsWith("caregiver_update_") &&
               notification.state === "simulated_delivered" ? (
               <button
                 type="button"
@@ -1115,7 +1395,7 @@ function HomeownerUpdateCard({
   return (
     <article className="homeowner-update-card" aria-label="Homeowner update">
       <p className="homeowner-update">
-        Your home reached and held {tempLabel} before you arrived
+        Your home reached and held {tempLabel} before the warm-by time
       </p>
       <p>
         Evaluation time:{" "}
@@ -1170,20 +1450,622 @@ const INSET_TARGETS: Record<string, string[]> = {
 };
 
 const KEY_CAPTIONS: Record<string, string> = {
-  "k-plan": "Replay time: 9:20 AM ET",
-  "k-trip": "Replay time: 9:20 AM ET",
-  "k-location": "Replay time: 2:06 PM ET",
-  "k-at-risk": "Replay time: 4:31 PM ET",
-  "k-help": "Replay time: 4:52 PM ET",
-  "k-ack": "Replay time: 4:52 PM ET",
-  "k-restored": "Replay time: 6:21 PM ET",
-  "k-warming": "Replay time: 6:51 PM ET",
-  "k-not-yet": "Replay time: 7:51 PM ET",
-  "k-verified": "Replay time: 8:21 PM ET",
-  "k-arrival": "Replay time: 9:01 PM ET",
-  "k-report": "Replay time: 8:46 PM ET",
-  "k-home": "Replay time: 9:01 PM ET",
+  "k-plan": "Replay time: 7:20 PM ET",
+  "k-confirm": "Replay time: 7:20 PM ET",
+  "k-flag": "Replay time: 2:31 AM ET",
+  "k-auth": "Replay time: 2:45 AM ET",
+  "k-ack": "Replay time: 2:45 AM ET",
+  "k-restored": "Replay time: 4:21 AM ET",
+  "k-warming": "Replay time: 4:51 AM ET",
+  "k-verified": "Replay time: 6:21 AM ET",
+  "k-arrival": "Replay time: 7:01 AM ET",
+  "k-report": "Replay time: 6:45 AM ET",
+  "k-home": "Replay time: 7:01 AM ET",
 };
+
+const PUBLIC_DISCLOSURE =
+  "Interactive demo · Synthetic home data · Simulated notifications · Recorded model responses where indicated · No equipment control.";
+
+const BRAD_HOOK =
+  "I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical or emergency service.";
+
+const STORY_SCENARIO = "care_home_v1";
+
+const STORY_STEP_TITLES = [
+  "Warm-by plan confirmed, with consent",
+  "Confirmation requested",
+  "House cooling overnight",
+  "Flagged before the warm-by time",
+  "Caregiver approves HVAC contact",
+  "Thermostat reporting restored",
+  "Warming observed",
+  "Temperature goal verified",
+  "Completion report as corroboration",
+  "Warm-by expectation met",
+];
+
+const STORY_STEP_GUIDANCE = [
+  "An older adult lives alone in demo-house. The household warm-by expectation is 07:00 at 68 F, recorded with the resident's consent: home status and observations may go to the resident and an adult-child family caregiver, nothing medical, no location tracking, no fall sensing.",
+  "ARIA Home asks for confirmation of the property, the warm-by plan, the target temperature, and caregiver coordination; the plan is confirmed at 19:20 with caregiver coordination allowed.",
+  "Overnight the furnace stops and the thermostat stops reporting; an independent room sensor shows the living area cooling toward 52 F.",
+  "ARIA Home flags the risk before the 07:00 warm-by time and notifies the resident and the family caregiver. Only scoped audiences are notified: the caregiver notice carries allowed fields only. ARIA then asks the caregiver: may it contact the HVAC company? Try Approve or Decline on the permission card: HVAC is contacted only after approval, and the Outcome headline never changes.",
+  "The caregiver explicitly authorizes contacting the HVAC company on file (in the recorded story, unless you declined at the previous step); only then is the simulated HVAC request allowed, carrying property, access note, and observations only, and the caregiver is told it was sent.",
+  "Thermostat reporting is restored, but reconnection alone proves nothing; verification is still pending.",
+  "Independent room readings show warming; the thermostat trend alone never decides this.",
+  "Independent readings held the 68 F goal through the full 30-minute hold: verified before the warm-by time, with the reading and evaluation times shown.",
+  "The HVAC completion report arrives after verification, as corroboration only; it changes no outcome.",
+  "The warm-by time is evaluated from readings received by 07:00, not assumed from verification.",
+];
+
+const MODEL_CONTRIBUTIONS = [
+  {
+    model: "muse-spark-1.3",
+    role: "Runtime explanation of the computed status",
+    status: "Recorded here where a matching recording exists, otherwise the deterministic summary is shown",
+  },
+  {
+    model: "sam-3.1",
+    role: "Recorded segmentation of the synthetic images, including the missed frost",
+    status: "Replay-only; never called at runtime",
+  },
+  {
+    model: "muse-image-1.0",
+    role: "Generated the synthetic images only",
+    status: "Fixture generation; not a runtime integration",
+  },
+  {
+    model: "muse-wonder-1.0 (second review)",
+    role: "Recorded structured second review of a displayed muse-spark-1.3 answer",
+    status: "Shown only beside the matching answer; never changes readiness, verification, or validity",
+  },
+  {
+    model: "muse-voice-transcribe-1.0 (human report)",
+    role: "Recorded transcript of the synthetic technician voice note as a human-report record",
+    status: "Corroboration only; never a measurement, outcome, or verification input",
+  },
+  {
+    model: "muse-spark-1.3 (anomaly watcher)",
+    role: "Recorded anomaly observations over the same evidence, each confirmed by the evidence check",
+    status: "Shown on the Laws view with code detections and provenance; never lowers risk",
+  },
+  {
+    model: "muse-wonder-1.0 and muse-spark-1.3",
+    role: "Wrote the application code",
+    status: "Authorship; no runtime role",
+  },
+];
+
+const NO_RECORDED_LABEL = "No recorded model response for this snapshot";
+
+function LawsView({ scenario, at, onBack }: { scenario: string; at: string; onBack: () => void }) {
+  const [laws, setLaws] = useState<LawsResponse | null>(null);
+  const [watcher, setWatcher] = useState<WatcherResponse | null>(null);
+  const [corrections, setCorrections] = useState<CorrectionsResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setError(null);
+    Promise.all([fetchLaws(), fetchWatcher(scenario, at), fetchCorrections()])
+      .then(([lawsResponse, watcherResponse, correctionsResponse]) => {
+        if (cancelled) return;
+        setLaws(lawsResponse);
+        setWatcher(watcherResponse);
+        setCorrections(correctionsResponse);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Laws data not reachable");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scenario, at]);
+
+  return (
+    <section aria-labelledby="laws-heading">
+      <h2 id="laws-heading">ARIA&rsquo;s Laws</h2>
+      <p>
+        Every model output is checked by code. A violation rejects the output and names the law. Proposed
+        laws never enforce.
+      </p>
+      <button type="button" onClick={onBack}>
+        Back to investigation
+      </button>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {!laws ? (
+        <p role="status">Loading laws…</p>
+      ) : (
+        <>
+          <h3>Model laws (version {laws.version})</h3>
+          <ul>
+            {laws.model_laws.map((law) => (
+              <li key={law.id}>
+                <strong>{law.id}</strong> — {law.statement} [{law.status}
+                {law.status === "proposed" ? ", never enforced" : ""}
+                ; rejected {law.rejected_recorded} recorded output{law.rejected_recorded === 1 ? "" : "s"}]
+              </li>
+            ))}
+          </ul>
+          <h3>Process laws</h3>
+          <ul>
+            {laws.process_laws.map((law) => (
+              <li key={law.id}>
+                <strong>{law.id}</strong> — {law.statement} (stage: {law.stage}; check:{" "}
+                {law.check_status})
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <h3>Watcher observations (recorded only)</h3>
+      {!watcher ? (
+        <p role="status">Loading watcher…</p>
+      ) : (
+        <>
+          {watcher.model_note && <p role="note">{watcher.model_note}</p>}
+          {watcher.model_observations.length === 0 && !watcher.model_note ? (
+            <p>No model observations for this snapshot. An empty watcher never lowers risk.</p>
+          ) : (
+            <ul>
+              {watcher.model_observations.map((observation, index) => (
+                <li key={`${observation.kind}-${index}`}>
+                  {observation.kind}: {observation.claim} [{observation.status}
+                  {observation.notice ? ` — ${observation.notice}` : ""}; evidence:{" "}
+                  {observation.evidence_ids.join(", ") || "none"}]
+                </li>
+              ))}
+            </ul>
+          )}
+          {watcher.code_detections.length > 0 && (
+            <>
+              <h4>Code detections (independent of the model)</h4>
+              <ul>
+                {watcher.code_detections.map((detection, index) => (
+                  <li key={`${detection.kind}-${index}`}>
+                    {detection.kind}: {detection.claim} [evidence:{" "}
+                    {detection.evidence_ids.join(", ") || "none"}]
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          <p>
+            Caregiver notice: {watcher.raise_caregiver_notice ? "raised" : "not raised"} (model or code
+            detection; never lowered by an empty watcher).
+          </p>
+          {watcher.provenance && (
+            <p>
+              Model: {watcher.provenance.model_id} — route {watcher.provenance.provider_route}, recorded{" "}
+              {watcher.provenance.recorded_at ?? "unknown"}, prompt{" "}
+              {watcher.provenance.watcher_prompt_version}, input revision{" "}
+              {watcher.provenance.input_revision}, laws {watcher.provenance.laws_version}.
+            </p>
+          )}
+        </>
+      )}
+      <h3>Corrections</h3>
+      {!corrections ? (
+        <p role="status">Loading corrections…</p>
+      ) : corrections.corrections.length === 0 ? (
+        <p>No watcher corrections recorded yet.</p>
+      ) : (
+        <ul>
+          {corrections.corrections.map((record: CorrectionRecord, index: number) => (
+            <li key={`${record.scenario_id}-${record.evaluated_at_utc}-${index}`}>
+              {record.scenario_id} at {record.evaluated_at_utc}: {record.final_result}. Original:{" "}
+              {record.original_claim ?? "—"}. Failed checks: {record.failed_checks.join("; ") || "none"}.
+              Revision: {record.revision_claim ?? "—"}. The ledger below is shown to the model as
+              in-context examples only; the model itself is not retrained.
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+const TRACE_SOURCE_COLORS: Record<string, string> = {
+  calendar: "#0f766e",
+  thermostat: "#c2410c",
+  room_sensor: "#1d4ed8",
+  electrical: "#a16207",
+  weather: "#5b7fa6",
+  human_report: "#92400e",
+};
+
+interface TraceMapNode {
+  id: string;
+  x: number;
+  y: number;
+  label: string;
+  sub: string;
+  color: string;
+  state: string;
+  detail: string;
+}
+
+interface TraceMapEdge {
+  id: string;
+  from: string;
+  to: string;
+  state: string;
+  label: string;
+  detail: string;
+}
+
+function traceNodeState(state: string): string {
+  if (state === "pass") return "pass";
+  if (state === "fail") return "fail";
+  if (state === "quiet") return "quiet";
+  return "stale";
+}
+
+function shortTraceLabel(label: string): string {
+  return label.length > 30 ? `${label.slice(0, 29)}…` : label;
+}
+
+function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges: TraceMapEdge[]; height: number } {
+  const colX = [10, 320, 630, 930];
+  const nodeH = 48;
+  const gap = 12;
+  const nodes: TraceMapNode[] = [];
+  const edges: TraceMapEdge[] = [];
+
+  nodes.push({
+    id: "pack",
+    x: colX[0],
+    y: 10,
+    label: `evidence pack as of ${shortTimeLabel(trace.at)}`,
+    sub: "only what was received by then",
+    color: "#333333",
+    state: "info",
+    detail: trace.as_of_note,
+  });
+  trace.sources.forEach((source, index) => {
+    const reading = source.latest_reading;
+    nodes.push({
+      id: `source-${source.source}`,
+      x: colX[0],
+      y: 10 + (index + 1) * (nodeH + gap),
+      label: `${source.source}: ${source.availability}`,
+      sub: source.freshness_reason,
+      color: TRACE_SOURCE_COLORS[source.source] ?? "#444444",
+      state: source.availability === "available" && source.freshness === "fresh" && !source.conflicted ? "pass" : source.freshness === "fresh" ? "fail" : "stale",
+      detail: reading
+        ? `reading ${reading.id}: ${String(reading.value)} ${reading.unit ?? ""} observed ${reading.observed_at}, received ${reading.received_at}; ${source.freshness_reason}${source.conflicted ? "; cited by contradictory readings" : ""}`
+        : `${source.source}: ${source.freshness_reason}`,
+    });
+  });
+  if (trace.human_report) {
+    nodes.push({
+      id: "human",
+      x: colX[0],
+      y: 10 + (trace.sources.length + 1) * (nodeH + gap),
+      label: "human report, not a measurement",
+      sub: "corroboration only",
+      color: TRACE_SOURCE_COLORS.human_report ?? "#92400e",
+      state: "stale",
+      detail: `${String(trace.human_report.payload.transcript ?? "").slice(0, 300)} (${trace.human_report.note})`,
+    });
+  }
+
+  trace.checks.forEach((check: TraceCheck, index: number) => {
+    nodes.push({
+      id: `check-${index}`,
+      x: colX[1],
+      y: 10 + index * (nodeH + gap),
+      label: shortTraceLabel(`${check.check} · ${check.target}`),
+      sub: check.passed === true ? "passed" : check.passed === false ? "failed" : "not run",
+      color: "#444444",
+      state: check.passed === true ? "pass" : check.passed === false ? "fail" : "stale",
+      detail: check.reason,
+    });
+    const target = nodes.find((node) => node.id === `source-${check.target}`);
+    edges.push({
+      id: `edge-in-${index}`,
+      from: target ? target.id : "pack",
+      to: `check-${index}`,
+      state: check.passed === true ? "pass" : check.passed === false ? "fail" : "stale",
+      label: `${check.check} on ${check.target}`,
+      detail: check.reason,
+    });
+  });
+
+  const decisionCount = 2 + trace.watcher.code_detections.length + (trace.watcher.observations.length === 0 && trace.watcher.code_detections.length === 0 ? 1 : 0);
+  const readinessState = trace.readiness.status === "on_track" || trace.readiness.status === "arrival_passed" ? "pass" : trace.readiness.status === "at_risk" ? "fail" : "stale";
+  nodes.push({
+    id: "readiness",
+    x: colX[2],
+    y: 10,
+    label: `readiness: ${trace.readiness.status}`,
+    sub: "computed by code",
+    color: "#1a1a1a",
+    state: readinessState,
+    detail: trace.readiness.reasons.join("; ") || "no readiness reasons",
+  });
+  const stage = String(trace.verification.stage ?? "not available");
+  nodes.push({
+    id: "verification",
+    x: colX[2],
+    y: 10 + (nodeH + gap),
+    label: `verification: ${shortTraceLabel(stage)}`,
+    sub: "later readings only",
+    color: "#1a1a1a",
+    state: stage === "goal_verified" || stage === "arrival_met" ? "pass" : "stale",
+    detail: Array.isArray(trace.verification.reasons) ? (trace.verification.reasons as string[]).join("; ") : String(trace.verification.reason ?? "verification not available"),
+  });
+  edges.push({ id: "edge-readiness-verification", from: "readiness", to: "verification", state: readinessState, label: "readiness into verification", detail: trace.readiness.reasons.join("; ") || "no readiness reasons" });
+  trace.checks.forEach((_check: TraceCheck, index: number) => {
+    edges.push({ id: `edge-check-decision-${index}`, from: `check-${index}`, to: "readiness", state: traceNodeState(nodes.find((node) => node.id === `check-${index}`)?.state ?? "stale"), label: "check into readiness", detail: trace.checks[index].reason });
+  });
+  trace.watcher.code_detections.forEach((detection, index: number) => {
+    const record = detection as Record<string, string>;
+    nodes.push({
+      id: `detection-${index}`,
+      x: colX[2],
+      y: 10 + (index + 2) * (nodeH + gap),
+      label: shortTraceLabel(`code: ${String(record.rule ?? record.kind ?? "detection")}`),
+      sub: "independent of the model",
+      color: "#444444",
+      state: "fail",
+      detail: String(record.detail ?? record.claim ?? ""),
+    });
+  });
+  const watcherState = trace.watcher.status === "confirmed" ? "pass" : trace.watcher.status === "rejected" ? "fail" : "quiet";
+  const watcherY = 10 + (2 + trace.watcher.code_detections.length) * (nodeH + gap);
+  if (trace.watcher.observations.length === 0 && trace.watcher.code_detections.length === 0) {
+    nodes.push({
+      id: "no-detection",
+      x: colX[2],
+      y: watcherY,
+      label: "no detection, never safe",
+      sub: "absence is not an all-clear",
+      color: "#d97706",
+      state: "quiet",
+      detail: "no model observation and no code detection at this time; absence of a detection is not an all-clear",
+    });
+  }
+  nodes.push({
+    id: "watcher",
+    x: colX[2],
+    y: watcherY + (trace.watcher.observations.length === 0 && trace.watcher.code_detections.length === 0 ? nodeH + gap : 0),
+    label: `watcher (model): ${trace.watcher.status}`,
+    sub: "AI noticed, code confirmed",
+    color: "#7c3aed",
+    state: watcherState,
+    detail: trace.watcher.observations.length > 0
+      ? trace.watcher.observations.map((obs) => `${String(obs.kind)}: ${String(obs.claim)} [${String(obs.status)}]`).join("; ")
+      : (trace.watcher.model_note ?? "no model observations for this snapshot"),
+  });
+  if (trace.human_report) {
+    edges.push({ id: "edge-human-verification", from: "human", to: "verification", state: "stale", label: "human report as corroboration only", detail: "a human report never counts as a sensor measurement" });
+  }
+  edges.push({ id: "edge-pack-watcher", from: "pack", to: "watcher", state: "info", label: "observations checked against the pack", detail: trace.watcher.model_note ?? "watcher observations verified against the evidence pack" });
+
+  if (trace.permission) {
+    const permission = trace.permission;
+    const permissionState = permission.status === "approved" ? "pass" : permission.status === "declined" ? "fail" : "stale";
+    nodes.push({
+      id: "permission",
+      x: colX[3],
+      y: 10 + trace.notices.length * (nodeH + gap),
+      label: `caregiver permission: ${permission.status}`,
+      sub: permission.status === "waiting" ? "requested, waiting for her answer" : `${permission.status} by the caregiver`,
+      color: "#0e7490",
+      state: permissionState,
+      detail: `${permission.text} (${permission.note})`,
+    });
+    edges.push({ id: "edge-verification-permission", from: "verification", to: "permission", state: permissionState, label: "the caregiver is asked before HVAC is contacted", detail: permission.note });
+  }
+
+  trace.notices.forEach((notice, index: number) => {
+    nodes.push({
+      id: `notice-${index}`,
+      x: colX[3],
+      y: 10 + index * (nodeH + gap),
+      label: `${notice.audience}: ${notice.allowed ? "raised" : "refused"}`,
+      sub: notice.reason ?? `fields: ${notice.payload_keys.join(", ")}`,
+      color: notice.allowed ? "#166534" : "#6b7280",
+      state: notice.allowed ? "pass" : "stale",
+      detail: notice.reason ?? `simulated payload fields: ${notice.payload_keys.join(", ")}`,
+    });
+    edges.push({ id: `edge-verification-notice-${index}`, from: "verification", to: `notice-${index}`, state: notice.allowed ? "pass" : "stale", label: `${notice.audience} notice ${notice.allowed ? "raised" : "refused"}`, detail: notice.reason ?? `simulated payload fields: ${notice.payload_keys.join(", ")}` });
+    edges.push({ id: `edge-watcher-notice-${index}`, from: "watcher", to: `notice-${index}`, state: watcherState === "pass" ? "pass" : "quiet", label: "model and code detection into the notice", detail: trace.watcher.observations.length > 0 ? "a confirmed model observation supports the caregiver notice" : "no confirmed model observation; code detections decide" });
+  });
+
+  const counts = [trace.sources.length + 2, trace.checks.length, decisionCount + 1, trace.notices.length + (trace.permission ? 1 : 0)];
+  const height = Math.max(...counts) * (nodeH + gap) + 20;
+  return { nodes, edges, height: Math.max(height, 220) };
+}
+
+function traceEdgePath(nodes: TraceMapNode[], from: string, to: string): string {
+  const start = nodes.find((node) => node.id === from);
+  const end = nodes.find((node) => node.id === to);
+  if (!start || !end) return "";
+  const x1 = start.x + 250;
+  const y1 = start.y + 24;
+  const x2 = end.x;
+  const y2 = end.y + 24;
+  const mid = Math.max(30, (x2 - x1) / 2);
+  return `M ${x1} ${y1} C ${x1 + mid} ${y1}, ${x2 - mid} ${y2}, ${x2} ${y2}`;
+}
+
+function TraceView({ scenario, at, times, onSelectAt, onBack }: { scenario: string; at: string; times: Array<{ label: string; at: string }>; onSelectAt: (at: string) => void; onBack: () => void }) {
+  const [trace, setTrace] = useState<TraceResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<{ title: string; state: string; detail: string } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setError(null);
+    setTrace(null);
+    setSelected(null);
+    fetchTrace(scenario, at)
+      .then((response) => {
+        if (cancelled) return;
+        if (Date.parse(response.at) !== Date.parse(at)) return;
+        setTrace(response);
+      })
+      .catch(() => {
+        if (!cancelled) setError("ARIA's view is not reachable");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scenario, at]);
+
+  const layout = trace ? buildTraceLayout(trace) : null;
+
+  return (
+    <section aria-labelledby="trace-heading">
+      <h2 id="trace-heading">ARIA&rsquo;s view</h2>
+      <p>
+        A live map of how each decision is made at this replay moment, drawn only from the trace: sources on the
+        left, code checks next, the code-computed decision, then notices. Violet is the model (watcher); everything
+        else is code. Only evidence received by this time is shown.
+      </p>
+      <button type="button" onClick={onBack}>
+        Back
+      </button>
+      <div className="trace-times" role="group" aria-label="Trace replay time">
+        {times.map((time) => (
+          <button
+            key={time.at}
+            type="button"
+            onClick={() => onSelectAt(time.at)}
+            aria-pressed={at === time.at}
+            aria-label={`Trace at ${time.label}`}
+          >
+            {time.label}
+          </button>
+        ))}
+      </div>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {!trace ? (
+        <p role="status">Loading ARIA&rsquo;s view…</p>
+      ) : (
+        <>
+          <ul className="trace-legend" aria-label="Map legend">
+            <li><span className="trace-swatch trace-swatch-pass" /> passing streak glows</li>
+            <li><span className="trace-swatch trace-swatch-stale" /> stale or quiet, grey dashed</li>
+            <li><span className="trace-swatch trace-swatch-fail" /> failed check stops here</li>
+            <li><span className="trace-swatch trace-swatch-model" /> violet is the model, the rest is code</li>
+            <li><span className="trace-swatch trace-swatch-quiet" /> no detection, never safe</li>
+            <li><span className="trace-swatch trace-swatch-permission" /> teal is the caregiver&rsquo;s permission</li>
+          </ul>
+          <div className="trace-map-wrap">
+            <svg data-testid="trace-map" viewBox={`0 0 1200 ${layout?.height ?? 220}`} role="img" aria-label={`ARIA's view map at ${at}`}>
+              {layout?.edges.map((edge) => (
+                <g key={edge.id}>
+                  <path
+                    d={traceEdgePath(layout.nodes, edge.from, edge.to)}
+                    className={`trace-streak trace-streak-${traceNodeState(edge.state)}`}
+                    data-state={traceNodeState(edge.state)}
+                    data-testid={`trace-streak-${edge.id}`}
+                  />
+                  <path
+                    d={traceEdgePath(layout.nodes, edge.from, edge.to)}
+                    className="trace-streak-hit"
+                    data-state={traceNodeState(edge.state)}
+                    onClick={() => setSelected({ title: edge.label, state: edge.state, detail: edge.detail })}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") setSelected({ title: edge.label, state: edge.state, detail: edge.detail });
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${edge.label}: ${edge.detail}`}
+                  >
+                    <title>{`${edge.label}: ${edge.detail}`}</title>
+                  </path>
+                </g>
+              ))}
+              {layout?.nodes.map((node) => (
+                <g
+                  key={node.id}
+                  className={`trace-node trace-node-${traceNodeState(node.state)}`}
+                  data-state={traceNodeState(node.state)}
+                  data-testid={`trace-node-${node.id}`}
+                  onClick={() => setSelected({ title: node.label, state: node.state, detail: `${node.sub} — ${node.detail}` })}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") setSelected({ title: node.label, state: node.state, detail: `${node.sub} — ${node.detail}` });
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${node.label}: ${node.sub}`}
+                >
+                  <title>{`${node.label}: ${node.sub}`}</title>
+                  <rect x={node.x} y={node.y} width={node.id === "pack" ? 250 : node.x >= 930 ? 230 : node.x >= 630 ? 230 : 250} height={48} rx={8} style={{ stroke: node.color }} />
+                  <text x={node.x + 12} y={node.y + 20}>{shortTraceLabel(node.label)}</text>
+                  <text x={node.x + 12} y={node.y + 38} className="trace-node-sub">{shortTraceLabel(node.sub)}</text>
+                </g>
+              ))}
+            </svg>
+          </div>
+          <div data-testid="trace-detail" className="trace-detail" role="status">
+            {selected ? (
+              <>
+                <h3>{selected.title}</h3>
+                <p>State: {selected.state}</p>
+                <p>{selected.detail}</p>
+              </>
+            ) : (
+              <p>Select a node or streak to see the reading, check, or result.</p>
+            )}
+          </div>
+          <h3>Steps in order</h3>
+          <ol className="trace-steps">
+            {trace.steps.map((step) => (
+              <li
+                key={step.seq}
+                data-state={traceNodeState(step.state)}
+                data-testid={`trace-step-${step.seq}`}
+                onClick={() => setSelected({ title: step.label, state: step.state, detail: step.detail })}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") setSelected({ title: step.label, state: step.state, detail: step.detail });
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`${step.label}: ${step.detail}`}
+              >
+                <span className={`trace-dot trace-dot-${traceNodeState(step.state)}`} aria-hidden="true" />
+                {step.label} — {step.detail}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+    </section>
+  );
+}
+
+function shortTimeLabel(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${new Intl.DateTimeFormat("en-US", {
+    timeZone: PROPERTY_TIMEZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date)} ET`;
+}
+
+function VersionLine({ commit }: { commit: string | null }) {
+  if (commit === null) return null;
+  const short = commit === "unknown" ? "unknown" : commit.slice(0, 7);
+  return (
+    <p className="version-line" data-testid="version-line">
+      Version {short}
+    </p>
+  );
+}
 
 export default function App() {
   // Test-only inset zoom: ?inset=<panel> hides all but that panel and scales it (see index.css). No effect without the parameter.
@@ -1211,6 +2093,7 @@ export default function App() {
   const [replayError, setReplayError] = useState<string | null>(null);
   const [verification, setVerification] = useState<VerificationResult | null>(null);
   const [evidenceTimeline, setEvidenceTimeline] = useState<EvidenceTimelineEntry[]>([]);
+  const [humanReport, setHumanReport] = useState<HumanReportPayload | null>(null);
   const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryEntry[]>([]);
   const [events, setEvents] = useState<ScenarioEvent[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -1221,12 +2104,62 @@ export default function App() {
   const [followUpTargetTemp, setFollowUpTargetTemp] = useState<number | null>(null);
   const [selectedAt, setSelectedAt] = useState<string>(REPLAY_START_AT);
   const [livePower, setLivePower] = useState<LivePowerResponse | null>(null);
+  const [cameraConfigured, setCameraConfigured] = useState(false);
   const [sourcesLoading, setSourcesLoading] = useState(false);
+  const [publicMode, setPublicMode] = useState<boolean | null>(null);
+  const [caregiverPermission, setCaregiverPermission] = useState<CaregiverPermission | null>(null);
+  const [decidingPermission, setDecidingPermission] = useState(false);
+  const [version, setVersion] = useState<string | null>(null);
+  const [storyCheckpoints, setStoryCheckpoints] = useState<string[]>([]);
+  const [view, setView] = useState<"landing" | "story" | "free" | "laws" | "trace" | null>(null);
+  const [storyIndex, setStoryIndex] = useState(0);
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
   const sourcesTokenRef = useRef(0);
   const contextTokenRef = useRef(0);
   const investigationTokenRef = useRef(0);
   const replayTokenRef = useRef(0);
   const eventsTokenRef = useRef(0);
+  const noFollowUpIds = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    let live = true;
+    fetchHealth()
+      .then((health) => {
+        if (!live) return;
+        setVersion(health.version?.commit ?? "unknown");
+        if (health.public_demo !== true) {
+          setPublicMode(false);
+          setView((current) => current ?? "free");
+          return;
+        }
+        return fetchScenarios().then((response) => {
+          if (!live) return;
+          const scenarios = response && Array.isArray(response.scenarios) ? response.scenarios : [];
+          const story = scenarios.find((item) => item.id === STORY_SCENARIO);
+          setPublicMode(true);
+          setStoryCheckpoints(
+            story && Array.isArray(story.checkpoints) ? [...story.checkpoints] : [],
+          );
+          setView((current) => current ?? "landing");
+        });
+      })
+      .catch(() => {
+        if (!live) return;
+        setPublicMode(false);
+        setView((current) => current ?? "free");
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (publicMode !== true) return;
+    if (scenario !== STORY_SCENARIO || storyCheckpoints.length === 0) return;
+    setStoryIndex((current) => Math.min(current, storyCheckpoints.length - 1));
+  }, [publicMode, scenario, storyCheckpoints]);
 
   useEffect(() => {
     const token = ++sourcesTokenRef.current;
@@ -1264,10 +2197,15 @@ export default function App() {
   }, [scenario, selectedAt]);
 
   useEffect(() => {
+    if (publicMode === null) return;
     const token = ++investigationTokenRef.current;
     const controller = new AbortController();
     const search = new URLSearchParams(window.location.search);
-    const startAt = search.get("e2e_at") ?? startAtForScenario(scenario);
+    const publicStart =
+      publicMode === true && scenario === STORY_SCENARIO && storyCheckpoints.length > 0
+        ? storyCheckpoints[0]
+        : null;
+    const startAt = search.get("e2e_at") ?? publicStart ?? startAtForScenario(scenario);
     const e2eParts: string[] = [];
     for (const [from, to] of [["e2e_delay_s", "test_delay_s"], ["e2e_lease_s", "lease_s"]] as const) {
       const value = search.get(from);
@@ -1284,11 +2222,14 @@ export default function App() {
     setInvestigationId(null);
     setVerification(null);
     setEvidenceTimeline([]);
+    setHumanReport(null);
     setEvents([]);
     setNotifications([]);
+    setCaregiverPermission(null);
     setNotificationsError(null);
     setFollowUpTargetTemp(null);
     setReplayAt(null);
+    noFollowUpIds.current.clear();
     createInvestigation(scenario, startAt, { signal: controller.signal, queryExtra })
       .then((response) => {
         if (token !== investigationTokenRef.current) return;
@@ -1315,6 +2256,10 @@ export default function App() {
         }
         setReplayAt(startAt);
         setReplayLoading(false);
+        if (response.follow_up === null) {
+          noFollowUpIds.current.add(response.investigation_id);
+          return;
+        }
         fetchFollowUp(response.investigation_id, startAt)
           .then((followUp) => {
             if (token !== investigationTokenRef.current) return;
@@ -1323,7 +2268,9 @@ export default function App() {
             setHistory(followUp.history);
             setVerification(followUp.verification ?? null);
             setEvidenceTimeline(followUp.evidence_timeline ?? []);
+            setHumanReport(followUp.human_report ?? null);
             setVerificationHistory(followUp.verification_history ?? []);
+            setCaregiverPermission(followUp.caregiver_permission ?? null);
             if (followUp.notifications) {
               setNotifications(followUp.notifications);
             } else {
@@ -1350,7 +2297,7 @@ export default function App() {
     return () => {
       controller.abort();
     };
-  }, [scenario]);
+  }, [scenario, publicMode, storyCheckpoints]);
 
   useEffect(() => {
     if (!replayAt) return;
@@ -1375,6 +2322,9 @@ export default function App() {
     fetchWhatsappStatus().then((response) => {
       if (live) setWhatsappConfigured(response?.configured ?? false);
     });
+    fetchCameraConfigured().then((configured) => {
+      if (live) setCameraConfigured(configured);
+    });
     return () => {
       live = false;
     };
@@ -1382,12 +2332,18 @@ export default function App() {
 
   function handleScenarioChange(nextScenario: string) {
     replayTokenRef.current += 1;
-    investigationTokenRef.current += 1;
+    if (nextScenario !== scenario) {
+      investigationTokenRef.current += 1;
+    }
     sourcesTokenRef.current += 1;
     contextTokenRef.current += 1;
     setContextData(null);
     setScenario(nextScenario);
-    setSelectedAt(startAtForScenario(nextScenario));
+    const publicStart =
+      publicMode === true && nextScenario === STORY_SCENARIO && storyCheckpoints.length > 0
+        ? storyCheckpoints[0]
+        : startAtForScenario(nextScenario);
+    setSelectedAt(publicStart);
     setSourcesLoading(true);
   }
 
@@ -1397,8 +2353,46 @@ export default function App() {
     setSelectedAt(at);
     setReplayLoading(true);
     setReplayError(null);
-    fetchFollowUp(investigationId, at)
+    setOutcome(null);
+    setHistory([]);
+    setVerification(null);
+    setEvidenceTimeline([]);
+    setHumanReport(null);
+    setVerificationHistory([]);
+    setEvents([]);
+    setNotifications([]);
+    setCaregiverPermission(null);
+    setNotificationsError(null);
+    const storyPosition = storyCheckpoints.indexOf(at);
+    if (scenario === STORY_SCENARIO && storyPosition >= 0) setStoryIndex(storyPosition);
+    const eventsToken = ++eventsTokenRef.current;
+    const eventsScenario = scenario;
+    fetchEvents(eventsScenario, at)
       .then((response) => {
+        if (token !== replayTokenRef.current) return;
+        if (eventsToken !== eventsTokenRef.current) return;
+        if (response.scenario !== eventsScenario) return;
+        if (Date.parse(response.at) !== Date.parse(at)) return;
+        setEvents(response.events);
+      })
+      .catch(() => {
+        if (token === replayTokenRef.current && eventsToken === eventsTokenRef.current) setEvents([]);
+      });
+    const createdWithoutFollowUp = noFollowUpIds.current.has(investigationId);
+    const createFresh = () => createInvestigation(scenario, at).then((created) => {
+      if (token !== replayTokenRef.current) return null;
+      noFollowUpIds.current.delete(created.investigation_id);
+      setCreatedInvestigation(created);
+      setInvestigationId(created.investigation_id);
+      if (created.notifications) setNotifications(created.notifications);
+      return fetchFollowUp(created.investigation_id, at);
+    });
+    const followUpRequest = createdWithoutFollowUp
+      ? createFresh()
+      : fetchFollowUp(investigationId, at).catch(() => createFresh());
+    followUpRequest
+      .then((response) => {
+        if (response === null) return;
         if (token !== replayTokenRef.current) return;
         if (response.scenario !== scenario) return;
         if (response.at && Date.parse(response.at) !== Date.parse(at)) return;
@@ -1406,7 +2400,19 @@ export default function App() {
         setHistory(response.history);
         setVerification(response.verification ?? null);
         setEvidenceTimeline(response.evidence_timeline ?? []);
+        setHumanReport(response.human_report ?? null);
         setVerificationHistory(response.verification_history ?? []);
+        setCaregiverPermission(response.caregiver_permission ?? null);
+        if (response.follow_up) {
+          if (typeof response.follow_up.target_unit === "string") {
+            setFollowUpUnit(response.follow_up.target_unit);
+          }
+          if (typeof response.follow_up.target_temp === "number") {
+            setFollowUpTargetTemp(response.follow_up.target_temp);
+          } else if (typeof response.follow_up.target?.target_temp === "number") {
+            setFollowUpTargetTemp(response.follow_up.target.target_temp);
+          }
+        }
         if (response.notifications) {
           setNotifications(response.notifications);
           setNotificationsError(null);
@@ -1429,9 +2435,64 @@ export default function App() {
       });
   }
 
+  function startStory() {
+    if (scenario !== STORY_SCENARIO) {
+      handleScenarioChange(STORY_SCENARIO);
+    } else if (storyCheckpoints.length > 0 && investigationId) {
+      handleReplayTime(storyCheckpoints[0]);
+    } else if (storyCheckpoints.length > 0 && selectedAt !== storyCheckpoints[0]) {
+      setSelectedAt(storyCheckpoints[0]);
+    } else if (storyCheckpoints.length === 0 && selectedAt !== CARE_START_AT) {
+      setSelectedAt(CARE_START_AT);
+    }
+    setStoryIndex(0);
+    setEvidenceOpen(false);
+    setView("story");
+  }
+
+  function stepTo(index: number) {
+    if (storyCheckpoints.length === 0) return;
+    const next = Math.min(Math.max(index, 0), storyCheckpoints.length - 1);
+    setStoryIndex(next);
+    handleReplayTime(storyCheckpoints[next]);
+  }
+
+  function exploreFreely() {
+    setEvidenceOpen(false);
+    setView("free");
+  }
+
+  function openLaws() {
+    setEvidenceOpen(false);
+    setView("laws");
+  }
+
+  function openTrace() {
+    setEvidenceOpen(false);
+    setView("trace");
+  }
+
+  function backToLanding() {
+    setEvidenceOpen(false);
+    setView("landing");
+  }
+
+  function handleResetSession() {
+    setResetting(true);
+    setResetError(null);
+    resetPublicSession()
+      .then(() => {
+        window.location.reload();
+      })
+      .catch(() => {
+        setResetting(false);
+        setResetError("Reset not reachable — please reload the page");
+      });
+  }
+
   function handleAck(notification: Notification) {
     setAckingId(notification.id);
-    ackNotification(notification.id, "property_manager", replayAt ?? undefined)
+    ackNotification(notification.id, notification.audience, replayAt ?? undefined)
       .then((response) => {
         const updated = response.notification;
         const withAcks = updated.acks?.length ? updated : { ...updated, acks: response.acks };
@@ -1443,6 +2504,24 @@ export default function App() {
       .catch(() => {
         setNotificationsError("Notifications not reachable");
         setAckingId(null);
+      });
+  }
+
+  function handleCaregiverDecision(decision: "approve" | "decline") {
+    if (!caregiverPermission || !investigationId || !replayAt) return;
+    const at = replayAt;
+    const id = investigationId;
+    setDecidingPermission(true);
+    decideCaregiverPermission(caregiverPermission.notification_id, decision, at)
+      .then(() => fetchFollowUp(id, at))
+      .then((response) => {
+        setCaregiverPermission(response.caregiver_permission ?? null);
+        if (response.notifications) setNotifications(response.notifications);
+        setDecidingPermission(false);
+      })
+      .catch(() => {
+        setNotificationsError("Notifications not reachable");
+        setDecidingPermission(false);
       });
   }
 
@@ -1484,8 +2563,331 @@ export default function App() {
     );
   });
 
+  const inStory = publicMode === true && view === "story" && storyCheckpoints.length > 0;
+  const storyAt = inStory ? storyCheckpoints[Math.min(storyIndex, storyCheckpoints.length - 1)] : null;
+  const storyTitle = STORY_STEP_TITLES[Math.min(storyIndex, STORY_STEP_TITLES.length - 1)] ?? "";
+  const storyGuidance = STORY_STEP_GUIDANCE[Math.min(storyIndex, STORY_STEP_GUIDANCE.length - 1)] ?? "";
+  const deterministicReadiness =
+    createdInvestigation?.readiness ?? displayInvestigation?.summary.readiness ?? null;
+  const recordedProvenance =
+    (createdInvestigation?.investigation as unknown as
+      | { recorded_provenance?: Record<string, unknown> }
+      | null
+      | undefined)?.recorded_provenance ?? null;
+  const hvacDelivered = visibleNotifications.find(
+    (notification) =>
+      notification.audience === "hvac_company" && notification.state === "simulated_delivered",
+  );
+  const refusedNotifications = visibleNotifications.filter(
+    (notification) => notification.state === "refused",
+  );
+
+  useEffect(() => {
+    if (!evidenceOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setEvidenceOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [evidenceOpen]);
+
+  if (publicMode === true && (view === "landing" || view === null)) {
+    return (
+      <div className="page public-landing">
+        <p className="banner" role="status">
+          SYNTHETIC DATA - demo scenario, not a real home
+        </p>
+        <main>
+          <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
+          <p>ARIA Home watches a synthetic winter night and gets the right person moving when something looks wrong.</p>
+          <p className="brad-hook">{BRAD_HOOK}</p>
+          <p className="disclosure">{PUBLIC_DISCLOSURE}</p>
+          <div className="landing-actions">
+            <button type="button" onClick={startStory} autoFocus>
+              Start the warm-by story
+            </button>
+            <button type="button" onClick={exploreFreely}>
+              Explore the app freely
+            </button>
+          </div>
+          <div className="session-controls">
+            <button type="button" onClick={handleResetSession} disabled={resetting}>
+              {resetting ? "Resetting…" : "Reset my session"}
+            </button>
+            {resetError && (
+              <p role="alert" className="error">
+                {resetError}
+              </p>
+            )}
+          </div>
+        </main>
+        <VersionLine commit={version} />
+      </div>
+    );
+  }
+
   return (
     <div className={`page${inset && insetPanels.length ? ` inset-active inset-${inset}` : ""}${keyCaption ? ` key-active key-${keyName}` : ""}`}>
+      {publicMode === true && (
+        <div className="public-bar" role="navigation" aria-label="Demo session">
+          <p className="disclosure">{PUBLIC_DISCLOSURE}</p>
+          <div className="session-controls">
+            {view !== "landing" && (
+              <button type="button" onClick={backToLanding}>
+                Back to start
+              </button>
+            )}
+            <button type="button" onClick={() => setEvidenceOpen((open) => !open)} aria-expanded={evidenceOpen}>
+              {evidenceOpen ? "Close evidence" : "Explore evidence"}
+            </button>
+            {view !== "landing" && (
+              <button type="button" onClick={openLaws}>
+                ARIA&rsquo;s Laws
+              </button>
+            )}
+            {view !== "landing" && (
+              <button type="button" onClick={openTrace}>
+                ARIA&rsquo;s view
+              </button>
+            )}
+            <button type="button" onClick={handleResetSession} disabled={resetting}>
+              {resetting ? "Resetting…" : "Reset my session"}
+            </button>
+          </div>
+          {resetError && (
+            <p role="alert" className="error">
+              {resetError}
+            </p>
+          )}
+        </div>
+      )}
+      {view === "laws" && (
+        <LawsView
+          scenario={scenario}
+          at={selectedAt}
+          onBack={() => setView(publicMode === true && storyCheckpoints.length > 0 ? "story" : "free")}
+        />
+      )}
+      {view === "trace" && (
+        <TraceView
+          scenario={scenario}
+          at={selectedAt}
+          times={scenario === VIDEO_SCENARIO ? VIDEO_REPLAY_TIMES : scenario === CARE_SCENARIO ? CARE_REPLAY_TIMES : REPLAY_TIMES}
+          onSelectAt={handleReplayTime}
+          onBack={() => setView(publicMode === true && storyCheckpoints.length > 0 ? "story" : "free")}
+        />
+      )}
+      {inStory && (
+        <section aria-labelledby="story-heading" className="story-panel">
+          <h2 id="story-heading">The warm-by story</h2>
+          <p className="story-progress" role="status">
+            Step {Math.min(storyIndex + 1, storyCheckpoints.length)} of {storyCheckpoints.length} —{" "}
+            {storyTitle} at {storyAt ? shortTimeLabel(storyAt) : "…"}
+          </p>
+          <p>{storyGuidance}</p>
+          {verification ? (
+            <p className="story-live">
+              Now showing: {VERIFICATION_LABEL[verification.stage]} (computed by code).
+            </p>
+          ) : replayLoading ? (
+            <p role="status">Loading this step…</p>
+          ) : null}
+          {deterministicReadiness && (
+            <p className="story-live">
+              Readiness: {READINESS_LABEL[deterministicReadiness.status]} (computed by code).
+            </p>
+          )}
+          <div className="story-known">
+            <h3>What was observed and when it became known</h3>
+            {evidenceTimeline.length === 0 ? (
+              <p>{replayLoading ? "Loading evidence…" : "No evidence entries known at this step."}</p>
+            ) : (
+              <ul>
+                {evidenceTimeline.map((entry) => (
+                  <li key={entry.kind}>
+                    {entry.label} — observed{" "}
+                    <time dateTime={entry.observed_at}>{formatTimestamp(entry.observed_at)}</time>,
+                    first known{" "}
+                    <time dateTime={entry.first_known_at}>{formatTimestamp(entry.first_known_at)}</time>
+                    {entry.corroboration_only ? " (corroboration only)" : ""}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {hvacDelivered && (
+            <p className="story-live">
+              HVAC notice fields sent: {Object.keys(hvacDelivered.payload).join(", ")} (from the
+              simulated payload, not a summary).
+            </p>
+          )}
+          {refusedNotifications.length > 0 && (
+            <ul className="story-refusals">
+              {refusedNotifications.map((notification) => (
+                <li key={notification.id}>
+                  {NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience} notice
+                  refused: {refusalReasonInWords(notification)}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="story-nav">
+            <button type="button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId}>
+              Rewind to start
+            </button>
+            <button
+              type="button"
+              onClick={() => stepTo(storyIndex - 1)}
+              disabled={storyIndex === 0 || !investigationId}
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => stepTo(storyIndex + 1)}
+              disabled={storyIndex >= storyCheckpoints.length - 1 || !investigationId}
+            >
+              {storyIndex >= storyCheckpoints.length - 1 ? "Story complete" : "Next"}
+            </button>
+            <button type="button" onClick={openTrace} disabled={!investigationId}>
+              See ARIA&rsquo;s view of this step
+            </button>
+          </div>
+          {storyIndex >= storyCheckpoints.length - 1 && (
+            <p className="story-complete" role="status">
+              Story complete — the home reached and held 68 F before the 07:00 warm-by time. Explore the evidence or
+              reset your session to run it again.
+            </p>
+          )}
+        </section>
+      )}
+      {evidenceOpen && publicMode === true && (
+        <aside aria-label="Explore evidence" className="evidence-drawer">
+          <div className="drawer-head">
+            <h2>Explore evidence</h2>
+            <button type="button" onClick={() => setEvidenceOpen(false)} autoFocus>
+              Close evidence
+            </button>
+          </div>
+          <p>Synthetic, reviewed fields only. No raw audit data.</p>
+          <section aria-labelledby="drawer-sources-heading">
+            <h3 id="drawer-sources-heading">Sources</h3>
+            {!data ? (
+              <p role="status">Loading sources…</p>
+            ) : (
+              <ul>
+                {data.sources.map((status) => (
+                  <li key={status.source}>
+                    {status.source}: {AVAILABILITY_LABEL[status.availability]} — newest observed{" "}
+                    {formatTimestamp(status.newest_observed_at)}, age {formatAge(status.age_s)}
+                    {status.notes.length > 0 ? ` (${status.notes.join("; ")})` : ""} (synthetic,
+                    received by {formatTimestamp(data.at)})
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section aria-labelledby="drawer-readiness-heading">
+            <h3 id="drawer-readiness-heading">Readiness (computed by code)</h3>
+            {!deterministicReadiness ? (
+              <p role="status">Loading readiness…</p>
+            ) : (
+              <>
+                <p>Status: {READINESS_LABEL[deterministicReadiness.status]}</p>
+                <ul>
+                  {deterministicReadiness.reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+          <section aria-labelledby="drawer-verification-heading">
+            <h3 id="drawer-verification-heading">Verification (computed by code)</h3>
+            {!verification ? (
+              <p role="status">{replayLoading ? "Loading verification…" : "No verification yet."}</p>
+            ) : (
+              <>
+                <p>Stage: {VERIFICATION_LABEL[verification.stage]}</p>
+                <ul>
+                  {verification.reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+                <p>Only later measurements advance a stage; acknowledgements, visits and the HVAC report do not.</p>
+              </>
+            )}
+          </section>
+          <section aria-labelledby="drawer-model-heading">
+            <h3 id="drawer-model-heading">Model interpretation and limits</h3>
+            {displayInvestigation?.output ? (
+              <>
+                <p>
+                  {displayInvestigation.provider_mode === "recorded"
+                    ? "Recorded model response (not live inference)."
+                    : "MOCK - example answer, not live inference."}
+                </p>
+                <p>{displayInvestigation.output.interpretation}</p>
+                {displayInvestigation.output.limitations.length > 0 && (
+                  <ul>
+                    {displayInvestigation.output.limitations.map((limitation) => (
+                      <li key={limitation}>{limitation}</li>
+                    ))}
+                  </ul>
+                )}
+                {recordedProvenance ? (
+                  <p>
+                    Model: {String(recordedProvenance["model_id"] ?? "unknown")} — route{" "}
+                    {String(recordedProvenance["provider_route"] ?? "unknown")}, recorded{" "}
+                    {String(recordedProvenance["recorded_at"] ?? "unknown")}, input revision{" "}
+                    {String(recordedProvenance["input_revision"] ?? "unknown")}, code snapshot{" "}
+                    {String(recordedProvenance["code_snapshot"] ?? "unknown")}.
+                  </p>
+                ) : (
+                  <p>Provenance: provider mode {displayInvestigation.provider_mode ?? "unknown"}.</p>
+                )}
+              </>
+            ) : (
+              <>
+                <p>{NO_RECORDED_LABEL} — showing the deterministic summary instead.</p>
+                {deterministicReadiness && (
+                  <ul>
+                    {deterministicReadiness.reasons.map((reason) => (
+                      <li key={reason}>{reason}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+          </section>
+          <section aria-labelledby="drawer-notices-heading">
+            <h3 id="drawer-notices-heading">Notices: fields sent and refused</h3>
+            {visibleNotifications.length === 0 ? (
+              <p>No notices visible at this step.</p>
+            ) : (
+              <ul>
+                {visibleNotifications.map((notification) => (
+                  <li key={notification.id}>
+                    {NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience}:{" "}
+                    {notificationStateInWords(notification)} — fields sent:{" "}
+                    {Object.keys(notification.payload).join(", ")}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section aria-labelledby="drawer-models-heading">
+            <h3 id="drawer-models-heading">Model contributions</h3>
+            <ul>
+              {MODEL_CONTRIBUTIONS.map((item) => (
+                <li key={item.model}>
+                  {item.model} — {item.role}. {item.status}.
+                </li>
+              ))}
+            </ul>
+          </section>
+        </aside>
+      )}
       <section className="demo-controls" aria-label="Demo controls">
         <p className="demo-controls-title">Demo controls (synthetic replay)</p>
         <label className="demo-scenario">
@@ -1503,7 +2905,7 @@ export default function App() {
           </select>
         </label>
         <div className="demo-times" role="group" aria-label="Replay time">
-          {(scenario === VIDEO_SCENARIO ? VIDEO_REPLAY_TIMES : REPLAY_TIMES).map((time) => (
+          {(scenario === VIDEO_SCENARIO ? VIDEO_REPLAY_TIMES : scenario === CARE_SCENARIO ? CARE_REPLAY_TIMES : REPLAY_TIMES).map((time) => (
             <button
               key={time.at}
               type="button"
@@ -1516,6 +2918,12 @@ export default function App() {
             </button>
           ))}
         </div>
+        <button type="button" onClick={openLaws}>
+          ARIA&rsquo;s Laws
+        </button>
+        <button type="button" onClick={openTrace}>
+          ARIA&rsquo;s view
+        </button>
       </section>
       <main>
       {data && (
@@ -1526,7 +2934,7 @@ export default function App() {
       )}
 
       <header>
-        <h1>Will my property be ready when I arrive, and if something looks wrong, who should respond?</h1>
+        <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
         {data && (
           <p className="eval-time">
             Scenario evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
@@ -1555,16 +2963,36 @@ export default function App() {
           error={replayError}
           loading={replayLoading}
           verification={verification}
+          notScheduled={
+            outcome === null &&
+            createdInvestigation !== null &&
+            createdInvestigation.follow_up === null &&
+            createdInvestigation.schedule_status === "not_scheduled"
+          }
         />
       </section>
 
       <section aria-labelledby="evidence-timeline-heading" className={insetClass("evidence-timeline")}>
         <h2 id="evidence-timeline-heading">Evidence timeline</h2>
         <EvidenceTimelineSection entries={evidenceTimeline} />
+        <HumanReportSection report={humanReport} />
       </section>
 
       <section aria-labelledby="notifications-heading" className={insetClass("notifications")}>
         <h2 id="notifications-heading">Notifications (simulated delivery)</h2>
+        {caregiverPermission && (
+          <CaregiverPermissionCard
+            permission={caregiverPermission}
+            onDecide={handleCaregiverDecision}
+            deciding={decidingPermission}
+            whatsappConfigured={whatsappConfigured}
+            onSendWhatsapp={() => {
+              const alert = notifications.find((item) => item.id === caregiverPermission.notification_id);
+              if (alert) handleSendWhatsapp(alert);
+            }}
+            sending={sendingWhatsappId === caregiverPermission.notification_id}
+          />
+        )}
         <NotificationsSection
           notifications={visibleNotifications}
           error={notificationsError}
@@ -1615,7 +3043,7 @@ export default function App() {
           </div>
         )}
       </section>
-      {scenario.startsWith("visual_") && (
+      {(scenario.startsWith("visual_") || scenario === CARE_SCENARIO) && (
         <section aria-labelledby="visual-heading" className={insetClass("visual")}>
           <h2 id="visual-heading">Visual evidence (synthetic image)</h2>
           <VisualEvidencePanel scenario={scenario} at={selectedAt} />
@@ -1627,7 +3055,14 @@ export default function App() {
           <LivePowerPanel data={livePower} />
         </section>
       )}
+      {cameraConfigured && (
+        <section aria-labelledby="live-camera-heading">
+          <h2 id="live-camera-heading">Live camera (owner&rsquo;s mechanical room)</h2>
+          <LiveCameraPanel />
+        </section>
+      )}
       </main>
+      <VersionLine commit={version} />
       {keyCaption && <p className="key-caption">{keyCaption}</p>}
     </div>
   );

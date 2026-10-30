@@ -9,6 +9,7 @@ from aria_home.investigator import build_evidence_pack
 from aria_home.scenario import load_scenario
 from aria_home.verification import verify_recovery
 from aria_home.outcomes import follow_up_for
+from pyemvue.device import VueDeviceChannelUsage, VueUsageDevice
 
 SCENARIOS = Path(__file__).resolve().parent.parent / "scenarios"
 
@@ -16,11 +17,28 @@ EMAIL = "owner@example.com"
 PASSWORD = "test-emporia-password"
 
 
+def _usage_device(gid, entries, timestamp=None):
+    device = VueUsageDevice(gid=gid)
+    device.device_gid = gid
+    device.timestamp = timestamp
+    channels = {}
+    for channel_num, name, usage in entries:
+        channel = VueDeviceChannelUsage()
+        channel.channel_num = channel_num
+        channel.name = name
+        channel.device_gid = gid
+        channel.usage = usage
+        channels[channel_num] = channel
+    device.channels = channels
+    return device
+
+
 class FakeVue:
-    def __init__(self, calls, usage=None, error=None):
+    def __init__(self, calls, usage=None, error=None, seen=None):
         self.calls = calls
         self.usage = usage
         self.error = error
+        self.seen = seen if seen is not None else {}
 
     def login(self, username=None, password=None):
         self.calls.append("login")
@@ -33,15 +51,19 @@ class FakeVue:
         self.calls.append("get_devices")
         if self.error == "devices":
             raise RuntimeError("devices unavailable (test)")
-        return [{"device_gid": "gid-1"}, {"device_gid": "gid-2"}]
+        return [{"device_gid": 111}, {"device_gid": 222}]
 
-    def get_device_list_usage(self, device_gids):
+    def get_device_list_usage(self, deviceGids, instant=None, scale="1S", unit="KilowattHours"):
         self.calls.append("get_device_list_usage")
+        self.seen.update({"gids": deviceGids, "instant": instant, "scale": scale, "unit": unit})
         if self.error == "usage":
             raise RuntimeError("usage unavailable (test)")
         if self.usage is not None:
             return self.usage
-        return {"devices": {"gid-1": {"channels": {"1": {"name": "mains", "usage": 842.34}, "2": {"name": "furnace", "usage": 0.0}}}, "gid-2": {"channels": {"1": {"name": "water_heater", "usage": 12.6}}}}}
+        return {
+            111: _usage_device(111, [("1", "mains", 0.000234), ("2", "furnace", 0.0)]),
+            222: _usage_device(222, [("1", "water_heater", 0.0000035)]),
+        }
 
 
 def _client(tmp_path, monkeypatch):
@@ -62,7 +84,10 @@ def _emporia_env(monkeypatch, **overrides):
 
 
 def _factory(monkeypatch, calls, **kwargs):
-    monkeypatch.setattr(emporia, "_client_factory", lambda: FakeVue(calls, **kwargs))
+    seen = kwargs.pop("seen", None)
+    fake = FakeVue(calls, seen=seen, **kwargs)
+    monkeypatch.setattr(emporia, "_client_factory", lambda: fake)
+    return fake
 
 
 def test_default_off_reports_not_configured(tmp_path, monkeypatch):
@@ -111,9 +136,9 @@ def test_ok_returns_watts_and_caches_sixty_seconds(tmp_path, monkeypatch):
         assert first["source"] == "live-read-only (owner's home)"
         assert first["fetched_at"]
         assert first["circuits"] == [
-            {"circuit": "gid-1/furnace", "watts": 0.0},
-            {"circuit": "gid-1/mains", "watts": 842.3},
-            {"circuit": "gid-2/water_heater", "watts": 12.6},
+            {"circuit": "111/furnace", "watts": 0.0},
+            {"circuit": "111/mains", "watts": 842.4},
+            {"circuit": "222/water_heater", "watts": 12.6},
         ]
         assert first["cached"] is False
         assert calls == ["login", "get_devices", "get_device_list_usage"]
@@ -169,6 +194,23 @@ def test_only_read_methods_called(tmp_path, monkeypatch):
         client = _client(tmp_path, monkeypatch)
         assert client.get("/api/live-power").get_json()["status"] == "ok"
         assert set(calls) <= {"login", "get_devices", "get_device_list_usage"}
+    finally:
+        emporia.clear_live_power_cache()
+
+
+def test_usage_called_with_explicit_instant_scale_unit(tmp_path, monkeypatch):
+    _emporia_env(monkeypatch)
+    calls = []
+    seen = {}
+    _factory(monkeypatch, calls, seen=seen)
+    emporia.clear_live_power_cache()
+    try:
+        client = _client(tmp_path, monkeypatch)
+        assert client.get("/api/live-power").get_json()["status"] == "ok"
+        assert seen["gids"] == [111, 222]
+        assert seen["instant"] is not None and seen["instant"].tzinfo is not None and seen["instant"].utcoffset() is not None
+        assert seen["scale"] == "1S"
+        assert seen["unit"] == "KilowattHours"
     finally:
         emporia.clear_live_power_cache()
 

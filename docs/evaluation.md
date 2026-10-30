@@ -2,7 +2,7 @@
 
 Synthetic scenarios, expected labels written by the builder, small sample, not a benchmark of real homes.
 
-The 17 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.
+The 22 cases pair each scenario with fixed replay times. Expected readiness (and, for `demo_video_v1` and `care_home_v1` only, the expected verification stage) is hand-written in `backend/eval/expected.json` from the fixture data, with a one-line reason per case. For `arrival_passed` cases (now strictly after the confirmed arrival), `expected_target_at_arrival` (`met` / `not_met`) is also scored: a case is correct only if both the readiness status and the at-arrival outcome (`target_at_arrival` on the readiness result) match, so a source condition without indoor temperatures yields `unknown` and is scored unsupported, not correct. Each case is run under the combined (all-sources) condition and under source-limited conditions that keep only one source kind of evidence record; trip/confirmation context (the arrival and target being asked about) is retained. `useful_heat` is supportable in no condition: circuit watts alone never prove useful heat. The `visual_*` cases add synthetic SAM 3.1 segmentation evidence (recorded responses over synthetic images, including the recorded frost-pipe false negative); visual evidence never yields `on_track`, `warming_observed`, `goal_verified` or `arrival_met`, and zero detected objects is reported as no detection, never as an all-clear.
 
 The model investigation contract is `inv-v3`: after the confirmed arrival has passed, the model states the temperature at arrival (`temperature_at_arrival`, the last eligible reading observed and received by arrival) and must not state a `current_temperature`. The live runs on snapshots 53a06bd, 114be6a and 77cafc9 below used the `inv-v2` contract, which asked for a current temperature even after arrival; the after-arrival rerun on snapshot efdff57 used `inv-v3`.
 
@@ -10,11 +10,11 @@ The model investigation contract is `inv-v3`: after the confirmed arrival has pa
 
 | Condition | Cases | Readiness correct | Wrong | Unsupported | Target at arrival correct (scored) | Verification correct (scored) | Fully correct |
 |---|---|---|---|---|---|---|---|
-| combined | 17 | 17 | 0 | 0 | 6 (6) | 5 (5) | 17 |
-| thermostat_only | 17 | 14 | 0 | 5 | 6 (6) | 1 (5) | 12 |
-| room_sensor_only | 17 | 12 | 0 | 14 | 1 (6) | 1 (5) | 3 |
-| electrical_only | 17 | 8 | 0 | 15 | 0 (6) | 1 (5) | 2 |
-| calendar_only | 17 | 8 | 0 | 15 | 0 (6) | 1 (5) | 2 |
+| combined | 22 | 22 | 0 | 0 | 7 (7) | 10 (10) | 22 |
+| thermostat_only | 22 | 16 | 0 | 10 | 7 (7) | 2 (10) | 12 |
+| room_sensor_only | 22 | 17 | 0 | 18 | 2 (7) | 2 (10) | 4 |
+| electrical_only | 22 | 9 | 0 | 20 | 0 (7) | 2 (10) | 2 |
+| calendar_only | 22 | 9 | 0 | 20 | 0 (7) | 2 (10) | 2 |
 
 ## Cases
 
@@ -80,6 +80,31 @@ The model investigation contract is `inv-v3`: after the confirmed arrival has pa
 | demo_video_v1@21:01 | room_sensor_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: met) | no (unsupported) |
 | demo_video_v1@21:01 | electrical_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
 | demo_video_v1@21:01 | calendar_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| care_home_v1@02:31 | combined | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| care_home_v1@02:31 | thermostat_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@02:31 | room_sensor_only | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| care_home_v1@02:31 | electrical_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@02:31 | calendar_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@04:21 | combined | at_risk / reporting_restored | at_risk / reporting_restored | yes |
+| care_home_v1@04:21 | thermostat_only | at_risk / reporting_restored | cannot_tell / unable_to_verify | no (unsupported) |
+| care_home_v1@04:21 | room_sensor_only | at_risk / reporting_restored | at_risk / telemetry_missing | no (unsupported) |
+| care_home_v1@04:21 | electrical_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@04:21 | calendar_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@04:51 | combined | at_risk / warming_observed | at_risk / warming_observed | yes |
+| care_home_v1@04:51 | thermostat_only | at_risk / warming_observed | cannot_tell / unable_to_verify | no (unsupported) |
+| care_home_v1@04:51 | room_sensor_only | at_risk / warming_observed | at_risk / telemetry_missing | no (unsupported) |
+| care_home_v1@04:51 | electrical_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@04:51 | calendar_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@06:21 | combined | on_track / goal_verified | on_track / goal_verified | yes |
+| care_home_v1@06:21 | thermostat_only | on_track / goal_verified | on_track / unable_to_verify | no (unsupported) |
+| care_home_v1@06:21 | room_sensor_only | on_track / goal_verified | on_track / telemetry_missing | no (unsupported) |
+| care_home_v1@06:21 | electrical_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@06:21 | calendar_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@07:01 | combined | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / arrival_met (target at arrival: met) | yes |
+| care_home_v1@07:01 | thermostat_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / unable_to_verify (target at arrival: met) | no (unsupported) |
+| care_home_v1@07:01 | room_sensor_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: met) | no (unsupported) |
+| care_home_v1@07:01 | electrical_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
+| care_home_v1@07:01 | calendar_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
 | visual_water_low_temp_v1@18:00 | combined | at_risk | at_risk | yes |
 | visual_water_low_temp_v1@18:00 | thermostat_only | at_risk | at_risk | yes |
 | visual_water_low_temp_v1@18:00 | room_sensor_only | at_risk | cannot_tell | no (unsupported) |
@@ -148,6 +173,25 @@ The model investigation contract is `inv-v3`: after the confirmed arrival has pa
 - room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
 - electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
 - calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
+- thermostat_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
+- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
+- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
+- thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/reporting_restored.
+- room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
+- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
+- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
+- thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/warming_observed.
+- room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/warming_observed.
+- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
+- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
+- thermostat_only gives unsupported answer (on_track/unable_to_verify) where combined gives the expected on_track/goal_verified.
+- room_sensor_only gives unsupported answer (on_track/telemetry_missing) where combined gives the expected on_track/goal_verified.
+- electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
+- calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified.
+- thermostat_only gives unsupported answer (arrival_passed/unable_to_verify) where combined gives the expected arrival_passed/arrival_met.
+- room_sensor_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
+- electrical_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
+- calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met.
 - room_sensor_only gives unsupported answer (cannot_tell/None) where combined gives the expected at_risk/None.
 - electrical_only gives unsupported answer (cannot_tell/None) where combined gives the expected at_risk/None.
 - calendar_only gives unsupported answer (cannot_tell/None) where combined gives the expected at_risk/None.
@@ -164,29 +208,36 @@ The model investigation contract is `inv-v3`: after the confirmed arrival has pa
 - electrical_only gives unsupported answer (arrival_passed/None) where combined gives the expected arrival_passed/None.
 - calendar_only gives unsupported answer (arrival_passed/None) where combined gives the expected arrival_passed/None.
 - electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.
+- electrical_only at care_home_v1@02:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.
+
+## Care camera fixtures (recorded replay)
+
+The six synthetic home-camera frames attached to `care_home_v1` (`backend/fixtures/visual/care/`, generated by muse-image-1.0; each `*.sam.txt` is the recorded raw sam-3.1 response for that image and phrase, replayed here and by tests, never a live call). Night frames attach during the cooling, the morning frames after recovery; at any replay time the visible frame is the latest one with `received_at <= now`. Zero objects is no detection, never an all-clear: the two recorded frost misses stay `at_risk` and are shown as "missed by the model" in the evidence drawer.
+
+| Image | Phrase | sam-3.1 objects | Correct? |
+|---|---|---|---|
+| care-v1-window-frost | frost | 0 | missed (frost on every pane) |
+| care-v2-furnace-off | indicator light | 0 | unclear (small indicator) |
+| care-v3-thermostat-blank | blank display | 1 | yes |
+| care-v4-pipe-frost | frost | 0 | missed |
+| care-v5-dry-floor | water puddle | 0 | yes (negative control) |
+| care-v6-warm-morning | frost | 0 | yes (no frost present) |
+
+## Watcher correction rates (recorded runs only)
+
+No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs), after-correction pass rate n/a (0 runs).
+Once the operator records an approved batch through `aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as separate measures, computed from `backend/eval/corrections-*.json`.
 
 ## Reading this
 
 - Combined matches every expected readiness label and every scored verification stage; the single-source conditions do not, mostly by falling back to `cannot_tell` / `telemetry_missing` / `unable_to_verify` (unsupported), not by asserting the opposite readiness.
-- Thermostat-only during the `demo_video_v1` outage (16:31) cannot support a warming or even a current-temperature claim: its last reading is 15:30, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.
+- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (02:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is hours old, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.
 - Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
 
-## Live runs
-
-| Date | Snapshot | Model and route | Calls | Valid | Rejected | Readiness agreement |
-|---|---|---|---|---|---|---|
-| 2026-10-26 | 53a06bd | muse-spark-1.3 via the Meta Model API | 12 | 12 | 0 | 12/12 |
-| 2026-10-26 | 53a06bd | muse-wonder-1.0 via the Meta Model API | 12 | 12 | 0 | 12/12 |
-| 2026-10-27 | 114be6a | muse-spark-1.3 via the Meta Model API, 12000 tokens | 12 | 8 | 4 | 8/8 |
-| 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 12000 tokens | 12 | 1 | 10 (+1 no answer) | 1/1 |
-| 2026-10-27 | 114be6a | meta-models/muse-spark-open-1026 via Baseten, 2000 tokens | 12 | 0 | 0 (+12 no answer) | — |
-| 2026-10-28 | 77cafc9 | muse-spark-1.3 via the Meta Model API, 12000 tokens | 17 | 11 | 6 | 11/11 |
-| 2026-10-29 | efdff57 | muse-spark-1.3 via the Meta Model API, 12000 tokens (six after-arrival cases only, inv-v3) | 6 | 5 | 1 | 5/5 |
-
-Details per run are in the sections below. The 77cafc9 17-case run (inv-v2) stays as recorded; the efdff57 rerun covers only the six after-arrival cases under inv-v3 and is not a full re-run. Earlier rows are kept for the record and are superseded, not current.
-
 ## Live model condition (2026-10-26)
+
+Note: the live runs below predate the care story and used the trip-home scenarios (`demo_v1`, `demo_video_v1` and related fixtures); they are kept verbatim as historical runs and are not re-scored against `care_home_v1`.
 
 Note: the live run used the earlier labels (before the strictly-after-arrival correction and target-at-arrival scoring), so its computed-readiness column reflects those earlier labels.
 
@@ -276,3 +327,22 @@ Run by the operator, approved by Brad: exactly 6 calls (only the six after-arriv
 | visual_frost_missed_v1@20:31 | arrival_passed | valid, agreed |
 
 Honest reading, plainly: what changed is the contract, `inv-v2` to `inv-v3` — after arrival the model states the temperature at arrival instead of a current temperature, so the stale-reading-as-current rejections of the 77cafc9 run no longer apply. Five of the six after-arrival cases now validate with readiness agreement (enforced by the contract, so agreement shows contract-following, not independent readiness judgment). The one remaining rejection is a genuine claim-check catch, not a contract gap: the answer said "below target" against the resolved target_gap fact. This rerun covers only the six after-arrival cases, so it is not a full re-run, and the 77cafc9 17-case run (inv-v2) stays as recorded. One run per case, synthetic data, small sample. This is not a pass or fail of the product.
+
+## Second review and transcription (placeholder, 2026-10-29)
+
+No muse-wonder-1.0 review and no muse-voice-transcribe-1.0 transcription has been recorded yet: the code that
+will display them is built offline (day11-06), and the approved paid calls run after it. When recorded, reviews
+(`backend/eval/reviews-*.json`, review-v1) are scored only on contract validity (known verdict, known issue kinds,
+evidence ids restricted to the pack, notes of at most 200 characters) and on whether they flag the planted
+unsupported claim; they never change a readiness, verification, or outcome result. Transcriptions
+(`backend/eval/transcripts-*.json`) are scored only on whether the resulting `human_report` record carries the
+expected statement (HVAC completion, observed 2026-01-16T20:40-05:00) without entering any measurement source list,
+eligibility, verification stage, or notification payload. Until then this section stays a placeholder.
+
+## Watcher correction rates (placeholder, 2026-10-29)
+
+No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs),
+after-correction pass rate n/a (0 runs). Once the operator records an approved batch through
+`aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as
+separate measures, computed from `backend/eval/corrections-*.json`. The offline report already renders this
+section the same way (see `watcher_correction_rates` in `backend/aria_home/evaluation.py`).

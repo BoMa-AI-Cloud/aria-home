@@ -1,0 +1,19 @@
+{
+  "transcripts": [
+    {
+      "scenario_id": "care_home_v1",
+      "model_id": "muse-voice-transcribe-1.0",
+      "provider": "Meta Model API POST /v1/asr/transcribe",
+      "recorded_at": "2026-10-29T17:54:38Z",
+      "audio_fixture": "backend/fixtures/voice/technician-note-synthetic.wav (synthetic, Kokoro voice)",
+      "transcript": "this is the service technician at the demo house. The furnace igniter was replaced and the system restarted at about 7 40 heat is running please confirm the house temperature with your sensors",
+      "audio_duration_ms": 14080,
+      "validation": {
+        "passed": true,
+        "reasons": []
+      },
+      "approved_by": "Brad 2026-10-29, 1 call",
+      "session_id": "voyager/transcribe/73AAD70004594275B5B886F65A2B9893"
+    }
+  ]
+}

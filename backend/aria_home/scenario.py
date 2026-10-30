@@ -73,6 +73,7 @@ class Scenario:
     events: list["ScenarioEvent"] = field(default_factory=list)
     arrival_plan: dict | None = None
     visual: dict | None = None
+    visuals: list = field(default_factory=list)
 
     @property
     def trip_revisions(self):
@@ -368,20 +369,29 @@ def load_scenario(path) -> Scenario:
             event_rows = events_payload.get("events", events_payload.get("records", []))
         events = [ScenarioEvent.model_validate(row) for row in event_rows]
     visual = None
+    visuals: list = []
     visual_path = base / "visual.json"
     if visual_path.is_file():
         from .visual import ReplayVisualProvider
 
         spec = _read_json(visual_path)
-        observation = ReplayVisualProvider().observe(
-            spec["image_id"],
-            spec["phrase"],
-            observed_at=spec["observed_at"],
-            received_at=spec["received_at"],
-            file=spec.get("file"),
-        )
-        visual = observation.as_dict()
-    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events, arrival_plan=arrival_plan, visual=visual)
+        specs = spec if isinstance(spec, list) else [spec]
+        for item in specs:
+            observation = ReplayVisualProvider().observe(
+                item["image_id"],
+                item["phrase"],
+                observed_at=item["observed_at"],
+                received_at=item["received_at"],
+                file=item.get("file"),
+            )
+            record = observation.as_dict()
+            if item.get("known_miss"):
+                record["known_miss"] = True
+            if isinstance(spec, list):
+                visuals.append(record)
+            else:
+                visual = record
+    return Scenario(manifest=manifest, records=records, trip=trip, confirmation=confirmation, confirmations=sorted(confirmations, key=lambda item: item.confirmed_at), path=base, trips=trips, events=events, arrival_plan=arrival_plan, visual=visual, visuals=visuals)
 
 
 def visible_records(records: list[EvidenceRecord], now: datetime) -> list[EvidenceRecord]:
@@ -392,3 +402,32 @@ def visible_records(records: list[EvidenceRecord], now: datetime) -> list[Eviden
 def events_as_of(scenario, now: datetime) -> list[ScenarioEvent]:
     ensure_aware(now, "now")
     return [event for event in (getattr(scenario, "events", None) or []) if event.available_at <= now]
+
+
+def _visual_received(value):
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
+
+
+def visual_as_of(scenario, now: datetime) -> dict | None:
+    ensure_aware(now, "now")
+    candidates = list(getattr(scenario, "visuals", None) or [])
+    single = getattr(scenario, "visual", None)
+    if isinstance(single, dict):
+        candidates.append(single)
+    best = None
+    best_received = None
+    for item in candidates:
+        if not isinstance(item, dict):
+            continue
+        received = _visual_received(item.get("received_at"))
+        if received is not None and received > now:
+            continue
+        if best is None or (received is not None and (best_received is None or received > best_received)):
+            best, best_received = item, received
+    return best

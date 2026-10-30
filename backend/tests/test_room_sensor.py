@@ -80,6 +80,6 @@ def test_events_hidden_before_available_at(tmp_path):
 
 
 def test_demo_v1_sources_unchanged():
-    body = create_app().test_client().get("/api/sources").get_json()
-    assert len(body["sources"]) == 4
-    assert {s["source"] for s in body["sources"]} == {"calendar", "thermostat", "electrical", "weather"}
+    body = create_app().test_client().get("/api/sources?scenario=demo_v1").get_json()
+    assert len(body["sources"]) == 5
+    assert {s["source"] for s in body["sources"]} == {"calendar", "thermostat", "electrical", "weather", "human_report"}

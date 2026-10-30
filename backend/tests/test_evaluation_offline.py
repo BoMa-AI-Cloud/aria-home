@@ -12,8 +12,8 @@ def test_evaluation_offline_returns_results_file():
     assert resp.status_code == 200
     assert resp.get_json() == {
         **expected,
-        "scenario": "demo_v1",
-        "at": "2026-01-16T18:00:00-05:00",
+        "scenario": "care_home_v1",
+        "at": "2026-01-16T19:00:00-05:00",
         "timezone": "America/New_York",
     }
     assert resp.get_json()["totals"]["combined"]["fully_correct"] == resp.get_json()["totals"]["combined"]["cases"]

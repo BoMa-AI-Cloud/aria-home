@@ -62,31 +62,31 @@ test("scenario change while pending keeps the current context", async ({ page },
   const at = uniqueAt(testInfo, 3);
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}&e2e_delay_s=6`);
   await expect(page.locator(".banner")).toContainText("SYNTHETIC DATA", { timeout: 30_000 });
-  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
-  await expect(page.locator("header .eval-time")).toContainText("4:31 PM ET", { timeout: 30_000 });
+  await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
+  await expect(page.locator("header .eval-time")).toContainText("7:03 PM ET", { timeout: 30_000 });
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
-  await expect(investigation.getByText(MOCK)).toBeVisible({ timeout: 60_000 });
-  await expect(page.getByLabel("Scenario")).toHaveValue("demo_video_v1");
+  await expect(investigation.getByText(/MOCK - example answer, not live inference|Provider mode: recorded/)).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByLabel("Scenario")).toHaveValue("care_home_v1");
   await expect(page.locator("body")).not.toContainText("Follow-up not reachable");
 });
 
 test("rapid replay changes end on the last selection with no stale overwrite", async ({ page }, testInfo) => {
   const at = uniqueAt(testInfo, 4);
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}`);
-  await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
+  await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
   const demoControls = page.locator(".demo-controls");
-  await expect(demoControls.getByRole("button", { name: "16:31" })).toBeEnabled({ timeout: 60_000 });
+  await expect(demoControls.getByRole("button", { name: "19:03" })).toBeEnabled({ timeout: 60_000 });
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Outcome" }),
   });
-  await demoControls.getByRole("button", { name: "19:51" }).click();
-  await demoControls.getByRole("button", { name: "20:21" }).click();
-  await demoControls.getByRole("button", { name: "21:01" }).click();
-  await expect(headerTime).toContainText("9:01 PM ET", { timeout: 30_000 });
-  await expect(outcome.locator(".outcome-status")).toContainText("Arrival expectation met", {
+  await demoControls.getByRole("button", { name: "04:51" }).click();
+  await demoControls.getByRole("button", { name: "06:21" }).click();
+  await demoControls.getByRole("button", { name: "07:01" }).click();
+  await expect(headerTime).toContainText("7:01 AM ET", { timeout: 30_000 });
+  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met", {
     timeout: 30_000,
   });
 });

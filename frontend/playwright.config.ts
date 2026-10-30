@@ -20,6 +20,7 @@ const backendPort = process.env.PLAYWRIGHT_BACKEND_PORT ?? "5000";
 
 export default defineConfig({
   testDir: "e2e",
+  testIgnore: "public-demo.spec.ts",
   workers: 1,
   use: { baseURL: `http://127.0.0.1:${frontendPort}` },
   projects: [

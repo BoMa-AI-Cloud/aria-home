@@ -97,3 +97,28 @@ def test_hooks_ignored_without_e2e_flag(tmp_path, monkeypatch):
     lease_dt = datetime.fromisoformat(str(lease_raw).replace("Z", "+00:00"))
     created_dt = datetime.fromisoformat(str(created_raw).replace("Z", "+00:00"))
     assert (lease_dt - created_dt).total_seconds() == 120
+
+
+def test_e2e_reset_clears_stored_state(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch, name="reset.db")
+    client = app.test_client()
+    created = client.post(f"/api/investigations?scenario=demo_v1&at={AT}")
+    assert created.status_code == 200, created.get_json()
+    investigation_id = created.get_json()["investigation_id"]
+    follow_up = client.get(f"/api/follow-ups/{investigation_id}?at={AT}")
+    assert follow_up.status_code == 200, follow_up.get_json()
+    reset = client.post("/api/e2e/reset")
+    assert reset.status_code == 200, reset.get_json()
+    assert reset.get_json()["reset"] is True
+    assert client.get(f"/api/follow-ups/{investigation_id}?at={AT}").status_code == 404
+    store = Store(tmp_path / "reset.db")
+    assert store.list_notifications(investigation_id) == []
+
+
+def test_e2e_reset_missing_without_flag(tmp_path, monkeypatch):
+    monkeypatch.setenv("ARIA_HOME_DB_PATH", str(tmp_path / "reset-off.db"))
+    monkeypatch.setenv("ARIA_HOME_MODEL_ENABLED", "0")
+    monkeypatch.delenv("ARIA_HOME_E2E_HOOKS", raising=False)
+    monkeypatch.setattr(app_module, "get_provider", lambda *a, **k: MockProvider())
+    app = create_app()
+    assert app.test_client().post("/api/e2e/reset").status_code == 404

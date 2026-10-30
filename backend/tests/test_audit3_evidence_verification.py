@@ -90,7 +90,7 @@ def test_identical_duplicate_collapses_and_still_arrival_met(tmp_path):
     _edit(target, "room_sensor.json", add)
     result, _, _ = _verify(target, at(21, 1))
     assert result["stage"] == "arrival_met"
-    assert result["supporting_ids"].count("dup-identical") + result["supporting_ids"].count("room-temp-2100") <= 1 or True
+    assert ("room-temp-2100" in result["supporting_ids"]) != ("dup-identical" in result["supporting_ids"])
     assert len(result["supporting_ids"]) == len(set(result["supporting_ids"]))
 
 

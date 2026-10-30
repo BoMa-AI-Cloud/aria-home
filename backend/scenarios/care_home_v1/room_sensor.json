@@ -1,0 +1,3183 @@
+{
+  "records": [
+    {
+      "id": "room-care-0600",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0605",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 55.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0610",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0615",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0620",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0625",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0630",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0635",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0640",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0645",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0650",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0655",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0700",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0705",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0710",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0715",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0720",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0725",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0730",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0735",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0740",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0745",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0750",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0755",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0800",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0805",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0810",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0815",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0820",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0825",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0830",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0835",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0840",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0845",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0850",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0855",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0900",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0905",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0910",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0915",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0920",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0925",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0930",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0935",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0940",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0945",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0950",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-0955",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1000",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1005",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1010",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1015",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1020",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1025",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1030",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1035",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1040",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1045",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1050",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1055",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1100",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1105",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1110",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.4,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1115",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1120",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1125",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1130",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.3,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1135",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1140",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1145",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1150",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.2,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1155",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1200",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1205",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1210",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.1,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1215",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1220",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1225",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.0,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1230",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1235",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1240",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1245",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.9,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1250",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1255",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1300",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1305",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1310",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1315",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1320",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1325",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.7,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1330",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1335",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1340",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1345",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.6,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1350",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1355",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1400",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.5,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1405",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1410",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1415",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1420",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1425",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1430",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1435",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1440",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.3,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1445",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1450",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1455",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1500",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1505",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.1,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1510",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.1,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1515",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.1,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1520",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.1,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1525",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1530",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1535",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1540",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1545",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1550",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1555",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1600",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1605",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1610",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1615",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1620",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1625",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1630",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1635",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1640",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1645",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1650",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1655",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1700",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1705",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1710",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1715",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1720",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1725",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1730",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1735",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1740",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:40:00-05:00",
+      "received_at": "2026-01-17T03:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1745",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:45:00-05:00",
+      "received_at": "2026-01-17T03:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1750",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:50:00-05:00",
+      "received_at": "2026-01-17T03:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1755",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T03:55:00-05:00",
+      "received_at": "2026-01-17T03:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1800",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1805",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:05:00-05:00",
+      "received_at": "2026-01-17T04:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1810",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:10:00-05:00",
+      "received_at": "2026-01-17T04:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1815",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:15:00-05:00",
+      "received_at": "2026-01-17T04:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1820",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:20:00-05:00",
+      "received_at": "2026-01-17T04:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1825",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:25:00-05:00",
+      "received_at": "2026-01-17T04:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1830",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1835",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:35:00-05:00",
+      "received_at": "2026-01-17T04:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1840",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 52.8,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:40:00-05:00",
+      "received_at": "2026-01-17T04:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1845",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 53.7,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:45:00-05:00",
+      "received_at": "2026-01-17T04:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1850",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 54.5,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:50:00-05:00",
+      "received_at": "2026-01-17T04:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1855",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 55.6,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:55:00-05:00",
+      "received_at": "2026-01-17T04:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1900",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 56.8,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1905",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 57.9,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:05:00-05:00",
+      "received_at": "2026-01-17T05:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1910",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 59.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:10:00-05:00",
+      "received_at": "2026-01-17T05:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1915",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 60.1,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:15:00-05:00",
+      "received_at": "2026-01-17T05:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1920",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 61.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:20:00-05:00",
+      "received_at": "2026-01-17T05:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1925",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 62.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:25:00-05:00",
+      "received_at": "2026-01-17T05:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1930",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 63.5,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1935",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 64.6,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:35:00-05:00",
+      "received_at": "2026-01-17T05:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1940",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 65.8,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:40:00-05:00",
+      "received_at": "2026-01-17T05:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1945",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 66.9,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:45:00-05:00",
+      "received_at": "2026-01-17T05:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1950",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:50:00-05:00",
+      "received_at": "2026-01-17T05:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-1955",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T05:55:00-05:00",
+      "received_at": "2026-01-17T05:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2000",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2005",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:05:00-05:00",
+      "received_at": "2026-01-17T06:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2010",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:10:00-05:00",
+      "received_at": "2026-01-17T06:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2015",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:15:00-05:00",
+      "received_at": "2026-01-17T06:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2020",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:20:00-05:00",
+      "received_at": "2026-01-17T06:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2025",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:25:00-05:00",
+      "received_at": "2026-01-17T06:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2030",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2035",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:35:00-05:00",
+      "received_at": "2026-01-17T06:35:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2040",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:40:00-05:00",
+      "received_at": "2026-01-17T06:40:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2045",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:45:00-05:00",
+      "received_at": "2026-01-17T06:45:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2050",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:50:00-05:00",
+      "received_at": "2026-01-17T06:50:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2055",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T06:55:00-05:00",
+      "received_at": "2026-01-17T06:55:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2100",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2105",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.6,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:05:00-05:00",
+      "received_at": "2026-01-17T07:05:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2110",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:10:00-05:00",
+      "received_at": "2026-01-17T07:10:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2115",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:15:00-05:00",
+      "received_at": "2026-01-17T07:15:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2120",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.0,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:20:00-05:00",
+      "received_at": "2026-01-17T07:20:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2125",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.2,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:25:00-05:00",
+      "received_at": "2026-01-17T07:25:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "room-care-2130",
+      "source": "room_sensor",
+      "kind": "measurement",
+      "subject": "demo-house/main",
+      "quantity": "indoor_temp",
+      "value": 68.4,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "expected_cadence_s": 300,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    }
+  ]
+}

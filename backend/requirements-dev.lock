@@ -1,0 +1,11 @@
+# Pinned dev/test dependencies for the ARIA Home backend (pytest only).
+# Generated 2026-10-29 from the packages installed in the local Python 3.12.7
+# environment (read-only `python -m pip freeze` input, no installs). Exact pins
+# cover the full transitive closure so CI installs exactly what the tests use.
+pytest==9.0.3
+iniconfig==2.3.0
+packaging==26.1
+pluggy==1.6.0
+Pygments==2.20.0
+tomli==2.5.0
+colorama==0.4.6

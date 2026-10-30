@@ -118,6 +118,36 @@ def conflicting_observed_times(records, quantity=None, zone=None):
     return {item["observed_at"] for item in measurement_conflict_groups(records, quantity=quantity, zone=zone)}
 
 
+def unresolved_conflict_groups(records, quantity, now, zone=None, sources=None):
+    """Conflict groups no later eligible reading supersedes.
+
+    A conflict blocks a decision only when it is decision-relevant: no
+    eligible reading in the same source scope was observed after it. A
+    conflict superseded by later eligible evidence is historical and leaves
+    unrelated zones and intervals unaffected. `sources` optionally restricts
+    both the groups and the superseding pool (for example the indoor source).
+    """
+    groups = measurement_conflict_groups(records, quantity=quantity, zone=zone)
+    if sources is not None:
+        wanted = {s.value if hasattr(s, "value") else str(s) for s in sources}
+        groups = [item for item in groups if item["source"] in wanted]
+    pool = eligible_records(records, quantity, now=now, zone=zone, require_value=True)
+    if sources is not None:
+        wanted = {s.value if hasattr(s, "value") else str(s) for s in sources}
+        pool = [record for record in pool if _enum_str(_get(record, "source")) in wanted]
+    out = []
+    for item in groups:
+        superseded = False
+        for record in pool:
+            observed = _parse_time(_get(record, "observed_at"))
+            if observed is not None and observed > item["observed_at"]:
+                superseded = True
+                break
+        if not superseded:
+            out.append(item)
+    return out
+
+
 def freshness_limit_s(record):
     cadence = _get(record, "expected_cadence_s")
     if _is_number(cadence) and float(cadence) > 0:
@@ -170,20 +200,15 @@ def _sort_key(record):
 
 
 def eligible_records(records, quantity, now=None, zone=None, require_value=True):
-    seen = set()
-    filtered = []
+    candidates = []
     for record in records or []:
-        rid = _get(record, "id")
-        if rid in seen:
-            continue
         if not is_measurement_eligible(record, now=now, quantity=quantity, zone=zone, require_value=require_value):
             continue
-        seen.add(rid)
-        filtered.append(record)
-    filtered.sort(key=_sort_key)
+        candidates.append(record)
+    candidates.sort(key=_sort_key)
     groups = {}
     order = []
-    for record in filtered:
+    for record in candidates:
         if normalized_measurement_value(record) is None:
             order.append((None, record))
             continue
@@ -203,6 +228,13 @@ def eligible_records(records, quantity, now=None, zone=None, require_value=True)
             continue
         out.append(group[0])
     return sorted(out, key=_sort_key)
+
+
+def conflicting_record_ids(records, quantity=None, zone=None):
+    ids = set()
+    for item in measurement_conflict_groups(records, quantity=quantity, zone=zone):
+        ids.update(item["ids"])
+    return ids
 
 
 def indoor_records(records, zone, now=None, require_value=True):
@@ -239,7 +271,71 @@ def latest_current(records, quantity, now, zone=None):
     latest = latest_eligible(records, quantity, now=now, zone=zone)
     if latest is None or not is_fresh(latest, now):
         return None
+    if unresolved_after(records, quantity, now, zone, _get(latest, "observed_at")):
+        return None
     return latest
+
+
+def _is_relevant_visible(record, quantity, now, zone, sources):
+    if _get(record, "quantity") != quantity:
+        return False
+    if _kind(record) is not ALLOWED_KIND:
+        return False
+    if _source(record) not in ALLOWED_SOURCES.get(quantity, frozenset()):
+        return False
+    if sources is not None and _source(record) not in sources:
+        return False
+    if zone is not None and _get(record, "subject") != zone:
+        return False
+    observed = _parse_time(_get(record, "observed_at"))
+    received = _parse_time(_get(record, "received_at"))
+    if observed is None or received is None or observed > received:
+        return False
+    ensure_aware(now, "now")
+    if received > now:
+        return False
+    if observed > now + FUTURE_SKEW:
+        return False
+    return True
+
+
+def unresolved_after(records, quantity, now, zone, after, pool=None):
+    """Newer relevant records after `after` that never became eligible.
+
+    The single definition of "current" behind canonical selection and claim
+    validation: a reading is current only when no newer relevant visible
+    measurement exists that is unresolved (in a conflict group), missing, or
+    invalid. `after` is an observed_at instant; `pool` is the eligible pool
+    that scopes the source selection (room-sensor preferred for indoor
+    readings, one circuit for circuit readings). Identical duplicates of an
+    eligible reading never block; records from other zones, other quantities,
+    or not yet received never block.
+    """
+    ensure_aware(now, "now")
+    after_dt = _parse_time(after) if not isinstance(after, datetime) else after
+    if after_dt is None:
+        return []
+    pool = current_pool(records, quantity, now, zone=zone) if pool is None else pool
+    sources = {_source(r) for r in pool}
+    cover = [(_conflict_key(r), normalized_measurement_value(r)) for r in pool]
+    blockers = []
+    for record in records or []:
+        if not _is_relevant_visible(record, quantity, now, zone, sources):
+            continue
+        observed = _parse_time(_get(record, "observed_at"))
+        if observed is None or observed <= after_dt:
+            continue
+        value = normalized_measurement_value(record)
+        if value is None:
+            if _get(record, "value") is None:
+                continue
+            blockers.append(record)
+            continue
+        key = _conflict_key(record)
+        if any(k == key and v is not None and not _values_distinct([value, v]) for k, v in cover):
+            continue
+        blockers.append(record)
+    return blockers
 
 
 def is_current_record(record, records, quantity, now, zone=None):
@@ -257,4 +353,6 @@ def is_current_record(record, records, quantity, now, zone=None):
     latest = pool[-1]
     if str(_get(latest, "id")) != str(_get(record, "id")) or _parse_time(_get(latest, "observed_at")) != _parse_time(_get(record, "observed_at")):
         return False, "superseded reading is not eligible as a current claim; only the latest eligible fresh reading is current (older readings are historical only)"
+    if unresolved_after(records, quantity, now, zone, _get(record, "observed_at"), pool=pool):
+        return False, "newer relevant evidence is unresolved, conflicting or invalid; only the latest eligible fresh reading is current (older readings are historical only)"
     return True, None

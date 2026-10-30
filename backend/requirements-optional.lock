@@ -1,0 +1,24 @@
+# Pinned OPTIONAL integration dependencies (Emporia Vue live panel via PyEmVue).
+# Optional: install only to exercise the off-by-default Emporia live path.
+# Generated 2026-10-29 from the packages installed in the local Python 3.12.7
+# environment (read-only `python -m pip freeze` / `python -m pip show` input,
+# no installs). Exact pins cover the full transitive closure (PyEmVue 0.18.9
+# requires pycognito, python-dateutil, requests, typing-extensions; pycognito
+# requires boto3, envs, pyjwt, requests; boto3 requires botocore, jmespath,
+# s3transfer).
+pyemvue==0.18.9
+pycognito==2024.5.1
+boto3==1.43.66
+botocore==1.43.66
+s3transfer==0.19.2
+jmespath==1.1.0
+envs==1.4
+PyJWT==2.15.0
+requests==2.33.1
+certifi==2026.2.25
+charset-normalizer==3.4.7
+idna==3.11
+urllib3==2.8.0
+python-dateutil==2.9.0.post0
+six==1.17.0
+typing_extensions==4.15.0

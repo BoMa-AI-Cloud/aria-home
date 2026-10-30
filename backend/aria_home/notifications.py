@@ -3,13 +3,18 @@ from datetime import datetime
 from .scenario import context_as_of, events_as_of
 from .scheduling import compute_follow_up_schedule
 
-AUDIENCES = ("homeowner", "property_manager", "hvac_company")
+AUDIENCES = ("homeowner", "property_manager", "family_caregiver", "hvac_company")
 
 ALLOWLISTS = {
     "homeowner": {"audience", "kind", "readiness", "readiness_in_words", "stage", "stage_in_words", "verified_facts", "what_was_done", "evaluated_at", "planned_arrival"},
     "property_manager": {"audience", "kind", "property_label", "verified_facts", "readiness", "requested_action", "access_note"},
+    "family_caregiver": {"audience", "kind", "property_label", "verified_facts", "readiness", "requested_action", "access_note"},
     "hvac_company": {"audience", "kind", "property_label", "access_note", "manager_contact_label", "relevant_observations"},
 }
+
+CAREGIVER_SCENARIOS = frozenset({"care_home_v1"})
+
+HVAC_AUTH_EVENT_KINDS = ("manager_hvac_authorized", "caregiver_hvac_authorized")
 
 FORBIDDEN_KEY_PARTS = ("trip", "itinerary", "email", "phone", "location", "flight")
 
@@ -30,8 +35,16 @@ STAGE_IN_WORDS = {
 }
 
 MANAGER_REQUESTED_ACTION = "Please review the verified facts and decide whether to contact the HVAC company on file."
+CAREGIVER_REQUESTED_ACTION = "Please review the home status and observations and decide whether to contact the HVAC company on file."
 DEFAULT_ACCESS_NOTE = "Access arranged through the property manager (synthetic label)"
 DEFAULT_MANAGER_CONTACT_LABEL = "property manager on file (synthetic label)"
+DEFAULT_CAREGIVER_ACCESS_NOTE = "Access arranged through the family caregiver (synthetic label)"
+DEFAULT_CAREGIVER_CONTACT_LABEL = "family caregiver on file (synthetic label)"
+
+
+def _uses_caregiver(scenario):
+    manifest = _get(scenario, "manifest")
+    return _get(manifest, "id") in CAREGIVER_SCENARIOS
 
 
 def _get(obj, name, default=None):
@@ -118,10 +131,14 @@ def _event_payload(events, kind):
     return {}
 
 
-def _access_and_contact(events):
+def _access_and_contact(events, scenario=None):
     payload = _event_payload(events, "hvac_request")
-    access = payload.get("access_note") or DEFAULT_ACCESS_NOTE
-    contact = payload.get("manager_contact") or payload.get("manager_contact_label") or DEFAULT_MANAGER_CONTACT_LABEL
+    if _uses_caregiver(scenario):
+        access = payload.get("access_note") or DEFAULT_CAREGIVER_ACCESS_NOTE
+        contact = payload.get("manager_contact") or payload.get("manager_contact_label") or DEFAULT_CAREGIVER_CONTACT_LABEL
+    else:
+        access = payload.get("access_note") or DEFAULT_ACCESS_NOTE
+        contact = payload.get("manager_contact") or payload.get("manager_contact_label") or DEFAULT_MANAGER_CONTACT_LABEL
     return str(access), str(contact)
 
 
@@ -129,7 +146,7 @@ def build_payload(audience, investigation=None, readiness=None, verification=Non
     status = _readiness_status(readiness, investigation)
     stage = _stage(verification)
     facts = verified_facts_from(investigation, readiness)
-    access_note, manager_contact = _access_and_contact(events)
+    access_note, manager_contact = _access_and_contact(events, scenario)
     if audience == "homeowner":
         trip = _get(context, "trip")
         payload = {
@@ -152,6 +169,16 @@ def build_payload(audience, investigation=None, readiness=None, verification=Non
             "verified_facts": facts,
             "readiness": status,
             "requested_action": MANAGER_REQUESTED_ACTION,
+            "access_note": access_note,
+        }
+    elif audience == "family_caregiver":
+        payload = {
+            "audience": audience,
+            "kind": "caregiver_alert",
+            "property_label": _property_label(context, scenario),
+            "verified_facts": facts,
+            "readiness": status,
+            "requested_action": CAREGIVER_REQUESTED_ACTION,
             "access_note": access_note,
         }
     elif audience == "hvac_company":
@@ -190,8 +217,13 @@ def manager_is_authorized(context):
     return bool(confirmation is not None and _get(confirmation, "manager_authorized"))
 
 
+def caregiver_is_authorized(context):
+    confirmation = _get(context, "confirmation")
+    return bool(confirmation is not None and _get(confirmation, "manager_authorized"))
+
+
 def hvac_is_authorized(events):
-    return any(_get(event, "kind") == "manager_hvac_authorized" for event in (events or []))
+    return any(_get(event, "kind") in HVAC_AUTH_EVENT_KINDS for event in (events or []))
 
 
 def _decision(audience, kind, allowed, reason, payload, investigation_id):
@@ -220,19 +252,31 @@ def decide_notifications(investigation=None, readiness=None, verification=None, 
     reason = homeowner_refusal_reason(context)
     decisions.append(_decision("homeowner", homeowner["kind"], reason is None, reason, homeowner, investigation_id))
     if status in ("at_risk", "cannot_tell"):
-        manager = build_payload("property_manager", investigation, readiness, verification, context, events, now, scenario)
-        if manager_is_authorized(context):
-            decisions.append(_decision("property_manager", manager["kind"], True, None, manager, investigation_id))
+        if _uses_caregiver(scenario):
+            caregiver = build_payload("family_caregiver", investigation, readiness, verification, context, events, now, scenario)
+            if caregiver_is_authorized(context):
+                decisions.append(_decision("family_caregiver", caregiver["kind"], True, None, caregiver, investigation_id))
+            else:
+                decisions.append(_decision("family_caregiver", caregiver["kind"], False, "caregiver_not_authorized", caregiver, investigation_id))
         else:
-            decisions.append(_decision("property_manager", manager["kind"], False, "manager_not_authorized", manager, investigation_id))
+            manager = build_payload("property_manager", investigation, readiness, verification, context, events, now, scenario)
+            if manager_is_authorized(context):
+                decisions.append(_decision("property_manager", manager["kind"], True, None, manager, investigation_id))
+            else:
+                decisions.append(_decision("property_manager", manager["kind"], False, "manager_not_authorized", manager, investigation_id))
     return decisions
 
 
-def decide_hvac_notification(investigation=None, readiness=None, verification=None, context=None, events=None, now=None, scenario=None, investigation_id=""):
+def decide_hvac_notification(investigation=None, readiness=None, verification=None, context=None, events=None, now=None, scenario=None, investigation_id="", caregiver_decision=None):
+    """A caregiver decision recorded in the app wins over the scripted authorisation event."""
     payload = build_payload("hvac_company", investigation, readiness, verification, context, events, now, scenario)
-    if hvac_is_authorized(events):
+    decided = _get(caregiver_decision, "decision") if caregiver_decision is not None else None
+    if decided == "declined":
+        return _decision("hvac_company", payload["kind"], False, "caregiver_declined", payload, investigation_id)
+    if decided == "approved" or hvac_is_authorized(events):
         return _decision("hvac_company", payload["kind"], True, None, payload, investigation_id)
-    return _decision("hvac_company", payload["kind"], False, "manager_hvac_not_authorized", payload, investigation_id)
+    reason = "caregiver_hvac_not_authorized" if _uses_caregiver(scenario) else "manager_hvac_not_authorized"
+    return _decision("hvac_company", payload["kind"], False, reason, payload, investigation_id)
 
 
 def _deterministic_created_at(store, scenario, investigation_id, gate_at, discovery_at):
@@ -315,12 +359,67 @@ def create_investigation_notifications(store, scenario, investigation_id, invest
     return _persist_decisions(store, investigation_id, decisions, at)
 
 
-def create_hvac_notification(store, scenario, investigation_id, investigation, readiness, at, verification=None):
+def _as_datetime(value):
+    if isinstance(value, str):
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return value
+
+
+def create_hvac_notification(store, scenario, investigation_id, investigation, readiness, at, verification=None, caregiver_decision=None):
     context = context_as_of(scenario, at) if scenario is not None else None
     events = events_as_of(scenario, at) if scenario is not None else []
-    decision = decide_hvac_notification(investigation, readiness, verification, context, events, at, scenario, investigation_id)
+    decision = decide_hvac_notification(investigation, readiness, verification, context, events, at, scenario, investigation_id, caregiver_decision=caregiver_decision)
     created_at = at
     if decision["allowed"] and scenario is not None:
-        gate_at = next((_get(e, "available_at") for e in (getattr(scenario, "events", None) or []) if _get(e, "kind") == "manager_hvac_authorized"), None)
+        if caregiver_decision is not None and _get(caregiver_decision, "decision") == "approved":
+            gate_at = _as_datetime(_get(caregiver_decision, "decided_at"))
+        else:
+            gate_at = next((_get(e, "available_at") for e in (getattr(scenario, "events", None) or []) if _get(e, "kind") in HVAC_AUTH_EVENT_KINDS), None)
         created_at = _deterministic_created_at(store, scenario, investigation_id, gate_at, at)
     return _persist_decisions(store, investigation_id, [decision], created_at)[0]
+
+
+def _latest_visible(scenario, at, source, quantity=None):
+    visible = [
+        r for r in (getattr(scenario, "records", None) or [])
+        if r.received_at <= at and r.source.value == source and (quantity is None or r.quantity == quantity)
+    ]
+    return max(visible, key=lambda r: r.observed_at) if visible else None
+
+
+def caregiver_permission_text(scenario, at):
+    """The permission request, built only from readings visible at `at`; a missing reading is said, never invented."""
+    room = _latest_visible(scenario, at, "room_sensor", "indoor_temp") if scenario is not None else None
+    thermostat = _latest_visible(scenario, at, "thermostat") if scenario is not None else None
+    temp = f"{round(float(room.value))} F" if room is not None and isinstance(room.value, (int, float)) else "temperature unknown"
+    quiet = thermostat.observed_at.strftime("%H:%M") if thermostat is not None else "unknown"
+    return f"ARIA Home (synthetic scenario): your mother's home is cooling ({temp}, furnace quiet since {quiet}). May I contact the HVAC company? Approve or decline in ARIA Home."
+
+
+CAREGIVER_UPDATES = {
+    "caregiver_update_hvac_contacted": "HVAC company contacted with the allowed fields only",
+    "caregiver_update_goal_verified": "Temperature goal verified from independent room readings",
+}
+
+
+def create_caregiver_updates(store, scenario, investigation_id, hvac_row, verification, at):
+    """Simulated for-your-information updates to the caregiver after the HVAC request and after verification."""
+    if hvac_row is None or hvac_row.get("state") != "simulated_delivered":
+        return []
+    hvac_payload = hvac_row.get("payload") or {}
+    due = [("caregiver_update_hvac_contacted", _as_datetime(hvac_row.get("created_at")))]
+    if verification and verification.get("stage") in ("goal_verified", "arrival_met") and verification.get("goal_verified_at"):
+        due.append(("caregiver_update_goal_verified", _as_datetime(verification["goal_verified_at"])))
+    rows = []
+    for kind, created_at in due:
+        payload = validate_payload("family_caregiver", {
+            "audience": "family_caregiver",
+            "kind": kind,
+            "property_label": hvac_payload.get("property_label"),
+            "verified_facts": [CAREGIVER_UPDATES[kind]],
+            "readiness": "informational",
+            "requested_action": "No action needed: for your information",
+            "access_note": hvac_payload.get("access_note"),
+        })
+        rows.extend(_persist_decisions(store, investigation_id, [_decision("family_caregiver", kind, True, None, payload, investigation_id)], created_at))
+    return rows

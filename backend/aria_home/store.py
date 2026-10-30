@@ -148,6 +148,13 @@ class Store:
                     acknowledged_at TEXT NOT NULL,
                     UNIQUE(notification_id, actor, acknowledged_at)
                 )""",
+            """CREATE TABLE IF NOT EXISTS caregiver_decisions (
+                    investigation_id TEXT PRIMARY KEY,
+                    decision TEXT NOT NULL CHECK(decision IN ('approved','declined')),
+                    actor TEXT NOT NULL,
+                    decided_at TEXT NOT NULL,
+                    notification_id TEXT NOT NULL
+                )""",
             """CREATE TABLE IF NOT EXISTS whatsapp_attempts (
                     notification_id TEXT PRIMARY KEY,
                     state TEXT NOT NULL,
@@ -184,6 +191,13 @@ class Store:
     def __exit__(self, *exc):
         self.close()
         return False
+
+    def reset_e2e(self):
+        """Empty every table in the schema, so a table added later cannot be missed."""
+        with self._connection(immediate=True) as conn:
+            tables = [r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").fetchall()]
+            for table in tables:
+                conn.execute(f'DELETE FROM "{table}"')
 
     @staticmethod
     def _attempts_from_conn(conn, identity_key):
@@ -710,6 +724,31 @@ class Store:
             cutoff = _parse_dt(at)
             results = [r for r in results if _parse_dt(r["acknowledged_at"]) <= cutoff]
         return results
+
+    def record_caregiver_decision(self, investigation_id, notification_id, decision, actor, decided_at):
+        """Once-only per investigation: a second decision returns the first one with created False."""
+        if decision not in ("approved", "declined"):
+            raise ValueError("decision must be 'approved' or 'declined'")
+        at = _parse_dt(decided_at)
+        if at is None or at.tzinfo is None or at.utcoffset() is None:
+            raise ValueError("decided_at must be timezone-aware")
+        with self._connection() as conn:
+            cur = conn.execute(
+                "INSERT OR IGNORE INTO caregiver_decisions (investigation_id, decision, actor, decided_at, notification_id) VALUES (?, ?, ?, ?, ?)",
+                (investigation_id, decision, str(actor), _iso(at), notification_id),
+            )
+            created = cur.rowcount == 1
+            row = conn.execute("SELECT * FROM caregiver_decisions WHERE investigation_id = ?", (investigation_id,)).fetchone()
+        return (dict(row) if row else None), created
+
+    def get_caregiver_decision(self, investigation_id, at=None):
+        with self._connection() as conn:
+            row = conn.execute("SELECT * FROM caregiver_decisions WHERE investigation_id = ?", (investigation_id,)).fetchone()
+        if row is None:
+            return None
+        if at is not None and _parse_dt(row["decided_at"]) > _parse_dt(at):
+            return None
+        return dict(row)
 
     def list_investigations(self):
         with self._connection() as conn:

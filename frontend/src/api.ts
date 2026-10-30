@@ -7,13 +7,15 @@ export type Availability =
 
 export type DataMode = "synthetic" | "replay" | "live";
 
-export type SourceKind = "calendar" | "thermostat" | "electrical" | "weather";
+export type SourceKind = "calendar" | "thermostat" | "electrical" | "weather" | "room_sensor" | "human_report";
 
 export interface SourceStatus {
   source: SourceKind;
   availability: Availability;
   record_count: number;
   newest_observed_at: string | null;
+  newest_value: number | null;
+  newest_unit: string | null;
   age_s: number | null;
   mode: DataMode;
   notes: string[];
@@ -332,6 +334,50 @@ export interface Investigation {
   max_tokens_used: number | null;
   summary: InvestigationSummary;
   evidence_pack: EvidencePack;
+  recorded_review?: RecordedReview | null;
+}
+
+export interface RecordedReviewIssue {
+  kind: string;
+  evidence_ids: string[];
+  note: string;
+}
+
+export interface RecordedReviewProvenance {
+  model_id: string;
+  provider_route: string;
+  recorded_at: string | null;
+  review_contract_version: string;
+  reviewed_model_id: string | null;
+  reviewed_input_revision: string | null;
+  reviewed_at: string | null;
+  validation: { passed: boolean; reasons: string[] };
+}
+
+export interface RecordedReview {
+  review: { verdict: string; issues: RecordedReviewIssue[] } | null;
+  raw_output: unknown;
+  provenance: RecordedReviewProvenance;
+}
+
+export interface HumanReportProvenance {
+  model_id: string;
+  provider_route: string;
+  recorded_at: string | null;
+  audio_fixture: string;
+  session_id: string | null;
+  source_note: string;
+}
+
+export interface HumanReportPayload {
+  record_id: string;
+  source: string;
+  transcript: string;
+  observed_at: string;
+  received_at: string;
+  zone: string;
+  provenance: HumanReportProvenance;
+  note: string;
 }
 
 export interface InvestigationResponse extends Omit<Investigation, "status"> {
@@ -377,7 +423,7 @@ export interface FollowUpSchedule {
   model_time_reasons: string[];
 }
 
-export type NotificationAudience = "homeowner" | "property_manager" | "hvac_company";
+export type NotificationAudience = "homeowner" | "property_manager" | "family_caregiver" | "hvac_company";
 
 export type NotificationState = "queued" | "simulated_delivered" | "refused" | string;
 
@@ -437,6 +483,8 @@ export interface HealthResponse {
   scenario: string;
   at: string;
   timezone: string;
+  public_demo?: boolean;
+  version?: { commit: string; source: string };
 }
 
 export interface SourcesResponse {
@@ -508,6 +556,35 @@ async function fetchJson<T>(path: string): Promise<T> {
 
 export function fetchHealth(): Promise<HealthResponse> {
   return fetchJson<HealthResponse>("/api/health");
+}
+
+export interface ScenarioCheckpoint {
+  id: string;
+  label: string;
+  checkpoints: string[];
+  timezone?: string;
+}
+
+export interface ScenariosResponse {
+  data_mode: DataMode;
+  scenarios: ScenarioCheckpoint[];
+}
+
+export async function fetchScenarios(): Promise<ScenariosResponse | null> {
+  try {
+    const response = await fetch("/api/scenarios");
+    if (!response.ok) return null;
+    return (await response.json()) as ScenariosResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function resetPublicSession(): Promise<void> {
+  const response = await fetch("/api/session/reset", { method: "POST" });
+  if (!response.ok) {
+    throw new Error(`POST /api/session/reset failed with status ${response.status}`);
+  }
 }
 
 export function fetchSources(scenario?: string, at?: string): Promise<SourcesResponse> {
@@ -684,6 +761,7 @@ export type EvidenceTimelineKind =
   | "target_reached"
   | "goal_verified"
   | "hvac_completion_report"
+  | "human_report"
   | "arrival_checked";
 
 export interface EvidenceTimelineEntry {
@@ -713,7 +791,36 @@ export interface FollowUpResponse {
   verification?: VerificationResult | null;
   verification_history?: VerificationHistoryEntry[];
   evidence_timeline?: EvidenceTimelineEntry[];
+  human_report?: HumanReportPayload | null;
   notifications?: Notification[];
+  caregiver_permission?: CaregiverPermission | null;
+}
+
+export interface CaregiverPermission {
+  notification_id: string;
+  text: string;
+  requested_at: string;
+  status: "waiting" | "approved" | "declined";
+  decided_at: string | null;
+  actor: string | null;
+  source?: string | null;
+  note: string;
+}
+
+export async function decideCaregiverPermission(
+  notificationId: string,
+  decision: "approve" | "decline",
+  at: string,
+): Promise<{ recorded: boolean; caregiver_permission: CaregiverPermission | null }> {
+  const response = await fetch(`/api/notifications/${encodeURIComponent(notificationId)}/caregiver-decision`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision, at }),
+  });
+  if (!response.ok) {
+    throw new Error(`POST caregiver-decision failed with status ${response.status}`);
+  }
+  return (await response.json()) as { recorded: boolean; caregiver_permission: CaregiverPermission | null };
 }
 
 export class RecoveryRequiredError extends Error {
@@ -836,6 +943,7 @@ export interface VisualEvidence {
   received_at: string;
   caption: string;
   image_url: string;
+  known_miss?: boolean;
 }
 
 export interface VisualResponse {
@@ -939,4 +1047,222 @@ export async function fetchLivePower(): Promise<LivePowerResponse | null> {
   } catch {
     return null;
   }
+}
+
+export interface CameraSnapshotResponse {
+  camera: { status: string; captured_at: string; device_display_name: string | null; source: string; stream_stop?: string };
+  note: string;
+  image_url: string | null;
+  segmentation: {
+    status: string;
+    reason?: string;
+    disclosure?: string;
+    model?: string;
+    results?: Array<{ phrase: string; status: string; count?: number; note?: string | null; error?: string }>;
+  } | null;
+}
+
+export async function fetchCameraConfigured(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/camera/status");
+    if (!response.ok) return false;
+    const body = (await response.json()) as { configured?: boolean };
+    return body.configured === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function takeCameraSnapshot(segment: boolean): Promise<CameraSnapshotResponse> {
+  const response = await fetch("/api/camera/snapshot", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ segment }),
+  });
+  if (!response.ok) throw new Error(`POST /api/camera/snapshot failed with status ${response.status}`);
+  return (await response.json()) as CameraSnapshotResponse;
+}
+
+export interface ModelLaw {
+  id: string;
+  statement: string;
+  origin: string;
+  status: string;
+  check: string;
+  rejected_recorded: number;
+}
+
+export interface ProcessLaw {
+  id: string;
+  statement: string;
+  stage: string;
+  check: string;
+  check_status: string;
+}
+
+export interface LawsResponse {
+  data_mode: DataMode;
+  version: string;
+  model_laws: ModelLaw[];
+  process_laws: ProcessLaw[];
+}
+
+export function fetchLaws(): Promise<LawsResponse> {
+  return fetchJson<LawsResponse>("/api/laws");
+}
+
+export interface WatcherObservation {
+  kind: string;
+  claim: string;
+  evidence_ids: string[];
+  values: Record<string, unknown>;
+  status: string;
+  notice: string | null;
+}
+
+export interface WatcherCodeDetection {
+  kind: string;
+  claim: string;
+  evidence_ids: string[];
+  values: Record<string, unknown>;
+}
+
+export interface WatcherProvenance {
+  model_id: string;
+  provider_route: string;
+  recorded_at: string | null;
+  watcher_prompt_version: string;
+  input_revision: string;
+  laws_version: string;
+}
+
+export interface WatcherResponse {
+  data_mode: DataMode;
+  scenario: string;
+  at: string;
+  timezone?: string;
+  recorded_only: boolean;
+  model_observations: WatcherObservation[];
+  model_note: string | null;
+  code_detections: WatcherCodeDetection[];
+  raise_caregiver_notice: boolean;
+  provenance: WatcherProvenance | null;
+}
+
+export function fetchWatcher(scenario: string, at: string): Promise<WatcherResponse> {
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
+  return fetchJson<WatcherResponse>(`/api/watcher${query}`);
+}
+
+export interface CorrectionRecord {
+  scenario_id: string;
+  evaluated_at_utc: string;
+  input_revision: string;
+  laws_version: string;
+  watcher_prompt_version: string;
+  original_claim: string | null;
+  failed_checks: string[];
+  revision_claim: string | null;
+  final_result: string;
+}
+
+export interface CorrectionsResponse {
+  data_mode: DataMode;
+  corrections: CorrectionRecord[];
+}
+
+export function fetchCorrections(): Promise<CorrectionsResponse> {
+  return fetchJson<CorrectionsResponse>("/api/corrections");
+}
+
+export interface TraceReading {
+  id: string;
+  source: string;
+  subject: string;
+  quantity: string;
+  value: number | string | null;
+  unit: string | null;
+  observed_at: string | null;
+  received_at: string | null;
+}
+
+export interface TraceSource {
+  source: string;
+  availability: string;
+  record_count: number;
+  notes: string[];
+  latest_reading: TraceReading | null;
+  freshness: string;
+  freshness_reason: string;
+  conflicted: boolean;
+}
+
+export interface TraceCheck {
+  check: string;
+  target: string;
+  passed: boolean | null;
+  reason: string;
+}
+
+export interface TraceNotice {
+  audience: string;
+  kind: string;
+  allowed: boolean;
+  reason: string | null;
+  payload_keys: string[];
+}
+
+export interface TraceStep {
+  seq: number;
+  kind: string;
+  label: string;
+  state: string;
+  detail: string;
+  ref: { section: string; index: number };
+}
+
+export interface TraceResponse {
+  data_mode: DataMode;
+  scenario: string;
+  at: string;
+  timezone?: string;
+  trace_version: string;
+  computed_by: string;
+  input_revision: string;
+  evaluated_at_utc: string;
+  as_of_note: string;
+  sources: TraceSource[];
+  checks: TraceCheck[];
+  readiness: { status: string; reasons: string[] };
+  verification: Record<string, unknown>;
+  verification_timeline: Array<Record<string, unknown>>;
+  watcher: {
+    observations: Array<Record<string, unknown>>;
+    model_note: string | null;
+    status: string;
+    provenance: Record<string, unknown> | null;
+    code_detections: Array<Record<string, unknown>>;
+    corrections: Array<Record<string, unknown>>;
+  };
+  human_report: {
+    payload: Record<string, unknown>;
+    timeline_entry: Record<string, unknown>;
+    label: string;
+    note: string;
+  } | null;
+  permission?: {
+    status: "waiting" | "approved" | "declined";
+    actor: string | null;
+    decided_at: string | null;
+    source: string | null;
+    text: string;
+    note: string;
+  } | null;
+  notices: TraceNotice[];
+  steps: TraceStep[];
+}
+
+export function fetchTrace(scenario: string, at: string): Promise<TraceResponse> {
+  const query = `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`;
+  return fetchJson<TraceResponse>(`/api/trace${query}`);
 }

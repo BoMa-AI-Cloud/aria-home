@@ -157,7 +157,7 @@ def test_post_sends_once_and_second_post_does_not_resend(tmp_path, monkeypatch):
     assert call["body"]["to"] == RECIPIENT
     assert call["body"]["text"]["body"].splitlines()[0] == "ARIA Home test (synthetic scenario)"
     payload = resp.get_json()
-    assert payload["whatsapp"]["state"] == "delivered_to_test_number"
+    assert payload["whatsapp"]["state"] == "accepted_by_api"
     assert payload["notification"]["whatsapp"]["message_id"] == "wamid.TEST123"
     resp = _send(client, hvac["id"])
     assert resp.status_code == 200
@@ -165,11 +165,11 @@ def test_post_sends_once_and_second_post_does_not_resend(tmp_path, monkeypatch):
     assert len(_attempt_rows(tmp_path)) == 1
     rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company")
-    assert hvac["whatsapp"]["state"] == "delivered_to_test_number"
+    assert hvac["whatsapp"]["state"] == "accepted_by_api"
     assert hvac["whatsapp"]["message_id"] == "wamid.TEST123"
     assert hvac["whatsapp"]["attempted_at"]
     stored = _attempt_rows(tmp_path)
-    assert len(stored) == 1 and stored[0][1] == "delivered_to_test_number" and stored[0][2] == "wamid.TEST123"
+    assert len(stored) == 1 and stored[0][1] == "accepted_by_api" and stored[0][2] == "wamid.TEST123"
 
 
 def test_success_records_status_and_message_id(tmp_path, monkeypatch):
@@ -183,11 +183,11 @@ def test_success_records_status_and_message_id(tmp_path, monkeypatch):
     assert len(fake.calls) == 1
     rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
     hvac = next(r for r in rows if r["audience"] == "hvac_company")
-    assert hvac["whatsapp"]["state"] == "delivered_to_test_number"
+    assert hvac["whatsapp"]["state"] == "accepted_by_api"
     assert hvac["whatsapp"]["message_id"] == "wamid.TEST123"
     assert hvac["whatsapp"]["attempted_at"]
     stored = _attempt_rows(tmp_path)
-    assert len(stored) == 1 and stored[0][1] == "delivered_to_test_number" and stored[0][2] == "wamid.TEST123"
+    assert len(stored) == 1 and stored[0][1] == "accepted_by_api" and stored[0][2] == "wamid.TEST123"
 
 
 def test_second_post_and_replay_never_resend(tmp_path, monkeypatch):

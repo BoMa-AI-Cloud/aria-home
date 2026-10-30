@@ -170,7 +170,7 @@ def test_missing_and_endpoint():
     _assert_no_banned(result)
 
     client = create_app().test_client()
-    response = client.get("/api/power-context")
+    response = client.get("/api/power-context?scenario=demo_v1")
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["data_mode"] == "synthetic"

@@ -45,3 +45,6 @@ private/
 *.live.json
 live-power-cache.json
 backend/instance/live-*.json
+
+# Build-time version stamp (written by the host build, never committed)
+backend/RELEASE_COMMIT

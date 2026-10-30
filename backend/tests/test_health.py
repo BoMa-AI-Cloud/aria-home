@@ -1,5 +1,6 @@
 """Tests for the backend health endpoint."""
 import importlib
+import os
 
 from aria_home.app import create_app
 
@@ -15,13 +16,18 @@ def test_health_returns_ok():
     client = create_app().test_client()
     resp = client.get("/api/health")
     assert resp.status_code == 200
-    assert resp.get_json() == {
+    body = resp.get_json()
+    expected_marker = os.path.basename(os.environ.get("ARIA_HOME_DB_PATH") or "") or None
+    assert body.pop("db_marker") == expected_marker
+    assert set(body.pop("version")) == {"commit", "source"}
+    assert body == {
         "status": "ok",
         "service": "aria-home-backend",
         "data_mode": "synthetic",
-        "scenario": "demo_v1",
-        "at": "2026-01-16T18:00:00-05:00",
+        "scenario": "care_home_v1",
+        "at": "2026-01-16T19:00:00-05:00",
         "timezone": "America/New_York",
+        "public_demo": False,
     }
 
 

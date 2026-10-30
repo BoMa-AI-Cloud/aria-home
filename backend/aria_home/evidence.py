@@ -37,15 +37,21 @@ def source_status(
         and (r.quantity not in ALLOWED_SOURCES or is_measurement_eligible(r, require_value=False))
     ]
 
-    seen: set[str] = set()
-    deduped: list[EvidenceRecord] = []
+    seen: dict = {}
     duplicates = 0
-    for record in relevant:
-        if record.id in seen:
+    for record in sorted(relevant, key=lambda r: (r.received_at, r.observed_at, r.id)):
+        value = normalized_measurement_value(record)
+        if value is not None:
+            collapse_key = (record.subject, record.quantity, record.observed_at, "n", value)
+        elif isinstance(record.value, str):
+            collapse_key = (record.subject, record.quantity, record.observed_at, "s", record.value)
+        else:
+            collapse_key = (record.subject, record.quantity, record.observed_at, "m", repr(record.value))
+        if collapse_key in seen:
             duplicates += 1
             continue
-        seen.add(record.id)
-        deduped.append(record)
+        seen[collapse_key] = record
+    deduped = list(seen.values())
 
     resolved_mode = mode or (deduped[0].mode if deduped else DataMode.synthetic)
     notes: list[str] = []
@@ -59,6 +65,8 @@ def source_status(
             availability=Availability.missing,
             record_count=0,
             newest_observed_at=None,
+            newest_value=None,
+            newest_unit=None,
             age_s=None,
             mode=resolved_mode,
             notes=notes,
@@ -83,6 +91,21 @@ def source_status(
         if any(not math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9) for a, b in zip(ordered, ordered[1:])):
             numeric_conflicting.append(key)
     conflicting_keys = list(dict.fromkeys(conflicting_keys + numeric_conflicting))
+    clean_times = [
+        record.observed_at
+        for record in deduped
+        if not any(
+            record.subject == subject and record.quantity == quantity and record.observed_at == observed_at
+            for subject, quantity, observed_at in conflicting_keys
+        )
+    ]
+    if clean_times:
+        latest_clean = max(clean_times)
+        conflicting_keys = [
+            (subject, quantity, observed_at)
+            for subject, quantity, observed_at in conflicting_keys
+            if observed_at >= latest_clean
+        ]
     if conflicting_keys:
         for subject, quantity, observed_at in conflicting_keys:
             notes.append(
@@ -115,11 +138,21 @@ def source_status(
         else:
             availability = Availability.available
 
+    newest_value: float | None = None
+    newest_unit: str | None = None
+    for record in deduped:
+        if record.observed_at == newest_observed_at and isinstance(record.value, (int, float)) and not isinstance(record.value, bool):
+            newest_value = float(record.value)
+            newest_unit = record.unit
+            break
+
     return SourceStatus(
         source=source,
         availability=availability,
         record_count=len(deduped),
         newest_observed_at=newest_observed_at,
+        newest_value=newest_value,
+        newest_unit=newest_unit,
         age_s=age_s,
         mode=resolved_mode,
         notes=notes,

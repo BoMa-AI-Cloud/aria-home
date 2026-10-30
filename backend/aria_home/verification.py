@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from .clock import ensure_aware
 from .contracts import Availability, EvidenceKind, SourceKind
-from .eligibility import circuit_records, eligible_records, indoor_records, is_fresh, is_measurement_eligible, measurement_conflict_groups
+from .eligibility import circuit_records, eligible_records, indoor_records, is_fresh, is_measurement_eligible, measurement_conflict_groups, normalized_measurement_value
 from .evidence import freshness
 from .metrics import NOISE_FLOOR_W
 
@@ -11,7 +11,7 @@ GOAL_HOLD_S = 1800
 MAX_GAP_CADENCE_MULTIPLIER = 2
 REPORT_EVENT_KIND = "hvac_completion_report"
 CORROBORATION_EVENT_KINDS = (REPORT_EVENT_KIND,)
-NON_CORROBORATING_EVENT_KINDS = ("manager_acknowledgement", "manager_acknowledged", "manager_hvac_authorized", "service_visit")
+NON_CORROBORATING_EVENT_KINDS = ("manager_acknowledgement", "manager_acknowledged", "manager_hvac_authorized", "caregiver_hvac_authorized", "caregiver_alert", "service_visit")
 HEATING_REPORTED_STATES = {"heating", "heat", "heating_active"}
 NON_HEATING_REPORTED_STATES = {"idle", "off", "cooling", "fan_only", "fan", "fault", "error", "failed"}
 MAPPED_HEATING_EQUIPMENT = {"furnace", "blower", "heating", "hvac", "heat_pump", "heater"}
@@ -56,9 +56,13 @@ def _dedup(records):
     seen = set()
     out = []
     for record in records:
-        if record.id in seen:
+        value = normalized_measurement_value(record)
+        if value is None:
+            value = record.value if isinstance(record.value, str) else repr(record.value)
+        key = (record.id, record.source, record.subject, record.quantity, record.observed_at, value)
+        if key in seen:
             continue
-        seen.add(record.id)
+        seen.add(key)
         out.append(record)
     return out
 
@@ -225,7 +229,7 @@ def verify_recovery(scenario, followup, now):
     historical_verified_at = _goal_analysis(_hist_after, followup, _hist_conflicts)["verified_at"]
 
     thermostat = sorted(
-        [r for r in eligible_records(records, "indoor_temp") if r.source is SourceKind.thermostat],
+        [r for r in eligible_records(records, "indoor_temp", zone=zone) if r.source is SourceKind.thermostat],
         key=lambda r: (r.observed_at, r.received_at, r.id),
     )
     if not thermostat or freshness(thermostat[-1], now) is not Availability.available:
@@ -260,11 +264,21 @@ def verify_recovery(scenario, followup, now):
             reasons.append(f"temperature goal was verified at {historical_verified_at.isoformat()} but current maintenance cannot be verified from stale or missing readings")
         return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room, goal_verified_at=historical_verified_at)
 
-    room_after = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
-    if not room_after:
-        reasons = restored_reasons + ["no room-sensor readings after the follow-up was created"] + corroboration_reasons
+    arrival = _arrival(scenario, followup, now)
+    late_start = arrival is not None and now >= arrival and created_at >= arrival
+    if late_start:
+        room_base = [r for r in room_all if r.observed_at <= arrival and (deadline is None or r.observed_at <= deadline)]
+        conflict_base = {t for t in conflict_times_all if t <= arrival and (deadline is None or t <= deadline)}
+    else:
+        room_base = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
+        conflict_base = {t for t in conflict_times_all if t > created_at and (deadline is None or t <= deadline)}
+    if not room_base:
+        if late_start:
+            reasons = restored_reasons + ["no room-sensor readings observed by the warm-by time"] + corroboration_reasons
+        else:
+            reasons = restored_reasons + ["no room-sensor readings after the follow-up was created"] + corroboration_reasons
         return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room, goal_verified_at=historical_verified_at)
-    latest_used = _reading_payload(room_after[-1])
+    latest_used = _reading_payload(room_base[-1])
 
     states = sorted(
         [r for r in records if r.source is SourceKind.thermostat and r.quantity == "hvac_reported_state" and r.subject == zone],
@@ -306,8 +320,8 @@ def verify_recovery(scenario, followup, now):
     if circuit_support_ids:
         circuit_quiet = False
 
-    conflict_times_after = {t for t in conflict_times_all if t > created_at and (deadline is None or t <= deadline)}
-    analysis = _goal_analysis(room_after, followup, conflict_times_after)
+    conflict_times_after = conflict_base
+    analysis = _goal_analysis(room_base, followup, conflict_times_after)
     verified_at = analysis["verified_at"]
     segment = analysis["verified_segment"]
 
@@ -328,7 +342,6 @@ def verify_recovery(scenario, followup, now):
             return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
         goal_ids = [r.id for r in segment]
         goal_reasons = restored_reasons + equipment_reasons + ["independent room-sensor readings show the temperature goal held"] + [f"every room-sensor reading held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s before the deadline"]
-        arrival = _arrival(scenario, followup, now)
         if analysis["dips_after"]:
             dip = analysis["dips_after"][-1]
             dip_value = _in_target_unit(dip.value, dip.unit, target_unit)
@@ -342,7 +355,7 @@ def verify_recovery(scenario, followup, now):
                 reason = f"room-sensor coverage after verification is incomplete: gap of {gap_value:.0f} s from {earlier.observed_at.isoformat()} to {later.observed_at.isoformat()} exceeds {MAX_GAP_CADENCE_MULTIPLIER}x cadence; current goal maintenance cannot be verified and a new full {GOAL_HOLD_S} s hold is required"
                 return _result("unable_to_verify", goal_reasons + [reason] + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
             return _result("goal_verified", goal_reasons + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
-        arrival_room = [r for r in room_after if r.observed_at <= arrival]
+        arrival_room = [r for r in room_base if r.observed_at <= arrival]
         arrival_conflicts = {t for t in conflict_times_after if t <= arrival}
         arrival_analysis = _goal_analysis(arrival_room, followup, arrival_conflicts)
         verified_at_arrival = arrival_analysis["verified_at"]
@@ -385,7 +398,7 @@ def verify_recovery(scenario, followup, now):
         arrival_ids = list(dict.fromkeys(arrival_goal_ids + [r.id for r in through_arrival]))
         return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the confirmed arrival is at or above the target with no coverage gap over 2x cadence"] + corroboration_reasons, arrival_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival, arrival_met_at=arrival)
 
-    candidate = _goal_analysis(room_after, followup, set())
+    candidate = _goal_analysis(room_base, followup, set())
     if candidate["verified_at"] is not None and candidate["verified_segment"]:
         seg_start = candidate["verified_segment"][0].observed_at
         inside = [t for t in sorted(conflict_times_after) if seg_start <= t <= candidate["verified_at"]]
@@ -393,23 +406,27 @@ def verify_recovery(scenario, followup, now):
             reasons = restored_reasons + [f"conflicting room-sensor readings at {inside[0].isoformat()} inside the required hold interval; the conflicting readings are not resolved by record order"] + corroboration_reasons
             return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at if historical_verified_at and historical_verified_at < seg_start else None)
 
+    if late_start:
+        reasons = restored_reasons + [f"the temperature goal was not held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s before the warm-by time"] + corroboration_reasons
+        return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
+
     rise_f = None
-    if room_after:
-        first, last = room_after[0], room_after[-1]
+    if room_base:
+        first, last = room_base[0], room_base[-1]
         rise_f = _rise_f(first.value, first.unit, last.value, last.unit, target_unit)
     warming_reasons = list(restored_reasons)
-    if len(room_after) < min_samples:
-        warming_reasons.append(f"only {len(room_after)} room-sensor readings after the follow-up was created; {min_samples} required for warming")
+    if len(room_base) < min_samples:
+        warming_reasons.append(f"only {len(room_base)} room-sensor readings after the follow-up was created; {min_samples} required for warming")
     if rise_f is None or rise_f < min_rise_f:
         warming_reasons.append(f"room-sensor rise {rise_f} F is below the required {min_rise_f} F" if rise_f is not None else "room-sensor rise is unavailable")
     warming_reasons.extend(equipment_reasons)
     warming_reasons.extend(corroboration_reasons)
-    if analysis["segment"] and len(room_after) >= min_samples and _in_target_unit(room_after[-1].value, room_after[-1].unit, target_unit) >= target_temp and (rise_f is None or rise_f < min_rise_f):
+    if analysis["segment"] and len(room_base) >= min_samples and _in_target_unit(room_base[-1].value, room_base[-1].unit, target_unit) >= target_temp and (rise_f is None or rise_f < min_rise_f):
         reasons = restored_reasons + equipment_reasons + [f"temperature is at or above the target but has not been held for {GOAL_HOLD_S} s"] + corroboration_reasons
         return _result("reporting_restored", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
-    if len(room_after) < min_samples or rise_f is None or rise_f < min_rise_f:
+    if len(room_base) < min_samples or rise_f is None or rise_f < min_rise_f:
         return _result("reporting_restored", warming_reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
-    warming_ids = [r.id for r in room_after]
+    warming_ids = [r.id for r in room_base]
     if state_supports and state_record is not None:
         warming_ids.append(state_record.id)
     warming_ids.extend(circuit_support_ids)
@@ -453,17 +470,20 @@ def build_evidence_timeline(scenario, followup, now):
     entries = []
 
     thermostat = sorted(
-        [r for r in eligible_records(records, "indoor_temp") if r.source is SourceKind.thermostat],
+        [r for r in eligible_records(records, "indoor_temp", zone=zone) if r.source is SourceKind.thermostat],
         key=lambda r: (r.observed_at, r.received_at, r.id),
     )
     restored = None
+    restored_earlier = None
     for earlier, later in zip(thermostat, thermostat[1:]):
         cadence_s = later.expected_cadence_s or earlier.expected_cadence_s
         if cadence_s is not None and (later.observed_at - earlier.observed_at).total_seconds() > MAX_GAP_CADENCE_MULTIPLIER * cadence_s and later.observed_at > created_at:
             restored = later
+            restored_earlier = earlier
             break
     if restored is not None:
-        entries.append(_timeline_entry("reporting_restored", "Thermostat reporting restored", [restored.id], restored.observed_at, restored.received_at, restored.received_at))
+        first_known = max(restored.received_at, restored_earlier.received_at)
+        entries.append(_timeline_entry("reporting_restored", "Thermostat reporting restored", [restored.id], restored.observed_at, restored.received_at, first_known))
 
     room_all = _room_records(records, zone)
     room_after = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
@@ -474,7 +494,8 @@ def build_evidence_timeline(scenario, followup, now):
                 continue
             rise_f = _rise_f(first.value, first.unit, record.value, record.unit, target_unit)
             if rise_f is not None and rise_f >= min_rise_f:
-                entries.append(_timeline_entry("warming_observed", "Warming first observed", [first.id, record.id], record.observed_at, record.received_at, record.received_at))
+                first_known = max(r.received_at for r in room_after[: index + 1])
+                entries.append(_timeline_entry("warming_observed", "Warming first observed", [first.id, record.id], record.observed_at, record.received_at, first_known))
                 break
         for record in room_after:
             if _in_target_unit(record.value, record.unit, target_unit) >= target_temp:
@@ -487,7 +508,8 @@ def build_evidence_timeline(scenario, followup, now):
     verified_segment = analysis["verified_segment"]
     if verified_at is not None and verified_segment:
         last = verified_segment[-1]
-        entries.append(_timeline_entry("goal_verified", "Hold completed and goal verified", [r.id for r in verified_segment], verified_at, last.received_at, last.received_at))
+        first_known = max(r.received_at for r in verified_segment)
+        entries.append(_timeline_entry("goal_verified", "Hold completed and goal verified", [r.id for r in verified_segment], verified_at, last.received_at, first_known))
 
     for event in sorted(events, key=lambda e: (e.available_at, e.event_time, e.id)):
         if event.kind in CORROBORATION_EVENT_KINDS:
@@ -498,7 +520,8 @@ def build_evidence_timeline(scenario, followup, now):
         through = [r for r in room_all if r.observed_at <= arrival and r.observed_at > created_at]
         if through and through[-1].observed_at >= arrival:
             last = through[-1]
-            first_known = max(arrival, last.received_at)
+            segment_known = max((r.received_at for r in verified_segment), default=last.received_at)
+            first_known = max(arrival, last.received_at, segment_known)
             if first_known <= now:
                 support = list(dict.fromkeys([r.id for r in verified_segment] + [last.id]))
                 entries.append(_timeline_entry("arrival_checked", "Arrival checked", support, arrival, last.received_at, first_known))

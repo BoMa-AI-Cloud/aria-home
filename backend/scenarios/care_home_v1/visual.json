@@ -1,0 +1,46 @@
+[
+  {
+    "image_id": "care/care-v1-window-frost",
+    "file": "care/care-v1-window-frost.webp",
+    "phrase": "frost",
+    "observed_at": "2026-01-17T02:30:00-05:00",
+    "received_at": "2026-01-17T02:30:30-05:00",
+    "known_miss": true
+  },
+  {
+    "image_id": "care/care-v2-furnace-off",
+    "file": "care/care-v2-furnace-off.webp",
+    "phrase": "indicator light",
+    "observed_at": "2026-01-17T02:44:00-05:00",
+    "received_at": "2026-01-17T02:44:30-05:00"
+  },
+  {
+    "image_id": "care/care-v3-thermostat-blank",
+    "file": "care/care-v3-thermostat-blank.webp",
+    "phrase": "blank display",
+    "observed_at": "2026-01-17T04:20:00-05:00",
+    "received_at": "2026-01-17T04:20:30-05:00"
+  },
+  {
+    "image_id": "care/care-v4-pipe-frost",
+    "file": "care/care-v4-pipe-frost.webp",
+    "phrase": "frost",
+    "observed_at": "2026-01-17T04:50:00-05:00",
+    "received_at": "2026-01-17T04:50:30-05:00",
+    "known_miss": true
+  },
+  {
+    "image_id": "care/care-v5-dry-floor",
+    "file": "care/care-v5-dry-floor.webp",
+    "phrase": "water puddle",
+    "observed_at": "2026-01-17T06:20:00-05:00",
+    "received_at": "2026-01-17T06:20:30-05:00"
+  },
+  {
+    "image_id": "care/care-v6-warm-morning",
+    "file": "care/care-v6-warm-morning.webp",
+    "phrase": "frost",
+    "observed_at": "2026-01-17T06:44:00-05:00",
+    "received_at": "2026-01-17T06:44:30-05:00"
+  }
+]

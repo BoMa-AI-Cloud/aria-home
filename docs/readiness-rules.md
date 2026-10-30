@@ -25,7 +25,7 @@ unchanged.
 
 Readiness is computed once, from canonical (unrounded) inputs, in
 `compute_readiness`. Every result is stamped with
-`READINESS_POLICY_VERSION` (`readiness-policy-v3`, also in
+`READINESS_POLICY_VERSION` (`readiness-policy-v4`, also in
 `inputs.policy_version` and the pack's `readiness_policy_version`). The
 evidence pack keeps that decision in `canonical_readiness` (unrounded) and
 `computed_readiness`; the `metrics`/`evidence` values shown to the model are
@@ -66,7 +66,7 @@ All thresholds are named module-level constants in `readiness.py`:
 | `PROJECTION_MARGIN_F` | 0.5 F | Projected temperature at arrival must reach target plus this margin. |
 | `ARRIVAL_TIME_MARGIN_S` | 1800 s | The gap must be projected to close at least this long before arrival. |
 | `TARGET_GAP_TOLERANCE_F` | 0.0 F | Explicit tolerance in the meets-target decision (`gap_f >= -TARGET_GAP_TOLERANCE_F`); default zero, never implied by display rounding. See Canonical decision precision above. |
-| `READINESS_POLICY_VERSION` | `readiness-policy-v3` | Version stamped on every readiness result and evidence pack. |
+| `READINESS_POLICY_VERSION` | `readiness-policy-v4` | Version stamped on every readiness result and evidence pack. |
 
 Temperature gaps, rises, and rates in Celsius are converted to Fahrenheit
 equivalents before comparison with the `*_F` thresholds.
@@ -96,11 +96,18 @@ All physical-measurement paths use the single policy in
   known, otherwise at most 3600 s (readiness also caps this at
   `STALE_READING_AGE_S`). A claim exactly at the limit passes; one second over
   fails. Only the latest eligible reading (by observed, then received, time)
-  for the chosen source is current; an older eligible reading may only be
-  described as historical, never as `current_temperature`, and a stale reading
-  likewise is historical only. After the planned arrival has passed there is
-  no current claim at all: `temperature_at_arrival` replaces it (see
-  Statuses above).
+  for the chosen source is current, and only when no newer relevant visible
+  measurement is unresolved, conflicting, or invalid
+  (`eligibility.unresolved_after`, used by both canonical selection
+  `latest_current` and claim validation `is_current_record` and the
+  investigator metric path): a newer relevant record — same quantity, zone,
+  and source scope, visible at evaluation — that never became eligible blocks
+  any older reading from being called current. An older eligible reading may
+  only be described as historical, never as `current_temperature`, and a stale
+  reading likewise is historical only. Records from other zones, other
+  quantities, or not yet received never block. After the planned arrival has
+  passed there is no current claim at all: `temperature_at_arrival` replaces
+  it (see Statuses above).
 
 Allowed source/kind per measurement path:
 
@@ -114,19 +121,27 @@ Allowed source/kind per measurement path:
 Shared conflict and finiteness policy (`eligibility.measurement_conflict_groups`,
 used by readiness, evidence `source_status`, and recovery verification):
 readings are grouped by (source, subject, quantity, observed_at) after unit
-normalization (Celsius converted to Fahrenheit). Genuinely identical
-duplicates — same normalized value — collapse to one reading keeping
-provenance and never count twice. A group with distinct normalized values is
-an unresolved conflict: it is excluded from eligible measurements and is
-never resolved by record id or insertion order. Readings from different
-sensors or zones are separate groups, not conflicts. An unresolved conflict
-in the indoor source gives readiness `cannot_tell`, and a conflict inside a
-required hold or arrival interval gives verification `unable_to_verify`,
-never a success stage. Non-finite numbers (NaN, +/-inf, and values that
-overflow on unit conversion) are rejected at the `EvidenceRecord` contract
-and are ineligible in every measurement path; invalid units are rejected at
-the same boundary. String-valued evidence (for example HVAC reported state)
-remains valid.
+normalization (Celsius converted to Fahrenheit, compared with the same
+relative/absolute tolerance everywhere). Record ids never decide anything:
+genuinely identical duplicates — same normalized value at the same instant,
+even when they share one record id — collapse to a single reading keeping
+provenance and never count twice. Incompatible records sharing an id are an
+unresolved conflict, exactly like distinct ids with distinct values, and are
+never resolved by insertion order, id sorting, or first/last wins. Readings
+from different sensors or zones are separate groups, not conflicts. A
+conflict blocks a decision only while it is unresolved
+(`eligibility.unresolved_conflict_groups`): a conflict superseded by a later
+eligible reading in the same source scope is historical, so unrelated zones
+and intervals are unaffected — for example a 16:30 contradiction followed by
+clean readings through 21:00 leaves a 21:01 decision unaffected, while a
+21:00 contradiction with no later eligible reading gives readiness
+`cannot_tell` and verification `unable_to_verify`, never a success stage. A
+conflict inside a required hold or arrival interval gives verification
+`unable_to_verify`, never a success stage. Non-finite numbers (NaN, +/-inf,
+and values that overflow on unit conversion) are rejected at the
+`EvidenceRecord` contract and are ineligible in every measurement path;
+invalid units are rejected at the same boundary. String-valued evidence (for
+example HVAC reported state) remains valid.
 
 Thermostat `hvac_reported_state`/`setpoint` records are `device_report`, not
 physical measurements: they may support/contradict heating as reported state
@@ -225,22 +240,28 @@ Synthetic visual evidence comes from SAM 3.1 segmentation
 (`backend/aria_home/visual.py`) over synthetic images generated by
 muse-image-1.0 (`backend/fixtures/visual/`). Each `*.sam.txt` fixture is the
 recorded raw sam-3.1 response for one image and phrase; tests replay these
-recordings and never call the network. Live segmentation is opt-in only
-(`ARIA_HOME_VISUAL_LIVE=1` plus `MODEL_API_KEY`, single POST, no silent
-retries). A scenario may carry one observation in `visual.json`
-(`image_id`, `phrase`, `observed_at`, `received_at`, `file`), loaded by
-`scenario.load_scenario` and attached to the evidence pack as
-`visual_evidence` (gated by `received_at <= now`, like every other record).
+recordings and never call the network. The app is replay-only: it never
+constructs the `SamLiveProvider` adapter (an unintegrated reference kept
+in `backend/aria_home/visual.py`), so setting `ARIA_HOME_VISUAL_LIVE=1`
+changes nothing and no network happens. A scenario may carry one observation in `visual.json`
+(`image_id`, `phrase`, `observed_at`, `received_at`, `file`); `care_home_v1`
+carries a list of six timed synthetic camera frames (night frames during the
+cooling, morning frames after recovery). `scenario.load_scenario` replays each
+spec from its recorded `*.sam.txt` and attaches the observations; the evidence
+pack carries the latest one with `received_at <= now` as `visual_evidence`
+(like every other record, gated by receive time).
 The observation records the phrase, the object count, the largest box area
 fraction, the image id, `image_synthetic: true`, model `sam-3.1`, and the
-provider mode (`replay`/`live`).
+provider mode (always `recorded` in the replay-only app).
 
-Policy (enforced in `compute_readiness`, `readiness-policy-v3`):
+Policy (enforced in `compute_readiness`, `readiness-policy-v4`):
 
 - Visual evidence never yields `on_track`, `warming_observed`,
   `goal_verified`, or `arrival_met`. It never changes the HVAC allowlist,
-  and images are never sent anywhere: HVAC payloads may carry only the
-  observation line "visual observation: water detected (synthetic image)".
+  and the running app never sends images anywhere: HVAC payloads may carry
+  only the observation line "visual observation: water detected (synthetic
+  image)" (the unintegrated live adapter would POST image bytes if anyone
+  ever wired it in).
 - A water/frost detection (object count above zero for a supported phrase)
   plus a low or unknown indoor temperature can support `at_risk` with the
   observation line as a citing reason; the detection supports attention,
@@ -250,7 +271,10 @@ Policy (enforced in `compute_readiness`, `readiness-policy-v3`):
   of a detection is not an all-clear"), never as an all-clear: it neither
   lowers an `at_risk` nor lifts a `cannot_tell`, and it never produces
   `on_track`. The recorded frost-pipe fixture (`v2-frost-pipe`, zero
-  objects) is a known false negative and is handled exactly this way.
+  objects) is a known false negative and is handled exactly this way, as are
+  the two recorded care-story frost misses (`care-v1-window-frost`,
+  `care-v4-pipe-frost`, flagged `known_miss` and shown as "missed by the
+  model" in the evidence drawer).
 
 ## Follow-up scheduling
 
@@ -350,8 +374,15 @@ Named constants in `verification.py`:
 
 Stages, in order (each requires the previous):
 
-1. `telemetry_missing`: no fresh thermostat `indoor_temp` telemetry; freshness
-   is `evidence.freshness` (missing value, or age over 2x expected cadence).
+1. `telemetry_missing`: no fresh thermostat `indoor_temp` telemetry for the
+   follow-up zone; freshness is `evidence.freshness` (missing value, or age
+   over 2x expected cadence). The gate is scoped to the zone (`subject`
+   equals the zone): a thermostat in another zone never satisfies it, and a
+   reading from another property's circuit binding never counts as zone
+   telemetry. The gate is kept as an independent liveness signal for the
+   telemetry path, not as a causal claim — no stage says a repair caused
+   the recovery — and equipment or circuit observations are separate
+   supporting-only claims (see stage 3).
 2. `reporting_restored`: fresh thermostat telemetry after a gap over 2x
    cadence. It never closes anything alone.
 3. `warming_observed`: at least `min_samples` room-sensor (not thermostat)
@@ -464,6 +495,21 @@ For `demo_video_v1` with a follow-up created by `POST /api/investigations`
 at 16:31: 16:31 `telemetry_missing`, 18:21 `reporting_restored`, 18:51
 `warming_observed`, 19:51 still `warming_observed` (target first reached at
 19:50, hold not yet complete), 20:21 `goal_verified`, 21:01 `arrival_met`.
+
+### Timeline knowledge time
+
+The evidence timeline (`build_evidence_timeline`) keeps physical time and
+knowledge time distinct. Every entry carries both `observed_at` (when the
+underlying reading was observed) and `first_known_at` (when the entry could
+first have been known): the maximum `received_at` over ALL supporting
+evidence for that entry — both readings bounding a restored gap, every
+reading in the warming prefix through the qualifying reading, every
+reading in the completed hold segment, and additionally the arrival
+instant itself for `arrival_checked`. A delayed reading observed at 20:59
+therefore supports an entry only in evaluations at or after its receipt,
+never in an earlier replay, and entries with `first_known_at` after `now`
+are filtered out. An earlier replay never exposes future evidence or later
+acknowledgements (see Replay projection above).
 
 ## Homeowner notification preference
 

@@ -15,10 +15,13 @@ if (!inheritedDbPath) {
   }
 }
 
+const frontendPort = process.env.PLAYWRIGHT_FRONTEND_PORT ?? "15173";
+const backendPort = process.env.PLAYWRIGHT_BACKEND_PORT ?? "15000";
+
 export default defineConfig({
   testDir: "e2e",
   workers: 1,
-  use: { baseURL: "http://127.0.0.1:15173" },
+  use: { baseURL: `http://127.0.0.1:${frontendPort}` },
   projects: [
     {
       name: "utc",
@@ -27,18 +30,19 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "python -m flask --app aria_home.app:create_app run --port 15000",
+      command: `python -m flask --app aria_home.app:create_app run --port ${backendPort}`,
       cwd: "../backend",
-      url: "http://127.0.0.1:15000/api/health",
+      url: `http://127.0.0.1:${backendPort}/api/health`,
       reuseExistingServer: false,
       timeout: 60 * 1000,
       env: { ARIA_HOME_MODEL_ENABLED: "0", ARIA_HOME_DB_PATH: dbPath, ARIA_HOME_E2E_HOOKS: "1" },
     },
     {
-      command: "npm run dev -- --host 127.0.0.1 --port 15173 --strictPort",
-      url: "http://127.0.0.1:15173",
+      command: `npm run dev -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
+      url: `http://127.0.0.1:${frontendPort}`,
       reuseExistingServer: false,
       timeout: 60 * 1000,
+      env: { PLAYWRIGHT_BACKEND_PORT: backendPort },
     },
   ],
 });

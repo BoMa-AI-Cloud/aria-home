@@ -17,6 +17,7 @@ class SourceKind(str, Enum):
     electrical = "electrical"
     weather = "weather"
     room_sensor = "room_sensor"
+    human_report = "human_report"
 
 
 class EvidenceKind(str, Enum):
@@ -205,6 +206,8 @@ class SourceStatus(_Strict):
     availability: Availability
     record_count: int = Field(ge=0)
     newest_observed_at: datetime | None = None
+    newest_value: float | None = None
+    newest_unit: str | None = None
     age_s: float | None = None
     mode: DataMode
     notes: list[str] = Field(default_factory=list)

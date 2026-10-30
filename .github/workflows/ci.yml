@@ -20,11 +20,12 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - name: Install backend (pinned lock + dev/test deps)
+      - name: Install backend (pinned locks: runtime + optional + dev/test)
         working-directory: backend
         run: |
           pip install -r requirements.lock
-          pip install -r requirements-dev.txt
+          pip install -r requirements-optional.lock
+          pip install -r requirements-dev.lock
       - name: Backend tests
         working-directory: backend
         run: python -m pytest -q
@@ -49,6 +50,9 @@ jobs:
           PLAYWRIGHT_FRONTEND_PORT: "5174"
           PLAYWRIGHT_BACKEND_PORT: "5001"
         run: npm run test:e2e
+      - name: Alternate-port config (isolated 15173/15000 proxy check)
+        working-directory: frontend
+        run: npm run test:e2e:alt-ports
       - name: npm audit (reporting only, does not fail on advisories)
         if: always()
         continue-on-error: true
@@ -60,4 +64,4 @@ jobs:
         working-directory: backend
         run: |
           pip install pip-audit
-          pip-audit -r requirements.lock
+          pip-audit -r requirements.lock -r requirements-optional.lock -r requirements-dev.lock

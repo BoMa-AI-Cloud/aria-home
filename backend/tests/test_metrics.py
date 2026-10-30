@@ -221,7 +221,7 @@ def test_no_cadence_records_report_no_cadence_basis():
 def test_metrics_endpoint():
     app = create_app()
     client = app.test_client()
-    response = client.get("/api/metrics")
+    response = client.get("/api/metrics?scenario=demo_v1&at=2026-01-16T18:00:00-05:00")
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["data_mode"] == "synthetic"

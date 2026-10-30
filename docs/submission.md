@@ -13,7 +13,7 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Meta models only at runtime | **Shown in code for the gated live path.** Runtime calls only muse-spark-1.3 through the Meta Model API behind a gated live provider (`backend/aria_home/provider.py`); mock is the default. This is different evidence from a recorded live run, and different again from a current live call: no current live call is claimed here. Recorded live runs are in [Evaluation](evaluation.md). Baseten Muse Spark Open is evaluation-only, not runtime. |
 | Synthetic data only | **Shown for the shipped fixtures; not a certification.** The shipped thermostat, electrical, weather, calendar and contact records are invented and labelled synthetic, and the UI banner reads "SYNTHETIC DATA - demo scenario, not a real home". Synthetic fixtures do not by themselves certify "no PII / no secrets" in every possible file or environment; `.env` files are git-ignored and `.env.example` holds placeholders only. |
 | Live product or run instructions | **Run instructions Shown; hosted live product Pending.** Run instructions are in README "What judges should click" / "Try it in 5 minutes"; no hosted URL exists (see [Day 9 handoff](day9-handoff.md)). Live-provider support (code), recorded live runs (files), and a current live call (not made for Audit 3) are three different kinds of evidence and are not interchangeable. |
-| Deadline Nov 4, 5 PM ET | **Pending** (Brad, submit before the deadline) |
+| Deadline Nov 4 | **Needs confirmation** (Brad): earlier organizer material said 9 PM ET on November 4; 5 PM ET is Brad's internal target. Submit before the earlier of the two until confirmed. |
 | Optional: Most Viral Project post on X, with its link submitted | **Pending** (Brad) |
 | Licence | **Shown.** MIT [LICENSE](../LICENSE), Copyright (c) 2026 Bradley Allen Wentzel. Public visibility alone would not grant these rights; the licence file does. |
 | Security posture | **Scoped, not "secure".** See [SECURITY.md](../SECURITY.md): local loopback, synthetic data, simulated delivery, no equipment control. It lists what is checked vs not checked and prerequisites for any shared/real-data deployment. No compliance claim is made. |
@@ -24,34 +24,49 @@ I live in Petoskey, Michigan, where the winters are long and cold. As an electri
 major damage from a fault that nobody caught in time. ARIA Home is built to help notice sooner and get the right
 person moving. It does not repair or control anything.
 
-ARIA Home answers one question for someone travelling home: will my property be ready when I arrive, and if
-something looks wrong, who should respond? It combines trip, thermostat, room-sensor, electrical, weather and
+ARIA Home answers one question for an older adult's household: will the home be warm by the warm-by time, and if
+something looks wrong overnight, who should respond? On a synthetic winter night the furnace stops and the
+thermostat stops reporting; an independent room sensor shows the living area cooling toward 52 F. ARIA Home flags
+the risk before the household 07:00 warm-by time, notifies the resident and an adult-child family caregiver under the
+resident's recorded consent, and the caregiver authorizes the simulated HVAC request. It combines the warm-by plan,
+consent, thermostat, room-sensor, electrical, weather (forecast context only, never a decision input) and
 visual evidence (all synthetic) into one readiness picture. Code decides readiness, follow-ups and outcomes;
 muse-spark-1.3 explains only code-checked facts, and claim checks reject any answer that cites the wrong evidence
 or presents an old reading as current. Electrical activity is never treated as heat, a visual "nothing detected"
-is never treated as all-clear, an acknowledgement is not a resolution, and recovery is verified only from later
-independent temperature readings. This is temperature-goal verification, not proof of a repair.
+is never treated as an all-clear, an acknowledgement is not a resolution, and recovery is verified only from later
+independent temperature readings. This is temperature-goal verification, not proof of a repair. ARIA Home is not
+a medical or emergency service: no health data, no medical terms, no location tracking of the person, no fall or
+activity sensing.
 
 Notifications are scoped per audience with recorded refusals and stay simulated by default. As an opt-in test,
 the HVAC request was delivered to my own phone through the WhatsApp Cloud API with only its allowed fields.
 
-Meta models: muse-spark-1.3 at runtime; sam-3.1 segments synthetic images (recorded replay by default, live
-opt-in); muse-image-1.0 made the synthetic test images. All application code was written by muse-wonder-1.0 and
+Meta models: muse-spark-1.3 at runtime; sam-3.1 segmentation over synthetic images is replay-only recorded responses (no live call, no opt-in); muse-image-1.0 made the synthetic test images. All application code was written by muse-wonder-1.0 and
 muse-spark-1.3 through Claude Code, which acted as operator; every prompt and answer, including failed runs, is in
 the public build log. That is my disclosure; the log shows what was recorded.
 
 An independent audit reported 12 defects; all 12 were reproduced, fixed and covered by regression tests ([defect matrix](audit-3.md)).
-Offline: 17 synthetic cases across 9 scenarios, combined evidence 17/17. Live (muse-spark-1.3): 11 of 17 valid on
-the full run; after a contract fix, the six after-arrival cases were rerun and 5 of 6 were valid. In the visual
-probe sam-3.1 missed obvious frost on a pipe, which is why "no detection" never lowers risk.
+Offline: 22 synthetic cases across 10 scenarios, combined evidence 22/22. The five `care_home_v1` night cases score
+readiness and verification from independent room readings up to the 07:00 warm-by time. Live (muse-spark-1.3): 11 of 17 valid on
+the full run; after a contract fix, the six after-arrival cases were rerun and 5 of 6 were valid. Both live runs
+predate the care story and used the trip-home scenarios; they are kept verbatim, not re-scored. In the visual
+probe sam-3.1 missed obvious frost on a pipe, which is why "no detection" never lowers risk — the care night frames
+carry the same recorded misses.
 Limits: small synthetic sample, simulated delivery, no equipment control.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 
-- That she boarded, that a flight, traffic, or baggage state is known, or that ARIA Home is a travel platform.
-- That command acknowledgement, a manager acknowledgement, or a technician report proves physical success or caused the recovery.
+- That anyone boarded, that a flight, traffic, or baggage state is known, or that ARIA Home is a travel platform (the older trip-home fixtures only).
+- That ARIA Home knows where the resident is, or that it senses falls, activity, or health in any way.
+- That command acknowledgement, a caregiver acknowledgement, or a technician report proves physical success or caused the recovery.
 - That electrical activity proves useful heat, a fault, equipment power, or "no outage".
 - That recovery was "instantaneous", that the equipment is fault-free, or that the goal is guaranteed beyond the observed readings.
 - That any email, call, message, location, or scene control in the video is real.
 - Only "verified recovery of the monitored temperature goal" — never a proven repair cause. Reconnection alone proves nothing; say "on the next sensor update". Missing location is "unavailable", never evidence about her schedule.
 - No dollar-loss figures, no "0 hallucinations", no "secure" or "guaranteed" claims.
+
+## 4. Proposed final freeze and recording schedule (proposed, not assumed — needs Brad's approval)
+
+- Final code freeze: proposed end of day November 2, so November 3 is reserved for a clean re-run of the full check (`python -m pytest -q`, typecheck, build, both e2e suites, `record:demo`) with no further edits except wording fixes.
+- Recording: proposed November 3 from the frozen tree in default mock/replay mode on a fresh temporary database, following [Recording checklist](recording-checklist.md); a live-inference take only if Brad separately approves that call before filming.
+- Submission: before the earlier deadline interpretation (9 PM ET November 4 unconfirmed vs 5 PM ET internal target) until the official time is confirmed.

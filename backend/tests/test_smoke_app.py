@@ -24,7 +24,7 @@ def test_smoke_page_contract(monkeypatch):
 
     client = create_app().test_client()
     health = client.get("/api/health")
-    sources = client.get("/api/sources")
+    sources = client.get("/api/sources?scenario=demo_v1")
     provider = client.get("/api/provider")
 
     assert health.status_code == 200
@@ -37,12 +37,13 @@ def test_smoke_page_contract(monkeypatch):
 
     assert health_body["data_mode"] == "synthetic"
     assert sources_body["data_mode"] == "synthetic"
-    assert len(sources_body["sources"]) == 4
+    assert len(sources_body["sources"]) == 5
     assert {s["source"] for s in sources_body["sources"]} == {
         "calendar",
         "thermostat",
         "electrical",
         "weather",
+        "human_report",
     }
     assert provider_body["mode"] == "mock"
     assert provider_body["key_present"] is False
