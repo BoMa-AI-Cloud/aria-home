@@ -35,6 +35,8 @@ The evaluation can also run Muse Spark Open (meta-models/muse-spark-open-1026, a
 
 The investigation uses the **inv-v3** contract, which binds the model's claims to the evidence. The model returns structured `facts[]`; each claim type may cite only its allowed evidence fields, values are checked against the evidence pack, and the facts shown as "Verified facts (checked against the evidence)" are rendered by code, not by the model. The model's own wording stays separate under "Interpretation (model-written, not verified)".
 
+Recorded answers for the public demo are made with `backend/scripts/record_care_answers.py`: dry run by default (prints the 10 `care_home_v1` checkpoints, the planned call count and the output paths, makes no call); live only with `--live --max-calls N --code-snapshot HEAD`, refusing to start when the planned calls exceed N. Each checkpoint gets one muse-spark-1.3 call through the same investigation path the app uses, validated the same way (a rejected answer is written but marked rejected and never served), and each accepted answer gets one muse-wonder-1.0 second review. The key comes only from environment variables and never appears in output or files.
+
 The model may explain a computed status, describe supporting and conflicting evidence, and suggest what observation to make at a follow-up. It may not decide:
 
 - **Readiness** — computed in code in `backend/aria_home/readiness.py` (`on_track`, `at_risk`, `cannot_tell`, `arrival_passed`). The prompt states the computed status and any answer that disagrees is rejected. If no valid answer is produced, the app shows a deterministic summary computed by code.

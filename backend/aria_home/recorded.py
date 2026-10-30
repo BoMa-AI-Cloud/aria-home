@@ -114,6 +114,8 @@ def _eval_result_entries():
 
 
 def _entry_matches(entry, scenario_id, evaluated_at_utc, input_revision, prompt_version, readiness_policy_version):
+    if entry.get("status") == "rejected":
+        return False
     try:
         entry_at = _norm_time(entry.get("evaluated_at_utc"))
     except (TypeError, ValueError):
