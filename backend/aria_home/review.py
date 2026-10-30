@@ -35,6 +35,7 @@ REVIEW_URL = REVIEW_BASE_URL + REVIEW_PATH
 REVIEW_PROVIDER_ROUTE = "meta live via Meta Model API (responses)"
 DEFAULT_TIMEOUT_S = 20.0
 DEFAULT_MAX_TOKENS = 512
+REVIEW_MAX_OUTPUT_TOKENS = 16000
 MAX_NOTE_CHARS = 200
 REVIEW_VERDICTS = ("no_issues", "issues_found")
 REVIEW_ISSUE_KINDS = (
@@ -159,8 +160,32 @@ def _candidate_texts(data):
             yield "".join(parts)
 
 
+def _review_error_text(data):
+    err = data.get("error")
+    if isinstance(err, dict):
+        for key in ("code", "message"):
+            value = err.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()[:200]
+        return ""
+    if isinstance(err, str) and err.strip():
+        return err.strip()[:200]
+    return ""
+
+
 def parse_review_response(data, evidence_ids):
     """Extract a review output from a Responses-API envelope, then validate."""
+    if isinstance(data, dict):
+        if data.get("error"):
+            return None, [f"review failed: {_review_error_text(data) or 'unknown'}"]
+        if data.get("status") == "incomplete":
+            details = data.get("incomplete_details")
+            reason = details.get("reason") if isinstance(details, dict) else None
+            if not reason:
+                reason = "unknown"
+            return None, [f"review incomplete: {reason}"]
+        if data.get("status") == "failed":
+            return None, [f"review failed: {_review_error_text(data) or 'unknown'}"]
     for candidate in _candidate_texts(data):
         try:
             output = json.loads(candidate)
@@ -190,7 +215,7 @@ def build_review_request(answer_output, evidence_pack, model_id=REVIEW_MODEL_ID)
         "url": REVIEW_URL,
         "body": {
             "model": model_id,
-            "max_output_tokens": DEFAULT_MAX_TOKENS,
+            "max_output_tokens": REVIEW_MAX_OUTPUT_TOKENS,
             "input": [
                 {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},
@@ -388,6 +413,7 @@ __all__ = [
     "REVIEW_ALLOWED_MODEL_IDS",
     "REVIEW_CONTRACT_VERSION",
     "REVIEW_ISSUE_KINDS",
+    "REVIEW_MAX_OUTPUT_TOKENS",
     "REVIEW_MODEL_ID",
     "REVIEW_PROVIDER_ROUTE",
     "REVIEW_SYSTEM_PROMPT",

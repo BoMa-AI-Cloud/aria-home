@@ -398,13 +398,15 @@ def test_recorded_review_helper_matches_exact_case_only():
 def test_review_request_uses_max_output_tokens():
     import json as _json
 
-    from aria_home.review import REVIEW_URL, build_review_request
+    from aria_home.review import REVIEW_MAX_OUTPUT_TOKENS, REVIEW_URL, build_review_request
 
+    assert REVIEW_MAX_OUTPUT_TOKENS == 16000
     request = build_review_request({"answer": 1}, {"evidence_ids": []})
     assert request["url"] == REVIEW_URL
     assert request["url"].endswith("/v1/responses")
-    assert request["body"]["max_output_tokens"] == 512
+    assert request["body"]["max_output_tokens"] == 16000
     assert "max_tokens" not in request["body"]
+    assert "reasoning" not in request["body"]
     _json.dumps(request["body"])
 
 
@@ -431,3 +433,89 @@ def test_review_response_parses_output_text_field():
     parsed, reasons = parse_review_response(data, ids)
     assert reasons == []
     assert parsed == {"verdict": "no_issues", "issues": []}
+
+
+def _incomplete_response():
+    return {
+        "id": "resp-incomplete",
+        "status": "incomplete",
+        "incomplete_details": {"reason": "max_output_tokens"},
+        "output": [{"type": "reasoning", "id": "rs-1"}],
+        "usage": {"output_tokens": 512, "reasoning_tokens": 510},
+    }
+
+
+def _completed_response():
+    import json as _json
+
+    return {
+        "id": "resp-completed",
+        "status": "completed",
+        "output": [{"type": "message", "content": [{"type": "output_text", "text": _json.dumps({"verdict": "no_issues", "issues": []})}]}],
+        "usage": {"output_tokens": 1770, "reasoning_tokens": 1747},
+    }
+
+
+def test_review_incomplete_response_names_budget_reason():
+    from aria_home.review import parse_review_response
+
+    _, _, ids = _pack_ids()
+    parsed, reasons = parse_review_response(_incomplete_response(), ids)
+    assert parsed is None
+    assert reasons == ["review incomplete: max_output_tokens"]
+
+
+def test_review_incomplete_response_without_details_is_unknown():
+    from aria_home.review import parse_review_response
+
+    _, _, ids = _pack_ids()
+    parsed, reasons = parse_review_response({"status": "incomplete", "output": []}, ids)
+    assert parsed is None
+    assert reasons == ["review incomplete: unknown"]
+
+
+def test_review_failed_response_names_error():
+    from aria_home.review import parse_review_response
+
+    _, _, ids = _pack_ids()
+    parsed, reasons = parse_review_response({"status": "failed", "error": {"code": "server_error", "message": "boom"}}, ids)
+    assert parsed is None
+    assert reasons == ["review failed: server_error"]
+    parsed, reasons = parse_review_response({"error": {"message": "boom " + "x" * 500}}, ids)
+    assert parsed is None
+    assert reasons == ["review failed: " + ("boom " + "x" * 500)[:200]]
+
+
+def test_live_review_reports_incomplete_budget_reason():
+    from aria_home.review import build_review_request, request_live_review
+
+    _, _, ids = _pack_ids()
+    seen = {}
+
+    def post(url, headers, body, timeout_s):
+        seen["body"] = body
+        return 200, _incomplete_response()
+
+    result = request_live_review({"answer": 1}, {"evidence_ids": ids}, env={"MODEL_API_KEY": "k"}, http_post=post)
+    assert seen["body"]["max_output_tokens"] == 16000
+    assert "reasoning" not in seen["body"]
+    assert result["ok"] is True
+    assert result["review"] is None
+    assert result["validation"] == {"passed": False, "reasons": ["review incomplete: max_output_tokens"]}
+
+
+def test_live_review_completed_shape_passes_no_issues():
+    from aria_home.review import request_live_review
+
+    _, _, ids = _pack_ids()
+    seen = {}
+
+    def post(url, headers, body, timeout_s):
+        seen["body"] = body
+        return 200, _completed_response()
+
+    result = request_live_review({"answer": 1}, {"evidence_ids": ids}, env={"MODEL_API_KEY": "k"}, http_post=post)
+    assert seen["body"]["max_output_tokens"] == 16000
+    assert result["ok"] is True
+    assert result["review"] == {"verdict": "no_issues", "issues": []}
+    assert result["validation"] == {"passed": True, "reasons": []}
