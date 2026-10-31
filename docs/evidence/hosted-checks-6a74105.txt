@@ -1,0 +1,12 @@
+Hosted checks, 2026-10-31T18:55Z, https://aria-home-demo.onrender.com
+health version: {'commit': '6a74105ed1ee2702993fcb8514830ee364a387c0', 'source': 'file'}
+F3 forged cookie: 1 new session cookie issued; forged value kept: 0
+F4 off-checkpoint ack: HTTP 400; acks stored: 0
+F7 malformed decisions: []->400 {}->400 null->400 5->400 true->400
+F1/F2 at 06:21 after decline: follow-up=[goal_verified declined] map=[goal_verified declined [False]]
+isolation: second visitor reading the first visitor's investigation -> HTTP 404
+story 02:31: rate/h -0.2057142857142862 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, furnace quiet since 19:15). May I contact
+story 04:51: rate/h 0.8571428571428572 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, furnace quiet since 19:15). May I contact
+story 06:21: rate/h 5.485714285714286 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, furnace quiet since 19:15). May I contact
+
+Note: the request is frozen at its ask time, 19:20 (54 F, furnace quiet since 19:15). 52 F is the room at 02:31, when the caregiver answers.
