@@ -17,8 +17,9 @@ from .eligibility import (
 )
 from .evidence import freshness, source_status
 from .investigator import build_evidence_pack, inference_identity
-from .notifications import _get, caregiver_permission_text, decide_hvac_notification, decide_notifications
+from .notifications import _get, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
 from .outcomes import follow_up_for
+from .public_demo import parsed_checkpoints
 from .recorded import find_recorded, load_recorded_answers, public_investigation
 from .review import find_recorded_review, load_recorded_reviews
 from .scenario import context_as_of, events_as_of, visible_records
@@ -302,8 +303,62 @@ def _watcher_detail(scenario, at, pack, identities, watcher_entries):
     }
 
 
-def _permission_trace(scenario, at, events, decisions, caregiver_decision=None):
-    """The caregiver permission step: requested, waiting, then approved or declined by the caregiver."""
+def _alert_created_at(store, investigation_id, at):
+    """The moment ARIA asked: the delivered caregiver-alert row creation time."""
+    try:
+        rows = store.list_notifications(investigation_id, at=at)
+    except Exception:
+        return None
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        if row.get("audience") == "family_caregiver" and row.get("kind") == "caregiver_alert" and row.get("state") == "simulated_delivered":
+            try:
+                return datetime.fromisoformat(str(row.get("created_at")).replace("Z", "+00:00"))
+            except ValueError:
+                return None
+    return None
+
+
+def _scripted_ask_time(scenario, at):
+    """The first replay moment at or before `at` when the caregiver alert is raised.
+
+    The same predicate as the notification gate (readiness at risk or unknown
+    with caregiver coordination allowed), so the scripted trace freezes the
+    request at the same moment the stored flow does.
+    """
+    try:
+        checkpoints = parsed_checkpoints(scenario.manifest.id)
+    except Exception:
+        return at
+    for checkpoint in checkpoints:
+        if checkpoint > at:
+            break
+        try:
+            pack = build_evidence_pack(scenario, checkpoint)
+        except Exception:
+            continue
+        readiness = pack.get("readiness") if isinstance(pack.get("readiness"), dict) else {}
+        if readiness.get("status") not in ("at_risk", "cannot_tell"):
+            continue
+        try:
+            context = context_as_of(scenario, checkpoint)
+        except Exception:
+            continue
+        try:
+            if caregiver_is_authorized(context):
+                return checkpoint
+        except Exception:
+            continue
+    return at
+
+
+def _permission_trace(scenario, at, events, decisions, caregiver_decision=None, store=None, investigation_id=None):
+    """The caregiver permission step: requested, waiting, then approved or declined by the caregiver.
+
+    The request text is frozen at the moment ARIA asked (the alert creation
+    time), never rebuilt at the replay time; before it is raised there is no step.
+    """
     if scenario.manifest.id != "care_home_v1":
         return None
     alert = next((d for d in decisions if d["audience"] == "family_caregiver" and d["kind"] == "caregiver_alert"), None)
@@ -318,12 +373,20 @@ def _permission_trace(scenario, at, events, decisions, caregiver_decision=None):
         actor = "family_caregiver" if approval is not None else None
         decided_at = _iso(_get(approval, "available_at")) if approval is not None else None
         source = "scenario event" if approval is not None else None
+    asked_at = None
+    if store is not None and investigation_id is not None:
+        asked_at = _alert_created_at(store, investigation_id, at)
+    if asked_at is None:
+        asked_at = _scripted_ask_time(scenario, at)
+    if asked_at is None or asked_at > at:
+        return None
     return {
         "status": status,
         "actor": actor,
         "decided_at": decided_at,
         "source": source,
-        "text": caregiver_permission_text(scenario, at),
+        "requested_at": asked_at.isoformat(),
+        "text": caregiver_permission_text(scenario, asked_at),
         "note": "approval only lets ARIA contact the HVAC company; it never changes readiness or verification",
     }
 
@@ -390,7 +453,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     verification_for_notif = {key: value for key, value in verification.items() if key != "available"} if verification.get("available") else None
     decisions = decide_notifications(investigation, readiness, verification_for_notif, context, events, at, scenario, identity["investigation_id"])
     decisions = list(decisions) + [decide_hvac_notification(investigation, readiness, verification_for_notif, context, events, at, scenario, investigation_id or identity["investigation_id"], caregiver_decision=caregiver_decision)]
-    permission = _permission_trace(scenario, at, events, decisions, caregiver_decision)
+    permission = _permission_trace(scenario, at, events, decisions, caregiver_decision, store=store, investigation_id=investigation_id)
     notices = [{"audience": item["audience"], "kind": item["kind"], "allowed": item["allowed"], "reason": item.get("reason"), "payload_keys": sorted((item.get("payload") or {}).keys())} for item in decisions]
 
     steps = []
@@ -415,9 +478,14 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     if human_trace is not None:
         steps.append({"seq": len(steps), "kind": "human", "label": "human report, not a measurement", "state": "stale", "detail": human_trace["payload"].get("transcript", "")[:200], "ref": {"section": "human", "index": 0}})
     if permission is not None:
-        label = {"waiting": "caregiver permission: requested, waiting", "approved": "caregiver permission: approved by the caregiver", "declined": "caregiver permission: declined by the caregiver"}[permission["status"]]
+        decided = permission.get("decided_at") or "an unknown time"
+        label = {
+            "waiting": "caregiver permission: no answer yet — ARIA will not contact HVAC until she answers",
+            "approved": f"caregiver permission: approved by the caregiver at {decided} — HVAC may now be contacted",
+            "declined": f"caregiver permission: declined by the caregiver at {decided} — no HVAC request; ARIA keeps monitoring",
+        }[permission["status"]]
         state = {"waiting": "stale", "approved": "pass", "declined": "fail"}[permission["status"]]
-        steps.append({"seq": len(steps), "kind": "permission", "label": label, "state": state, "detail": permission["text"], "ref": {"section": "permission", "index": 0}})
+        steps.append({"seq": len(steps), "kind": "permission", "label": label, "state": state, "detail": f"{permission['text']} (asked at {permission['requested_at']}; {permission['note']})", "ref": {"section": "permission", "index": 0}})
     for index, notice in enumerate(notices):
         state = "pass" if notice["allowed"] else "stale"
         steps.append({"seq": len(steps), "kind": "notice", "label": f"{notice['audience']}: {'raised' if notice['allowed'] else 'refused'}", "state": state, "detail": notice["reason"] or f"fields: {', '.join(notice['payload_keys'])}", "ref": {"section": "notices", "index": index}})

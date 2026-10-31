@@ -1,0 +1,18 @@
+{
+  "description": "Furnace stops 03:40, steep drop; evaluated 04:51 with little history after the stop.",
+  "eval_at": "2026-01-17T04:51:00-05:00",
+  "expected_readiness": "at_risk",
+  "expected_verification": "telemetry_missing",
+  "followup_created_at": "2026-01-17T02:45:00-05:00",
+  "followup_target": {
+    "target_temp": 68,
+    "target_unit": "F"
+  },
+  "ground_truth": {
+    "next_action": "Dispatch HVAC technician now; warm-by time is at risk.",
+    "problem": "Furnace stopped around 03:40; steep late-night drop."
+  },
+  "id": "ev-outage-0340",
+  "seed": 20261030,
+  "source_scenario": "care_home_v1"
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Furnace stops 23:10, no repair before evaluation; room cools, thermostat dark.",
+  "eval_at": "2026-01-17T02:45:00-05:00",
+  "expected_readiness": "at_risk",
+  "expected_verification": "telemetry_missing",
+  "followup_created_at": "2026-01-17T00:30:00-05:00",
+  "followup_target": {
+    "target_temp": 68,
+    "target_unit": "F"
+  },
+  "ground_truth": {
+    "next_action": "Dispatch HVAC technician now; keep the warm-by plan under watch.",
+    "problem": "Furnace stopped around 23:10; living area cooling through the night."
+  },
+  "id": "ev-outage-2310",
+  "seed": 20261030,
+  "source_scenario": "care_home_v1"
+}

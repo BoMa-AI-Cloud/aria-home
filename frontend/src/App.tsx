@@ -46,7 +46,9 @@ import {
   type OutcomeStatus,
   type Readiness,
   type ReadinessResult,
+  type RecordedInvestigation,
   type RecordedReview,
+  type ReplayMetrics,
   type ScenarioEvent,
   type SourceKind,
   type SourceStatus,
@@ -548,12 +550,37 @@ function InvestigationSection({
   error,
   created,
   replayAt,
+  earlier = [],
 }: {
   data: InvestigationResponse | null;
   error: string | null;
   created: CreateInvestigationResponse | null;
   replayAt: string | null;
+  earlier?: RecordedInvestigation[];
 }) {
+  const earlierList = (earlier ?? []).filter(
+    (item) =>
+      !!item?.output && typeof item.evaluated_at === "string" &&
+      replayAt !== null && !Number.isNaN(Date.parse(item.evaluated_at)) &&
+      !Number.isNaN(Date.parse(replayAt)) && Date.parse(item.evaluated_at) < Date.parse(replayAt),
+  );
+  const earlierBlock =
+    earlierList.length === 0 ? null : (
+      <details className="earlier-explanations" data-testid="earlier-explanations">
+        <summary>Earlier explanations ({earlierList.length})</summary>
+        <p>Earlier recorded answers, kept as history. Only the answer above is current.</p>
+        <ul>
+          {earlierList.map((item) => (
+            <li key={item.evaluated_at}>
+              <p>
+                Evaluation time: <time dateTime={item.evaluated_at}>{formatTimestamp(item.evaluated_at)}</time>
+              </p>
+              <p>{item.output?.interpretation}</p>
+            </li>
+          ))}
+        </ul>
+      </details>
+    );
   if (!data && !error) return <p role="status">Loading investigation…</p>;
   if (error) {
     return (
@@ -612,6 +639,7 @@ function InvestigationSection({
     return (
       <>
         {evaluationLine}
+        {earlierBlock}
         <p className="unavailable">ARIA&apos;s explanation is unavailable</p>
         {data.status === "rejected" && (
           <p className="model-not-used">The model answer was not used.</p>
@@ -641,6 +669,7 @@ function InvestigationSection({
   return (
     <>
       {evaluationLine}
+      {earlierBlock}
       {data.provider_mode === "mock" && (
         <p className="mock-label" role="note">
           MOCK - example answer, not live inference
@@ -1246,6 +1275,41 @@ function notificationStateInWords(notification: Notification): string {
   return notification.state.replace(/_/g, " ");
 }
 
+function caregiverStatusParts(permission: CaregiverPermission): {
+  prefix: string;
+  whenText: string;
+  whenDateTime: string | null;
+  effect: string;
+} {
+  if (permission.status === "approved") {
+    return {
+      prefix: "Approved by the caregiver at",
+      whenText: permission.decided_at ? formatTimestamp(permission.decided_at) : "an unknown time",
+      whenDateTime: permission.decided_at ?? null,
+      effect: "HVAC may now be contacted.",
+    };
+  }
+  if (permission.status === "declined") {
+    return {
+      prefix: "Declined by the caregiver at",
+      whenText: permission.decided_at ? formatTimestamp(permission.decided_at) : "an unknown time",
+      whenDateTime: permission.decided_at ?? null,
+      effect: "No HVAC request; ARIA keeps monitoring.",
+    };
+  }
+  return {
+    prefix: "No answer yet — asked at",
+    whenText: permission.requested_at ? formatTimestamp(permission.requested_at) : "an unknown time",
+    whenDateTime: null,
+    effect: "ARIA will not contact HVAC until she answers.",
+  };
+}
+
+function caregiverStatusCopy(permission: CaregiverPermission): { headline: string; effect: string } {
+  const parts = caregiverStatusParts(permission);
+  return { headline: `${parts.prefix} ${parts.whenText}.`, effect: parts.effect };
+}
+
 function CaregiverPermissionCard({
   permission,
   onDecide,
@@ -1261,24 +1325,25 @@ function CaregiverPermissionCard({
   onSendWhatsapp: () => void;
   sending: boolean;
 }) {
-  const statusLine =
-    permission.status === "waiting"
-      ? "Waiting for the caregiver's answer. ARIA will not contact the HVAC company until she approves."
-      : permission.status === "approved"
-        ? "Approved by the caregiver. Only now may ARIA contact the HVAC company."
-        : "Declined by the caregiver. No HVAC request; ARIA keeps monitoring and its own alerts continue.";
+  const copy = caregiverStatusCopy(permission);
+  const parts = caregiverStatusParts(permission);
+  const dotTone = permission.status === "approved" ? "ok" : permission.status === "declined" ? "risk" : "watch";
   return (
     <article className="caregiver-permission-card" aria-label="Caregiver permission" data-testid="caregiver-permission">
       <h3 className="card-title">Permission request to the family caregiver</h3>
       <blockquote className="permission-text">{permission.text}</blockquote>
+      <p className="permission-asked">
+        Asked at <time dateTime={permission.requested_at}>{formatTimestamp(permission.requested_at)}</time> — the
+        original request, kept word-for-word at every later step.
+      </p>
       <p className={`permission-status permission-${permission.status}`} role="status">
-        {statusLine}
-        {permission.decided_at && (
-          <>
-            {" "}
-            <time dateTime={permission.decided_at}>{formatTimestamp(permission.decided_at)}</time>
-          </>
+        <span className={`status-dot status-dot-${dotTone}`} aria-hidden="true" /> {parts.prefix}{" "}
+        {parts.whenDateTime ? (
+          <time dateTime={parts.whenDateTime}>{parts.whenText}</time>
+        ) : (
+          parts.whenText
         )}
+        . {copy.effect}
         {permission.source && <span className="permission-source"> ({permission.source})</span>}
       </p>
       <p className="permission-note">{permission.note}</p>
@@ -1859,15 +1924,29 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
   if (trace.permission) {
     const permission = trace.permission;
     const permissionState = permission.status === "approved" ? "pass" : permission.status === "declined" ? "fail" : "stale";
+    const decidedAt = permission.decided_at ? formatTimestamp(permission.decided_at) : "an unknown time";
+    const askedAt = permission.requested_at ? formatTimestamp(permission.requested_at) : "an unknown time";
+    const permissionLabel =
+      permission.status === "waiting"
+        ? "No answer yet"
+        : permission.status === "approved"
+          ? `Approved by the caregiver at ${decidedAt}`
+          : `Declined by the caregiver at ${decidedAt}`;
+    const permissionEffect =
+      permission.status === "waiting"
+        ? "ARIA will not contact HVAC until she answers"
+        : permission.status === "approved"
+          ? "HVAC may now be contacted"
+          : "No HVAC request; ARIA keeps monitoring";
     nodes.push({
       id: "permission",
       x: colX[3],
       y: 10 + trace.notices.length * (nodeH + gap),
-      label: `caregiver permission: ${permission.status}`,
-      sub: permission.status === "waiting" ? "requested, waiting for her answer" : `${permission.status} by the caregiver`,
+      label: permissionLabel,
+      sub: `${permissionEffect} — asked at ${askedAt}`,
       color: "#0e7490",
       state: permissionState,
-      detail: `${permission.text} (${permission.note})`,
+      detail: `${permission.text} Asked at ${askedAt}. (${permission.note})`,
     });
     edges.push({ id: "edge-verification-permission", from: "verification", to: "permission", state: permissionState, label: "the caregiver is asked before HVAC is contacted", detail: permission.note });
   }
@@ -2426,7 +2505,7 @@ function KnowRow({
 }) {
   const [open, setOpen] = useState(true);
   return (
-    <li className="know-row">
+    <li className="know-row" data-testid={`know-row-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
       <span className={`status-dot status-dot-${tone}`} aria-hidden="true" />
       <div className="know-row-body">
         <button
@@ -2480,6 +2559,9 @@ function WhoKnows({
   const homeownerNotices = notifications.filter((item) => item.audience === "homeowner");
   const managerNotices = notifications.filter((item) => item.audience === "property_manager");
   const articleProps = { onAck, ackingId, whatsappConfigured, onSendWhatsapp: onSendWhatsappFor, sendingWhatsappId };
+  const caregiverClause = permission
+    ? `${caregiverStatusCopy(permission).headline} ${caregiverStatusCopy(permission).effect}`
+    : "No caregiver request at this step — no HVAC decision to make.";
   return (
     <section aria-labelledby="who-knows-heading" className={sectionClassName}>
       <p className="section-label">Notices</p>
@@ -2497,13 +2579,7 @@ function WhoKnows({
           <KnowRow
             tone={permission.status === "approved" ? "ok" : permission.status === "declined" ? "risk" : "watch"}
             title="Family caregiver"
-            meta={
-              permission.status === "waiting"
-                ? "Asked — waiting for her answer"
-                : permission.status === "approved"
-                  ? "Approved HVAC contact"
-                  : "Declined HVAC contact"
-            }
+            meta={caregiverStatusCopy(permission).headline}
           >
             <CaregiverPermissionCard
               permission={permission}
@@ -2532,12 +2608,13 @@ function WhoKnows({
               hvacNotices.some((item) => item.state === "simulated_delivered")
                 ? `Simulated request sent — fields sent: ${Object.keys(
                   hvacNotices.find((item) => item.state === "simulated_delivered")?.payload ?? {},
-                ).join(", ")}`
+                ).join(", ")}. ${caregiverClause}`
                 : hvacNotices.length > 0
-                  ? `No request sent: ${refusalReasonInWords(hvacNotices[0])}`
-                  : "No HVAC request at this time"
+                  ? `No request sent: ${refusalReasonInWords(hvacNotices[0])}. ${caregiverClause}`
+                  : `No HVAC request at this time. ${caregiverClause}`
             }
           >
+            <p>{caregiverClause}</p>
             {hvacNotices.length === 0 ? (
               <p>No HVAC request at this time.</p>
             ) : (
@@ -2825,6 +2902,9 @@ export default function App() {
   const [sourcesLoading, setSourcesLoading] = useState(false);
   const [publicMode, setPublicMode] = useState<boolean | null>(null);
   const [caregiverPermission, setCaregiverPermission] = useState<CaregiverPermission | null>(null);
+  const [replayMetrics, setReplayMetrics] = useState<ReplayMetrics | null>(null);
+  const [recordedReplay, setRecordedReplay] = useState<RecordedInvestigation | null>(null);
+  const [recordedByAt, setRecordedByAt] = useState<Record<string, RecordedInvestigation>>({});
   const [decidingPermission, setDecidingPermission] = useState(false);
   const [version, setVersion] = useState<string | null>(null);
   const [storyCheckpoints, setStoryCheckpoints] = useState<string[]>([]);
@@ -2958,6 +3038,9 @@ export default function App() {
     setEvents([]);
     setNotifications([]);
     setCaregiverPermission(null);
+    setReplayMetrics(null);
+    setRecordedReplay(null);
+    setRecordedByAt({});
     setNotificationsError(null);
     setFollowUpTargetTemp(null);
     setReplayAt(null);
@@ -2967,6 +3050,8 @@ export default function App() {
         if (token !== investigationTokenRef.current) return;
         if (response.scenario !== scenario) return;
         setCreatedInvestigation(response);
+        setReplayMetrics(response.metrics ?? null);
+        setRecordedReplay(response.investigation as unknown as RecordedInvestigation);
         setInvestigationId(response.investigation_id);
         createdAtRef.current = startAt;
         setOutcome(response.outcome);
@@ -3004,6 +3089,8 @@ export default function App() {
             setHumanReport(followUp.human_report ?? null);
             setVerificationHistory(followUp.verification_history ?? []);
             setCaregiverPermission(followUp.caregiver_permission ?? null);
+            setReplayMetrics(followUp.metrics ?? null);
+            setRecordedReplay(followUp.recorded_investigation ?? null);
             if (followUp.notifications) {
               setNotifications(followUp.notifications);
             } else {
@@ -3096,6 +3183,8 @@ export default function App() {
     setEvents([]);
     setNotifications([]);
     setCaregiverPermission(null);
+    setReplayMetrics(null);
+    setRecordedReplay(null);
     setNotificationsError(null);
     const storyPosition = storyCheckpoints.indexOf(at);
     if (scenario === STORY_SCENARIO && storyPosition >= 0) setStoryIndex(storyPosition);
@@ -3133,6 +3222,15 @@ export default function App() {
       }
       createdAtRef.current = at;
       setCreatedInvestigation(created);
+      setReplayMetrics(created.metrics ?? null);
+      setRecordedReplay(created.investigation as unknown as RecordedInvestigation);
+      {
+        const createdRecorded = created.investigation as unknown as RecordedInvestigation | null;
+        if (createdRecorded?.output && typeof createdRecorded.evaluated_at === "string") {
+          const key = createdRecorded.evaluated_at;
+          setRecordedByAt((prev) => (prev[key] ? prev : { ...prev, [key]: createdRecorded }));
+        }
+      }
       setInvestigationId(created.investigation_id);
       if (created.notifications) setNotifications(created.notifications);
       if (created.follow_up === null) {
@@ -3159,6 +3257,15 @@ export default function App() {
         setHumanReport(response.human_report ?? null);
         setVerificationHistory(response.verification_history ?? []);
         setCaregiverPermission(response.caregiver_permission ?? null);
+        setReplayMetrics(response.metrics ?? null);
+        setRecordedReplay(response.recorded_investigation ?? null);
+        {
+          const recorded = response.recorded_investigation ?? null;
+          if (recorded?.output && typeof recorded.evaluated_at === "string") {
+            const key = recorded.evaluated_at;
+            setRecordedByAt((prev) => ({ ...prev, [key]: recorded }));
+          }
+        }
         if (response.follow_up) {
           if (typeof response.follow_up.target_unit === "string") {
             setFollowUpUnit(response.follow_up.target_unit);
@@ -3277,6 +3384,15 @@ export default function App() {
       .then(() => fetchFollowUp(id, at))
       .then((response) => {
         setCaregiverPermission(response.caregiver_permission ?? null);
+        setReplayMetrics(response.metrics ?? null);
+        setRecordedReplay(response.recorded_investigation ?? null);
+        {
+          const recorded = response.recorded_investigation ?? null;
+          if (recorded?.output && typeof recorded.evaluated_at === "string") {
+            const key = recorded.evaluated_at;
+            setRecordedByAt((prev) => ({ ...prev, [key]: recorded }));
+          }
+        }
         if (response.notifications) setNotifications(response.notifications);
         setDecidingPermission(false);
       })
@@ -3311,6 +3427,8 @@ export default function App() {
         evaluated_at: createdInvestigation.investigation.evaluated_at,
       } as unknown as InvestigationResponse)
     : null;
+  const reasoningInvestigation =
+    publicMode === true ? (recordedReplay ?? displayInvestigation) : displayInvestigation;
 
   const visibleNotifications = notifications.filter((notification) => {
     if (!replayAt) return true;
@@ -3328,6 +3446,16 @@ export default function App() {
   const storyAt = inStory ? storyCheckpoints[Math.min(storyIndex, storyCheckpoints.length - 1)] : null;
   const storyTitle = STORY_STEP_TITLES[Math.min(storyIndex, STORY_STEP_TITLES.length - 1)] ?? "";
   const storyGuidance = STORY_STEP_GUIDANCE[Math.min(storyIndex, STORY_STEP_GUIDANCE.length - 1)] ?? "";
+  const earlierInvestigations = inStory
+    ? storyCheckpoints
+      .slice(0, Math.min(storyIndex, storyCheckpoints.length))
+      .map((checkpoint) => recordedByAt[checkpoint])
+      .filter((item): item is RecordedInvestigation =>
+        !!item?.output && typeof item.evaluated_at === "string" &&
+        !Number.isNaN(Date.parse(item.evaluated_at)) && !Number.isNaN(Date.parse(selectedAt)) &&
+        Date.parse(item.evaluated_at) < Date.parse(selectedAt),
+      )
+    : [];
   const deterministicReadiness =
     createdInvestigation?.readiness ?? displayInvestigation?.summary?.readiness ?? null;
   const recordedProvenance =
@@ -3348,8 +3476,8 @@ export default function App() {
   const verdict = !replayLoading || deterministicReadiness || verification
     ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit)
     : null;
-  const trend = displayInvestigation?.summary?.metrics?.indoor_trend ?? null;
-  const gapTarget = displayInvestigation?.summary?.metrics?.target_gap ?? null;
+  const trend = replayMetrics?.indoor_trend ?? null;
+  const gapTarget = replayMetrics?.target_gap ?? null;
   const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
   const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
   const plannedArrival = contextData?.planned_arrival ?? null;
@@ -3572,6 +3700,11 @@ export default function App() {
                 .join("; ")}
             </p>
           )}
+          <p className="story-caregiver-caption" data-testid="story-caregiver-caption" role="status">
+            {caregiverPermission
+              ? `${caregiverStatusCopy(caregiverPermission).headline} ${caregiverStatusCopy(caregiverPermission).effect} Asked at ${formatTimestamp(caregiverPermission.requested_at)}.`
+              : "No caregiver request at this step."}
+          </p>
           <div className="story-nav">
             <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId}>
               Rewind to start
@@ -3670,17 +3803,17 @@ export default function App() {
           </section>
           <section aria-labelledby="drawer-model-heading">
             <h3 id="drawer-model-heading">Model interpretation and limits</h3>
-            {displayInvestigation?.output ? (
+            {reasoningInvestigation?.output ? (
               <>
                 <p>
-                  {displayInvestigation.provider_mode === "recorded"
+                  {reasoningInvestigation.provider_mode === "recorded"
                     ? "Recorded model response (not live inference)."
                     : "MOCK - example answer, not live inference."}
                 </p>
-                <p>{displayInvestigation.output.interpretation}</p>
-                {displayInvestigation.output.limitations.length > 0 && (
+                <p>{reasoningInvestigation.output.interpretation}</p>
+                {reasoningInvestigation.output.limitations.length > 0 && (
                   <ul>
-                    {displayInvestigation.output.limitations.map((limitation) => (
+                    {reasoningInvestigation.output.limitations.map((limitation) => (
                       <li key={limitation}>{limitation}</li>
                     ))}
                   </ul>
@@ -3694,7 +3827,7 @@ export default function App() {
                     {String(recordedProvenance["code_snapshot"] ?? "unknown")}.
                   </p>
                 ) : (
-                  <p>Provenance: provider mode {displayInvestigation.provider_mode ?? "unknown"}.</p>
+                  <p>Provenance: provider mode {reasoningInvestigation.provider_mode ?? "unknown"}.</p>
                 )}
               </>
             ) : (
@@ -3840,10 +3973,10 @@ export default function App() {
         <SectionBoundary name="Investigation" key={`investigation-${selectedAt}`}>
         <p className="section-label">What the model said</p>
         <h2 id="investigation-heading">Investigation</h2>
-        {publicMode === true && displayInvestigation?.provider_mode === "recorded" && (
+        {publicMode === true && reasoningInvestigation?.provider_mode === "recorded" && (
           <p>Recorded model response — recorded, not live.</p>
         )}
-        <InvestigationSection data={displayInvestigation} error={investigationError} created={createdInvestigation} replayAt={selectedAt} />
+        <InvestigationSection data={reasoningInvestigation} error={investigationError} created={createdInvestigation} replayAt={selectedAt} earlier={earlierInvestigations} />
         </SectionBoundary>
       </section>
 

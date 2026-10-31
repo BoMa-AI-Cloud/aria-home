@@ -1,0 +1,4764 @@
+{
+  "records": [
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0000",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0000",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0001",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0001",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0002",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0002",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0003",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0003",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0004",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0004",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0005",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0005",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0006",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0006",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0007",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0007",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0008",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0008",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0009",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0009",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0010",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0010",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0011",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0011",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0012",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0012",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0013",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0013",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0014",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0014",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0015",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0015",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0016",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0016",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0017",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0017",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0018",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0018",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0019",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0019",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0020",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0020",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0021",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0021",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0022",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0022",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0023",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0023",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0024",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0024",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0025",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0025",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0026",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0026",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0027",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0027",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0028",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0028",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0029",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0029",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0030",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0030",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0031",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0031",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0032",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0032",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0033",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0033",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0034",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0034",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0035",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0035",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0036",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0036",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0037",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0037",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0038",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0038",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0039",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0039",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0040",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0040",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0041",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0041",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0042",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0042",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0043",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0043",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0044",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0044",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0045",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0045",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0046",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0046",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0047",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0047",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0048",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0048",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0049",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0049",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0050",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0050",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0051",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0051",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0052",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0052",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0053",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0053",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0054",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0054",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0055",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0055",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0056",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0056",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0057",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0057",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0058",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0058",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0059",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0059",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0060",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0060",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0061",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0061",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0062",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0062",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0063",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0063",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0064",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0064",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0065",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0065",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0066",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0066",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0067",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0067",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0068",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0068",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0069",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0069",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0070",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0070",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0071",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0071",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0072",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0072",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0073",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0073",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0074",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0074",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0075",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0075",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0076",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0076",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0077",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0077",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0078",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0078",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0079",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0079",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0080",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0080",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0081",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0081",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0082",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0082",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0083",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0083",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0084",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0084",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0085",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0085",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0086",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0086",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0087",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0087",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0088",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0088",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0089",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0089",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0090",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0090",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0091",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0091",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0092",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0092",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0093",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0093",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0094",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0094",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0095",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0095",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0096",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0096",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0097",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0097",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0098",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0098",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0099",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0099",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0100",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0100",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0101",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0101",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0102",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0102",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0103",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0103",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0104",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0104",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0105",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0105",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0106",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0106",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0107",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0107",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0108",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0108",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0109",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0109",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0110",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0110",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0111",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0111",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0112",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0112",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0113",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0113",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0114",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0114",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0115",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0115",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0116",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0116",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0117",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0117",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0118",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0118",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0119",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0119",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0120",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0120",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0121",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0121",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0122",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0122",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0123",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0123",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0124",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0124",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0125",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0125",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0126",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0126",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0127",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0127",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0128",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0128",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0129",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0129",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0130",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0130",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0131",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0131",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0132",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0132",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0133",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0133",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0134",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0134",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0135",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0135",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0136",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0136",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0137",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0137",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0138",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0138",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-temp-0139",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev03-tstat-state-0139",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-outage-0340",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Two room sensors disagree sharply at the same times; the truth cannot be told.",
+  "eval_at": "2026-01-17T02:45:00-05:00",
+  "expected_readiness": "cannot_tell",
+  "expected_verification": "unable_to_verify",
+  "followup_created_at": "2026-01-17T00:30:00-05:00",
+  "followup_target": {
+    "target_temp": 68,
+    "target_unit": "F"
+  },
+  "ground_truth": {
+    "next_action": "Inspect the sensors on site; do not decide dispatch from these readings.",
+    "problem": "Room sensors contradict each other; no trustworthy room temperature."
+  },
+  "id": "ev-conflict-sensors",
+  "seed": 20261030,
+  "source_scenario": "care_home_v1"
+}

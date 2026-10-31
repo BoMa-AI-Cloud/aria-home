@@ -1,0 +1,6362 @@
+{
+  "records": [
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0000",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0000",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0001",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0001",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0002",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0002",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0003",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0003",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0004",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0004",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0005",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0005",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0006",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0006",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0007",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0007",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0008",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0008",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0009",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0009",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0010",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0010",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0011",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0011",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0012",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0012",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0013",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0013",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0014",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0014",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0015",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0015",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0016",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0016",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0017",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0017",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0018",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0018",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0019",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0019",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0020",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0020",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0021",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0021",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0022",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0022",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0023",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0023",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0024",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0024",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0025",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0025",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0026",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0026",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0027",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0027",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0028",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0028",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0029",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0029",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0030",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0030",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0031",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0031",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0032",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0032",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0033",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0033",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0034",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0034",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0035",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0035",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0036",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0036",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0037",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0037",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0038",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0038",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0039",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0039",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0040",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0040",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0041",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0041",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0042",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0042",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0043",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0043",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0044",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0044",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0045",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0045",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0046",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0046",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0047",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0047",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0048",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0048",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0049",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0049",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0050",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0050",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0051",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0051",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0052",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0052",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0053",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0053",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0054",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0054",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0055",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0055",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0056",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0056",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0057",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0057",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0058",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0058",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0059",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0059",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0060",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0060",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0061",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0061",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0062",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0062",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0063",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0063",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0064",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0064",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0065",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0065",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0066",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0066",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0067",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0067",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0068",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0068",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0069",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0069",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0070",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0070",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0071",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0071",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0072",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0072",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0073",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 69.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0073",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0074",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0074",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0075",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0075",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0076",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0076",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0077",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0077",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0078",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0078",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0079",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0079",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0080",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0080",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0081",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0081",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0082",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0082",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0083",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0083",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0084",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0084",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0085",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0085",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0086",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0086",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0087",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0087",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0088",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0088",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0089",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0089",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0090",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0090",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0091",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0091",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0092",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0092",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0093",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0093",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0094",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0094",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0095",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0095",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0096",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0096",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0097",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0097",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0098",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0098",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0099",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0099",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0100",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0100",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0101",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0101",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0102",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0102",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0103",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0103",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0104",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0104",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0105",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0105",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0106",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0106",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0107",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0107",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0108",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0108",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0109",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0109",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0110",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0110",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0111",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0111",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0112",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0112",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0113",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0113",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0114",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0114",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0115",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0115",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0116",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0116",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0117",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0117",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0118",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0118",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0119",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0119",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0120",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0120",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0121",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0121",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0122",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0122",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0123",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0123",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0124",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0124",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0125",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0125",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0126",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0126",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0127",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0127",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0128",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0128",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0129",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0129",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0130",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0130",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0131",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0131",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0132",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0132",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0133",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0133",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0134",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0134",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0135",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0135",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0136",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0136",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0137",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0137",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0138",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0138",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0139",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0139",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0140",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0140",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0141",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0141",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0142",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0142",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0143",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0143",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T03:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0144",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0144",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0145",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0145",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0146",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0146",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0147",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0147",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0148",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0148",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0149",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0149",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0150",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0150",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0151",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0151",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0152",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0152",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0153",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0153",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0154",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0154",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0155",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0155",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T04:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0156",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0156",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0157",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0157",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0158",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0158",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0159",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0159",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0160",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0160",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0161",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0161",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0162",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0162",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0163",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0163",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0164",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0164",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0165",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0165",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0166",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0166",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0167",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0167",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T05:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0168",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0168",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0169",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0169",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0170",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0170",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0171",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0171",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0172",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0172",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0173",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0173",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0174",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0174",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0175",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0175",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:35:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0176",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0176",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:40:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0177",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0177",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:45:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0178",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0178",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:50:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0179",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0179",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T06:55:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0180",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0180",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0181",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0181",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:05:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0182",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0182",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:10:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0183",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0183",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:15:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0184",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 67.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0184",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:20:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0185",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0185",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:25:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-temp-0186",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev05-tstat-state-0186",
+      "kind": "device_report",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-slow-cool-ontrack",
+        "version": "1"
+      },
+      "quantity": "hvac_reported_state",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "source": "thermostat",
+      "subject": "demo-house/main",
+      "unit": null,
+      "value": "idle"
+    }
+  ]
+}

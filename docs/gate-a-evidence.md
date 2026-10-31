@@ -25,4 +25,11 @@ Note on finding 3: on `247cdb5` the probe hit the 64 MiB disk bound after 93 ses
 
 ## Hosted demo
 
-See the section below, added after the deploy of the commit that carries this page's fixes.
+Run against https://aria-home-demo.onrender.com after deploying `cbce15e`, on 2026-10-30 at 21:55 UTC ([`hosted-checks.txt`](evidence/gate-a/hosted-checks.txt)):
+
+- `/api/health` reports commit `cbce15e63d3d933c81367cd6d270c291f797a61b` (read from the build stamp), so the footer version equals the deployed commit.
+- Finding 3: a forged session cookie gets a newly issued session; the forged value is never kept. (The 500-visitor flood was not run against the public site, so real visitors are not crowded out; it is covered offline above.)
+- Finding 4: an off-checkpoint acknowledgement at 02:32 gets HTTP 400 and nothing is stored.
+- Finding 7: `[]`, `{}`, `null`, `5` and `true` as the decision all get HTTP 400.
+- Findings 1 and 2: after a decline at 02:31, at 06:21 the follow-up says `goal_verified` / `declined` and the decision map says the same, with the HVAC notice not allowed.
+- Isolation: a second visitor gets 404 for the first visitor's investigation.

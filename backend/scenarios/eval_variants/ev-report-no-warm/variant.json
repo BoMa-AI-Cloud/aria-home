@@ -1,0 +1,18 @@
+{
+  "description": "Technician visit and completion report filed, but room readings show no warming after.",
+  "eval_at": "2026-01-17T06:45:00-05:00",
+  "expected_readiness": "at_risk",
+  "expected_verification": "reporting_restored",
+  "followup_created_at": "2026-01-17T00:30:00-05:00",
+  "followup_target": {
+    "target_temp": 68,
+    "target_unit": "F"
+  },
+  "ground_truth": {
+    "next_action": "Re-dispatch; do not close on the report alone.",
+    "problem": "Completion report claims a fix, but independent readings show no warming; the report proves nothing."
+  },
+  "id": "ev-report-no-warm",
+  "seed": 20261030,
+  "source_scenario": "care_home_v1"
+}

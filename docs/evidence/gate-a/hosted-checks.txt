@@ -1,0 +1,7 @@
+Hosted checks, 2026-10-30T21:55Z, https://aria-home-demo.onrender.com
+health version: {'commit': 'cbce15e63d3d933c81367cd6d270c291f797a61b', 'source': 'file'}
+F3 forged cookie: 1 new session cookie issued; forged value kept: 0
+F4 off-checkpoint ack: HTTP 400; acks stored: 0
+F7 malformed decisions: []->400 {}->400 null->400 5->400 true->400
+F1/F2 at 06:21 after decline: follow-up=[goal_verified declined] map=[goal_verified declined [False]]
+isolation: second visitor reading the first visitor's investigation -> HTTP 404

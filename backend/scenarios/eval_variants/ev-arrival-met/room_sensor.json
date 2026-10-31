@@ -1,0 +1,3183 @@
+{
+  "records": [
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0000",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0001",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0002",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0003",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0004",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0005",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0006",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0007",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0008",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0009",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0010",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0011",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T16:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T16:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0012",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0013",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0014",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0015",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0016",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0017",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0018",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0019",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0020",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0021",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0022",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0023",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T17:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T17:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0024",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0025",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0026",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0027",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0028",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0029",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0030",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0031",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0032",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0033",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0034",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0035",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T18:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T18:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0036",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0037",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0038",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0039",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0040",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0041",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0042",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0043",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0044",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0045",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0046",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0047",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T19:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T19:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0048",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0049",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0050",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0051",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0052",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0053",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0054",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0055",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0056",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0057",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0058",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0059",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T20:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T20:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0060",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0061",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0062",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0063",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0064",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0065",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0066",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0067",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0068",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0069",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0070",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0071",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T21:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T21:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0072",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0073",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0074",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0075",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0076",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0077",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0078",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0079",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0080",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0081",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0082",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0083",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T22:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T22:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0084",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0085",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0086",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0087",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0088",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0089",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0090",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0091",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0092",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0093",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0094",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0095",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-16T23:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-16T23:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0096",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0097",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0098",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0099",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0100",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0101",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0102",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0103",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0104",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0105",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0106",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0107",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T00:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T00:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0108",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0109",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0110",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0111",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0112",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0113",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0114",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0115",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0116",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0117",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0118",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0119",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T01:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T01:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0120",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0121",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 60.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0122",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0123",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0124",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 61.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0125",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0126",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 62.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0127",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0128",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0129",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 63.9
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0130",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0131",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T02:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T02:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 64.7
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0132",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.0
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0133",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 65.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0134",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0135",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0136",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 66.8
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0137",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 67.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0138",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 67.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0139",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0140",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0141",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0142",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0143",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T03:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T03:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0144",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0145",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0146",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0147",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0148",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0149",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0150",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0151",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.1
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0152",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0153",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0154",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0155",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T04:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T04:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0156",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0157",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0158",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0159",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0160",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0161",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0162",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0163",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0164",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0165",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0166",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0167",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T05:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T05:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0168",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0169",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.2
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0170",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0171",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0172",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0173",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0174",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0175",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:35:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:35:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0176",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:40:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:40:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0177",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:45:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:45:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.6
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0178",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:50:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:50:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0179",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T06:55:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T06:55:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.4
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0180",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0181",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:05:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:05:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0182",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:10:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:10:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.3
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0183",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:15:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:15:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0184",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:20:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:20:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0185",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:25:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:25:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    },
+    {
+      "expected_cadence_s": 300,
+      "id": "ev12-room-0186",
+      "kind": "measurement",
+      "mode": "synthetic",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "provenance": {
+        "fixture_id": "ev-arrival-met",
+        "version": "1"
+      },
+      "quantity": "indoor_temp",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "source": "room_sensor",
+      "subject": "demo-house/main",
+      "unit": "F",
+      "value": 68.5
+    }
+  ]
+}

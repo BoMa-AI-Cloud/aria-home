@@ -154,6 +154,11 @@ export interface HomeownerConfirmation {
   trip_revision_id: string | null;
 }
 
+export interface ReplayMetrics {
+  indoor_trend: IndoorTrend;
+  target_gap: TargetGap | null;
+}
+
 export interface MetricsResponse {
   data_mode: DataMode;
   scenario?: string;
@@ -403,6 +408,11 @@ export interface CreatedInvestigation extends Investigation {
   evaluated_at: string;
   readiness: ReadinessResult | null;
   computed_readiness: ReadinessStatus | null;
+}
+
+export interface RecordedInvestigation extends InvestigationResponse {
+  evaluated_at: string;
+  recorded_provenance?: Record<string, unknown> | null;
 }
 
 export interface FollowUpSchedule {
@@ -712,6 +722,7 @@ export interface CreateInvestigationResponse {
   next_check_at: string | null;
   outcome: OutcomeResult | null;
   notifications?: Notification[];
+  metrics?: ReplayMetrics | null;
   error?: string;
 }
 
@@ -798,6 +809,8 @@ export interface FollowUpResponse {
   human_report?: HumanReportPayload | null;
   notifications?: Notification[];
   caregiver_permission?: CaregiverPermission | null;
+  metrics?: ReplayMetrics | null;
+  recorded_investigation?: RecordedInvestigation | null;
 }
 
 export interface CaregiverPermission {
@@ -1269,6 +1282,7 @@ export interface TraceResponse {
     actor: string | null;
     decided_at: string | null;
     source: string | null;
+    requested_at: string | null;
     text: string;
     note: string;
   } | null;

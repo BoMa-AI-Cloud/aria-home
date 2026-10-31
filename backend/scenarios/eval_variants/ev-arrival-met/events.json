@@ -1,0 +1,64 @@
+{
+  "events": [
+    {
+      "available_at": "2026-01-16T19:15:00-05:00",
+      "event_time": "2026-01-16T19:15:00-05:00",
+      "id": "ev12-evt-care-confirmation-request",
+      "kind": "confirmation_request",
+      "payload": {
+        "label": "synthetic confirmation_request for ev-arrival-met"
+      },
+      "simulated": true
+    },
+    {
+      "available_at": "2026-01-17T02:37:00-05:00",
+      "event_time": "2026-01-17T02:35:00-05:00",
+      "id": "ev12-evt-care-caregiver-alert",
+      "kind": "caregiver_alert",
+      "payload": {
+        "label": "synthetic caregiver_alert for ev-arrival-met"
+      },
+      "simulated": true
+    },
+    {
+      "available_at": "2026-01-17T02:45:00-05:00",
+      "event_time": "2026-01-17T02:45:00-05:00",
+      "id": "ev12-evt-care-caregiver-hvac-authorized",
+      "kind": "caregiver_hvac_authorized",
+      "payload": {
+        "label": "synthetic caregiver_hvac_authorized for ev-arrival-met"
+      },
+      "simulated": true
+    },
+    {
+      "available_at": "2026-01-17T02:52:00-05:00",
+      "event_time": "2026-01-17T02:50:00-05:00",
+      "id": "ev12-evt-care-hvac-request",
+      "kind": "hvac_request",
+      "payload": {
+        "label": "synthetic hvac_request for ev-arrival-met"
+      },
+      "simulated": true
+    },
+    {
+      "available_at": "2026-01-17T04:15:00-05:00",
+      "event_time": "2026-01-17T03:30:00-05:00",
+      "id": "ev12-evt-care-service-visit",
+      "kind": "service_visit",
+      "payload": {
+        "label": "synthetic service_visit for ev-arrival-met"
+      },
+      "simulated": true
+    },
+    {
+      "available_at": "2026-01-17T06:45:00-05:00",
+      "event_time": "2026-01-17T06:40:00-05:00",
+      "id": "ev12-evt-care-hvac-completion-report",
+      "kind": "hvac_completion_report",
+      "payload": {
+        "label": "synthetic hvac_completion_report for ev-arrival-met"
+      },
+      "simulated": true
+    }
+  ]
+}

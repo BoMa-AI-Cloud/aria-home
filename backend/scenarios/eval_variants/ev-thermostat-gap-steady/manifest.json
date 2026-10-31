@@ -1,0 +1,11 @@
+{
+  "author": "ARIA Home (synthetic)",
+  "created": "2026-10-29",
+  "description": "Synthetic model-value eval variant of care_home_v1 (seed 20261030): Thermostat radio dies 01:30 but the room sensor holds steady at goal; no heating fault.",
+  "id": "ev-thermostat-gap-steady",
+  "mode": "synthetic",
+  "scenario_period_note": "Scenario timestamps (January 2026) are fictional replay times, not when the data was created. All data is synthetic; all actor and communication events are simulated. Sources: calendar, thermostat, room_sensor (its own source), electrical, weather. Cadences: thermostat 300 s, room_sensor 300 s, electrical 1800 s, weather 21600 s.",
+  "start": "2026-01-16T16:00:00-05:00",
+  "timezone": "America/New_York",
+  "version": "1"
+}

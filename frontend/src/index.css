@@ -1665,6 +1665,8 @@ main h3 {
 
 .permission-approved { color: var(--ok); }
 .permission-declined { color: var(--risk); }
+.permission-waiting { color: var(--watch); }
+.permission-asked { font-size: 0.875rem; color: var(--muted); }
 .permission-note { font-size: 0.875rem; color: var(--muted); }
 
 .permission-actions {

@@ -77,6 +77,34 @@ def _recorded_review_for_display(scn, at, pack, answer_output=None):
         return None
 
 
+def _jsonable(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {k: _jsonable(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_jsonable(v) for v in value]
+    return value
+
+
+def _replay_metrics(scn, at):
+    """Indoor trend and target gap for one scenario at one replay time.
+
+    Shared by GET /api/metrics, POST /api/investigations and GET /api/follow-ups
+    so the House lead and the tiles always describe the shown time.
+    """
+    start = at - timedelta(hours=3)
+    ctx = context_as_of(scn, at)
+    visible = visible_records(scn.records, at)
+    zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
+    zone = zones[0] if zones else "demo-house/main"
+    trend = temperature_trend(visible, zone, start, at, at)
+    gap = None
+    if ctx.confirmation is not None:
+        gap = target_gap(trend, ctx.confirmation.target_temp, ctx.confirmation.target_unit)
+    return {"indoor_trend": _jsonable(trend), "target_gap": _jsonable(gap)}
+
+
 def _human_report_for_display(scn, at):
     try:
         return human_report_for(scn, at)
@@ -328,17 +356,6 @@ def create_app():
 
     @app.get("/api/metrics")
     def metrics():
-        from datetime import datetime as _datetime
-
-        def _jsonable(value):
-            if isinstance(value, _datetime):
-                return value.isoformat()
-            if isinstance(value, dict):
-                return {k: _jsonable(v) for k, v in value.items()}
-            if isinstance(value, list):
-                return [_jsonable(v) for v in value]
-            return value
-
         scn = _load_named_scenario(request.args.get("scenario"))
         if scn is None:
             return jsonify({"error": "unknown scenario", "scenario": request.args.get("scenario"), "at": request.args.get("at"), "timezone": scenario.manifest.timezone}), 404
@@ -358,10 +375,9 @@ def create_app():
         visible = visible_records(scn.records, at)
         zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
         zone = zones[0] if zones else "demo-house/main"
-        trend = temperature_trend(visible, zone, start, at, at)
-        gap = None
-        if ctx.confirmation is not None:
-            gap = target_gap(trend, ctx.confirmation.target_temp, ctx.confirmation.target_unit)
+        replay_metrics = _replay_metrics(scn, at)
+        trend = replay_metrics["indoor_trend"]
+        gap = replay_metrics["target_gap"]
         circuit_ids = sorted(
             {
                 (r.binding.circuit_id if r.binding else None) or r.subject
@@ -686,7 +702,7 @@ def create_app():
         computed_readiness = readiness.get("status") if isinstance(readiness, dict) else None
         investigation_payload.update({"id": investigation_id, "investigation_id": investigation_id, "scenario": scn.manifest.id, "evaluated_at": at.isoformat(), "readiness": readiness, "computed_readiness": computed_readiness, **({"recorded_provenance": public_provenance} if public_provenance else {}), **({"recorded_review": recorded_review} if recorded_review else {})})
         if schedule["deadline_passed"]:
-            return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
+            return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "metrics": _replay_metrics(scn, at), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
         anchor = _follow_up_anchor(scn, at)
         try:
             try:
@@ -697,11 +713,11 @@ def create_app():
                 follow_up = follow_up_for(scn, investigation_id, at, cadence_s=cadence_s)
         except ValueError as exc:
             if "deadline_passed" in str(exc):
-                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "deadline_passed", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": "deadline_passed", "flag": "deadline_passed", "deadline_passed": True, "next_check_at": None, "outcome": None, "metrics": _replay_metrics(scn, at), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
             if any(token in str(exc) for token in ("trip_cancelled", "trip_unconfirmed", "trip_mismatched", "confirmation_outdated", "no homeowner confirmation", "no trip visible")):
                 primary = next((name for name in ("trip_cancelled", "confirmation_outdated", "trip_mismatched", "trip_unconfirmed") if ctx.flags.get(name)), "trip_unconfirmed")
                 not_scheduled = {**schedule_payload, "status": "not_scheduled", "schedule_status": "not_scheduled", "next_check_at": None, "when": None}
-                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "cannot_tell", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": not_scheduled, "schedule": not_scheduled, "schedule_status": "not_scheduled", "flag": primary, "flags": dict(ctx.flags), "readiness_flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "deadline_passed": False, "next_check_at": None, "outcome": None, "error": str(exc), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
+                return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": "cannot_tell", "investigation_status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": None, "follow_up_schedule": not_scheduled, "schedule": not_scheduled, "schedule_status": "not_scheduled", "flag": primary, "flags": dict(ctx.flags), "readiness_flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "deadline_passed": False, "next_check_at": None, "outcome": None, "error": str(exc), "metrics": _replay_metrics(scn, at), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
         if follow_up.next_check_at is None or follow_up.next_check_at.tzinfo is None or follow_up.next_check_at <= follow_up.created_at:
             return jsonify({"error": "invalid follow-up schedule", "data_mode": "synthetic"}), 400
@@ -710,7 +726,7 @@ def create_app():
             store.save_follow_up(follow_up, outcome=outcome)
         except ValueError as exc:
             return jsonify({"error": str(exc), "data_mode": "synthetic"}), 400
-        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json"), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
+        return jsonify({"data_mode": "synthetic", "investigation_id": investigation_id, "id": investigation_id, "scenario": scn.manifest.id, "status": result.status, "readiness": readiness, "computed_readiness": computed_readiness, "investigation": investigation_payload, "follow_up": _follow_up_payload(store, investigation_id), "follow_up_schedule": schedule_payload, "schedule": schedule_payload, "schedule_status": schedule["status"], "deadline_passed": False, "next_check_at": schedule_payload["next_check_at"], "outcome": outcome.model_dump(mode="json"), "metrics": _replay_metrics(scn, at), "notifications": notif_rows, "deduplicated": deduplicated, "identity_key": identity["identity_key"], "input_revision": identity["input_revision"], **identity_extra})
 
     if not public and os.environ.get("ARIA_HOME_E2E_HOOKS") == "1" and os.environ.get("ARIA_HOME_MODEL_ENABLED") != "1":
         @app.post("/api/e2e/reset")
@@ -794,9 +810,11 @@ def create_app():
                 decision = {"decision": "approved", "decided_at": scripted.available_at.isoformat(), "actor": "family_caregiver"}
                 source = "scenario event (the recorded story)"
         created_at = datetime.fromisoformat(str(alert["created_at"]).replace("Z", "+00:00"))
-        # The permission text is shown at the replay moment ARIA asks, so it is
-        # built from evidence visible at `at` (not from the alert creation time).
-        asked_at = at if at >= created_at else created_at
+        if at < created_at:
+            return None
+        # The permission question is frozen at the moment ARIA asked: the alert
+        # creation time, built from the evidence visible then, never rebuilt.
+        asked_at = created_at
         return {
             "notification_id": alert["id"],
             "text": caregiver_permission_text(scn, asked_at),
@@ -886,6 +904,15 @@ def create_app():
         payload["notifications"] = [_notification_api(r) for r in store.list_notifications(investigation_id, at=at)]
         if scn.manifest.id == "care_home_v1":
             payload["caregiver_permission"] = _caregiver_permission_payload(store, scn, investigation_id, payload["notifications"], at)
+        payload["metrics"] = _replay_metrics(scn, at)
+        if public:
+            rec_result, rec_provenance = public_investigation(scn, at)
+            rec_review = None
+            if rec_provenance is not None:
+                rec_review = _recorded_review_for_display(scn, at, build_evidence_pack(scn, at))
+            rec_payload = rec_result.model_dump(mode="json")
+            rec_payload.update({"evaluated_at": at.isoformat(), **({"recorded_provenance": rec_provenance} if rec_provenance else {}), **({"recorded_review": rec_review} if rec_review else {})})
+            payload["recorded_investigation"] = rec_payload
         if human_report is not None:
             payload["human_report"] = human_report["payload"]
         return jsonify(payload)
@@ -989,7 +1016,6 @@ def create_app():
         if existing.get("audience") != "hvac_company" and not is_permission:
             return jsonify({"error": "only the hvac_company notice and the caregiver permission request can be sent via WhatsApp", "reason": "wrong_audience", "data_mode": "synthetic"}), 409
         raw_at = request.args.get("at")
-        replay_at = None
         if raw_at is None:
             try:
                 body = request.get_json(force=False, silent=True)
@@ -1001,7 +1027,6 @@ def create_app():
             at, error = _parse_at(raw_at, None)
             if error:
                 return error
-            replay_at = at
             try:
                 created_dt = datetime.fromisoformat(str(existing.get("created_at")).replace("Z", "+00:00"))
             except ValueError:
@@ -1016,10 +1041,9 @@ def create_app():
                 inv_row = store.get_investigation(existing["investigation_id"])
                 perm_scn = _load_named_scenario(inv_row["scenario"] if inv_row else None) or scenario
                 created_dt = datetime.fromisoformat(str(existing["created_at"]).replace("Z", "+00:00"))
-                # WhatsApp text mirrors the on-screen request: the replay moment
-                # ARIA asks, using only evidence visible then.
-                shown_at = replay_at if replay_at is not None and replay_at >= created_dt else created_dt
-                result = attempt_caregiver_permission_whatsapp(store, existing, caregiver_permission_text(perm_scn, shown_at))
+                # WhatsApp text mirrors the on-screen request: the frozen
+                # ask-time question, built from evidence visible at creation.
+                result = attempt_caregiver_permission_whatsapp(store, existing, caregiver_permission_text(perm_scn, created_dt))
             else:
                 result = attempt_hvac_whatsapp_delivery(store, existing)
         except Exception as exc:
