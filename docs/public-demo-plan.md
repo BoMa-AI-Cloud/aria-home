@@ -1,5 +1,7 @@
 # Public demo and model-coverage plan (work list)
 
+> Remaining work is now tracked in [finishing-plan.md](finishing-plan.md) (2026-10-31); this file is kept as history.
+
 Received 2026-10-29 from Brad. Three goals: broad, meaningful Meta-model use; evidence-grounded verification and
 truthful follow-through; one-click browser access for judges (no install, account, API key or terminal). This file
 is the work list and is updated as each step lands. Nothing here is deployed; the hosted link stays

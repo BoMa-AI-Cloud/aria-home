@@ -2915,9 +2915,9 @@ export default function App() {
       const stored = window.localStorage.getItem("aria-home-theme");
       if (stored === "light" || stored === "dark") return stored;
     } catch {
-      // storage unavailable; fall through to the OS preference
+      // storage unavailable; fall through to the default
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return "light";
   });
   const [storyIndex, setStoryIndex] = useState(0);
   const [evidenceOpen, setEvidenceOpen] = useState(false);

@@ -3,6 +3,7 @@ import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+from aria_home.contracts import DataMode, EvidenceKind, EvidenceRecord, Provenance, SourceKind
 from aria_home.notifications import caregiver_permission_text, create_caregiver_updates, decide_hvac_notification
 from aria_home.scenario import load_scenario
 from aria_home.store import Store
@@ -85,10 +86,58 @@ def test_permission_text_uses_only_visible_readings():
     scn = load_scenario(CARE)
     text = caregiver_permission_text(scn, datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET))
     assert text.startswith("ARIA Home (synthetic scenario): your mother's home is cooling (")
+    assert "52 F" in text
+    assert "16 F below the 68 F target" in text
+    assert "thermostat not reporting since 01:30" in text
     assert "temperature unknown" not in text and "since unknown" not in text
     assert text.endswith("May I contact the HVAC company? Approve or decline in ARIA Home.")
     early = caregiver_permission_text(scn, datetime.datetime(2026, 1, 16, 0, 0, tzinfo=ET))
-    assert "(temperature unknown, furnace quiet since unknown)" in early
+    assert "home is at an unknown temperature (thermostat not reporting)" in early
+    assert "below target" not in early
+
+
+def _unit_record(record_id, source, quantity, value, observed, zone="demo-house/main"):
+    return EvidenceRecord(
+        id=record_id,
+        source=source,
+        kind=EvidenceKind.measurement,
+        subject=zone,
+        quantity=quantity,
+        value=value,
+        unit="F" if quantity == "indoor_temp" else None,
+        observed_at=observed,
+        received_at=observed + datetime.timedelta(seconds=60),
+        expected_cadence_s=300,
+        mode=DataMode.replay,
+        provenance=Provenance(fixture_id="unit", version="1"),
+    )
+
+
+def test_permission_text_never_says_cooling_when_trend_rises():
+    at = datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET)
+    records = [
+        _unit_record(f"room-{i}", SourceKind.room_sensor, "indoor_temp", 60.0 + i * 0.1, at - datetime.timedelta(hours=3) + datetime.timedelta(minutes=5 * i))
+        for i in range(36)
+    ]
+    scn = SimpleNamespace(manifest=SimpleNamespace(id="care_home_v1"), events=[], records=records)
+    text = caregiver_permission_text(scn, at)
+    assert text.startswith("ARIA Home (synthetic scenario): your mother's home is below target (")
+    assert "cooling" not in text
+    assert "thermostat not reporting" in text
+
+
+def test_permission_text_omits_furnace_clause_when_heating():
+    at = datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET)
+    records = [
+        _unit_record("room-1", SourceKind.room_sensor, "indoor_temp", 60.0, at - datetime.timedelta(minutes=10)),
+        _unit_record("tstat-1", SourceKind.thermostat, "indoor_temp", 60.0, at - datetime.timedelta(minutes=5)),
+        _unit_record("state-1", SourceKind.thermostat, "hvac_reported_state", "heating", at - datetime.timedelta(minutes=5)),
+    ]
+    scn = SimpleNamespace(manifest=SimpleNamespace(id="care_home_v1"), events=[], records=records)
+    text = caregiver_permission_text(scn, at)
+    assert "home is below target (60 F)." in text
+    assert "furnace" not in text
+    assert "thermostat not reporting" not in text
 
 
 def test_caregiver_updates_follow_hvac_and_verification(tmp_path):

@@ -1,6 +1,7 @@
 """The frozen caregiver request is identical at every checkpoint after it is raised, in all three branches.
 
-The story raises the request at 19:20 ("54 F, furnace quiet since 19:15"). Walking
+The story raises the request at 19:20 ("54 F, 14 F below the 68 F target,
+furnace reported idle since 16:00"). Walking
 every later checkpoint — with no decision, with an approval at 02:31, or with a
 decline at 02:31 — keeps the original text and the original asked time; only the
 status (and the decision time) changes. The trace agrees with the follow-ups.
@@ -61,7 +62,7 @@ def test_frozen_request_identical_without_decision(tmp_path, monkeypatch):
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
         assert "54 F" in permission["text"], at
-        assert "19:15" in permission["text"], at
+        assert "16:00" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T19:20"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0245:
@@ -89,7 +90,7 @@ def test_frozen_request_identical_after_approval(tmp_path, monkeypatch):
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
         assert "54 F" in permission["text"], at
-        assert "19:15" in permission["text"], at
+        assert "16:00" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T19:20"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0231:
@@ -116,7 +117,7 @@ def test_frozen_request_identical_after_decline(tmp_path, monkeypatch):
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
         assert "54 F" in permission["text"], at
-        assert "19:15" in permission["text"], at
+        assert "16:00" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T19:20"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0231:

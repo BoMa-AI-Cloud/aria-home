@@ -1,5 +1,7 @@
 # ARIA Home feature freeze
 
+> Remaining work is now tracked in [finishing-plan.md](finishing-plan.md) (2026-10-31); this file is kept as history.
+
 Initial freeze: 2026-10-26 at commit 4d3bacb. Brad lifted the self-imposed
 feature freeze on 2026-10-28 for the Audit 3 repair and the integrations that
 follow. A final freeze date will be set later.

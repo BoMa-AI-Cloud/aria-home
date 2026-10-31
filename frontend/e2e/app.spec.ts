@@ -611,7 +611,7 @@ test("caregiver approves before ARIA contacts the HVAC company", async ({ page }
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
   const card = page.getByTestId("caregiver-permission");
-  await expect(card).toContainText("your mother's home is cooling (52 F, furnace quiet since 01:30)");
+  await expect(card).toContainText("your mother's home is cooling (52 F, 16 F below the 68 F target, thermostat not reporting since 01:30)");
   await expect(card).toContainText("No answer yet");
   const delivered = page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" });
   await expect(delivered).toHaveCount(0);

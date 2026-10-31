@@ -33,7 +33,7 @@ def test_permission_request_waits_with_text(tmp_path, monkeypatch):
     _, body = _start(client)
     permission = body["caregiver_permission"]
     assert permission["status"] == "waiting"
-    assert permission["text"] == "ARIA Home (synthetic scenario): your mother's home is cooling (52 F, furnace quiet since 01:30). May I contact the HVAC company? Approve or decline in ARIA Home."
+    assert permission["text"] == "ARIA Home (synthetic scenario): your mother's home is cooling (52 F, 16 F below the 68 F target, thermostat not reporting since 01:30). May I contact the HVAC company? Approve or decline in ARIA Home."
 
 
 def test_approve_creates_hvac_with_allowed_fields_only(tmp_path, monkeypatch):

@@ -1,6 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from .scenario import context_as_of, events_as_of
+from .contracts import Availability, SourceKind
+from .eligibility import eligible_records
+from .evidence import freshness
+from .metrics import target_gap, temperature_trend
+from .scenario import context_as_of, events_as_of, visible_records
 from .scheduling import compute_follow_up_schedule
 
 AUDIENCES = ("homeowner", "property_manager", "family_caregiver", "hvac_company")
@@ -387,13 +391,77 @@ def _latest_visible(scenario, at, source, quantity=None):
     return max(visible, key=lambda r: r.observed_at) if visible else None
 
 
+NON_HEATING_STATES = frozenset({"idle", "off"})
+
+
+def _whole(value):
+    return str(int(round(float(value))))
+
+
+def _thermostat_clause(records, at):
+    temps = sorted(
+        [r for r in eligible_records(records, "indoor_temp", now=at, require_value=False) if _get(r, "source") is SourceKind.thermostat],
+        key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id"))),
+    )
+    if not temps:
+        return "thermostat not reporting"
+    latest = temps[-1]
+    if freshness(latest, at) is not Availability.available:
+        return f"thermostat not reporting since {_get(latest, 'observed_at').strftime('%H:%M')}"
+    states = sorted(
+        [r for r in records if _get(r, "source") is SourceKind.thermostat and _get(r, "quantity") == "hvac_reported_state"],
+        key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id"))),
+    )
+    if not states:
+        return None
+    state = str(_get(states[-1], "value") or "").lower()
+    if state not in NON_HEATING_STATES:
+        return None
+    start = _get(states[-1], "observed_at")
+    for record in reversed(states[:-1]):
+        if str(_get(record, "value") or "").lower() != state:
+            break
+        start = _get(record, "observed_at")
+    return f"furnace reported {state} since {start.strftime('%H:%M')}"
+
+
 def caregiver_permission_text(scenario, at):
     """The permission request, built only from readings visible at `at`; a missing reading is said, never invented."""
+    records = visible_records(getattr(scenario, "records", None) or [], at) if scenario is not None else []
     room = _latest_visible(scenario, at, "room_sensor", "indoor_temp") if scenario is not None else None
-    thermostat = _latest_visible(scenario, at, "thermostat") if scenario is not None else None
-    temp = f"{round(float(room.value))} F" if room is not None and isinstance(room.value, (int, float)) else "temperature unknown"
-    quiet = thermostat.observed_at.strftime("%H:%M") if thermostat is not None else "unknown"
-    return f"ARIA Home (synthetic scenario): your mother's home is cooling ({temp}, furnace quiet since {quiet}). May I contact the HVAC company? Approve or decline in ARIA Home."
+    room_value = _get(room, "value")
+    temp = f"{_whole(room_value)} F" if isinstance(room_value, (int, float)) else "temperature unknown"
+    zones = sorted({_get(r, "subject") for r in eligible_records(records, "indoor_temp", now=at, require_value=False)})
+    zone = zones[0] if zones else "demo-house/main"
+    trend = temperature_trend(records, zone, at - timedelta(hours=3), at, at)
+    rate = trend.get("rate_per_hour")
+    cooling = bool(trend.get("sufficient")) and isinstance(rate, (int, float)) and rate < 0
+    parts = [temp]
+    try:
+        confirmation = _get(context_as_of(scenario, at), "confirmation") if scenario is not None else None
+    except Exception:
+        confirmation = None
+    target = _get(confirmation, "target_temp") if confirmation is not None else None
+    if target is not None and isinstance(room_value, (int, float)) and trend.get("last_value") is not None:
+        unit = _get(confirmation, "target_unit") or "F"
+        gap = target_gap(trend, float(target), unit)
+        if gap is not None:
+            if gap["gap"] < 0:
+                parts.append(f"{_whole(abs(gap['gap']))} F below the {_whole(target)} F target")
+            elif gap["gap"] > 0:
+                parts.append(f"{_whole(gap['gap'])} F above the {_whole(target)} F target")
+            else:
+                parts.append(f"at the {_whole(target)} F target")
+    clause = _thermostat_clause(records, at)
+    if clause is not None:
+        parts.append(clause)
+    below = target is None or not isinstance(room_value, (int, float)) or float(room_value) < float(target)
+    state = "cooling" if cooling else ("below target" if below else "at or above target")
+    if not isinstance(room_value, (int, float)):
+        state = "at an unknown temperature"
+        parts = parts[1:]
+    detail = f" ({', '.join(parts)})" if parts else ""
+    return f"ARIA Home (synthetic scenario): your mother's home is {state}{detail}. May I contact the HVAC company? Approve or decline in ARIA Home."
 
 
 CAREGIVER_UPDATES = {
