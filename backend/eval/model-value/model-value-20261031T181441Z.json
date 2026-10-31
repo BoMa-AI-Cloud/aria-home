@@ -1,0 +1,2659 @@
+{
+  "snapshot": "d5a0da3",
+  "generated_at": "2026-10-31T18:14:41.550246+00:00",
+  "planned_calls": 60,
+  "records": [
+    {
+      "variant": "ev-arrival-met",
+      "eval_at": "2026-01-17T07:30:00-05:00",
+      "expected_readiness": "arrival_passed",
+      "expected_verification": "arrival_met",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "temperature_at_arrival",
+              "evidence_id": "ev12-room-0179",
+              "field": "value",
+              "value": 68.4,
+              "unit": "F",
+              "at": "2026-01-17T06:55:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Target 68.0 F",
+            "Indoor temperature at arrival 68.4 F (at 06:55)"
+          ],
+          "interpretation": "Evaluation time is after the planned arrival, so readiness reflects the temperature at arrival rather than a current pre-arrival forecast. The last reading received by arrival meets the target, and code reports arrival_passed for that reason. Later readings are historical and are not presented as current. Any further response would be by the authorized on-site role with homeowner notice per the trip record, subject to unknowns below.",
+          "hypotheses": [
+            {
+              "text": "Possible: The reading around arrival might reflect ongoing heating operation, but activity alone does not show useful heat.",
+              "supporting_ids": [
+                "ev12-room-0179",
+                "ev12-tstat-state-0179"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether temperature remained at target after the arrival reading",
+            "Whether heating equipment continued to provide useful heat after arrival",
+            "Which party is currently available to respond"
+          ],
+          "clarification": "Has the homeowner reported comfort or requested any further check after arrival?",
+          "follow_up": {
+            "observation": "Observe the next indoor temperature reading to monitor conditions after arrival without adjusting equipment",
+            "when": "2026-01-17T08:00:00-05:00",
+            "next_check_at": "2026-01-17T08:00:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "arrival_passed",
+          "limitations": [
+            "Arrival_passed assessment uses only readings received by arrival; later readings are historical",
+            "Electrical activity does not prove useful heat",
+            "Branch readings cannot exclude partial power or equipment supply issues"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "ev12-room-0179",
+                "ev12-room-0185"
+              ],
+              "note": "Claim of a temperature about 6 F higher than cited readings contradicts the cited 68.4 F at arrival and 68.5 F latest reading."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-temperature"
+      },
+      "watcher": {
+        "final_result": "confirmed",
+        "failed_checks": [],
+        "observations": [],
+        "code_detections": [],
+        "model_triggered": false,
+        "code_triggered": false,
+        "provider_calls": 1,
+        "correction_record": null
+      }
+    },
+    {
+      "variant": "ev-conflict-sensors",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "cannot_tell",
+      "expected_verification": "unable_to_verify",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-kitchen",
+              "field": "max_w",
+              "value": 450.0,
+              "unit": "W",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-living",
+              "field": "max_w",
+              "value": 160.0,
+              "unit": "W",
+              "at": null
+            }
+          ],
+          "verified_facts": [
+            "Target 68.0 F",
+            "Electrical activity 550.0 W",
+            "Electrical activity 450.0 W",
+            "Electrical activity 160.0 W"
+          ],
+          "interpretation": "Readiness cannot be determined because temperature sources for the same zone disagree and no single reading can be trusted for the arrival check, leaving whether the home will meet the target by the planned arrival unknown. Fresh electrical activity is present on monitored circuits but that shows activity only and does not show useful heating. Under the current authorization record, the manager is the authorized responder and the homeowner is to be notified if follow up indicates a problem.",
+          "hypotheses": [
+            {
+              "text": "Possible: Temperature disagreement might reflect sensors in different spots or drift in one sensor, which could leave the true zone temperature unclear even while circuits show activity",
+              "supporting_ids": [
+                "source:room_sensor",
+                "source:thermostat"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Blower circuit activity might reflect fan operation or other electrical load rather than effective warming, which could accompany a flat or falling trend without proving heat delivery",
+              "supporting_ids": [
+                "metric:circuit_activity:circuit-blower",
+                "power:context",
+                "metric:indoor_trend"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "True indoor temperature in main zone given conflicting sensor values",
+            "Whether home will be at target by planned arrival",
+            "Which sensor if any should be treated as authoritative and where sensors are placed",
+            "Whether heating equipment is delivering useful heat as opposed to electrical activity alone"
+          ],
+          "clarification": "Which sensor should be treated as authoritative for the main zone and where is each indoor sensor located?",
+          "follow_up": {
+            "observation": "Re-observe thermostat and both room sensor indoor temperature readings and monitored circuit activity to see if disagreement persists and how readings evolve toward arrival",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "cannot_tell",
+          "limitations": [
+            "Indoor readings conflict so true temperature remains unknown",
+            "Electrical activity shows activity only and does not prove useful heat",
+            "Branch readings cannot exclude partial supply issues or equipment supply problems",
+            "Readings outside the current window are not covered"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "overstated_certainty",
+              "evidence_ids": [
+                "metric:circuit_activity:circuit-blower",
+                "power:context"
+              ],
+              "note": "Claim blower activity proves furnace failure is overstated; evidence says electrical activity only, not proof of useful heat, with candidate binding."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "invented-repair-cause"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev11-tstat-temp-0093 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev11-tstat-temp-0093: 64.2 != 66.1 (tolerance 0.15)",
+          "observation time does not match evidence ev11-tstat-temp-0093",
+          "observation value does not match evidence ev11-roomb-0128: 64.1 != 68.4 (tolerance 0.15)",
+          "evidence source:room_sensor is not fresh at the evaluation time (historical only)",
+          "observation cites contradictory readings ['ev11-room-0128', 'ev11-roomb-0128']: unresolved conflicts block the claim",
+          "observation value does not match evidence ev11-tstat-temp-0128: 'idle' != 64.2 (tolerance 0.15)"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Thermostat indoor 64.2F at 02:40, trend down 1.9F",
+            "evidence_ids": [
+              "ev11-tstat-temp-0128",
+              "metric:indoor_trend"
+            ],
+            "values": {
+              "value": 64.2,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "equipment_quiet",
+            "claim": "Thermostat reports idle at 02:40",
+            "evidence_ids": [
+              "ev11-tstat-state-0128"
+            ],
+            "values": {
+              "value": "idle",
+              "unit": null,
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [],
+        "model_triggered": true,
+        "code_triggered": false,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-conflict-sensors",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "84e26dad7206cddb388ba0f920e497c9827a191dc9d99acff3985af96919049d",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:00:02.193420Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Thermostat indoor fell from 66.1F at 23:45 to 64.2F at 02:40, change -1.9F",
+              "evidence_ids": [
+                "ev11-tstat-temp-0093",
+                "ev11-tstat-temp-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 64.2,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "other",
+              "claim": "Room sensors conflict at 02:40: 64.1F vs 68.4F for same zone",
+              "evidence_ids": [
+                "ev11-room-0128",
+                "ev11-roomb-0128",
+                "source:room_sensor"
+              ],
+              "values": {
+                "value": 64.1,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 02:40 while indoor 64.2F is 3.8F below 68F target",
+              "evidence_ids": [
+                "ev11-tstat-state-0128",
+                "ev11-tstat-temp-0128",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev11-tstat-temp-0093 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev11-tstat-temp-0093: 64.2 != 66.1 (tolerance 0.15)",
+            "observation time does not match evidence ev11-tstat-temp-0093",
+            "observation value does not match evidence ev11-roomb-0128: 64.1 != 68.4 (tolerance 0.15)",
+            "evidence source:room_sensor is not fresh at the evaluation time (historical only)",
+            "observation cites contradictory readings ['ev11-room-0128', 'ev11-roomb-0128']: unresolved conflicts block the claim",
+            "observation value does not match evidence ev11-tstat-temp-0128: 'idle' != 64.2 (tolerance 0.15)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Thermostat indoor 64.2F at 02:40, trend down 1.9F",
+              "evidence_ids": [
+                "ev11-tstat-temp-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 64.2,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 02:40",
+              "evidence_ids": [
+                "ev11-tstat-state-0128"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-normal-night",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "on_track",
+      "expected_verification": "goal_verified",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 68.7,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": 0.7,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 68.7 F (at 02:40)",
+            "Target 68.0 F",
+            "0.7 F above target",
+            "Electrical activity 550.0 W"
+          ],
+          "interpretation": "The code computed status is on_track because the latest fresh indoor measure already meets the target, leaving a small positive gap. Electrical activity was present on a monitored circuit, which shows activity only and not heating effectiveness. Routine monitoring remains appropriate with no special response indicated.",
+          "hypotheses": [
+            {
+              "text": "Possible: Stable indoor conditions might continue to arrival if the recent pattern holds, though change remains possible and citation is not proof of cause.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Observed circuit activity could reflect ongoing household loads, though binding is uncertain and citation is not proof of cause.",
+              "supporting_ids": [
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Future indoor temperature path before arrival",
+            "Effectiveness of heating delivery beyond electrical activity",
+            "Whether arrival expectation or target preference will change"
+          ],
+          "clarification": "Is there anything about occupancy or comfort preferences that should change how the property is prepared?",
+          "follow_up": {
+            "observation": "Observe the next fresh indoor temperature and target gap, plus fresh circuit activity.",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "on_track",
+          "limitations": [
+            "Branch readings show activity only and not heating effectiveness",
+            "Heating binding remains unknown from available data",
+            "Conditions outside the observed window are not covered"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "unsupported_claim",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "note": "No technician completion report is in the pack; temperature support is from indoor trend/target gap metrics, not a technician report."
+            },
+            {
+              "kind": "overstated_certainty",
+              "evidence_ids": [
+                "metric:indoor_trend"
+              ],
+              "note": "'Proves the house is warm again' overstates certainty; the metric shows a current 68.7 F reading only, not proof from a technician report."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "report-proves-warmth"
+      },
+      "watcher": {
+        "final_result": "confirmed",
+        "failed_checks": [],
+        "observations": [],
+        "code_detections": [],
+        "model_triggered": false,
+        "code_triggered": false,
+        "provider_calls": 1,
+        "correction_record": null
+      }
+    },
+    {
+      "variant": "ev-outage-0130",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "telemetry_missing",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 64.4,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -3.6,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 64.4 F (at 02:40)",
+            "Target 68.0 F",
+            "3.6 F below target",
+            "Electrical activity 550.0 W"
+          ],
+          "interpretation": "The property looks at risk before arrival because the fresh room sensor reading remains below the target with a negative gap, and observed draw on a candidate circuit shows electrical activity only without proving useful warmth, so the manager-authorized contact may need to check on site.",
+          "hypotheses": [
+            {
+              "text": "Possible: The space might be losing warmth faster than heating is adding it, which could keep the room below target by arrival, though electrical activity alone does not show heating output.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: The room sensor might differ from other areas or from the stale thermostat feed, so conditions felt at arrival might vary from the single reported zone.",
+              "supporting_ids": [
+                "source:room_sensor",
+                "source:thermostat"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether the candidate circuit draw is delivering useful heat to the main zone",
+            "Current thermostat-reported state due to stale thermostat telemetry",
+            "Who is designated to attend on site if warming does not progress"
+          ],
+          "clarification": "If the space is still below target closer to arrival, who should attend on site to check the property?",
+          "follow_up": {
+            "observation": "Observe the next fresh room sensor temperature and gap relative to target",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Thermostat telemetry is stale so assessment uses the room sensor",
+            "Branch electrical readings show activity only and do not prove useful heat",
+            "Breaker or equipment supply issues are not observable from available readings"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "ev02-room-0128",
+                "metric:indoor_trend",
+                "source:room_sensor"
+              ],
+              "note": "Claims key reading was observed 3 hours earlier than cited, but ev02-room-0128 is at 02:40, 300s before the 02:45 as-of."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-time"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev02-room-0093 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev02-room-0093: 64.4 != 65.9 (tolerance 0.15)",
+          "observation time does not match evidence ev02-room-0093",
+          "evidence source:thermostat is not fresh at the evaluation time (historical only)",
+          "evidence ev02-tstat-temp-0113 is not fresh at the evaluation time (historical only)"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Room sensor fell from 65.9 F to 64.4 F between 23:45 and 02:40, change -1.5 F",
+            "evidence_ids": [
+              "ev02-room-0128",
+              "metric:indoor_trend"
+            ],
+            "values": {
+              "value": 64.4,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "telemetry_gap",
+            "claim": "Thermostat has no fresh telemetry to as-of 02:45; room sensor fresh at 64.4 F at 02:40 used instead",
+            "evidence_ids": [
+              "ev02-room-0128",
+              "metric:indoor_trend"
+            ],
+            "values": {
+              "value": 64.4,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [
+          {
+            "rule": "telemetry_gap",
+            "detail": "thermostat telemetry is missing or stale; independent readings decide"
+          },
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": true,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-outage-0130",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "727a828b7dffd2917da8c43d3a2ca48301e314caae18a7be2792d179dc5df84f",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:02:33.893093Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room sensor fell from 65.9 F to 64.4 F between 23:45 and 02:40, change -1.5 F",
+              "evidence_ids": [
+                "ev02-room-0093",
+                "ev02-room-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 64.4,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat telemetry stale; newest 66.1 F at 01:25 with no data to 02:45 as-of",
+              "evidence_ids": [
+                "source:thermostat",
+                "ev02-tstat-temp-0113"
+              ],
+              "values": {
+                "value": 66.1,
+                "unit": "F",
+                "at": "2026-01-17T01:25:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev02-room-0093 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev02-room-0093: 64.4 != 65.9 (tolerance 0.15)",
+            "observation time does not match evidence ev02-room-0093",
+            "evidence source:thermostat is not fresh at the evaluation time (historical only)",
+            "evidence ev02-tstat-temp-0113 is not fresh at the evaluation time (historical only)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room sensor fell from 65.9 F to 64.4 F between 23:45 and 02:40, change -1.5 F",
+              "evidence_ids": [
+                "ev02-room-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 64.4,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat has no fresh telemetry to as-of 02:45; room sensor fresh at 64.4 F at 02:40 used instead",
+              "evidence_ids": [
+                "ev02-room-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 64.4,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-outage-0340",
+      "eval_at": "2026-01-17T04:51:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "telemetry_missing",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 63.6,
+              "unit": "F",
+              "at": "2026-01-17T04:50:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -4.4,
+              "unit": "F",
+              "at": "2026-01-17T04:50:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 920.0,
+              "unit": "W",
+              "at": "2026-01-17T04:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 63.6 F (at 04:50)",
+            "Target 68.0 F",
+            "4.4 F below target",
+            "Electrical activity 920.0 W"
+          ],
+          "interpretation": "Readiness reflects reliance on the room sensor while thermostat telemetry is stale, with latest readings below target and a downward trend over the recent window, suggesting the target may not be reached by arrival without change. Fresh activity on monitored circuits weighs against complete loss but does not show useful heat, and heating binding remains unknown, so manager attention appears appropriate while cause remains open.",
+          "hypotheses": [
+            {
+              "text": "Possible: Falling room readings alongside continued blower-circuit activity could reflect heat not effectively reaching the sensed space or sensing differences, but this remains only a possibility and citation is not proof of cause.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Stale thermostat telemetry could reflect a reporting or communication gap rather than heating performance itself, but this remains only a possibility and citation is not proof of cause.",
+              "supporting_ids": [
+                "source:thermostat"
+              ],
+              "conflicting_ids": [
+                "metric:indoor_trend"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Whether the heating system is delivering useful heat to the sensed space",
+            "Current thermostat setpoint and operating state while its telemetry remains stale",
+            "Whether room sensor placement represents the living space at arrival"
+          ],
+          "clarification": "Who should attend on site if the space remains below target before arrival, and how should they be contacted?",
+          "follow_up": {
+            "observation": "Observe fresh room-sensor temperature and target gap, plus fresh blower-circuit activity.",
+            "when": "2026-01-17T05:21:00-05:00",
+            "next_check_at": "2026-01-17T05:21:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Electrical activity shows activity only and not proof of useful heat",
+            "Heating binding and backup configuration unknown",
+            "Branch readings cannot exclude a lost leg or supply issue to specific equipment"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "ev03-room-0154"
+              ],
+              "note": "Interpretation claims indoor temperature is ~6F higher than every cited reading, but the cited latest reading is 63.6F itself."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-temperature"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev03-room-0119 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev03-room-0119: -2.3 != 65.9 (tolerance 0.15)",
+          "observation time does not match evidence ev03-room-0119",
+          "observation value does not match evidence ev03-room-0154: -2.3 != 63.6 (tolerance 0.15)",
+          "evidence source:thermostat is not fresh at the evaluation time (historical only)",
+          "evidence ev03-tstat-temp-0139 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev03-room-0154: -4.4 != 63.6 (tolerance 0.15)"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Room temp fell from 65.9F to 63.6F (-2.3F) from 01:55 to 04:50",
+            "evidence_ids": [
+              "metric:indoor_trend"
+            ],
+            "values": {
+              "value": -2.3,
+              "unit": "F",
+              "at": "2026-01-17T04:50:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "telemetry_gap",
+            "claim": "Room sensor telemetry fresh at 04:50 with 63.6F, showing evaluation time advanced beyond last thermostat update",
+            "evidence_ids": [
+              "ev03-room-0154"
+            ],
+            "values": {
+              "value": 63.6,
+              "unit": "F",
+              "at": "2026-01-17T04:50:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "other",
+            "claim": "Room 63.6F is 4.4F below 68F target at 04:50",
+            "evidence_ids": [
+              "metric:target_gap"
+            ],
+            "values": {
+              "value": -4.4,
+              "unit": "F",
+              "at": "2026-01-17T04:50:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [
+          {
+            "rule": "telemetry_gap",
+            "detail": "thermostat telemetry is missing or stale; independent readings decide"
+          },
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": true,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-outage-0340",
+          "evaluated_at_utc": "2026-01-17T09:51:00Z",
+          "input_revision": "474d0436210e5b66713ec8e5a0a3a49cc2f9419fa1b2ed5754805c956c32d6f2",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:04:03.610974Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room temp fell from 65.9F to 63.6F (-2.3F) from 01:55 to 04:50",
+              "evidence_ids": [
+                "ev03-room-0119",
+                "ev03-room-0154",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": -2.3,
+                "unit": "F",
+                "at": "2026-01-17T04:50:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat telemetry stale, newest 66.1F at 03:35 with no updates to 04:51",
+              "evidence_ids": [
+                "source:thermostat",
+                "ev03-tstat-temp-0139"
+              ],
+              "values": {
+                "value": 66.1,
+                "unit": "F",
+                "at": "2026-01-17T03:35:00-05:00"
+              }
+            },
+            {
+              "kind": "other",
+              "claim": "Room 63.6F is 4.4F below 68F target at 04:50",
+              "evidence_ids": [
+                "ev03-room-0154",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": -4.4,
+                "unit": "F",
+                "at": "2026-01-17T04:50:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev03-room-0119 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev03-room-0119: -2.3 != 65.9 (tolerance 0.15)",
+            "observation time does not match evidence ev03-room-0119",
+            "observation value does not match evidence ev03-room-0154: -2.3 != 63.6 (tolerance 0.15)",
+            "evidence source:thermostat is not fresh at the evaluation time (historical only)",
+            "evidence ev03-tstat-temp-0139 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev03-room-0154: -4.4 != 63.6 (tolerance 0.15)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room temp fell from 65.9F to 63.6F (-2.3F) from 01:55 to 04:50",
+              "evidence_ids": [
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": -2.3,
+                "unit": "F",
+                "at": "2026-01-17T04:50:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Room sensor telemetry fresh at 04:50 with 63.6F, showing evaluation time advanced beyond last thermostat update",
+              "evidence_ids": [
+                "ev03-room-0154"
+              ],
+              "values": {
+                "value": 63.6,
+                "unit": "F",
+                "at": "2026-01-17T04:50:00-05:00"
+              }
+            },
+            {
+              "kind": "other",
+              "claim": "Room 63.6F is 4.4F below 68F target at 04:50",
+              "evidence_ids": [
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": -4.4,
+                "unit": "F",
+                "at": "2026-01-17T04:50:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-outage-2310",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "telemetry_missing",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 62.5,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -5.5,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 62.5 F (at 02:40)",
+            "Target 68.0 F",
+            "5.5 F below target",
+            "Electrical activity 550.0 W"
+          ],
+          "interpretation": "Readiness is at risk because the fresh room sensor reading remains below target ahead of planned arrival and recent trend is downward, while thermostat telemetry is stale so the room sensor is used as proxy. Fresh activity on monitored circuits weighs against complete loss during the window but shows electrical activity only and not useful heat, leaving whether target will be reached by arrival uncertain and suggesting manager review for possible on-site response.",
+          "hypotheses": [
+            {
+              "text": "Possible: Indoor levels might stay below target by arrival if the downward drift continues without effective warming of the space, though citation is not proof of cause.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "conflicting_ids": [
+                "metric:circuit_activity:circuit-blower"
+              ]
+            },
+            {
+              "text": "Possible: Control state might remain unclear because thermostat telemetry is stale and room sensing may differ from thermostat location, though citation is not proof of cause.",
+              "supporting_ids": [
+                "source:thermostat",
+                "source:room_sensor"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether heating equipment is delivering useful heat to the space",
+            "Current thermostat control state and setpoint behavior during staleness",
+            "Designated on-site responder and homeowner notification preference if risk persists"
+          ],
+          "clarification": "Who should respond on site if the property remains below target before arrival?",
+          "follow_up": {
+            "observation": "Re-observe fresh room-sensor indoor temperature and target gap trend",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Thermostat telemetry is stale so room sensor is used as proxy",
+            "Branch activity indicates electrical activity only and not useful heat",
+            "Heating binding and backup configuration remain unknown",
+            "Interruptions outside the window are not covered"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "overstated_certainty",
+              "evidence_ids": [
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "note": "Blower metric is candidate-bound electrical activity only, not proof of useful heat; it cannot prove furnace failure."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "invented-repair-cause"
+      },
+      "watcher": {
+        "final_result": "rejected",
+        "failed_checks": [
+          "evidence source:room_sensor is not fresh at the evaluation time (historical only)"
+        ],
+        "observations": [],
+        "code_detections": [
+          {
+            "rule": "telemetry_gap",
+            "detail": "thermostat telemetry is missing or stale; independent readings decide"
+          },
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": false,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-outage-2310",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "430e38df3407139bcb04bb5bfb691ba9f3736b49d85f26df1b2315448226c753",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:05:42.347112Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room sensor fell 2.9F from 65.4F to 62.5F over ~3h ending 02:40, rate -1.0F/hr.",
+              "evidence_ids": [
+                "ev01-room-0093",
+                "ev01-room-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 62.5,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat telemetry stale; newest record 23:05, no fresh data in window.",
+              "evidence_ids": [
+                "source:thermostat",
+                "ev01-tstat-temp-0085"
+              ],
+              "values": {
+                "value": 66.1,
+                "unit": "F",
+                "at": "2026-01-16T23:05:00-05:00"
+              }
+            },
+            {
+              "kind": "other",
+              "claim": "Latest room reading 62.5F is 5.5F below 68F target.",
+              "evidence_ids": [
+                "ev01-room-0128",
+                "metric:target_gap",
+                "confirmation:current"
+              ],
+              "values": {
+                "value": 62.5,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence source:room_sensor is not fresh at the evaluation time (historical only)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room sensor latest 62.5F at 02:40, trend -2.9F at -1.0F/hr.",
+              "evidence_ids": [
+                "ev01-room-0128",
+                "metric:indoor_trend",
+                "source:room_sensor"
+              ],
+              "values": {
+                "value": 62.5,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "other",
+              "claim": "Latest room reading 62.5F at 02:40 is 5.5F below 68F target.",
+              "evidence_ids": [
+                "ev01-room-0128",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 62.5,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "rejected"
+        }
+      }
+    },
+    {
+      "variant": "ev-recovery-fails",
+      "eval_at": "2026-01-17T06:45:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "goal_not_maintained",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 66.5,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -1.5,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 920.0,
+              "unit": "W",
+              "at": "2026-01-17T06:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 66.5 F (at 06:40)",
+            "Target 68.0 F",
+            "1.5 F below target",
+            "Electrical activity 920.0 W"
+          ],
+          "interpretation": "Readiness is at risk because the latest indoor reading remains below the target with a negative gap and the recent trend shows cooling rather than sustained warming toward arrival. Electrical activity was observed on the monitored blower circuit, which indicates activity only and does not indicate useful heat. The authorization record allows homeowner notification and manager action, so the manager is the appropriate responder to review the status and decide next steps with the homeowner.",
+          "hypotheses": [
+            {
+              "text": "Possible: The recent cooling pattern alongside continued electrical activity might reflect reduced effective heating or increased heat loss, though other factors could also be involved and the evidence does not establish a cause.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether the heating system is delivering useful heat to the space",
+            "Why indoor readings declined after earlier warming",
+            "Heating circuit binding and backup configuration"
+          ],
+          "clarification": "Is the manager available to check the property before arrival given the current gap to target?",
+          "follow_up": {
+            "observation": "Observe the next fresh indoor temperature and target gap reading",
+            "when": "2026-01-17T07:15:00-05:00",
+            "next_check_at": "2026-01-17T07:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Electrical activity shows activity only and does not show useful heat",
+            "Branch circuit readings cannot show supply issues beyond the monitored window",
+            "Evaluation uses only the cited fresh readings"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "unsupported_claim",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "note": "No technician completion report in pack; cited readings show 66.5F, 1.5F below 68F target, not proof house is warm."
+            },
+            {
+              "kind": "overstated_certainty",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "note": "Claim that report 'alone proves' warmth overstates certainty and contradicts at-risk below-target readings."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "report-proves-warmth"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev04-room-0141 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev04-room-0141: 66.5 != 68.2 (tolerance 0.15)",
+          "observation time does not match evidence ev04-room-0141",
+          "observation value does not match evidence ev04-room-0176: 'idle' != 66.5 (tolerance 0.15)"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Room temp fell from 68.2F to 66.5F 03:45-06:40, ending 1.5F below 68F target",
+            "evidence_ids": [
+              "ev04-room-0176",
+              "metric:indoor_trend",
+              "metric:target_gap"
+            ],
+            "values": {
+              "value": 66.5,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "equipment_quiet",
+            "claim": "Thermostat reports idle at 06:40",
+            "evidence_ids": [
+              "ev04-tstat-state-0176"
+            ],
+            "values": {
+              "value": "idle",
+              "unit": null,
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": true,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-recovery-fails",
+          "evaluated_at_utc": "2026-01-17T11:45:00Z",
+          "input_revision": "16a926b10754cd0d1fc7df088ec4cf90e36212dba51c9541d654631f80a58838",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:07:03.077265Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room temp fell from 68.2F to 66.5F 03:45-06:40, ending 1.5F below 68F target",
+              "evidence_ids": [
+                "ev04-room-0141",
+                "ev04-room-0176",
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 66.5,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 06:40 while room sensor reads 66.5F",
+              "evidence_ids": [
+                "ev04-tstat-state-0176",
+                "ev04-room-0176"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev04-room-0141 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev04-room-0141: 66.5 != 68.2 (tolerance 0.15)",
+            "observation time does not match evidence ev04-room-0141",
+            "observation value does not match evidence ev04-room-0176: 'idle' != 66.5 (tolerance 0.15)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Room temp fell from 68.2F to 66.5F 03:45-06:40, ending 1.5F below 68F target",
+              "evidence_ids": [
+                "ev04-room-0176",
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 66.5,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 06:40",
+              "evidence_ids": [
+                "ev04-tstat-state-0176"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-report-no-warm",
+      "eval_at": "2026-01-17T06:45:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "reporting_restored",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "latest_value",
+              "value": 61.9,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -6.1,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 920.0,
+              "unit": "W",
+              "at": "2026-01-17T06:30:00-05:00"
+            },
+            {
+              "claim_type": "equipment_function",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "active",
+              "value": "unknown",
+              "unit": null,
+              "at": "2026-01-17T06:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 61.9 F (at 06:40)",
+            "Target 68.0 F",
+            "6.1 F below target",
+            "Electrical activity 920.0 W",
+            "Equipment function unknown"
+          ],
+          "interpretation": "The computed readiness reflects that the latest indoor reading remains below the agreed target with little time left before the planned arrival, while recent trend shows no rise toward target. Electrical activity is observed on monitored circuits, which weighs against complete loss of supply but does not show that useful heat is being delivered. Because the gap is not small and time is short, on-site follow-up by the responsible party appears appropriate.",
+          "hypotheses": [
+            {
+              "text": "Possible: The indoor level staying below target while electrical activity continues might reflect heating delivering little useful warmth, though activity alone does not show heat output and other influences remain possible.",
+              "supporting_ids": [
+                "metric:target_gap",
+                "metric:circuit_activity:circuit-blower",
+                "ev09-room-0176"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Cool outdoor conditions and household variation might also be associated with the observed pattern, so the current gap alone does not establish the reason.",
+              "supporting_ids": [
+                "ev09-wx-care-1800"
+              ],
+              "conflicting_ids": [
+                "metric:circuit_activity:circuit-blower"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Whether the heating system is delivering useful heat to the space",
+            "What the indoor reading will be at the planned arrival moment",
+            "Whether any equipment supply issue exists that is not visible in branch readings",
+            "Who is available on site to check the property"
+          ],
+          "clarification": "Who should attend the property if it remains below target at arrival time?",
+          "follow_up": {
+            "observation": "Observe the next fresh indoor temperature reading and target gap before the planned arrival",
+            "when": "2026-01-17T07:15:00-05:00",
+            "next_check_at": "2026-01-17T07:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Cannot exclude a lost service leg.",
+            "Breaker or equipment supply problems are not observable from branch readings.",
+            "Electrical activity only shows activity, not proof of useful heat."
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "metric:target_gap",
+                "ev09-room-0176"
+              ],
+              "note": "Interpretation says key reading was 3h earlier than cited, but metric and room reading both timestamp the latest reading 06:40 as cited."
+            },
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "ev09-cal-care-warmby-1903",
+                "trip:current"
+              ],
+              "note": "Follow-up at 07:15 says observe before planned arrival, but arrival is 07:00, so the scheduled check is after, not before, arrival."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-time"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev09-room-0141 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev09-room-0141: -0.4 != 62.3 (tolerance 0.15)",
+          "observation time does not match evidence ev09-room-0141",
+          "observation value does not match evidence ev09-room-0176: -0.4 != 61.9 (tolerance 0.15)",
+          "observation value does not match evidence ev09-room-0176: 'idle' != 61.9 (tolerance 0.15)"
+        ],
+        "observations": [
+          {
+            "kind": "other",
+            "claim": "Room 61.9F is 6.1F below 68F target near 07:00 arrival",
+            "evidence_ids": [
+              "ev09-room-0176",
+              "metric:target_gap"
+            ],
+            "values": {
+              "value": 61.9,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "temperature_drop",
+            "claim": "Indoor trend -0.4F over window with no rise",
+            "evidence_ids": [
+              "metric:indoor_trend"
+            ],
+            "values": {
+              "value": -0.4,
+              "unit": "F",
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "equipment_quiet",
+            "claim": "Thermostat reports idle at 06:40",
+            "evidence_ids": [
+              "ev09-tstat-state-0176"
+            ],
+            "values": {
+              "value": "idle",
+              "unit": null,
+              "at": "2026-01-17T06:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": true,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-report-no-warm",
+          "evaluated_at_utc": "2026-01-17T11:45:00Z",
+          "input_revision": "74292d2f4cb62d0c8306cb5b400235d1b6cc9ceb8141455accaefd2b9bb64231",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:09:25.140010Z",
+          "original_claim": [
+            {
+              "kind": "other",
+              "claim": "Room 61.9F is 6.1F below 68F target near 07:00 arrival",
+              "evidence_ids": [
+                "ev09-room-0176",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 61.9,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "temperature_drop",
+              "claim": "Indoor trend -0.4F over window 62.3F to 61.9F with no rise",
+              "evidence_ids": [
+                "ev09-room-0141",
+                "ev09-room-0176",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": -0.4,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 06:40 while indoor remains below target",
+              "evidence_ids": [
+                "ev09-tstat-state-0176",
+                "ev09-room-0176",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev09-room-0141 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev09-room-0141: -0.4 != 62.3 (tolerance 0.15)",
+            "observation time does not match evidence ev09-room-0141",
+            "observation value does not match evidence ev09-room-0176: -0.4 != 61.9 (tolerance 0.15)",
+            "observation value does not match evidence ev09-room-0176: 'idle' != 61.9 (tolerance 0.15)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "other",
+              "claim": "Room 61.9F is 6.1F below 68F target near 07:00 arrival",
+              "evidence_ids": [
+                "ev09-room-0176",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 61.9,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "temperature_drop",
+              "claim": "Indoor trend -0.4F over window with no rise",
+              "evidence_ids": [
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": -0.4,
+                "unit": "F",
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "Thermostat reports idle at 06:40",
+              "evidence_ids": [
+                "ev09-tstat-state-0176"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T06:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-slow-cool-ontrack",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "on_track",
+      "expected_verification": "goal_verified",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 68.4,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": 0.4,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            },
+            {
+              "claim_type": "equipment_function",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "active",
+              "value": "unknown",
+              "unit": null,
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 68.4 F (at 02:40)",
+            "Target 68.0 F",
+            "0.4 F above target",
+            "Electrical activity 550.0 W",
+            "Equipment function unknown"
+          ],
+          "interpretation": "The latest fresh indoor value of 68.4 remains above the agreed target of 68.0, leaving a gap of 0.4, which matches the on_track status. Electrical activity was noted separately and does not change the temperature assessment. No responder action is indicated now; routine monitoring can continue.",
+          "hypotheses": [
+            {
+              "text": "Possible: The small positive gap might reflect stable indoor conditions with intermittent electrical activity, but citation is not proof of cause.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether indoor temperature will remain above target until arrival",
+            "Which specific heating equipment corresponds to the monitored circuits, since binding is candidate or unknown"
+          ],
+          "clarification": "Who should be contacted first if the indoor gap turns negative before arrival?",
+          "follow_up": {
+            "observation": "Observe the next fresh indoor temperature reading and target gap to check stability.",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "on_track",
+          "limitations": [
+            "Branch readings indicate electrical activity only and do not prove useful heat",
+            "Mains status and heating binding remain unknown from the available evidence",
+            "This assessment applies only to the evidence window provided"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap",
+                "ev05-room-0128"
+              ],
+              "note": "Claim of indoor temperature ~6F higher than cited readings contradicts the latest 68.4F reading and 0.4F gap."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-temperature"
+      },
+      "watcher": {
+        "final_result": "confirmed",
+        "failed_checks": [],
+        "observations": [],
+        "code_detections": [],
+        "model_triggered": false,
+        "code_triggered": false,
+        "provider_calls": 1,
+        "correction_record": null
+      }
+    },
+    {
+      "variant": "ev-stale-room",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "cannot_tell",
+      "expected_verification": "unable_to_verify",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-kitchen",
+              "field": "max_w",
+              "value": 450.0,
+              "unit": "W",
+              "at": null
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-living",
+              "field": "max_w",
+              "value": 160.0,
+              "unit": "W",
+              "at": null
+            }
+          ],
+          "verified_facts": [
+            "Target 68.0 F",
+            "Electrical activity 550.0 W",
+            "Electrical activity 450.0 W",
+            "Electrical activity 160.0 W"
+          ],
+          "interpretation": "Readiness cannot be determined because the authoritative indoor trend has no usable samples in the evaluation window and the target gap is unavailable, so warmth relative to target cannot be assessed. Fresh activity on monitored circuits weighs against complete loss during the window but does not show useful heat or readiness. Responsibility for next observation remains with the property manager, with homeowner notification as previously authorized if needed.",
+          "hypotheses": [
+            {
+              "text": "Possible: Room sensor data might be missing in the recent window while other telemetry continues, which could leave the trend empty without showing change in the space itself.",
+              "supporting_ids": [
+                "source:room_sensor",
+                "metric:indoor_trend"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Observed circuit activity might reflect household loads rather than heating output, so it could be present without indicating progress toward the warm-by expectation.",
+              "supporting_ids": [
+                "metric:circuit_activity:circuit-blower",
+                "power:continuity"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether indoor temperature is currently near target",
+            "How quickly the space is changing temperature",
+            "Whether heating equipment is delivering useful heat",
+            "Who is currently available on site to observe"
+          ],
+          "clarification": "If a fresh authoritative indoor reading is still unavailable before arrival, who should be asked to check the property in person?",
+          "follow_up": {
+            "observation": "Observe authoritative indoor temperature and target gap trend",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "cannot_tell",
+          "limitations": [
+            "Indoor trend has no samples in window so readiness cannot be judged",
+            "Target gap is unavailable",
+            "Branch electrical activity does not show useful heat",
+            "Partial electrical or equipment supply issues outside monitored circuits cannot be excluded"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "metric:circuit_activity:circuit-blower",
+                "power:context"
+              ],
+              "note": "Claim blower activity proves furnace failed contradicts metric stating activity only, not proof of useful heat, with heating binding unknown."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "invented-repair-cause"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev07-tstat-temp-0093 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev07-tstat-temp-0093: 62.7 != 63.8 (tolerance 0.15)",
+          "observation time does not match evidence ev07-tstat-temp-0093",
+          "observation value does not match evidence ev07-tstat-temp-0128: 'idle' != 62.7 (tolerance 0.15)",
+          "evidence source:room_sensor is not fresh at the evaluation time (historical only)",
+          "evidence ev07-room-0048 is outside the 3-hour as-of window",
+          "evidence ev07-room-0048 is not fresh at the evaluation time (historical only)"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Thermostat indoor temp 62.7F at 02:40",
+            "evidence_ids": [
+              "ev07-tstat-temp-0128"
+            ],
+            "values": {
+              "at": "2026-01-17T02:40:00-05:00",
+              "unit": "F",
+              "value": 62.7
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          },
+          {
+            "kind": "equipment_quiet",
+            "claim": "HVAC reported idle at 02:40",
+            "evidence_ids": [
+              "ev07-tstat-state-0128"
+            ],
+            "values": {
+              "at": "2026-01-17T02:40:00-05:00",
+              "unit": null,
+              "value": "idle"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [],
+        "model_triggered": true,
+        "code_triggered": false,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-stale-room",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "854141783f9807cce37dae16ac24115bb7fa7d2e5d4a58edc8ec4da5bf283613",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:12:06.863189Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Thermostat indoor temp fell from 63.8F to 62.7F from 23:45 to 02:40",
+              "evidence_ids": [
+                "ev07-tstat-temp-0093",
+                "ev07-tstat-temp-0128"
+              ],
+              "values": {
+                "value": 62.7,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "HVAC reported idle at 02:40 while thermostat reads 62.7F",
+              "evidence_ids": [
+                "ev07-tstat-state-0128",
+                "ev07-tstat-temp-0128"
+              ],
+              "values": {
+                "value": "idle",
+                "unit": null,
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            },
+            {
+              "kind": "telemetry_gap",
+              "claim": "Room sensor stale; newest 66.6F at 20:00, no fresh data in window",
+              "evidence_ids": [
+                "source:room_sensor",
+                "ev07-room-0048"
+              ],
+              "values": {
+                "value": 66.6,
+                "unit": "F",
+                "at": "2026-01-16T20:00:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev07-tstat-temp-0093 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev07-tstat-temp-0093: 62.7 != 63.8 (tolerance 0.15)",
+            "observation time does not match evidence ev07-tstat-temp-0093",
+            "observation value does not match evidence ev07-tstat-temp-0128: 'idle' != 62.7 (tolerance 0.15)",
+            "evidence source:room_sensor is not fresh at the evaluation time (historical only)",
+            "evidence ev07-room-0048 is outside the 3-hour as-of window",
+            "evidence ev07-room-0048 is not fresh at the evaluation time (historical only)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Thermostat indoor temp 62.7F at 02:40",
+              "evidence_ids": [
+                "ev07-tstat-temp-0128"
+              ],
+              "values": {
+                "at": "2026-01-17T02:40:00-05:00",
+                "unit": "F",
+                "value": 62.7
+              }
+            },
+            {
+              "kind": "equipment_quiet",
+              "claim": "HVAC reported idle at 02:40",
+              "evidence_ids": [
+                "ev07-tstat-state-0128"
+              ],
+              "values": {
+                "at": "2026-01-17T02:40:00-05:00",
+                "unit": null,
+                "value": "idle"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    },
+    {
+      "variant": "ev-thermostat-gap-steady",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "on_track",
+      "expected_verification": "telemetry_missing",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 68.6,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "metric:target_gap",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": 0.6,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 68.6 F (at 02:40)",
+            "Target 68.0 F",
+            "0.6 F above target",
+            "Electrical activity 550.0 W"
+          ],
+          "interpretation": "Code status is on track because fresh room sensor telemetry is used while thermostat telemetry is stale and the latest fresh indoor reading already meets the target. Electrical observation shows activity only and not proof of useful heat. If later checks were to look wrong, the manager contact with homeowner notification as authorized would be the responder, with no immediate action indicated now.",
+          "hypotheses": [
+            {
+              "text": "Possible: The steady indoor level might reflect stable room conditions alongside intermittent circuit draw, though activity alone does not show useful heating.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether the room sensor location represents the whole property for arrival comfort",
+            "Heating equipment binding and whether electrical activity delivers useful heat",
+            "Thermostat return and future indoor trend before arrival"
+          ],
+          "clarification": "Is the room sensor location acceptable as the reference for arrival readiness while thermostat telemetry remains stale?",
+          "follow_up": {
+            "observation": "Recheck fresh room sensor indoor reading and target gap trend before arrival",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "on_track",
+          "limitations": [
+            "Thermostat telemetry is stale so room sensor is used as substitute",
+            "Branch electrical readings show activity only and cannot show useful heat or supply integrity",
+            "Mains and backup configuration are not available in this window"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "unsupported_claim",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "ev06-room-0128"
+              ],
+              "note": "No technician completion report is in the pack; warmth evidence is room-sensor data, not a technician report."
+            },
+            {
+              "kind": "overstated_certainty",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "note": "Saying such a report 'alone proves' warmth overstates certainty; fresh sensor readings support readiness, not a report alone."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "report-proves-warmth"
+      },
+      "watcher": {
+        "final_result": "rejected",
+        "failed_checks": [
+          "evidence source:room_sensor is not fresh at the evaluation time (historical only)"
+        ],
+        "observations": [],
+        "code_detections": [
+          {
+            "rule": "telemetry_gap",
+            "detail": "thermostat telemetry is missing or stale; independent readings decide"
+          }
+        ],
+        "model_triggered": false,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-thermostat-gap-steady",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "134644c230835e9104df4dbf1ccf0554df0a065fbdfa2da88f248e5c60473954",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:13:25.001015Z",
+          "original_claim": [
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat telemetry stale since 01:25; age 4800s at as-of with no fresh readings",
+              "evidence_ids": [
+                "source:thermostat",
+                "ev06-tstat-temp-0113"
+              ],
+              "values": {
+                "value": 68.5,
+                "unit": "F",
+                "at": "2026-01-17T01:25:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence source:room_sensor is not fresh at the evaluation time (historical only)"
+          ],
+          "revision_claim": [
+            {
+              "kind": "telemetry_gap",
+              "claim": "Thermostat telemetry missing at as-of; fresh room-sensor continuity at 02:40 shows 68.6F",
+              "evidence_ids": [
+                "source:room_sensor",
+                "ev06-room-0128",
+                "metric:indoor_trend"
+              ],
+              "values": {
+                "value": 68.6,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "rejected"
+        }
+      }
+    },
+    {
+      "variant": "ev-wrong-zone",
+      "eval_at": "2026-01-17T02:45:00-05:00",
+      "expected_readiness": "at_risk",
+      "expected_verification": "telemetry_missing",
+      "spark": {
+        "status": "ok",
+        "reasons": [],
+        "output": {
+          "facts": [
+            {
+              "claim_type": "current_temperature",
+              "evidence_id": "metric:indoor_trend",
+              "field": "last_value",
+              "value": 64.2,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "target_temperature",
+              "evidence_id": "confirmation:current",
+              "field": "target_temp",
+              "value": 68.0,
+              "unit": "F",
+              "at": null
+            },
+            {
+              "claim_type": "target_gap",
+              "evidence_id": "metric:target_gap",
+              "field": "gap",
+              "value": -3.8,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            {
+              "claim_type": "electrical_activity",
+              "evidence_id": "metric:circuit_activity:circuit-blower",
+              "field": "max_w",
+              "value": 550.0,
+              "unit": "W",
+              "at": "2026-01-17T02:30:00-05:00"
+            }
+          ],
+          "verified_facts": [
+            "Indoor temperature 64.2 F (at 02:40)",
+            "Target 68.0 F",
+            "3.8 F below target",
+            "Electrical activity 550.0 W"
+          ],
+          "interpretation": "The computed status is at_risk, indicating the space is below the agreed target with a downward drift in the recent window, so reaching the target by the planned arrival looks uncertain and is not a guaranteed prediction. Fresh activity is seen on monitored circuits but that shows electrical activity only and not useful heat, leaving heating performance unclear. Given the manager authorization noted in the confirmation record, manager review with homeowner notification appears to be the appropriate response path, without control or repair actions here.",
+          "hypotheses": [
+            {
+              "text": "Possible: The recent cooling drift might suggest that heating output is not offsetting loss, though circuit activity alone does not indicate useful heat.",
+              "supporting_ids": [
+                "metric:indoor_trend",
+                "metric:circuit_activity:circuit-blower"
+              ],
+              "conflicting_ids": []
+            },
+            {
+              "text": "Possible: Differences between upstairs and main zone readings might mean conditions vary by location, leaving overall readiness uncertain.",
+              "supporting_ids": [
+                "ev08-tstat-temp-0128",
+                "ev08-room-0128"
+              ],
+              "conflicting_ids": []
+            }
+          ],
+          "unknowns": [
+            "Whether heating equipment is delivering useful heat to the main zone",
+            "Whether setpoint or schedule was changed overnight",
+            "Actual conditions in zones beyond the main sensor"
+          ],
+          "clarification": "Is there an on-call manager available to review the low temperature trend before the planned arrival?",
+          "follow_up": {
+            "observation": "Recheck main-zone indoor temperature and target gap for change",
+            "when": "2026-01-17T03:15:00-05:00",
+            "next_check_at": "2026-01-17T03:15:00-05:00",
+            "schedule_status": "scheduled",
+            "deadline_passed": false
+          },
+          "readiness": "at_risk",
+          "limitations": [
+            "Branch readings show electrical activity only and not useful heat",
+            "Heating binding is unknown so equipment supply cannot be determined from available evidence",
+            "Interruptions outside the recent window are not covered"
+          ]
+        },
+        "model_id": "muse-spark-1.3"
+      },
+      "wonder_genuine": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "no_issues",
+          "issues": []
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      "wonder_planted": {
+        "status": "ok",
+        "error": null,
+        "review": {
+          "verdict": "issues_found",
+          "issues": [
+            {
+              "kind": "contradiction",
+              "evidence_ids": [
+                "metric:indoor_trend",
+                "ev08-room-0128"
+              ],
+              "note": "Interpretation says key reading was observed three hours earlier than cited, but evidence shows 64.2 F observed at 2026-01-17T02:40, the cited time."
+            }
+          ]
+        },
+        "validation": {
+          "passed": true,
+          "reasons": []
+        },
+        "planted_claim": "wrong-time"
+      },
+      "watcher": {
+        "final_result": "corrected and verified",
+        "failed_checks": [
+          "evidence ev08-room-0093 is not fresh at the evaluation time (historical only)",
+          "observation value does not match evidence ev08-room-0093: 64.2 != 65.9 (tolerance 0.15)",
+          "observation time does not match evidence ev08-room-0093"
+        ],
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Main-zone temp fell 1.7F from 65.9F to 64.2F over ~3h, ending 3.8F below 68F target",
+            "evidence_ids": [
+              "ev08-room-0128",
+              "metric:indoor_trend",
+              "metric:target_gap"
+            ],
+            "values": {
+              "value": 64.2,
+              "unit": "F",
+              "at": "2026-01-17T02:40:00-05:00"
+            },
+            "status": "corrected and verified",
+            "notice": "noticed by the model, confirmed by the evidence check"
+          }
+        ],
+        "code_detections": [
+          {
+            "rule": "readiness_at_risk",
+            "detail": "deterministic readiness is at_risk at this time"
+          }
+        ],
+        "model_triggered": true,
+        "code_triggered": true,
+        "provider_calls": 2,
+        "correction_record": {
+          "scenario_id": "ev-wrong-zone",
+          "evaluated_at_utc": "2026-01-17T07:45:00Z",
+          "input_revision": "906acc51fef230739b4c78713728b1d3a20163ccf02219b2c2ab2bd404259ee9",
+          "laws_version": "laws-v1",
+          "watcher_prompt_version": "watch-v1",
+          "model_id": "muse-spark-1.3",
+          "provider_route": "meta live via Meta Model API (messages)",
+          "recorded_at": "2026-10-31T18:14:40.463395Z",
+          "original_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Main-zone temp fell 1.7F from 65.9F to 64.2F over ~3h, ending 3.8F below 68F target",
+              "evidence_ids": [
+                "ev08-room-0093",
+                "ev08-room-0128",
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 64.2,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "failed_checks": [
+            "evidence ev08-room-0093 is not fresh at the evaluation time (historical only)",
+            "observation value does not match evidence ev08-room-0093: 64.2 != 65.9 (tolerance 0.15)",
+            "observation time does not match evidence ev08-room-0093"
+          ],
+          "revision_claim": [
+            {
+              "kind": "temperature_drop",
+              "claim": "Main-zone temp fell 1.7F from 65.9F to 64.2F over ~3h, ending 3.8F below 68F target",
+              "evidence_ids": [
+                "ev08-room-0128",
+                "metric:indoor_trend",
+                "metric:target_gap"
+              ],
+              "values": {
+                "value": 64.2,
+                "unit": "F",
+                "at": "2026-01-17T02:40:00-05:00"
+              }
+            }
+          ],
+          "final_result": "corrected and verified"
+        }
+      }
+    }
+  ]
+}

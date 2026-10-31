@@ -601,7 +601,7 @@ def create_app():
     def _follow_up_payload(store, investigation_id, at=None, outcome=None):
         follow_up = store.get_follow_up(investigation_id)
         row = store.get_follow_up_row(investigation_id)
-        if follow_up is None:
+        if follow_up is None or row is None:
             return None
         payload = follow_up.model_dump(mode="json")
         if at is not None and outcome is not None:
@@ -855,6 +855,8 @@ def create_app():
             store.record_outcome(investigation_id, outcome)
         outcome_payload = outcome.model_dump(mode="json")
         payload = {"data_mode": "synthetic", "investigation_id": investigation_id, "scenario": scn.manifest.id, "at": at.isoformat(), "timezone": scn.manifest.timezone, "status": outcome.status.value, "outcome": outcome_payload, "follow_up": _follow_up_payload(store, investigation_id, at=at, outcome=outcome), "supporting_ids": outcome.supporting_ids, "history": store.list_outcomes(investigation_id, at=at)}
+        if payload["follow_up"] is None:
+            return jsonify({"error": "follow-up not found", "data_mode": "synthetic"}), 404
         verification = None
         if any(r.source is SourceKind.room_sensor for r in scn.records):
             verification = inputs["verification"]

@@ -298,7 +298,7 @@ def verify_observation(obs, pack, at):
                     reasons.append(f"observation time does not match evidence {evidence_id}")
         else:
             data = item.get("data") or {}
-            last_at = laws_module._parse_time(data.get("last_observed_at") or data.get("latest_observed_at"))
+            last_at = laws_module._parse_time(data.get("last_observed_at") or data.get("latest_observed_at") or data.get("newest_observed_at"))
             if last_at is not None and (last_at < window_start or last_at > at):
                 reasons.append(f"evidence {evidence_id} is outside the {WINDOW_HOURS}-hour as-of window")
             pseudo = {"value": 1, "observed_at": (last_at or at).isoformat(), "expected_cadence_s": data.get("expected_cadence_s")}

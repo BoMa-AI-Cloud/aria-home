@@ -119,3 +119,29 @@ def test_followups_recorded_investigation_fallback_is_labelled(story_env_no_reco
     assert recorded["status"] == "unavailable"
     assert NO_RECORDED_LABEL in recorded["reasons"]
     assert recorded["evaluated_at"] == CHECKPOINTS[0]
+
+
+def test_followups_row_removed_mid_request_is_not_found_not_500(story_env, monkeypatch):
+    # CI 41226961404: /api/e2e/reset removed the row between the endpoint's existence check and the payload read.
+    from aria_home.store import Store
+
+    client = create_app().test_client()
+    inv_id = _start(client)
+    real_get, real_row = Store.get_follow_up, Store.get_follow_up_row
+    state = {"get_calls": 0, "gone": False}
+
+    def get_follow_up(self, investigation_id):
+        state["get_calls"] += 1
+        result = real_get(self, investigation_id)
+        if state["get_calls"] == 2:
+            state["gone"] = True
+        return result
+
+    def get_follow_up_row(self, investigation_id):
+        return None if state["gone"] else real_row(self, investigation_id)
+
+    monkeypatch.setattr(Store, "get_follow_up", get_follow_up)
+    monkeypatch.setattr(Store, "get_follow_up_row", get_follow_up_row)
+    resp = client.get(f"/api/follow-ups/{inv_id}?at={CHECKPOINTS[0]}")
+    assert resp.status_code == 404
+    assert resp.get_json()["error"] == "follow-up not found"
