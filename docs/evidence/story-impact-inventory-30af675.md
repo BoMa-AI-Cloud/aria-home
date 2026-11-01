@@ -86,3 +86,10 @@ any permission exists. So no follow-up or notice may exist before the first at-r
 
 - Whether `eval/model-value` variants depend on the changed values.
 - Test impact beyond a text search: 31 tests and docs mention 54 F, 52 F, 7:20 PM or 19:20.
+
+## Published offline results on the changed data (measured 2026-11-01, temporary copy)
+
+`evaluation.evaluate_cases` gave the same totals on the current and the changed fixture: combined 22/22, thermostat 12,
+room sensor 4, electrical 2, calendar 2, and no row changed its result. The claims quoted in the README and the video stay
+true. One written reason in `backend/eval/expected.json` needs updating: the 02:31 case says "flat trend", but the
+three-hour trend at 02:31 becomes -2.4 F an hour even though the room has held 52 F since 01:30.

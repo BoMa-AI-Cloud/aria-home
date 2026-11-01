@@ -203,6 +203,9 @@ test("completion report arrives after verification and ack changes no outcome", 
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
+  await expect
+    .poll(async () => outcome.locator(".outcome-time time").getAttribute("datetime"), { timeout: 30000 })
+    .toBe(checkpoints[4]);
   await expect.poll(async () => outcome.locator(".outcome-status").innerText()).not.toBe("");
   const before = await outcome.locator(".outcome-status").innerText();
   const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
@@ -282,6 +285,9 @@ test("rapid step changes settle on the last step", async ({ page }) => {
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
+  await expect
+    .poll(async () => outcome.locator(".outcome-time time").getAttribute("datetime"), { timeout: 30000 })
+    .toBe(checkpoints[3]);
   await expect(outcome.locator(".outcome-status")).toContainText("Thermostat telemetry missing");
   await expect(outcome.locator(".outcome-status")).not.toContainText("Warm-by expectation met");
 });
@@ -472,6 +478,82 @@ test("a failed story step load re-enables story navigation", async ({ page }) =>
     .toBe("false");
   await expect(page.getByRole("button", { name: "Next", exact: true })).toBeEnabled();
   await expect(page.getByRole("button", { name: "Back", exact: true })).toBeEnabled();
+});
+
+test("starting the story creates its first step at most once", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const posted: string[] = [];
+  await page.route("**/api/investigations*", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      const at = new URL(request.url()).searchParams.get("at");
+      if (at) posted.push(at);
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.getByRole("heading", { name: "The warm-by story" })).toBeVisible();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  for (let index = 1; index < checkpoints.length; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".story-complete")).toBeVisible();
+  for (const at of checkpoints) {
+    expect(posted.filter((entry) => entry === at).length, `creates at ${at}`).toBeLessThanOrEqual(1);
+  }
+  expect(posted.filter((entry) => entry === checkpoints[0])).toHaveLength(1);
+});
+
+test("a hung story step load settles with an error and re-enables navigation", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const holdAt = checkpoints[3];
+  await page.addInitScript(() => {
+    (window as unknown as { __ariaStepTimeoutMs?: number }).__ariaStepTimeoutMs = 1500;
+  });
+  const hangForever = async (route: import("@playwright/test").Route) => {
+    await new Promise(() => {});
+    await route.continue();
+  };
+  await page.route("**/api/follow-ups/*", async (route) => {
+    const at = new URL(route.request().url()).searchParams.get("at");
+    if (at === holdAt) {
+      await hangForever(route);
+      return;
+    }
+    await route.continue();
+  });
+  await page.route("**/api/investigations*", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      const at = new URL(request.url()).searchParams.get("at");
+      if (at === holdAt) {
+        await hangForever(route);
+        return;
+      }
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await stepNext(page, checkpoints, 1);
+  await stepNext(page, checkpoints, 2);
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 4 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Back", exact: true })).toBeEnabled();
+  const outcome = page.locator("section", {
+    has: page.getByRole("heading", { name: "Recovery so far" }),
+  });
+  await expect(outcome.getByRole("alert")).toContainText("Follow-up not reachable");
 });
 
 test("story keeps the original caregiver request while readings update", async ({ page }) => {
@@ -1121,12 +1203,14 @@ test("earlier explanations list earlier recorded answers, never as the current o
   await page.route("**/api/follow-ups/*", injectRecorded);
   await page.route("**/api/investigations*", injectRecorded);
   const checkpoints = await storyCheckpoints(page);
+  // Starting the story reuses the page-load create for its first step, so no
+  // new record-bearing response follows the click: catch that create instead.
+  const firstRecord = page.waitForResponse(isRecordResponse(checkpoints[0]), { timeout: 30000 });
   await page.goto("/");
   await page.waitForResponse(
     (response) => response.request().method() === "POST" && response.url().includes("/api/investigations"),
     { timeout: 30000 },
   );
-  const firstRecord = page.waitForResponse(isRecordResponse(checkpoints[0]), { timeout: 30000 });
   await page.getByRole("button", { name: "Start the warm-by story" }).click();
   await expect(page.getByRole("heading", { name: "The warm-by story" })).toBeVisible();
   await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);

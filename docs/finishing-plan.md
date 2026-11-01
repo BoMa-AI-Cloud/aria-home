@@ -168,7 +168,7 @@ evidence folder.
 - Every recording shown at a checkpoint matches its exact identity; anything else shows the labelled fallback.
 - The inventory lists a 02:31-07:01 artifact as reusable only when its identity matches byte for byte.
 
-**Inventory result (2026-11-01, measured; supersedes the expectations above).** Any fixture value change before 23:31
+**Inventory result (2026-11-01, measured; supersedes the expectations above).** That includes the advice above to keep `manifest.version` unchanged: since nothing is reusable, the version becomes "2" so a fixture change cannot pass as the old one. Any fixture value change before 23:31
 changes the input revision at all ten checkpoints, because every pack carries every record since 16:00. No answer,
 review, watcher run or correction is reusable; visual evidence and the transcript are. Details:
 [evidence/story-impact-inventory-30af675.md](evidence/story-impact-inventory-30af675.md).

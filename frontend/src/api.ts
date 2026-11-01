@@ -561,7 +561,7 @@ export interface ContextResponse {
 }
 
 async function fetchJson<T>(path: string): Promise<T> {
-  const response = await fetch(path);
+  const response = await fetchWithStepTimeout(path);
   if (!response.ok) {
     throw new Error(`GET ${path} failed with status ${response.status}`);
   }
@@ -861,6 +861,41 @@ export const INFERENCE_POLL_MARGIN_S = 15;
 export const INFERENCE_POLL_DEADLINE_MS =
   (INFERENCE_LEASE_S + INFERENCE_POLL_MARGIN_S) * 1000;
 
+export const STEP_REQUEST_TIMEOUT_MS = 60_000;
+
+function stepTimeoutMs(): number {
+  if (typeof window !== "undefined") {
+    const override = (window as unknown as { __ariaStepTimeoutMs?: unknown }).__ariaStepTimeoutMs;
+    if (typeof override === "number" && Number.isFinite(override) && override > 0) return override;
+  }
+  return STEP_REQUEST_TIMEOUT_MS;
+}
+
+function fetchWithStepTimeout(path: string, init?: RequestInit, outerSignal?: AbortSignal): Promise<Response> {
+  const controller = new AbortController();
+  const onOuterAbort = () => controller.abort(outerSignal?.reason);
+  if (outerSignal?.aborted) {
+    controller.abort(outerSignal.reason);
+  } else {
+    outerSignal?.addEventListener("abort", onOuterAbort, { once: true });
+  }
+  const timer = setTimeout(() => controller.abort(), stepTimeoutMs());
+  const cleanup = () => {
+    clearTimeout(timer);
+    outerSignal?.removeEventListener("abort", onOuterAbort);
+  };
+  return fetch(path, { ...init, signal: controller.signal }).then(
+    (response) => {
+      cleanup();
+      return response;
+    },
+    (error) => {
+      cleanup();
+      throw error;
+    },
+  );
+}
+
 function sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
   if (ms <= 0) return Promise.resolve();
   if (signal?.aborted) return Promise.reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
@@ -891,9 +926,13 @@ export async function createInvestigation(
     if (options?.signal?.aborted) {
       throw options.signal.reason ?? new DOMException("Aborted", "AbortError");
     }
-    const response = await fetch(`/api/investigations${query}`, {
-      method: "POST",
-    });
+    const response = await fetchWithStepTimeout(
+      `/api/investigations${query}`,
+      {
+        method: "POST",
+      },
+      options?.signal,
+    );
     if (response.status === 202) {
       const body = (await response.json()) as { status?: string };
       if (body.status !== "pending") return body as CreateInvestigationResponse;

@@ -2932,6 +2932,7 @@ export default function App() {
   const noFollowUpIds = useRef<Set<string>>(new Set());
   const createdAtRef = useRef<string | null>(null);
   const storyBusyRef = useRef(false);
+  const storyBusyTokenRef = useRef<number | null>(null);
   const [storyWaiting, setStoryWaiting] = useState(false);
 
   useEffect(() => {
@@ -3155,6 +3156,9 @@ export default function App() {
 
   function handleScenarioChange(nextScenario: string) {
     replayTokenRef.current += 1;
+    storyBusyRef.current = false;
+    storyBusyTokenRef.current = null;
+    setStoryWaiting(false);
     if (nextScenario !== scenario) {
       investigationTokenRef.current += 1;
     }
@@ -3177,6 +3181,32 @@ export default function App() {
     if (isStoryStep && storyBusyRef.current) {
       return;
     }
+    if (
+      isStoryStep &&
+      createdInvestigation !== null &&
+      createdInvestigation.investigation_id === investigationId &&
+      createdInvestigation.follow_up === null &&
+      createdAtRef.current === at
+    ) {
+      setSelectedAt(at);
+      setReplayError(null);
+      setReplayLoading(false);
+      setOutcome(createdInvestigation.outcome);
+      setReplayAt(at);
+      setRecordedReplay(createdInvestigation.investigation as unknown as RecordedInvestigation);
+      {
+        const createdRecorded = createdInvestigation.investigation as unknown as RecordedInvestigation | null;
+        if (createdRecorded?.output && typeof createdRecorded.evaluated_at === "string") {
+          const key = createdRecorded.evaluated_at;
+          setRecordedByAt((prev) => (prev[key] ? prev : { ...prev, [key]: createdRecorded }));
+        }
+      }
+      setStoryIndex(storyPosition);
+      storyBusyRef.current = false;
+      storyBusyTokenRef.current = null;
+      setStoryWaiting(false);
+      return;
+    }
     const token = ++replayTokenRef.current;
     setSelectedAt(at);
     setReplayLoading(true);
@@ -3196,6 +3226,7 @@ export default function App() {
     if (isStoryStep) {
       setStoryIndex(storyPosition);
       storyBusyRef.current = true;
+      storyBusyTokenRef.current = token;
       setStoryWaiting(true);
     }
     const eventsToken = ++eventsTokenRef.current;
@@ -3258,17 +3289,19 @@ export default function App() {
       : createFresh();
     followUpRequest
       .then((response) => {
-        if (response === null) {
-          if (isStoryStep) {
-            if (token === replayTokenRef.current) setStoryIndex(storyPosition);
+        if (token !== replayTokenRef.current) {
+          if (isStoryStep && storyBusyTokenRef.current === token) {
             storyBusyRef.current = false;
+            storyBusyTokenRef.current = null;
             setStoryWaiting(false);
           }
           return;
         }
-        if (token !== replayTokenRef.current) {
+        if (response === null) {
           if (isStoryStep) {
+            setStoryIndex(storyPosition);
             storyBusyRef.current = false;
+            storyBusyTokenRef.current = null;
             setStoryWaiting(false);
           }
           return;
@@ -3276,6 +3309,7 @@ export default function App() {
         if (response.scenario !== scenario) {
           if (isStoryStep) {
             storyBusyRef.current = false;
+            storyBusyTokenRef.current = null;
             setStoryWaiting(false);
           }
           return;
@@ -3283,6 +3317,7 @@ export default function App() {
         if (response.at && Date.parse(response.at) !== Date.parse(at)) {
           if (isStoryStep) {
             storyBusyRef.current = false;
+            storyBusyTokenRef.current = null;
             setStoryWaiting(false);
           }
           return;
@@ -3330,13 +3365,15 @@ export default function App() {
         if (isStoryStep) {
           setStoryIndex(storyPosition);
           storyBusyRef.current = false;
+          storyBusyTokenRef.current = null;
           setStoryWaiting(false);
         }
       })
       .catch(() => {
         if (token !== replayTokenRef.current) {
-          if (isStoryStep) {
+          if (isStoryStep && storyBusyTokenRef.current === token) {
             storyBusyRef.current = false;
+            storyBusyTokenRef.current = null;
             setStoryWaiting(false);
           }
           return;
@@ -3345,6 +3382,7 @@ export default function App() {
         setReplayLoading(false);
         if (isStoryStep) {
           storyBusyRef.current = false;
+          storyBusyTokenRef.current = null;
           setStoryWaiting(false);
         }
       });
