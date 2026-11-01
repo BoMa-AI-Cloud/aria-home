@@ -168,14 +168,18 @@ evidence folder.
 - Every recording shown at a checkpoint matches its exact identity; anything else shows the labelled fallback.
 - The inventory lists a 02:31-07:01 artifact as reusable only when its identity matches byte for byte.
 
+**Inventory result (2026-11-01, measured; supersedes the expectations above).** Any fixture value change before 23:31
+changes the input revision at all ten checkpoints, because every pack carries every record since 16:00. No answer,
+review, watcher run or correction is reusable; visual evidence and the transcript are. Details:
+[evidence/story-impact-inventory-30af675.md](evidence/story-impact-inventory-30af675.md).
+
 **Revised recording-call estimate (paid; each batch needs its own approval).**
 
 | Case | Calls |
 |---|---|
-| Minimum: the three new evening steps show the labelled "no recorded model response" fallback | 0 |
-| Recommended: an answer, a review and a watcher run at each of the three evening steps | 9 |
-| Plus at most one watcher revision per step if a first attempt fails checks | up to 12 |
-| If the inventory shows the 02:31-07:01 identities changed (for example because the follow-up's creation moved) | up to 21 more (7 checkpoints x answer, review, watcher) |
+| No fixture change: activity line only; the story still opens at 55 F | 0 |
+| Fixture change: an answer, a review and a watcher run at each of the ten steps | 30 |
+| Plus at most one watcher revision per step if a first attempt fails checks | up to 40 in total |
 
 
 Model-contribution table (to replace the README's long paragraph; verify each row against code before publishing):

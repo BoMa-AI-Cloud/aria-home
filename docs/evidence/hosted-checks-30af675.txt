@@ -1,0 +1,17 @@
+Hosted checks, 2026-11-01T21:38Z, https://aria-home-demo.onrender.com
+health version: {'commit': '30af675ff928330e261f0ed62e192f0a608e15a2', 'source': 'file'}
+F3 forged cookie: 1 new session cookie issued; forged value kept: 0
+F4 off-checkpoint ack: HTTP 400; acks stored: 0
+F7 malformed decisions: []->400 {}->400 null->400 5->400 true->400
+F1/F2 at 06:21 after decline: follow-up=[goal_verified declined] map=[goal_verified declined [False]]
+isolation: second visitor reading the first visitor's investigation -> HTTP 404
+story 02:31: rate/h -0.2057142857142862 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, 14 F below the 68 F target, furnace repor
+story 04:51: rate/h 0.8571428571428572 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, 14 F below the 68 F target, furnace repor
+story 06:21: rate/h 5.485714285714286 | request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, 14 F below the 68 F target, furnace repor
+voice note at 06:45: restarted at about 4 15 heat i
+served css assets/main-BhHNClLY.css: prefers-color-scheme rules = 0
+P1-3 mismatched scenario: follow-up HTTP 400; decision HTTP 400; unknown id HTTP 404
+P1-4 approve at 02:45 HTTP 201; rewound decline at 02:31: recorded False decision None status waiting
+P1-1 live browser, Next hammered: steps STEP 1>STEP 2>STEP 3>STEP 4>STEP 5>STEP 6>STEP 7>STEP 8>STEP 9>STEP 10
+  creates at 19:03, 19:03, 19:15, 19:20; body background rgb(247, 243, 236)
+  request: ARIA Home (synthetic scenario): your mother's home is cooling (54 F, 14 F below the 68 F target, furnace reported idle since 16:00). May I contact the HVAC company? Approve or decline in ARIA Home. | Asked at 1/16/2026, 7:20 PM ET — the original request, kept word-for-word at every later step.
