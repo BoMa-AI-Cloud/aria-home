@@ -2931,6 +2931,8 @@ export default function App() {
   const eventsTokenRef = useRef(0);
   const noFollowUpIds = useRef<Set<string>>(new Set());
   const createdAtRef = useRef<string | null>(null);
+  const storyBusyRef = useRef(false);
+  const [storyWaiting, setStoryWaiting] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -3170,6 +3172,11 @@ export default function App() {
 
   function handleReplayTime(at: string) {
     if (!investigationId) return;
+    const storyPosition = storyCheckpoints.indexOf(at);
+    const isStoryStep = scenario === STORY_SCENARIO && storyPosition >= 0;
+    if (isStoryStep && storyBusyRef.current) {
+      return;
+    }
     const token = ++replayTokenRef.current;
     setSelectedAt(at);
     setReplayLoading(true);
@@ -3186,8 +3193,11 @@ export default function App() {
     setReplayMetrics(null);
     setRecordedReplay(null);
     setNotificationsError(null);
-    const storyPosition = storyCheckpoints.indexOf(at);
-    if (scenario === STORY_SCENARIO && storyPosition >= 0) setStoryIndex(storyPosition);
+    if (isStoryStep) {
+      setStoryIndex(storyPosition);
+      storyBusyRef.current = true;
+      setStoryWaiting(true);
+    }
     const eventsToken = ++eventsTokenRef.current;
     const eventsScenario = scenario;
     fetchEvents(eventsScenario, at)
@@ -3213,7 +3223,8 @@ export default function App() {
         Number.isNaN(Date.parse(createdAt)) ||
         Number.isNaN(Date.parse(at)) ||
         Date.parse(at) >= Date.parse(createdAt));
-    const createFresh = () => createInvestigation(scenario, at).then((created) => {
+    const createFresh = () => {
+      return createInvestigation(scenario, at).then((created) => {
       if (token !== replayTokenRef.current) return null;
       if (created.follow_up === null) {
         noFollowUpIds.current.add(created.investigation_id);
@@ -3240,16 +3251,42 @@ export default function App() {
         return null;
       }
       return fetchFollowUp(created.investigation_id, at);
-    });
+      });
+    };
     const followUpRequest = reuseAllowed
       ? fetchFollowUp(investigationId, at).catch(() => createFresh())
       : createFresh();
     followUpRequest
       .then((response) => {
-        if (response === null) return;
-        if (token !== replayTokenRef.current) return;
-        if (response.scenario !== scenario) return;
-        if (response.at && Date.parse(response.at) !== Date.parse(at)) return;
+        if (response === null) {
+          if (isStoryStep) {
+            if (token === replayTokenRef.current) setStoryIndex(storyPosition);
+            storyBusyRef.current = false;
+            setStoryWaiting(false);
+          }
+          return;
+        }
+        if (token !== replayTokenRef.current) {
+          if (isStoryStep) {
+            storyBusyRef.current = false;
+            setStoryWaiting(false);
+          }
+          return;
+        }
+        if (response.scenario !== scenario) {
+          if (isStoryStep) {
+            storyBusyRef.current = false;
+            setStoryWaiting(false);
+          }
+          return;
+        }
+        if (response.at && Date.parse(response.at) !== Date.parse(at)) {
+          if (isStoryStep) {
+            storyBusyRef.current = false;
+            setStoryWaiting(false);
+          }
+          return;
+        }
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
@@ -3290,11 +3327,26 @@ export default function App() {
         }
         setReplayAt(at);
         setReplayLoading(false);
+        if (isStoryStep) {
+          setStoryIndex(storyPosition);
+          storyBusyRef.current = false;
+          setStoryWaiting(false);
+        }
       })
       .catch(() => {
-        if (token !== replayTokenRef.current) return;
+        if (token !== replayTokenRef.current) {
+          if (isStoryStep) {
+            storyBusyRef.current = false;
+            setStoryWaiting(false);
+          }
+          return;
+        }
         setReplayError("Follow-up not reachable");
         setReplayLoading(false);
+        if (isStoryStep) {
+          storyBusyRef.current = false;
+          setStoryWaiting(false);
+        }
       });
   }
 
@@ -3317,7 +3369,6 @@ export default function App() {
   function stepTo(index: number) {
     if (storyCheckpoints.length === 0) return;
     const next = Math.min(Math.max(index, 0), storyCheckpoints.length - 1);
-    setStoryIndex(next);
     handleReplayTime(storyCheckpoints[next]);
   }
 
@@ -3705,15 +3756,15 @@ export default function App() {
               ? `${caregiverStatusCopy(caregiverPermission).headline} ${caregiverStatusCopy(caregiverPermission).effect} Asked at ${formatTimestamp(caregiverPermission.requested_at)}.`
               : "No caregiver request at this step."}
           </p>
-          <div className="story-nav">
-            <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId}>
+          <div className="story-nav" data-story-waiting={storyWaiting ? "true" : "false"}>
+            <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId || storyWaiting}>
               Rewind to start
             </button>
             <button
               type="button"
               className="ghost-button"
               onClick={() => stepTo(storyIndex - 1)}
-              disabled={storyIndex === 0 || !investigationId}
+              disabled={storyIndex === 0 || !investigationId || storyWaiting}
             >
               Back
             </button>
@@ -3721,7 +3772,7 @@ export default function App() {
               type="button"
               className="btn-primary"
               onClick={() => stepTo(storyIndex + 1)}
-              disabled={storyIndex >= storyCheckpoints.length - 1 || !investigationId}
+              disabled={storyIndex >= storyCheckpoints.length - 1 || !investigationId || storyWaiting}
             >
               {storyIndex >= storyCheckpoints.length - 1 ? "Story complete" : "Next"}
             </button>

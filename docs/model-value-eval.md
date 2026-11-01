@@ -106,3 +106,31 @@ Added limitations:
   That is a possible missed issue in the genuine review, and it is not counted
   as a false alarm.
 - Part A's problem and next-action scores still need a human, as listed above.
+
+## Part A human scoring (drafted by Claude, confirmed by Brad 2026-10-31)
+
+Each Spark answer was scored against the variant's written ground truth: did it name the real problem, and was its
+next action right? C = correct, P = partly, W = wrong.
+
+| Variant | Problem named | Next action right | Note |
+|---|---|---|---|
+| ev-arrival-met | P | C | target met at arrival; the earlier outage is not mentioned |
+| ev-conflict-sensors | C | C | names the disagreeing sensors; asks which is authoritative |
+| ev-normal-night | C | C | at target, routine check |
+| ev-outage-0130 | P | P | at risk and falling, but heat stopping is not named; next is "manager may need to check on site", not HVAC now |
+| ev-outage-0340 | P | P | same pattern |
+| ev-outage-2310 | P | P | same pattern |
+| ev-recovery-fails | C | P | cooling after earlier warming; next is manager review, not "the fix did not hold" |
+| ev-report-no-warm | P | P | no rise toward target; never says the completion report proves nothing |
+| ev-slow-cool-ontrack | C | C | above target, routine check |
+| ev-stale-room | C | C | no usable room samples; get an authoritative reading |
+| ev-thermostat-gap-steady | C | P | correctly no dispatch, but does not say to check the thermostat link |
+| ev-wrong-zone | P | P | zone difference raised only as a hypothesis |
+
+Totals: problem named 6/12 correct, 6/12 partly, 0/12 wrong; next action right 5/12 correct, 7/12 partly, 0/12
+wrong. No answer claimed a cause the evidence could not support.
+
+Limitation found by this scoring: Spark's prompt (`PROMPT_VERSION`) and the confirmation context it reads were
+written for the earlier trip-home story, so its next steps say "manager review before the planned arrival" instead of
+naming the caregiver or the HVAC company. That explains most of the partly scores. Fixing it needs a new prompt version
+and a re-recording of every answer, which is a separate paid batch and has not been done.

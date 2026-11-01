@@ -37,6 +37,9 @@ async function stepNext(page: Page, checkpoints: string[], index: number): Promi
   await expect(page.locator(".story-progress")).toContainText(
     `Step ${index + 1} of ${checkpoints.length}`,
   );
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
 }
 
 test.beforeEach(async ({ page }) => {
@@ -172,7 +175,7 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
   await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
 });
 
-test("notice facts are labelled with their creation time at 02:31", async ({ page }) => {
+test("caregiver notice at 02:31 keeps its 7:20 PM creation facts while House shows 52 F", async ({ page }) => {
   const checkpoints = await startStory(page);
   for (let index = 1; index <= 3; index += 1) {
     await stepNext(page, checkpoints, index);
@@ -180,7 +183,14 @@ test("notice facts are labelled with their creation time at 02:31", async ({ pag
   const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
   await expect(caregiver).toHaveCount(1);
   await caregiver.getByText("Show the simulated message").click();
-  await expect(caregiver).toContainText("Facts when this notice was created (2:31 AM ET)");
+  await expect(caregiver).toContainText("Facts when this notice was created (7:20 PM ET)");
+  await expect(caregiver).not.toContainText("2:31 AM");
+  const permission = page.getByTestId("caregiver-permission");
+  await expect(permission).toContainText("54 F");
+  await expect(permission).not.toContainText("52 F");
+  await expect(permission).toContainText("7:20 PM");
+  await expect(page.getByTestId("story-caregiver-caption")).toContainText("7:20 PM");
+  await expect(page.locator(".verdict-lead")).toContainText("52 F");
 });
 
 test("completion report arrives after verification and ack changes no outcome", async ({ page }) => {
@@ -274,6 +284,224 @@ test("rapid step changes settle on the last step", async ({ page }) => {
   });
   await expect(outcome.locator(".outcome-status")).toContainText("Thermostat telemetry missing");
   await expect(outcome.locator(".outcome-status")).not.toContainText("Warm-by expectation met");
+});
+
+test("delayed story create with rapid Next never creates at a later time", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const createAt = checkpoints[2];
+  const later = checkpoints.slice(3);
+  const posted: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/investigations*", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      const at = new URL(request.url()).searchParams.get("at");
+      if (at) posted.push(at);
+      if (at === createAt) await gate;
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await stepNext(page, checkpoints, 1);
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 3 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("true");
+  const next = page.getByRole("button", { name: "Next", exact: true });
+  const back = page.getByRole("button", { name: "Back", exact: true });
+  await expect(next).toBeDisabled();
+  await expect(back).toBeDisabled();
+  await expect(page.locator(".story-progress")).toContainText(`Step 3 of ${checkpoints.length}`);
+  release();
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await expect(page.getByTestId("story-caregiver-caption")).toContainText("Asked at", { timeout: 30000 });
+  await expect(page.locator(".story-progress")).toContainText(`Step 3 of ${checkpoints.length}`);
+  expect(posted.filter((at) => at === createAt)).toHaveLength(1);
+  for (const at of later) expect(posted, "no later-time creates").not.toContain(at);
+  expect(posted).toContain(createAt);
+});
+
+test("story Next stays disabled while a create POST is in flight and 19:20 still creates", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const holdAt = checkpoints[1];
+  const createAt = checkpoints[2];
+  const later = checkpoints.slice(3);
+  const posted: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/investigations*", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      const at = new URL(request.url()).searchParams.get("at");
+      if (at) posted.push(at);
+      if (at === holdAt) await gate;
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 2 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("true");
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+  await expect(page.locator(".story-progress")).toContainText(`Step 2 of ${checkpoints.length}`);
+  release();
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await stepNext(page, checkpoints, 2);
+  await expect(page.getByTestId("caregiver-permission")).toContainText("54 F");
+  await expect(page.getByTestId("caregiver-permission")).toContainText("7:20 PM");
+  await expect(page.getByTestId("story-caregiver-caption")).toContainText("7:20 PM");
+  expect(posted.filter((at) => at === holdAt)).toHaveLength(1);
+  expect(posted.filter((at) => at === createAt)).toHaveLength(1);
+  for (const at of later) expect(posted, "no later-time creates").not.toContain(at);
+});
+
+test("story Next stays disabled during the pre-POST GET and the step still settles", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const holdAt = checkpoints[3];
+  const later = checkpoints.slice(4);
+  const posted: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/follow-ups/*", async (route) => {
+    const at = new URL(route.request().url()).searchParams.get("at");
+    if (at === holdAt) await gate;
+    await route.continue();
+  });
+  await page.route("**/api/investigations*", async (route) => {
+    if (route.request().method() === "POST") {
+      const at = new URL(route.request().url()).searchParams.get("at");
+      if (at) posted.push(at);
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await stepNext(page, checkpoints, 1);
+  await stepNext(page, checkpoints, 2);
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 4 of ${checkpoints.length}`);
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("true");
+  await expect(page.locator(".story-progress")).toContainText(`Step 4 of ${checkpoints.length}`);
+  release();
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await expect(page.getByTestId("caregiver-permission")).toContainText("54 F", { timeout: 30000 });
+  await expect(page.getByTestId("caregiver-permission")).toContainText("7:20 PM");
+  await expect(page.getByTestId("story-caregiver-caption")).toContainText("7:20 PM");
+  expect(posted, "no reuse step creates").not.toContain(holdAt);
+  for (const at of later) expect(posted, "no later-time creates").not.toContain(at);
+});
+
+test("rapid clicks from start to finish keep the original 54 F request", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  const permission = page.getByTestId("caregiver-permission");
+  const caption = page.getByTestId("story-caregiver-caption");
+  for (let index = 1; index < checkpoints.length; index += 1) {
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.locator(".story-progress")).toContainText(
+      `Step ${index + 1} of ${checkpoints.length}`,
+    );
+    if (index >= 2) {
+      await expect(permission).toContainText("54 F", { timeout: 30000 });
+      await expect(permission).toContainText("7:20 PM", { timeout: 30000 });
+      await expect(caption).toContainText("7:20 PM");
+    }
+  }
+  await expect(page.locator(".story-complete")).toBeVisible();
+  await expect(permission).toContainText("54 F");
+  await expect(permission).toContainText("7:20 PM");
+  await expect(caption).toContainText("7:20 PM");
+});
+
+test("a failed story step load re-enables story navigation", async ({ page }) => {
+  const checkpoints = await storyCheckpoints(page);
+  const failAt = checkpoints[2];
+  await page.route("**/api/follow-ups/*", async (route) => {
+    const at = new URL(route.request().url()).searchParams.get("at");
+    if (at === failAt) {
+      await route.fulfill({ status: 500, body: "boom" });
+      return;
+    }
+    await route.continue();
+  });
+  await page.route("**/api/investigations*", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST") {
+      const at = new URL(request.url()).searchParams.get("at");
+      if (at === failAt) {
+        await route.fulfill({ status: 500, body: "boom" });
+        return;
+      }
+    }
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start the warm-by story" }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 1 of ${checkpoints.length}`);
+  await stepNext(page, checkpoints, 1);
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page.locator(".story-progress")).toContainText(`Step 3 of ${checkpoints.length}`);
+  await expect
+    .poll(async () => page.locator(".story-nav").getAttribute("data-story-waiting"), { timeout: 30000 })
+    .toBe("false");
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Back", exact: true })).toBeEnabled();
+});
+
+test("story keeps the original caregiver request while readings update", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  const permission = page.getByTestId("caregiver-permission");
+  const caption = page.getByTestId("story-caregiver-caption");
+  const lead = page.locator(".verdict-lead");
+  await stepNext(page, checkpoints, 1);
+  await stepNext(page, checkpoints, 2);
+  await expect(permission).toBeVisible();
+  const requestTexts: string[] = [];
+  const askedAt: Array<string | null> = [];
+  for (let index = 2; index < checkpoints.length; index += 1) {
+    if (index > 2) await stepNext(page, checkpoints, index);
+    await expect(permission).toContainText("54 F");
+    await expect(permission).toContainText("7:20 PM");
+    await expect(caption).toContainText("7:20 PM");
+    requestTexts.push(await permission.locator(".permission-text").innerText());
+    askedAt.push(await permission.locator(".permission-asked time").getAttribute("datetime"));
+    if (checkpoints[index].includes("02:31")) {
+      await expect(lead).toContainText("52 F");
+    }
+  }
+  await expect(page.locator(".story-complete")).toBeVisible();
+  for (let index = 1; index < requestTexts.length; index += 1) {
+    expect(requestTexts[index], "request text frozen").toBe(requestTexts[0]);
+    expect(askedAt[index], "request time frozen").toBe(askedAt[0]);
+  }
+  await expect(lead).not.toContainText("52 F");
+  await expect(lead).toContainText("68");
 });
 
 test("visual image is identical at UTC and offset representations", async ({ page }) => {
@@ -438,7 +666,7 @@ test("page has no horizontal scroll at 375px", async ({ page }) => {
   await expectNoScroll();
 });
 
-test("house at 02:31 has no legacy chrome and reasoning stays compact", async ({ page }) => {
+test("house at 02:31 keeps the 7:20 PM caregiver request while showing 52 F and reasoning stays compact", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   const checkpoints = await startStory(page);
   for (let index = 1; index <= 3; index += 1) {
@@ -461,10 +689,15 @@ test("house at 02:31 has no legacy chrome and reasoning stays compact", async ({
   });
   expect(emptyHeadings).toEqual([]);
   const permission = page.getByTestId("caregiver-permission");
-  await expect(permission).toContainText("52 F");
-  await expect(permission).toContainText("01:30");
+  await expect(permission).toContainText("54 F");
+  await expect(permission).toContainText("7:20 PM");
   await expect(permission).toContainText("No answer yet");
-  await expect(permission).not.toContainText("54 F");
+  await expect(permission).not.toContainText("52 F");
+  await expect(permission).not.toContainText("01:30");
+  await expect(page.locator(".verdict-lead")).toContainText("52 F");
+  const caregiverNotice = page.locator('article[aria-label="Family caregiver notification"]');
+  await caregiverNotice.getByText("Show the simulated message").click();
+  await expect(caregiverNotice).toContainText("Facts when this notice was created (7:20 PM ET)");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
   await expect(page.getByTestId("trace-map")).toBeVisible();

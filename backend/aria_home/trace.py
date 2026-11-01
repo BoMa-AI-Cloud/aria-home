@@ -286,13 +286,31 @@ def _watcher_detail(scenario, at, pack, identities, watcher_entries):
             for obs in parsed["observations"]:
                 observations.append({**_jsonable(obs), "status": "confirmed", "reasons": []})
     corrections = [
-        {key: record.get(key) for key in ("scenario_id", "evaluated_at_utc", "input_revision", "laws_version", "original_claim", "failed_checks", "revision_claim", "final_result")}
+        {key: record.get(key) for key in ("scenario_id", "evaluated_at_utc", "input_revision", "laws_version", "watcher_prompt_version", "original_claim", "failed_checks", "revision_claim", "final_result")}
         for record in load_correction_records()
         if isinstance(record, dict) and record.get("scenario_id") == wid["scenario_id"] and record.get("evaluated_at_utc") == wid["evaluated_at_utc"]
     ]
-    for record in corrections:
-        if record.get("final_result") == "corrected and verified":
+    if match is not None and parsed is not None and not reasons:
+        shown = _jsonable(parsed["observations"])
+        for record in load_correction_records():
+            if not isinstance(record, dict):
+                continue
+            if record.get("final_result") != "corrected and verified":
+                continue
+            if record.get("scenario_id") != wid["scenario_id"]:
+                continue
+            if record.get("evaluated_at_utc") != wid["evaluated_at_utc"]:
+                continue
+            if record.get("input_revision") != wid["input_revision"]:
+                continue
+            if record.get("laws_version") != wid["laws_version"]:
+                continue
+            if record.get("watcher_prompt_version") != wid["watcher_prompt_version"]:
+                continue
+            if _jsonable(record.get("revision_claim")) != shown:
+                continue
             status = "corrected and verified"
+            break
     return {
         "observations": observations,
         "model_note": note,

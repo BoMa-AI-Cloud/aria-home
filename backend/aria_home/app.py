@@ -277,6 +277,9 @@ def create_app():
         investigation_id = request.args.get("investigation_id") or None
         store = _get_store()
         if investigation_id is not None:
+            bound = _scenario_binding_error(store, investigation_id, request.args.get("scenario") or scn.manifest.id)
+            if bound:
+                return bound
             inputs = investigation_trace_inputs(store, scn, investigation_id, at)
             if inputs is None:
                 if store.get_investigation(investigation_id) is None:
@@ -563,6 +566,17 @@ def create_app():
         item = {k: v for k, v in row.items() if k != "payload_json"}
         return item
 
+    def _scenario_binding_error(store, investigation_id, scenario_name):
+        if not scenario_name:
+            return None
+        scn = _load_named_scenario(scenario_name)
+        if scn is None:
+            return jsonify({"error": "unknown scenario", "data_mode": "synthetic", "scenario": scenario_name}), 404
+        inv_row = store.get_investigation(investigation_id)
+        if inv_row is not None and inv_row.get("scenario") and inv_row["scenario"] != scn.manifest.id:
+            return jsonify({"error": "investigation does not belong to this scenario", "data_mode": "synthetic", "scenario": scn.manifest.id}), 400
+        return None
+
     @app.get("/api/context")
     def context_endpoint():
         scn = _load_named_scenario(request.args.get("scenario"))
@@ -829,6 +843,9 @@ def create_app():
     @app.get("/api/follow-ups/<investigation_id>")
     def get_follow_up_endpoint(investigation_id):
         store = _get_store()
+        bound = _scenario_binding_error(store, investigation_id, request.args.get("scenario"))
+        if bound:
+            return bound
         follow_up = store.get_follow_up(investigation_id)
         if follow_up is None:
             return jsonify({"error": "follow-up not found", "data_mode": "synthetic"}), 404
@@ -850,6 +867,8 @@ def create_app():
         from aria_home.trace import investigation_trace_inputs
 
         inputs = investigation_trace_inputs(store, scn, investigation_id, at)
+        if inputs is None:
+            return jsonify({"error": "follow-up not found", "data_mode": "synthetic"}), 404
         outcome = evaluate_outcome(inputs["follow_up"], scn.records, at)
         if not is_rewind:
             store.record_outcome(investigation_id, outcome)
@@ -923,6 +942,10 @@ def create_app():
     def list_notifications_endpoint():
         store = _get_store()
         investigation_id = request.args.get("investigation_id")
+        if investigation_id:
+            bound = _scenario_binding_error(store, investigation_id, request.args.get("scenario"))
+            if bound:
+                return bound
         raw_at = request.args.get("at")
         if raw_at:
             at, error = _parse_at(raw_at, None)
@@ -1073,6 +1096,9 @@ def create_app():
         existing = store.get_notification(notification_id)
         if existing is None:
             return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
+        bound = _scenario_binding_error(store, existing["investigation_id"], request.args.get("scenario") or (body.get("scenario") if isinstance(body, dict) else None))
+        if bound:
+            return bound
         if existing.get("audience") != "family_caregiver" or existing.get("kind") != "caregiver_alert" or existing.get("state") != "simulated_delivered":
             return jsonify({"error": "only a delivered caregiver permission request can be approved or declined", "reason": "not_permission_request", "data_mode": "synthetic"}), 409
         created_dt = datetime.fromisoformat(str(existing["created_at"]).replace("Z", "+00:00"))
@@ -1083,8 +1109,11 @@ def create_app():
         if public and not public_demo.checkpoint_ok(at, dec_scn.manifest.id):
             return jsonify({"error": "at is not an allowlisted replay time for this scenario", "data_mode": "synthetic", "scenario": dec_scn.manifest.id, "at": at.isoformat(), "timezone": dec_scn.manifest.timezone}), 400
         row, created = store.record_caregiver_decision(existing["investigation_id"], notification_id, choice, "family_caregiver", at)
+        if store.get_notification(notification_id) is None:
+            return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
+        asof_decision = store.get_caregiver_decision(existing["investigation_id"], at=at)
         permission = _caregiver_permission_payload(store, dec_scn, existing["investigation_id"], store.list_notifications(existing["investigation_id"], at=at), at)
-        return jsonify({"data_mode": "synthetic", "scenario": dec_scn.manifest.id, "at": at.isoformat(), "timezone": dec_scn.manifest.timezone, "recorded": created, "decision": row, "caregiver_permission": permission}), (201 if created else 200)
+        return jsonify({"data_mode": "synthetic", "scenario": dec_scn.manifest.id, "at": at.isoformat(), "timezone": dec_scn.manifest.timezone, "recorded": created, "decision": asof_decision, "caregiver_permission": permission}), (201 if created else 200)
 
     @app.post("/api/notifications/<notification_id>/ack")
     def ack_notification_endpoint(notification_id):
@@ -1102,6 +1131,9 @@ def create_app():
         existing = store.get_notification(notification_id)
         if existing is None:
             return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
+        bound = _scenario_binding_error(store, existing["investigation_id"], request.args.get("scenario") or (body.get("scenario") if isinstance(body, dict) else None))
+        if bound:
+            return bound
         if existing.get("state") != "simulated_delivered":
             return jsonify({"error": f"notification in state {existing.get('state')} cannot be acknowledged; only simulated_delivered notifications can be acknowledged", "data_mode": "synthetic"}), 409
         actor = body.get("actor", body.get("by"))
@@ -1146,7 +1178,9 @@ def create_app():
         ack = store.record_ack(notification_id, actor, at)
         if ack is None:
             return jsonify({"error": "notification not found", "data_mode": "synthetic"}), 404
-        updated = store.get_notification(notification_id)
+        updated = store.get_notification(notification_id, at=at)
+        if updated is None:
+            return jsonify({"error": "notification not yet visible at this time", "reason": "not_yet_visible", "data_mode": "synthetic"}), 409
         return jsonify({"data_mode": "synthetic", "scenario": ack_scn.manifest.id, "at": at.isoformat(), "timezone": ack_scn.manifest.timezone, "message": "acknowledged, not resolved", "acknowledgement": "acknowledged, not resolved", "notification": _notification_api(updated), "ack": ack, "acks": updated["acks"] if updated else []})
 
     DIST_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
