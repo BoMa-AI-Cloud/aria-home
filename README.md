@@ -11,7 +11,7 @@ It is a solo entry in the Meta Global AI Developer Hackathon (Indie Developer tr
 ## At a glance
 - **Built during the Hackathon:** all code in this repository. **Pre-existing:** only the name ARIA and private planning notes and designs.
 - **Meta models:** muse-spark-1.3 explains and watches, muse-wonder-1.0 reviews each answer, muse-voice-transcribe-1.0 transcribes the technician, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames. They also wrote the code; every prompt and answer is in [docs/build-log/](docs/build-log/README.md).
-- **See the models get caught:** code rejects the watcher's first answer in 9 of 12 unseen synthetic nights, muse-wonder-1.0 caught 12 of 12 planted false claims (fixed templates), and sam-3.1 misses are shown as misses.
+- **See the models get caught:** code rejects the watcher's first answer in 9 of 12 unseen simulated scenarios, run as one batch, muse-wonder-1.0 caught 12 of 12 planted false claims (fixed templates), and sam-3.1 misses are shown as misses.
 - **Code decides, models never do.** ARIA asks the caregiver first, and only independent room readings can verify the goal.
 
 ## What judges should click
@@ -42,7 +42,7 @@ Code decides readiness, verification and who is told. The models explain, review
 | Model id | Job | Mode | Evidence | Limitation |
 |---|---|---|---|---|
 | muse-spark-1.3 | explains the code's readiness and verification in plain words, citing evidence ids that code checks | recorded for the care checkpoints; live calls are operator-only | `backend/eval/recorded/`; claim checks in `backend/aria_home/investigator.py` | readiness agreement is enforced, so agreement is not independent accuracy; its published scoring used prompt inv-v3 with the earlier trip-home vocabulary; inv-v4 reworded it and was not re-scored ([model-value evaluation](docs/model-value-eval.md)) |
-| muse-spark-1.3 (watcher) | notices overnight anomalies with cited evidence; a failed first attempt gets one revision | recorded | watcher recordings in `backend/eval/`; the real 23:30 correction (23:30 was recorded twice on this night: one pass confirmed first time, one corrected; the app shows the newer, and both are in the repo) | on 12 unseen synthetic nights, first answers failed code checks in 9 of 12 (all 9 revisions verified) |
+| muse-spark-1.3 (watcher) | notices overnight anomalies with cited evidence; a failed first attempt gets one revision | recorded | watcher recordings in `backend/eval/`; the real 23:30 correction (23:30 was recorded twice on this night: one pass confirmed first time, one corrected; the app shows the newer, and both are in the repo) | on 12 unseen simulated scenarios, run as one batch, first answers failed code checks in 9 of 12 (all 9 revisions verified) |
 | muse-wonder-1.0 | second review of each recorded answer for unsupported claims | recorded, bound to the exact answer by digest | review recordings; 12 of 12 planted false claims caught, 0 of 12 false alarms | planted claims used four fixed templates |
 | muse-voice-transcribe-1.0 | turns the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261031.json` | a report, never a measurement |
 | sam-3.1 | segments the mechanical-room camera frames | recorded over synthetic images | visual recordings | it missed the frost; no detection is never an all-clear |
