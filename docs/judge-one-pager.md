@@ -40,9 +40,10 @@ Meta's Muse models (muse-spark-1.3 and muse-wonder-1.0) wrote most of the applic
 ## Measured results
 
 - Offline, 22 builder-labelled synthetic cases across 10 scenarios: combined evidence 22/22 fully correct. Any single source alone does far worse (thermostat 12/22, room sensor 4/22, electrical 2/22, calendar 2/22), which is why ARIA uses independent sources.
-- Recorded-model coverage is per-step: a muse-spark-1.3 answer that passed the contract checks, plus a muse-wonder-1.0 review. [CONFIRM after the 11-step re-recording: coverage of the 11 steps.] Recordings match on exact input, so a step without a match shows the labelled "No recorded model response for this snapshot" fallback.
+- Recorded-model coverage is per-step: a muse-spark-1.3 answer that passed the contract checks, plus a muse-wonder-1.0 review. The main story has recordings at all 11 steps, on prompt inv-v5 [CONFIRM after the 11-step re-recording]. Recordings match on exact input, so a step without a match shows the labelled "No recorded model response for this snapshot" fallback; the derived decline branch shows the labelled deterministic fallback at its later changed checkpoints.
 - Live runs on earlier trip-home scenarios: 11/11 and 5/5 valid answers agreed with code; the claim check caught the rest. That agreement shows contract-following, not independent judgment.
-- These are synthetic regression results, not real-world accuracy.
+- On 12 simulated scenarios, run as one batch: muse-wonder-1.0 caught 12 of 12 planted false claims from four fixed templates, and the watcher's first answers failed code checks in 9 of 12. These scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5.
+- These are synthetic regression results, not real-world accuracy. Explanation quality from the current prompt has not been measured, and real-world effectiveness has not been established.
 
 ## Limits
 

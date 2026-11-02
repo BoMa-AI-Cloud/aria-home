@@ -1,5 +1,7 @@
 # Public demo and model-coverage plan (work list)
 
+> Note 2026-11-02: the site is live at https://aria-home-demo.onrender.com, first deployed 2026-10-30, so "Nothing here is deployed" and "Pending deployment" below are history. The night now has 11 steps: notice at 21:41, ask at 22:46. The 23:30 step in the next note no longer exists.
+
 > Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
 
 > Remaining work is now tracked in [finishing-plan.md](finishing-plan.md) (2026-10-31); this file is kept as history.

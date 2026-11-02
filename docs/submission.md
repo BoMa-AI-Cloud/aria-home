@@ -60,11 +60,14 @@ my direction, recorded in docs/build-log/operator-log.md. Every Muse prompt and 
 
 Outside audits reported 12, 10 and 7 defects; each was reproduced and repaired with a regression test, and the
 Audit 4 repairs were red-proofed. Recorded-model coverage is per-step (a muse-spark-1.3 answer that passed the
-contract checks, each with a muse-wonder-1.0 review); [CONFIRM after the 11-step re-recording: coverage of the 11 steps]
-a step without a matching recording shows the labelled "No recorded model response for this snapshot" fallback. Offline: 22 synthetic cases across 10 scenarios, combined
+contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 11 steps, on prompt inv-v5
+[CONFIRM after the 11-step re-recording]; a step without a matching recording shows the labelled "No recorded model
+response for this snapshot" fallback, and the derived decline branch shows that fallback at its later changed
+checkpoints. Model-value scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. Offline: 22 synthetic cases across 10 scenarios, combined
 evidence 22/22. Live (muse-spark-1.3, older trip-home scenarios): 11 of 17 valid on the full run, then 5 of 6 on the
 after-arrival rerun; kept verbatim, not re-scored. Limits: small synthetic sample, simulated delivery, no equipment
-control.
+control. Explanation quality from the current prompt has not been measured, and real-world effectiveness has not been
+established.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 
@@ -76,6 +79,7 @@ control.
 - That any email, call, message, location, or scene control in the video is real, except the one labelled real-equipment segment, which shows the owner's own furnace and panel.
 - Only "verified recovery of the monitored temperature goal" — never a proven repair cause. Reconnection alone proves nothing; say "on the next sensor update". Missing location is "unavailable", never evidence about her schedule.
 - That ARIA monitors continuously (the demo checks at set story times), or that 2 F and 6 F are safety limits (they are configured settings).
+- That inv-v3 scores validate the current inv-v5 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
 - That Muse wrote all the code. Meta's Muse models wrote most of it; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass.
 - No dollar-loss figures, no "0 hallucinations", no "secure" or "guaranteed" claims.
 

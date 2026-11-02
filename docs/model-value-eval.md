@@ -1,5 +1,7 @@
 # Model-Value Evaluation Report
 
+> Note 2026-11-02: every score in this file was measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. They do not validate the current prompt, and no claim is made that current explanations were measured. The `HUMAN ... =?` rows and `observation_correct` below stay unscored. The Part A table at the end is one pass on inv-v3, drafted by Claude and confirmed by Brad. Human-scored quality of current explanations and real-world effectiveness have not been established.
+
 Code snapshot: d5a0da3; generated 20261031T181441Z; live variants n=12.
 
 ## A — Spark vs deterministic summary
