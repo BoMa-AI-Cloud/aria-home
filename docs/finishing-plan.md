@@ -5,9 +5,9 @@ items in [public-demo-plan.md](public-demo-plan.md), which stays as the history 
 file is a result: every status names its evidence, and an item without evidence is open. AI-generated suggestions,
 including the audit items below, are proposals to verify, not requirements.
 
-Note 2026-11-02: the night now has 11 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
-and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves right away and a technician is on site by
-11:30 PM; the repair finishes at 4:15 AM; a backstop still asks when the house is at risk within 2
+Note 2026-11-02: the night now has 10 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
+and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves at 10:47 PM and a technician is on site at
+11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:40 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. Meta's Muse models wrote most of the
 application code; Claude (Anthropic) wrote that alert rule and the final wording pass under Brad's direction, recorded
 in [operator-log.md](build-log/operator-log.md). Dated results below stay as they were measured.
@@ -131,7 +131,7 @@ Constraints (Brad, 2026-10-31):
   warm-by expectation evaluated). No new constants.
 - Docs, tests and the video script follow.
 
-**Checkpoint table** (updated 2026-11-02 to the 11-step night):
+**Checkpoint table** (updated 2026-11-02 to the 10-step night):
 
 | # | Time | Home condition (computed) | ARIA's latest activity (event or computed transition) |
 |---|---|---|---|
@@ -139,13 +139,12 @@ Constraints (Brad, 2026-10-31):
 | 2 | 21:00 | readiness still on track; trend falling | a decline was noticed in the room readings; readiness unchanged |
 | 3 | 21:41 | readiness at risk; 66.0 F, 2 F below the target | notice recorded; no one is asked |
 | 4 | 22:46 | readiness at risk; 62.0 F, 6 F below the target | permission request created and sent (simulated): "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)" |
-| 5 | 23:31 | unchanged by the decision | HVAC contacted with the allowed fields and technician on site (approved), or contact refused (declined) |
-| 6 | 02:31 | at risk; thermostat telemetry missing | repair not finished; room sensor still reporting |
-| 7 | 04:21 | thermostat reporting restored; not verified | thermostat reporting resumed; reconnection does not close the issue |
-| 8 | 04:51 | warming observed | independent room sensor shows warming |
-| 9 | 06:21 | goal verified (held 30 minutes) | goal verified from independent readings |
-| 10 | 06:45 | unchanged (goal verified) | technician report received, counted as a report only |
-| 11 | 07:01 | warm-by expectation met | warm-by expectation evaluated at 7:00 |
+| 5 | 23:31 | at risk; thermostat telemetry missing | HVAC contacted with the allowed fields and technician on site (approved), or contact refused (declined) |
+| 6 | 00:21 | thermostat reporting restored; not verified | repair ended 00:15; thermostat reporting resumed; reconnection does not close the issue |
+| 7 | 00:31 | warming observed | independent room sensor shows warming |
+| 8 | 01:41 | goal verified (held 30 minutes) | goal verified from independent readings |
+| 9 | 01:51 | unchanged (goal verified) | technician report received, counted as a report only |
+| 10 | 07:01 | warm-by expectation met | warm-by expectation evaluated at 7:00 |
 
 **Impact inventory (run before any fixture change; nothing is assumed reusable).** A script compares, at every care
 checkpoint, the identity each artifact is bound to before and after the change, and writes the result into the
@@ -186,8 +185,8 @@ review, watcher run or correction is reusable; visual evidence and the transcrip
 | Case | Calls |
 |---|---|
 | No fixture change: activity line only; the story still opens at 55 F | 0 |
-| Fixture change: an answer, a review and a watcher run at each of the eleven steps | 33 |
-| Plus at most one watcher revision per step if a first attempt fails checks | up to 44 in total |
+| Fixture change: an answer, a review and a watcher run at each of the ten steps | 30 |
+| Plus at most one watcher revision per step if a first attempt fails checks | up to 40 in total |
 
 
 Model-contribution table (to replace the README's long paragraph; verify each row against code before publishing):
@@ -212,8 +211,8 @@ evidence with its availability time. Not a prerequisite if the current screens a
 ### Phase 5: three-minute video (required)
 
 Script v5 (kept outside the repo) follows problem, the notice at 9:41 PM, the ask at 10:46 PM, the caregiver's approval
-and a technician on site by 11:30 PM, 52 F with a silent thermostat, a short decline demonstration, a model correction, the evaluation card and the 30-minute
-hold. [CONFIRM after the 11-step re-recording: whether a real correction happens, and at which step. Do not invent one.]
+and a technician on site at 11:30 PM, a silent thermostat, a short decline demonstration, a model correction, the evaluation card and the 30-minute
+hold. [CONFIRM after the 10-step re-recording: whether a real correction happens, and at which step. Do not invent one.]
 Confirm every stage against the repaired build before recording. Record only from
 the deployed repaired version; label dramatization; music under speech; keep three minutes.
 

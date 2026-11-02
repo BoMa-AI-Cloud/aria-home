@@ -32,13 +32,14 @@ no sign-in). On a synthetic winter night the evening starts warm and on track, a
 still on track. At 9:41 PM it is 66 F, 2 F below the target: code flags it as at risk, and ARIA records a notice and
 asks nobody. At 10:46 PM it is 62 F, 6 F below, and ARIA asks the family caregiver: "May I contact the HVAC company?"
 The 2 F and 6 F are configured settings, not safety limits, and a backstop still asks when the house is at risk within
-2 hours of the warm-by time. The demo checks at set story times. She approves right away, and only then is the HVAC
-request created, with allowed fields only. A technician is on site by 11:30 PM and finishes the repair at 4:15. Until
-then the room keeps falling: the thermostat goes silent at 1:30 and the room reaches 52 F. If she declines, no contact is made
+2 hours of the warm-by time. The demo checks at set story times. She approves at 10:47 PM, and only then is the HVAC
+request created, with allowed fields only. The thermostat goes silent at 11:00 PM. A technician is on site at 11:30 PM,
+44 minutes after the ask, and finishes at 12:15 AM, with the room at 56.6 F. If she declines, no contact is made
 — no request, visit, report or voice note — and the room readings are still checked at each later step: the room
-holds 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
-On the approved path, reconnection alone proves nothing: the goal is verified at 6:21 from independent readings held for 30 minutes, and
-the technician's 6:45 voice note counts only as a human report.
+falls to 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
+On the approved path, the room rises at once, and reconnection at 12:20 AM alone proves nothing: the goal is verified at
+1:40 AM from independent readings held for 30 minutes, under 3 hours after the ask, and the technician's 1:50 AM voice note
+counts only as a human report.
 
 Code decides readiness, verification and who is told; Meta models explain and review, never decide. The app has
 three pages: House (the verdict and who knows), Reasoning (ARIA's view, a live map of how each decision is made,
@@ -60,8 +61,8 @@ my direction, recorded in docs/build-log/operator-log.md. Every Muse prompt and 
 
 Outside audits reported 12, 10 and 7 defects; each was reproduced and repaired with a regression test, and the
 Audit 4 repairs were red-proofed. Recorded-model coverage is per-step (a muse-spark-1.3 answer that passed the
-contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 11 steps, on prompt inv-v5
-[CONFIRM after the 11-step re-recording]; a step without a matching recording shows the labelled "No recorded model
+contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 10 steps, on prompt inv-v5
+[CONFIRM after the 10-step re-recording]; a step without a matching recording shows the labelled "No recorded model
 response for this snapshot" fallback, and the derived decline branch shows that fallback at its later changed
 checkpoints. Model-value scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. Offline: 22 synthetic cases across 10 scenarios, combined
 evidence 22/22. Live (muse-spark-1.3, older trip-home scenarios): 11 of 17 valid on the full run, then 5 of 6 on the

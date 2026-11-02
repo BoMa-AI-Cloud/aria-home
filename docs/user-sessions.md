@@ -34,7 +34,7 @@ Wait for a yes. If they say no to quoting, still take notes but mark them
 
 Show ONLY this text, on paper or a phone. Do not show ARIA yet:
 
-> Thermostat offline. Last seen 1:30 AM.
+> Thermostat offline. Last seen 11:00 PM.
 
 Say: "This is how a normal thermostat app alerts you. What do you make of it?"
 
@@ -57,18 +57,20 @@ Think aloud."
 Do not explain, help or answer questions about the app. If they ask what to
 do, say "Do what you would do at home."
 
-The story is 11 steps about one winter night:
+The story is 10 steps about one winter night:
 - The evening starts warm and on track, then the room slowly falls.
 - At 9:41 PM the room is 66 F, 2 F below the target. ARIA records a notice and
   asks nobody.
 - At 10:46 PM the room is 62 F, 6 F below the target. ARIA says "may not be warm
   by 7:00" and asks "May I contact the HVAC company?" Let them choose Approve or Decline
   themselves, at this step, before the recorded story answers.
-- On Approve, a technician is on site by 11:30 PM. That closes nothing.
-- The thermostat goes silent at 1:30 and the room reaches 52 F.
-- On Approve: ARIA waits for independent readings and verifies that 68 F was held.
+- On Approve, a technician is on site at 11:30 PM, 44 minutes after the ask.
+  That closes nothing.
+- The thermostat goes silent at 11:00 PM.
+- On Approve: the repair ends at 12:15 AM and the room rises. ARIA waits for
+  independent readings and verifies at 1:40 AM that 68 F was held.
 - On Decline: nobody is contacted — no visit, report or voice note — the room
-  stays near 52 F with readings still checked each step, and 7:00 states the
+  falls to 52 F with readings still checked each step, and 7:00 states the
   miss against the 68 F goal.
 - It treats the technician's report as a report, not proof, and ends "warm by
   7:00".
@@ -81,7 +83,7 @@ Stop at 15 minutes even if they have not finished.
 For each question, mark Correct (C), Partly (P) or Wrong (W).
 
 - **Q1 Correct:** the independent room sensor shows the house is far below
-  the target and not recovering (62 F, then 52 F), and the silent thermostat
+  the target and not recovering (62 F, then 59 F), and the silent thermostat
   alone does not prove that.
 - **Q2 Correct:** decide whether to let ARIA contact the HVAC company on file.
 - **Q3 Correct:** only contacting the HVAC company on file, with the property,
