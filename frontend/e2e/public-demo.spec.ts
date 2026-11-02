@@ -1548,3 +1548,163 @@ test("story completion points to the Reasoning proof", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
   await expect(page.getByTestId("trace-map")).toBeVisible();
 });
+
+async function metricsAt(page: Page, at: string): Promise<any> {
+  const response = await page.request.get(
+    `/api/metrics?scenario=care_home_v1&at=${encodeURIComponent(at)}`,
+  );
+  expect(response.ok()).toBe(true);
+  return response.json();
+}
+
+async function roomNewestAt(page: Page, at: string): Promise<{ value: number | null; unit: string | null }> {
+  const response = await page.request.get(
+    `/api/sources?scenario=care_home_v1&at=${encodeURIComponent(at)}`,
+  );
+  expect(response.ok()).toBe(true);
+  const body = await response.json();
+  const room = (body.sources as Array<{ source: string; newest_value: number | null; newest_unit: string | null }>).find(
+    (entry) => entry.source === "room_sensor",
+  );
+  return { value: room?.newest_value ?? null, unit: room?.newest_unit ?? null };
+}
+
+function expectedAtRiskHeadline(metrics: any, room: { value: number | null; unit: string | null }): string {
+  const trend = metrics.indoor_trend;
+  const lastHour = metrics.last_hour_change_f as number | null;
+  if (typeof lastHour === "number" && Math.abs(lastHour) <= 0.2) {
+    if (room.value === null) return "The house may not be warm by 7:00.";
+    return `The house is holding at ${room.value}${room.unit ? ` ${room.unit}` : ""}. It may not be warm by 7:00.`;
+  }
+  const rate = trend.rate_per_hour as number | null;
+  const sufficient = trend.sufficient as boolean;
+  if (typeof rate === "number" && sufficient) {
+    if (rate < 0) return "The house is cooling. It may not be warm by 7:00.";
+    if (rate > 0) return "The house is warming, but it may not be warm by 7:00.";
+    if (room.value === null) return "The house may not be warm by 7:00.";
+    return `The house is holding at ${room.value}${room.unit ? ` ${room.unit}` : ""}. It may not be warm by 7:00.`;
+  }
+  return "The house may not be warm by 7:00.";
+}
+
+test("at-risk headline states the direction the room readings show in the approve path", async ({ page }) => {
+  test.setTimeout(180_000);
+  const checkpoints = await startStory(page);
+  expect(checkpoints).toHaveLength(10);
+  const headline = page.locator(".verdict-headline");
+  const checked: string[] = [];
+  for (let index = 0; index < checkpoints.length; index += 1) {
+    if (index > 0) await stepNext(page, checkpoints, index);
+    const at = checkpoints[index];
+    if (index === 3) {
+      await page.getByTestId("caregiver-permission").getByRole("button", { name: "Approve (as the caregiver)" }).click();
+      await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText(
+        "Approved by the caregiver at",
+      );
+    }
+    const metrics = await metricsAt(page, at);
+    if (index <= 1) {
+      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
+        "The house is on track to be warm by 7:00.",
+      );
+      continue;
+    }
+    if (index === 7 || index === 8) {
+      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
+        "The house reached 68 F and held it — the goal is verified.",
+      );
+      continue;
+    }
+    if (index === 9) {
+      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
+        "The house was warm by 7:00 — the expectation was met.",
+      );
+      continue;
+    }
+    if (metrics.computed_readiness !== "at_risk") continue;
+    checked.push(at);
+    const room = await roomNewestAt(page, at);
+    const expected = expectedAtRiskHeadline(metrics, room);
+    await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(expected);
+    const text = (await headline.textContent()) ?? "";
+    const lastHour = metrics.last_hour_change_f as number | null;
+    if (at.includes("23:30")) {
+      expect(text, "cooling still shown at 23:30").toContain("cooling");
+    }
+    for (const stamp of ["02:31", "02:45", "04:21", "04:51"]) {
+      if (at.includes(stamp) && !(typeof lastHour === "number" && lastHour < 0)) {
+        expect(text, `no cooling headline at ${at}`).not.toContain("cooling");
+      }
+    }
+    if (at.includes("04:51")) {
+      await expect(page.locator(".tiles .tile").nth(0).locator(".tile-sub"), "tile rises at 04:51").toContainText(
+        "rising",
+      );
+      await expect(page.locator(".verdict-lead"), "lead rises at 04:51").toContainText("rising");
+      expect(text, "warming headline at 04:51").toContain("warming");
+    }
+  }
+  for (const stamp of ["23:30", "02:31", "02:45", "04:21", "04:51"]) {
+    expect(checked.some((at) => at.includes(stamp)), `at-risk step checked at ${stamp}`).toBe(true);
+  }
+});
+
+test("decline-path headline tracks the slow 0.2 F an hour fall", async ({ page }) => {
+  test.setTimeout(180_000);
+  const checkpoints = await startStory(page);
+  expect(checkpoints).toHaveLength(10);
+  const headline = page.locator(".verdict-headline");
+  const atIndex = (stamp: string): number => {
+    const found = checkpoints.findIndex((entry) => entry.includes(stamp));
+    expect(found, `checkpoint ${stamp}`).toBeGreaterThan(0);
+    return found;
+  };
+  const at0231 = atIndex("02:31");
+  for (let index = 1; index <= at0231; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  let metrics = await metricsAt(page, checkpoints[at0231]);
+  expect(metrics.computed_readiness).toBe("at_risk");
+  await expect.poll(async () => headline.textContent(), "headline at 02:31").toBe(
+    expectedAtRiskHeadline(metrics, await roomNewestAt(page, checkpoints[at0231])),
+  );
+  expect((await headline.textContent()) ?? "", "holding at 02:31").toContain("holding at 52 F");
+  await page.getByTestId("caregiver-permission").getByRole("button", { name: "Decline (as the caregiver)" }).click();
+  await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText(
+    "Declined by the caregiver at",
+  );
+  let current = at0231;
+  for (const stamp of ["04:51", "06:21"]) {
+    const target = atIndex(stamp);
+    for (let index = current + 1; index <= target; index += 1) {
+      await stepNext(page, checkpoints, index);
+    }
+    current = target;
+    metrics = await metricsAt(page, checkpoints[target]);
+    expect(metrics.computed_readiness, `readiness at ${stamp}`).toBe("at_risk");
+    const rate = metrics.indoor_trend.rate_per_hour as number | null;
+    expect(typeof rate, `rate served at ${stamp}`).toBe("number");
+    expect(rate as number, `slow fall served at ${stamp}`).toBeLessThan(0);
+    const room = await roomNewestAt(page, checkpoints[target]);
+    await expect.poll(async () => headline.textContent(), `headline at ${stamp}`).toBe(
+      expectedAtRiskHeadline(metrics, room),
+    );
+    expect((await headline.textContent()) ?? "", `no warming without a visit at ${stamp}`).not.toContain("warming");
+    if (stamp === "04:51") {
+      expect((await headline.textContent()) ?? "", "cooling on the decline fall at 04:51").toBe(
+        "The house is cooling. It may not be warm by 7:00.",
+      );
+    }
+    if (stamp === "06:21") {
+      expect((await headline.textContent()) ?? "", "cooling on the decline fall at 06:21").toBe(
+        "The house is cooling. It may not be warm by 7:00.",
+      );
+    }
+  }
+  const end = atIndex("07:01");
+  for (let index = current + 1; index <= end; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect.poll(async () => headline.textContent(), "headline at 07:01").toContain("missed the");
+  await expect(headline, "missed warm-by time at 07:01").toContainText("warm-by time");
+});

@@ -2282,6 +2282,8 @@ function buildVerdict(
   plannedArrival: string | null,
   roomValue: number | null,
   roomUnit: string | null,
+  trend: IndoorTrend | null,
+  lastHourChangeF: number | null,
 ): Verdict | null {
   if (!readiness && !verification) return null;
   if (verification?.stage === "arrival_met") {
@@ -2295,7 +2297,17 @@ function buildVerdict(
     return { headline: "The house is on track to be warm by 7:00.", tone: "ok" };
   }
   if (readiness?.status === "at_risk") {
-    return { headline: "The house is cooling. It may not be warm by 7:00.", tone: "risk" };
+    const word = trendWord(trend, lastHourChangeF);
+    if (word === "falling") {
+      return { headline: "The house is cooling. It may not be warm by 7:00.", tone: "risk" };
+    }
+    if ((word === "holding" || word === "steady") && roomValue !== null) {
+      return { headline: `The house is holding at ${roomValue}${roomUnit ? ` ${roomUnit}` : ""}. It may not be warm by 7:00.`, tone: "risk" };
+    }
+    if (word === "rising") {
+      return { headline: "The house is warming, but it may not be warm by 7:00.", tone: "risk" };
+    }
+    return { headline: "The house may not be warm by 7:00.", tone: "risk" };
   }
   if (readiness?.status === "arrival_passed") {
     if (
@@ -3722,10 +3734,10 @@ export default function App() {
     inStory && storyCheckpoints.length > 0
       ? storyCheckpoints.map((at) => ({ label: clock12(at.slice(11, 16)), at }))
       : replayTimes;
-  const verdict = !replayLoading || deterministicReadiness || verification
-    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null)
-    : null;
   const trend = replayMetrics?.indoor_trend ?? null;
+  const verdict = !replayLoading || deterministicReadiness || verification
+    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null, trend, replayMetrics?.last_hour_change_f ?? null)
+    : null;
   const gapTarget = replayMetrics?.target_gap ?? null;
   const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
   const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
