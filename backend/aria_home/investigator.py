@@ -14,13 +14,14 @@ from .contracts import SourceKind
 from .eligibility import circuit_records, current_pool, eligible_records, freshness_limit_s, indoor_records, is_current_record, is_fresh, is_measurement_eligible, latest_eligible, measurement_conflict_groups, unresolved_after
 from .evidence import source_status
 from .metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
+from .notifications import CAREGIVER_SCENARIOS
 from .power_context import BANNED_PHRASES, power_context
 from .provider import get_provider, normalized_provider_identity
 from .readiness import READINESS_POLICY_VERSION, STALE_READING_AGE_S, compute_readiness
 from .scheduling import MAX_FOLLOW_UP_DELAY, MIN_FOLLOW_UP_DELAY, compute_follow_up_schedule, compute_next_check_at, validate_follow_up_time
 from .scenario import context_as_of, visible_records, visual_as_of
 
-PROMPT_VERSION = "inv-v4"
+PROMPT_VERSION = "inv-v5"
 INPUT_REVISION_VERSION = "input-revision-v2"
 INFERENCE_IDENTITY_VERSION = "inference-identity-v3"
 
@@ -45,8 +46,9 @@ def investigation_max_tokens(explicit=None):
         )
     return value, None
 
-SYSTEM_PROMPT = """You are the ARIA Home investigation synthesizer (prompt version inv-v4).
+SYSTEM_PROMPT = """You are the ARIA Home investigation synthesizer (prompt version inv-v5).
 Answer: will the home be warm by the warm-by time, and if something looks wrong, who should respond?
+The evidence pack names who should respond (responder.label) and who lives in the home (responder.occupant): name them only as the pack says, and write "warm-by time" in prose. Field, claim, and enum names containing arrival, trip, or manager are internal names and never belong in prose.
 Use ONLY the evidence ids given in the evidence pack.
 Return structured facts, not factual prose. Each fact is {claim_type, evidence_id, field, value, unit, at}
 where at is an optional ISO-8601 time. claim_type is one of: current_temperature, temperature_at_arrival,
@@ -82,6 +84,8 @@ Reply with JSON only, matching this schema exactly (no extra fields):
 ClaimType = Literal["current_temperature", "temperature_at_arrival", "target_temperature", "target_gap", "electrical_activity", "equipment_function"]
 
 CERTAINTY_PHRASES = ("confirmed", "definitely", "has failed", "is broken", "caused by")
+CARE_HOME_SCENARIO_ID = "care_home_v1"
+CARE_PROSE_BANNED_WORDING = ("manager", "planned arrival")
 EQUIPMENT_FUNCTION_VALUES = ("not_observed", "unknown")
 
 class _Strict(BaseModel):
@@ -207,6 +211,13 @@ def _visible_visual(visual, at):
     return best
 
 
+def _responder_for_scenario(scenario) -> dict:
+    manifest = getattr(scenario, "manifest", None)
+    if getattr(manifest, "id", None) in CAREGIVER_SCENARIOS:
+        return {"role": "family_caregiver", "label": "family caregiver", "occupant": "resident"}
+    return {"role": "property_manager", "label": "property manager", "occupant": "homeowner"}
+
+
 def _build_unrounded_evidence_pack(scenario, at) -> dict:
     ensure_aware(at, "at")
     start = at - timedelta(hours=3)
@@ -246,7 +257,7 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
         c = ctx.confirmation
         confirmation = {"trip_id": c.trip_id, "property_id": c.property_id, "target_temp": c.target_temp, "target_unit": c.target_unit, "notify_homeowner": c.notify_homeowner, "manager_authorized": c.manager_authorized, "confirmed_at": c.confirmed_at.isoformat(), "revision_id": c.revision_id, "trip_revision": c.trip_revision, "trip_revision_id": c.trip_revision_id}
         evidence.append({"id": "confirmation:current", "type": "confirmation", "data": confirmation})
-    pack = {"prompt_version": PROMPT_VERSION, "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": visual_as_of(scenario, at)}
+    pack = {"prompt_version": PROMPT_VERSION, "scenario_id": scenario.manifest.id, "responder": _responder_for_scenario(scenario), "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": visual_as_of(scenario, at)}
     readiness = compute_readiness(pack, at, flags=dict(ctx.flags))
     pack["readiness"] = dict(readiness)
     pack["canonical_readiness"] = dict(readiness)
@@ -742,7 +753,7 @@ def _render_fact(resolved):
     if claim == "temperature_at_arrival":
         at = _parse_time(resolved.get("at"))
         suffix = f" (at {at.strftime('%H:%M')})" if at is not None else ""
-        return f"Indoor temperature at arrival {_fmt_number(value)} {unit}{suffix}"
+        return f"Indoor temperature at the warm-by time {_fmt_number(value)} {unit}{suffix}"
     if claim == "target_temperature":
         return f"Target {_fmt_number(value)} {unit}"
     if claim == "target_gap":
@@ -796,6 +807,19 @@ def _check_direction(text, resolved, reasons):
     if "above target" in lowered and (gap is None or gap <= 0):
         reasons.append("direction 'above target' conflicts with resolved target_gap fact")
 
+def _responder_wording_reasons(parsed, pack):
+    if not isinstance(pack, dict) or pack.get("scenario_id") != CARE_HOME_SCENARIO_ID:
+        return []
+    texts = [parsed.interpretation, *[h.text for h in parsed.hypotheses], *parsed.unknowns, parsed.clarification]
+    if parsed.follow_up is not None:
+        texts.append(parsed.follow_up.observation)
+    texts.extend(parsed.limitations)
+    reasons = []
+    for phrase in CARE_PROSE_BANNED_WORDING:
+        if any(phrase in (text or "").lower() for text in texts):
+            reasons.append(f"care_home_v1 prose must use this story's words: {phrase!r} does not belong in model-written prose (name the responder only as the evidence pack's responder says)")
+    return reasons
+
 def validate(output, pack) -> list[str]:
     parsed, err = _parse_output(output)
     if err:
@@ -820,6 +844,7 @@ def validate(output, pack) -> list[str]:
         for phrase in CERTAINTY_PHRASES:
             if phrase in lowered:
                 reasons.append(f"certainty phrase in interpretation/hypothesis: {phrase}")
+    reasons.extend(_responder_wording_reasons(parsed, pack))
     _check_numbers(parsed.interpretation, resolved, None, reasons)
     _check_direction(parsed.interpretation, resolved, reasons)
     for hyp in parsed.hypotheses:

@@ -455,11 +455,11 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         inputs["arrival_last_value"] = arrival_value
         inputs["arrival_last_observed_at"] = arrival_observed.isoformat() if arrival_observed else None
         if outcome == "met":
-            reason = f"Arrival has passed: the target was met at arrival time (latest reading received by arrival was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {_fmt_num(target_temp)} {target_unit} target)."
+            reason = f"Warm-by time has passed: the target was met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {_fmt_num(target_temp)} {target_unit} target)."
         elif outcome == "not_met":
-            reason = f"Arrival has passed: the target was not met at arrival time (latest reading received by arrival was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, below the {_fmt_num(target_temp)} {target_unit} target)."
+            reason = f"Warm-by time has passed: the target was not met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, below the {_fmt_num(target_temp)} {target_unit} target)."
         else:
-            reason = "Arrival has passed: whether the target was met at arrival time is unknown (no fresh indoor reading was received by arrival)."
+            reason = "Warm-by time has passed: whether the target was met at the warm-by time is unknown (no fresh indoor reading was received by the warm-by time)."
         return _result("arrival_passed", [reason], inputs, target_at_arrival=outcome)
 
     deduped = []
@@ -509,7 +509,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if small_gap and sustained and with_margin:
         if thermostat_note:
             reasons.append(thermostat_note)
-        reasons.append("gap is small and sustained warming over the trend window would close it before arrival with margin")
+        reasons.append("gap is small and sustained warming over the trend window would close it before the warm-by time with margin")
         return _result("on_track", reasons, inputs, target_at_arrival=None)
 
     if thermostat_note:
@@ -518,7 +518,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         reasons.append(observation_line(visual_phrase))
     elif visual is not None and visual_count == 0:
         reasons.append(no_detection_line(visual_phrase))
-    reasons.append("At current readings the target may not be reached by arrival; this is not a guaranteed prediction.")
+    reasons.append("At current readings the target may not be reached by the warm-by time; this is not a guaranteed prediction.")
     if gap_f is not None:
         reasons.append(f"latest reading is {abs(gap_f):.1f} F below target")
     if rate_raw is not None:
@@ -532,5 +532,5 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     elif not sustained:
         reasons.append("warming is not sustained over the minimum window and rise thresholds")
     elif not with_margin:
-        reasons.append("projected warming does not close the gap before arrival with margin")
+        reasons.append("projected warming does not close the gap before the warm-by time with margin")
     return _result("at_risk", reasons, inputs, target_at_arrival=None)

@@ -83,7 +83,7 @@ def test_demo_recovery_at_1900_is_arrival_passed_not_met_at_arrival():
     assert result["target_at_arrival"] == "not_met"
     assert result.target_at_arrival == "not_met"
     assert pack["computed_readiness"] == "arrival_passed"
-    assert any("not met at arrival" in r for r in result["reasons"])
+    assert any("not met at the warm-by time" in r for r in result["reasons"])
 
 
 def test_demo_recovery_at_2031_is_arrival_passed_not_met_at_arrival():
@@ -96,7 +96,7 @@ def test_demo_recovery_at_2031_is_arrival_passed_not_met_at_arrival():
     assert result["status"] == "arrival_passed"
     assert result["target_at_arrival"] == "not_met"
     assert pack["computed_readiness"] == "arrival_passed"
-    assert any("not met at arrival" in r for r in result["reasons"])
+    assert any("not met at the warm-by time" in r for r in result["reasons"])
 
 
 def test_demo_video_at_2101_is_arrival_passed_met_at_arrival():
@@ -109,7 +109,7 @@ def test_demo_video_at_2101_is_arrival_passed_met_at_arrival():
     assert result["status"] == "arrival_passed"
     assert result["target_at_arrival"] == "met"
     assert pack["computed_readiness"] == "arrival_passed"
-    assert any("target was met at arrival" in r and "not met" not in r for r in result["reasons"])
+    assert any("target was met at the warm-by time" in r and "not met" not in r for r in result["reasons"])
 
 
 def test_before_arrival_nothing_changes():

@@ -45,10 +45,10 @@ def test_arrival_mock_answer_passes(name, at):
     result = investigate(scenario, at_dt, MockProvider())
     assert result.status == "ok", result.reasons
     assert result.output.readiness == "arrival_passed"
-    assert result.prompt_version == "inv-v4"
+    assert result.prompt_version == "inv-v5"
     assert not [f for f in result.output.facts if f.claim_type == "current_temperature"]
     assert any(f.claim_type == "temperature_at_arrival" for f in result.output.facts)
-    assert any("at arrival" in s for s in result.output.verified_facts)
+    assert any("at the warm-by time" in s for s in result.output.verified_facts)
 
 def test_arrival_stale_reading_as_current_rejected():
     scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
@@ -151,13 +151,14 @@ def test_valid_output_passes():
     assert result.status == "ok"
     assert result.output is not None
     assert result.provider_mode == "mock"
-    assert result.prompt_version == "inv-v4"
+    assert result.prompt_version == "inv-v5"
     assert fake.calls[0][2] == 12000
 
 def test_prompt_warm_by_wording_exact():
     from aria_home.investigator import PROMPT_VERSION, SYSTEM_PROMPT
-    assert PROMPT_VERSION == "inv-v4"
-    assert "(prompt version inv-v4)" in SYSTEM_PROMPT
+    assert PROMPT_VERSION == "inv-v5"
+    assert "(prompt version inv-v5)" in SYSTEM_PROMPT
+    assert "inv-v4" not in SYSTEM_PROMPT
     assert "inv-v3" not in SYSTEM_PROMPT
     for new in (
         "will the home be warm by the warm-by time",
@@ -165,6 +166,8 @@ def test_prompt_warm_by_wording_exact():
         "the evaluation time is after the warm-by time",
         "state the temperature AT THE WARM-BY TIME as a temperature_at_arrival fact",
         "any post-warm-by-time reading as current",
+        "name them only as the pack says",
+        "never belong in prose",
     ):
         assert new in SYSTEM_PROMPT
     for old in (
@@ -447,3 +450,69 @@ def test_mock_provider_output_validates():
     result = MockProvider().generate(prompt)
     assert result.ok
     assert validate(result.text, pack) == []
+
+CARE_AT = "2026-01-17T02:31:00-05:00"
+CARE_LATE_AT = "2026-01-17T07:01:00-05:00"
+MANAGER_WORDING = "With homeowner notification requested and manager authorization present, manager review with homeowner notification appears to be the appropriate response path."
+PLANNED_ARRIVAL_WORDING = "Evaluation time is after the planned arrival, so the computed readiness reflects the arrival outcome."
+
+def _care_pack(at=CARE_AT):
+    scenario = load_scenario(SCENARIOS_ROOT / "care_home_v1")
+    at_dt = datetime.fromisoformat(at)
+    return scenario, at_dt, build_evidence_pack(scenario, at_dt)
+
+def _mock_data(scenario, at):
+    return json.loads(_mock_text(scenario, at))
+
+def test_care_pack_names_family_caregiver_and_resident():
+    _, _, pack = _care_pack()
+    assert pack["scenario_id"] == "care_home_v1"
+    assert pack["responder"] == {"role": "family_caregiver", "label": "family caregiver", "occupant": "resident"}
+
+def test_manager_scenario_pack_names_property_manager():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    assert pack["scenario_id"] == "demo_recovery_v1"
+    assert pack["responder"]["role"] == "property_manager"
+    assert pack["responder"]["label"] == "property manager"
+    assert "caregiver" not in json.dumps(pack["responder"])
+    assert "manager_authorized" in pack["confirmation"]
+
+def test_care_arrival_fact_renders_at_warm_by_time():
+    scenario = load_scenario(SCENARIOS_ROOT / "care_home_v1")
+    at = datetime.fromisoformat(CARE_LATE_AT)
+    result = investigate(scenario, at, MockProvider())
+    assert result.status == "ok", result.reasons
+    assert result.output.readiness == "arrival_passed"
+    assert any(s.startswith("Indoor temperature at the warm-by time") for s in result.output.verified_facts)
+    assert not any("at arrival" in s for s in result.output.verified_facts)
+
+def test_care_gate_rejects_manager_wording():
+    scenario, at, pack = _care_pack()
+    baseline = _mock_data(scenario, at)
+    assert _only_timing(validate(baseline, pack)) == []
+    data = _mock_data(scenario, at)
+    data["interpretation"] = MANAGER_WORDING
+    reasons = validate(data, pack)
+    assert any("does not belong in model-written prose" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_care_gate_rejects_planned_arrival_wording():
+    scenario, at, pack = _care_pack()
+    data = _mock_data(scenario, at)
+    data["interpretation"] = PLANNED_ARRIVAL_WORDING
+    reasons = validate(data, pack)
+    assert any("does not belong in model-written prose" in r for r in reasons)
+    assert investigate(scenario, at, FakeProvider(json.dumps(data))).status == "rejected"
+
+def test_manager_scenario_allows_same_prose():
+    scenario, at = _scenario_at("demo_recovery_v1", "2026-01-16T19:00:00-05:00")
+    pack = build_evidence_pack(scenario, at)
+    for prose in (MANAGER_WORDING, PLANNED_ARRIVAL_WORDING):
+        data = _mock_data(scenario, at)
+        data["interpretation"] = prose
+        assert _only_timing(validate(data, pack)) == []
+
+def test_care_clean_prose_passes():
+    scenario, at, pack = _care_pack()
+    assert _only_timing(validate(_mock_text(scenario, at), pack)) == []

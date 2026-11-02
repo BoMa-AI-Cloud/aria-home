@@ -222,7 +222,7 @@ class MockProvider:
             text_in = " ".join(str(m.get("content", "")) if isinstance(m, dict) else str(m) for m in messages)
         elif prompt is not None:
             text_in = str(prompt)
-        if "inv-v4" in text_in:
+        if "inv-v5" in text_in:
             import json as _json
             from datetime import datetime as _dt, timedelta as _td
 
@@ -258,8 +258,8 @@ class MockProvider:
                 if gap.get("target_temp") is not None and "metric:target_gap" in ids:
                     facts.append({"claim_type": "target_temperature", "evidence_id": "metric:target_gap", "field": "target_temp", "value": gap["target_temp"], "unit": gap.get("target_unit") or gap.get("unit") or "F", "at": gap.get("latest_observed_at")})
                 support_id = winner["id"] if winner is not None else trend_id
-                interpretation = "[MOCK] The verified facts describe the indoor temperature at the planned arrival time."
-                hypothesis = "[MOCK] The cited reading shows the indoor temperature at the planned arrival time."
+                interpretation = "[MOCK] The verified facts describe the indoor temperature at the warm-by time."
+                hypothesis = "[MOCK] The cited reading shows the indoor temperature at the warm-by time."
             else:
                 metrics = pack.get("metrics") or {}
                 trend = metrics.get("indoor_trend") or {}
@@ -281,12 +281,12 @@ class MockProvider:
                         facts.append({"claim_type": "equipment_function", "evidence_id": circuit_evidence, "field": "active", "value": "not_observed" if circuit.get("active") is False else "unknown", "unit": None, "at": circuit.get("last_observed_at")})
                 support_id = trend_id
                 interpretation = "[MOCK] The verified facts describe the indoor temperature relative to the target."
-                hypothesis = "[MOCK] The property may not yet be ready on arrival based on the cited trend."
+                hypothesis = "[MOCK] The cited trend shows the home may not be warm by the warm-by time."
             if not facts:
                 facts.append({"claim_type": "equipment_function", "evidence_id": trend_id, "field": "active", "value": "unknown", "unit": None, "at": None})
                 support_id = trend_id
                 interpretation = "[MOCK] The verified facts describe the indoor temperature relative to the target."
-                hypothesis = "[MOCK] The property may not yet be ready on arrival based on the cited trend."
+                hypothesis = "[MOCK] The cited trend shows the home may not be warm by the warm-by time."
             payload = {
                 "facts": facts,
                 "interpretation": interpretation,

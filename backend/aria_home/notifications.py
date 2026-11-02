@@ -23,9 +23,9 @@ HVAC_AUTH_EVENT_KINDS = ("manager_hvac_authorized", "caregiver_hvac_authorized")
 FORBIDDEN_KEY_PARTS = ("trip", "itinerary", "email", "phone", "location", "flight")
 
 READINESS_IN_WORDS = {
-    "on_track": "On track: the property is expected to be ready on arrival, based on the verified facts.",
-    "at_risk": "At risk: the property may not be ready on arrival, based on the verified facts.",
-    "cannot_tell": "Cannot tell yet whether the property will be ready on arrival, based on the verified facts.",
+    "on_track": "On track: the property is expected to be ready by the warm-by time, based on the verified facts.",
+    "at_risk": "At risk: the property may not be ready by the warm-by time, based on the verified facts.",
+    "cannot_tell": "Cannot tell yet whether the property will be ready by the warm-by time, based on the verified facts.",
 }
 
 STAGE_IN_WORDS = {
@@ -34,7 +34,7 @@ STAGE_IN_WORDS = {
     "warming_observed": "Warming has been observed in independent readings.",
     "goal_verified": "The temperature goal has been verified.",
     "goal_not_maintained": "The temperature goal was verified earlier but is no longer being maintained.",
-    "arrival_met": "The temperature goal was still met at arrival.",
+    "arrival_met": "The temperature goal was still met at the warm-by time.",
     "unable_to_verify": "Recovery cannot be verified from the available readings.",
 }
 

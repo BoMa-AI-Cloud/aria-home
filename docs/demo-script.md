@@ -320,7 +320,7 @@ care story approved 2026-10-29):
   scheduling, outcome rules, and recovery verification stages
   (`telemetry_missing` to `arrival_met`, shown as "Warm-by expectation
   met"), all computed in code. The model cannot change the readiness status.
-- Evidence-pack investigation engine (inv-v4 claim binding, code-rendered
+- Evidence-pack investigation engine (inv-v5 claim binding, code-rendered
   verified facts) with mock and gated live Meta providers.
 - SQLite store with outcome and verification history surviving restarts.
 - Scoped simulated notifications with per-audience allowlists, recorded
