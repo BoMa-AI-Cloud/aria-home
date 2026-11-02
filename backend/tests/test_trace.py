@@ -22,7 +22,7 @@ from aria_home.watcher import public_watcher
 
 SCENARIO_PATH = "scenarios/care_home_v1"
 CHECKPOINTS = list(public_demo.CHECKPOINTS["care_home_v1"])
-AT_0231 = "2026-01-17T02:31:00-05:00"
+AT_2331 = "2026-01-16T23:31:00-05:00"
 
 
 @pytest.fixture(scope="module")
@@ -45,7 +45,7 @@ def _followup_or_none(scn, at):
 
 
 def test_trace_matches_sources_and_readiness_at_every_checkpoint(scn):
-    assert len(CHECKPOINTS) == 11
+    assert len(CHECKPOINTS) == 10
     for iso in CHECKPOINTS:
         at = _at(iso)
         pack = build_evidence_pack(scn, at)
@@ -143,7 +143,7 @@ def test_trace_shows_no_future_evidence(scn):
 
 
 def test_trace_failed_checks_carry_reasons(scn):
-    at = _at(AT_0231)
+    at = _at(AT_2331)
     trace = build_trace(scn, at)
     stale = [c for c in trace["checks"] if c["check"] == "freshness" and c["target"] == "thermostat"]
     assert stale and all(c["passed"] is False and c["reason"] for c in stale)
@@ -155,7 +155,7 @@ def test_trace_failed_checks_carry_reasons(scn):
 
 
 def test_trace_law_violation_names_the_law(scn):
-    at = _at(AT_0231)
+    at = _at(AT_2331)
     identity = inference_identity(scn, at)
     target_law = next(law for law in laws_module.active_model_laws() if law.get("check") == "check_no_detection_not_safe")
     answer = {
@@ -194,15 +194,15 @@ def test_trace_makes_zero_model_calls(scn, monkeypatch):
 
 def test_trace_endpoint_is_read_only_json():
     client = create_app().test_client()
-    resp = client.get(f"/api/trace?scenario=care_home_v1&at={AT_0231}")
+    resp = client.get(f"/api/trace?scenario=care_home_v1&at={AT_2331}")
     assert resp.status_code == 200
     body = resp.get_json()
     assert body["data_mode"] == "synthetic"
     assert body["recorded_only"] is True
     assert body["steps"] and [s["seq"] for s in body["steps"]] == list(range(len(body["steps"])))
-    assert client.post(f"/api/trace?scenario=care_home_v1&at={AT_0231}").status_code == 405
+    assert client.post(f"/api/trace?scenario=care_home_v1&at={AT_2331}").status_code == 405
     assert client.get("/api/trace?scenario=care_home_v1&at=not-a-time").status_code == 400
-    assert client.get("/api/trace?scenario=nope&at=2026-01-17T02:31:00-05:00").status_code == 404
+    assert client.get("/api/trace?scenario=nope&at=2026-01-16T23:31:00-05:00").status_code == 404
 
 
 def test_trace_public_demo_allows_only_checkpoints(monkeypatch, tmp_path):
@@ -215,7 +215,7 @@ def test_trace_public_demo_allows_only_checkpoints(monkeypatch, tmp_path):
     monkeypatch.setenv("ARIA_HOME_PUBLIC_DEMO_DIR", str(sessions))
     monkeypatch.setenv("ARIA_HOME_RECORDED_DIR", str(recorded))
     client = create_app().test_client()
-    ok = client.get(f"/api/trace?scenario=care_home_v1&at={AT_0231}")
+    ok = client.get(f"/api/trace?scenario=care_home_v1&at={AT_2331}")
     assert ok.status_code == 200
     assert ok.get_json()["steps"]
     bad = client.get("/api/trace?scenario=care_home_v1&at=2026-01-17T03:00:00-05:00")
@@ -224,7 +224,7 @@ def test_trace_public_demo_allows_only_checkpoints(monkeypatch, tmp_path):
 
 def test_permission_step_follows_the_caregiver_and_never_shows_the_future(scn):
     assert build_trace(scn, _at("2026-01-16T19:20:00-05:00"))["permission"] is None
-    waiting = build_trace(scn, _at(AT_0231))
+    waiting = build_trace(scn, _at("2026-01-16T22:46:00-05:00"))
     assert waiting["permission"]["status"] == "waiting"
     assert waiting["permission"]["decided_at"] is None
     assert [s["label"] for s in waiting["steps"] if s["kind"] == "permission"] == ["caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers"]
@@ -232,15 +232,15 @@ def test_permission_step_follows_the_caregiver_and_never_shows_the_future(scn):
     assert "62 F" in waiting["permission"]["text"]
     assert "4:00 PM" in waiting["permission"]["text"]
     assert "52 F" not in waiting["permission"]["text"]
-    approved = build_trace(scn, _at("2026-01-17T02:45:00-05:00"))
+    approved = build_trace(scn, _at(AT_2331))
     assert approved["permission"]["status"] == "approved"
     assert approved["permission"]["actor"] == "family_caregiver"
 
 
 def test_permission_never_changes_readiness_or_verification(scn):
-    at = _at(AT_0231)
+    at = _at(AT_2331)
     plain = build_trace(scn, at)
-    declined = build_trace(scn, at, caregiver_decision={"decision": "declined", "actor": "family_caregiver", "decided_at": AT_0231})
+    declined = build_trace(scn, at, caregiver_decision={"decision": "declined", "actor": "family_caregiver", "decided_at": AT_2331})
     assert declined["permission"]["status"] == "declined"
     assert declined["readiness"] == plain["readiness"]
     assert declined["verification"] == plain["verification"]

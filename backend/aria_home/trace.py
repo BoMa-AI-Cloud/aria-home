@@ -6,7 +6,7 @@ human-report attachment, notification gates). Never calls a model, never
 shows evidence received after the replay moment.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from . import laws as laws_module
 from .clock import plain_duration, plain_time
@@ -19,7 +19,7 @@ from .eligibility import (
 )
 from .evidence import freshness, source_status
 from .investigator import build_evidence_pack, inference_identity
-from .metrics import temperature_trend
+from .metrics import recent_change_f
 from .notifications import ALERT_GAP_F, CAREGIVER_SCENARIOS, _get, caregiver_alert_level, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
 from .outcomes import follow_up_for
 from .public_demo import parsed_checkpoints
@@ -71,6 +71,7 @@ def investigation_trace_inputs(store, scenario, investigation_id, at):
 TEMP_UNITS = frozenset({"F", "C"})
 POWER_UNITS = frozenset({"W"})
 CONFLICT_QUANTITIES = ("indoor_temp", "circuit_power")
+HOLDING_BAND_F = 1.0
 QUANTITY_WORDS = {"indoor_temp": "indoor temperature", "circuit_power": "circuit power"}
 CARE_AUDIENCE_WORDS = {"homeowner": "resident", "family_caregiver": "family caregiver", "hvac_company": "HVAC company"}
 READINESS_LABELS = {"arrival_passed": "warm-by time passed"}
@@ -489,6 +490,15 @@ def _readiness_lead(status):
     return "Warm-by time passed" if status == "arrival_passed" else f"Readiness {_words(status)}"
 
 
+def _direction_clause(recent_change, latest_room, target):
+    """Which way the room is going now, from the last 15 minutes only; no rate is claimed."""
+    if isinstance(target, (int, float)) and latest_room is not None and 0 <= _get(latest_room, "value") - target <= HOLDING_BAND_F:
+        return ", holding"
+    if recent_change is None:
+        return ""
+    return ", rising" if recent_change > 0 else ", falling" if recent_change < 0 else ", steady"
+
+
 def _plain_event_label(label):
     text = label.strip()
     if text.lower().startswith("simulated "):
@@ -623,21 +633,11 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
     if scenario.manifest.id == "care_home_v1" and caregiver_alert_level(readiness) == "notice" and isinstance(target, (int, float)) and latest_room is not None:
         below = target - _get(latest_room, "value")
         return {"text": f"Noticed: room {room_text} is {below:g} F below the {target:g} F target. No one is asked yet; ARIA asks at {ALERT_GAP_F:g} F below", "source": "computed:notice"}
-    trend_clause = ""
     try:
         zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
     except Exception:
         zones = []
-    try:
-        trend = temperature_trend(visible, zones[0] if zones else "demo-house/main", at - timedelta(hours=3), at, at)
-    except Exception:
-        trend = {}
-    rate = trend.get("rate_per_hour") if isinstance(trend, dict) else None
-    if isinstance(trend, dict) and trend.get("sufficient") and isinstance(rate, (int, float)) and not isinstance(rate, bool):
-        if rate < 0:
-            trend_clause = f", falling {abs(round(rate * 10) / 10):g} F an hour"
-        elif rate > 0:
-            trend_clause = f", rising {round(rate * 10) / 10:g} F an hour"
+    trend_clause = _direction_clause(recent_change_f(visible, zones[0] if zones else "demo-house/main", at), latest_room, target)
     return {"text": f"{_readiness_lead(status)}: room {room_text}{goal}{trend_clause}", "source": "computed:readiness"}
 
 

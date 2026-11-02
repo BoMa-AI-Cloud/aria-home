@@ -2,8 +2,8 @@
 
 The story raises the request at 22:46 ("62 F, 6 F below the 68 F target,
 furnace reported idle since 4:00 PM"). Walking
-every later checkpoint — with no decision, with an approval at 02:31, or with a
-decline at 02:31 — keeps the original text and the original asked time; only the
+every later checkpoint — with no decision, with an approval at 22:46, or with a
+decline at 22:46 — keeps the original text and the original asked time; only the
 status (and the decision time) changes. The trace agrees with the follow-ups.
 """
 from aria_home.app import create_app
@@ -12,14 +12,14 @@ T1920 = "2026-01-16T19:20:00-05:00"
 T2100 = "2026-01-16T21:00:00-05:00"
 T2141 = "2026-01-16T21:41:00-05:00"
 T2246 = "2026-01-16T22:46:00-05:00"
-T0231 = "2026-01-17T02:31:00-05:00"
-T0245 = "2026-01-17T02:45:00-05:00"
-T0421 = "2026-01-17T04:21:00-05:00"
-T0451 = "2026-01-17T04:51:00-05:00"
-T0621 = "2026-01-17T06:21:00-05:00"
-T0645 = "2026-01-17T06:45:00-05:00"
+T2247 = "2026-01-16T22:47:00-05:00"
+T2331 = "2026-01-16T23:31:00-05:00"
+T0021 = "2026-01-17T00:21:00-05:00"
+T0031 = "2026-01-17T00:31:00-05:00"
+T0141 = "2026-01-17T01:41:00-05:00"
+T0151 = "2026-01-17T01:51:00-05:00"
 T0701 = "2026-01-17T07:01:00-05:00"
-CHECKPOINTS = (T1920, T2100, T2141, T2246, T0231, T0245, T0421, T0451, T0621, T0645, T0701)
+CHECKPOINTS = (T1920, T2100, T2141, T2246, T2331, T0021, T0031, T0141, T0151, T0701)
 RAISED_ONWARDS = CHECKPOINTS[3:]
 
 
@@ -66,12 +66,12 @@ def test_frozen_request_identical_without_decision(tmp_path, monkeypatch):
         assert "4:00 PM" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T22:46"), at
         seen.add((permission["text"], permission["requested_at"]))
-        if at < T0245:
+        if at < T2247:
             assert permission["status"] == "waiting", at
             assert permission["decided_at"] is None, at
         else:
             assert permission["status"] == "approved", at
-            assert permission["decided_at"] == T0245, at
+            assert permission["decided_at"] == T2247, at
             assert permission["source"] == "scenario event (the recorded story)", at
         trace = _trace(client, inv_id, at)["permission"]
         assert trace is not None, at
@@ -84,8 +84,8 @@ def test_frozen_request_identical_without_decision(tmp_path, monkeypatch):
 def test_frozen_request_identical_after_approval(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch, name="approve.db")
     inv_id = _start(client)
-    notification_id = _follow(client, inv_id, T0231)["caregiver_permission"]["notification_id"]
-    _decide(client, notification_id, "approve", T0231)
+    notification_id = _follow(client, inv_id, T2246)["caregiver_permission"]["notification_id"]
+    _decide(client, notification_id, "approve", T2246)
     seen = set()
     for at in RAISED_ONWARDS:
         permission = _follow(client, inv_id, at)["caregiver_permission"]
@@ -94,11 +94,11 @@ def test_frozen_request_identical_after_approval(tmp_path, monkeypatch):
         assert "4:00 PM" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T22:46"), at
         seen.add((permission["text"], permission["requested_at"]))
-        if at < T0231:
+        if at < T2246:
             assert permission["status"] == "waiting", at
         else:
             assert permission["status"] == "approved", at
-            assert permission["decided_at"] == T0231, at
+            assert permission["decided_at"] == T2246, at
             assert permission["source"] == "in-app decision", at
         trace = _trace(client, inv_id, at)["permission"]
         assert trace is not None, at
@@ -111,8 +111,8 @@ def test_frozen_request_identical_after_approval(tmp_path, monkeypatch):
 def test_frozen_request_identical_after_decline(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch, name="decline.db")
     inv_id = _start(client)
-    notification_id = _follow(client, inv_id, T0231)["caregiver_permission"]["notification_id"]
-    _decide(client, notification_id, "decline", T0231)
+    notification_id = _follow(client, inv_id, T2246)["caregiver_permission"]["notification_id"]
+    _decide(client, notification_id, "decline", T2246)
     seen = set()
     for at in RAISED_ONWARDS:
         permission = _follow(client, inv_id, at)["caregiver_permission"]
@@ -121,11 +121,11 @@ def test_frozen_request_identical_after_decline(tmp_path, monkeypatch):
         assert "4:00 PM" in permission["text"], at
         assert permission["requested_at"].startswith("2026-01-16T22:46"), at
         seen.add((permission["text"], permission["requested_at"]))
-        if at < T0231:
+        if at < T2246:
             assert permission["status"] == "waiting", at
         else:
             assert permission["status"] == "declined", at
-            assert permission["decided_at"] == T0231, at
+            assert permission["decided_at"] == T2246, at
             assert permission["source"] == "in-app decision", at
         trace = _trace(client, inv_id, at)["permission"]
         assert trace is not None, at
