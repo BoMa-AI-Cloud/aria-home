@@ -34,7 +34,6 @@ import {
   type CreateInvestigationResponse,
   type EvidenceTimelineEntry,
   type HumanReportPayload,
-  type IndoorTrend,
   type InvestigationResponse,
   type InvestigationSummary,
   type LawsResponse,
@@ -2282,32 +2281,31 @@ function buildVerdict(
   plannedArrival: string | null,
   roomValue: number | null,
   roomUnit: string | null,
-  trend: IndoorTrend | null,
-  lastHourChangeF: number | null,
+  recentChangeF: number | null,
 ): Verdict | null {
   if (!readiness && !verification) return null;
   if (verification?.stage === "arrival_met") {
-    return { headline: "The house was warm by 7:00 — the expectation was met.", tone: "ok" };
+    return { headline: "The house was warm by 7:00 AM. The target was met.", tone: "ok" };
   }
   if (verification?.stage === "goal_verified") {
-    const goal = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "its goal";
-    return { headline: `The house reached ${goal} and held it — the goal is verified.`, tone: "ok" };
+    const goal = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "its target";
+    return { headline: `The house reached ${goal} and held it. The target is verified.`, tone: "ok" };
   }
   if (readiness?.status === "on_track") {
-    return { headline: "The house is on track to be warm by 7:00.", tone: "ok" };
+    return { headline: "The house is on track to be warm by 7:00 AM.", tone: "ok" };
   }
   if (readiness?.status === "at_risk") {
-    const word = trendWord(trend, lastHourChangeF);
+    const word = roomDirection(roomValue, recentChangeF, targetTemp);
     if (word === "falling") {
-      return { headline: "The house is cooling. It may not be warm by 7:00.", tone: "risk" };
+      return { headline: "The house is cooling. It may not be warm by 7:00 AM.", tone: "risk" };
     }
-    if ((word === "holding" || word === "steady") && roomValue !== null) {
-      return { headline: `The house is holding at ${roomValue}${roomUnit ? ` ${roomUnit}` : ""}. It may not be warm by 7:00.`, tone: "risk" };
+    if (word === "holding" && roomValue !== null) {
+      return { headline: `The house is holding at ${roomValue}${roomUnit ? ` ${roomUnit}` : ""}. It may not be warm by 7:00 AM.`, tone: "risk" };
     }
     if (word === "rising") {
-      return { headline: "The house is warming, but it may not be warm by 7:00.", tone: "risk" };
+      return { headline: "The house is warming, but it may not be warm by 7:00 AM.", tone: "risk" };
     }
-    return { headline: "The house may not be warm by 7:00.", tone: "risk" };
+    return { headline: "The house may not be warm by 7:00 AM.", tone: "risk" };
   }
   if (readiness?.status === "arrival_passed") {
     if (
@@ -2318,7 +2316,7 @@ function buildVerdict(
     ) {
       const goal = `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}`;
       const actual = `${roomValue}${roomUnit ? ` ${roomUnit}` : ""}`;
-      return { headline: `The house missed the ${shortTimeLabel(plannedArrival)} warm-by time — ${actual} in the living area against the ${goal} goal.`, tone: "risk" };
+      return { headline: `The house missed the ${shortTimeLabel(plannedArrival)} warm-by time: ${actual} in the living room against the ${goal} target.`, tone: "risk" };
     }
     return { headline: "The warm-by time has passed.", tone: "watch" };
   }
@@ -2336,48 +2334,35 @@ function sourceByKind(sources: SourceStatus[] | undefined, kind: SourceKind): So
   return sources?.find((status) => status.source === kind) ?? null;
 }
 
-function roomMovement(
-  room: SourceStatus | null,
-  lastHourChangeF: number | null,
+function roomDirection(
+  roomValue: number | null | undefined,
+  recentChangeF: number | null,
   targetTemp: number | null,
-  targetHeld: boolean,
-): { word: "holding" | "falling" | "rising" | "trend unknown"; rate: number } {
-  if (typeof lastHourChangeF !== "number") return { word: "trend unknown", rate: 0 };
-  const rate = Math.abs(Math.round(lastHourChangeF * 10) / 10);
-  const heldAtTarget =
-    targetHeld &&
-    targetTemp !== null &&
-    typeof room?.newest_value === "number" &&
-    room.newest_value >= targetTemp;
-  if (rate <= 0.2 || heldAtTarget) return { word: "holding", rate };
-  return { word: lastHourChangeF < 0 ? "falling" : "rising", rate };
+): "holding" | "falling" | "rising" | "trend unknown" {
+  if (typeof recentChangeF !== "number") return "trend unknown";
+  const nearTarget =
+    targetTemp !== null && typeof roomValue === "number" && roomValue >= targetTemp && roomValue <= targetTemp + 1;
+  if (nearTarget || Math.abs(Math.round(recentChangeF * 10) / 10) <= 0.2) return "holding";
+  return recentChangeF < 0 ? "falling" : "rising";
 }
 
 function buildLead(
   sources: SourceStatus[] | undefined,
-  trend: IndoorTrend | null,
-  lastHourChangeF: number | null,
+  recentChangeF: number | null,
   targetTemp: number | null,
-  targetHeld: boolean,
 ): string | null {
   const parts: string[] = [];
   const room = sourceByKind(sources, "room_sensor");
   if (room && room.newest_value !== null && room.newest_value !== undefined) {
     const unit = room.newest_unit ? ` ${room.newest_unit}` : "";
-    const movement = roomMovement(room, lastHourChangeF, targetTemp, targetHeld);
-    let roomPart: string;
-    if (movement.word === "holding") {
-      roomPart = `Living room holding at ${room.newest_value}${unit}`;
-      const fallen = trend?.change;
-      if (typeof fallen === "number" && trend?.sufficient && fallen < 0) {
-        roomPart += `, down ${Math.abs(Math.round(fallen * 10) / 10)} F over the last 3 hours`;
-      }
-    } else if (movement.word === "trend unknown") {
-      roomPart = `Living room ${room.newest_value}${unit}`;
+    const word = roomDirection(room.newest_value, recentChangeF, targetTemp);
+    if (word === "holding") {
+      parts.push(`Living room holding at ${room.newest_value}${unit}`);
+    } else if (word === "trend unknown") {
+      parts.push(`Living room ${room.newest_value}${unit}`);
     } else {
-      roomPart = `Living room ${room.newest_value}${unit} and ${movement.word} ${movement.rate} F an hour`;
+      parts.push(`Living room ${room.newest_value}${unit} and ${word}`);
     }
-    parts.push(roomPart);
   }
   const thermostat = sourceByKind(sources, "thermostat");
   if (thermostat && thermostat.availability !== "available") {
@@ -2457,8 +2442,7 @@ function CameraTile({ scenario, at, enabled }: { scenario: string; at: string; e
 
 function GlanceTiles({
   sources,
-  lastHourChangeF,
-  targetHeld,
+  recentChangeF,
   targetTemp,
   targetUnit,
   plannedArrival,
@@ -2468,8 +2452,7 @@ function GlanceTiles({
   visualEnabled,
 }: {
   sources: SourceStatus[] | undefined;
-  lastHourChangeF: number | null;
-  targetHeld: boolean;
+  recentChangeF: number | null;
   targetTemp: number | null;
   targetUnit: string | null;
   plannedArrival: string | null;
@@ -2484,7 +2467,7 @@ function GlanceTiles({
     room && room.newest_value !== null && room.newest_value !== undefined
       ? `${room.newest_value}${room.newest_unit ? ` ${room.newest_unit}` : ""}`
       : "No reading";
-  const insideTrend = roomMovement(room, lastHourChangeF, targetTemp, targetHeld).word;
+  const insideTrend = roomDirection(room?.newest_value, recentChangeF, targetTemp);
   const targetLabel = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "the target";
   const arrivalLabel = plannedArrival ? shortTimeLabel(plannedArrival) : "the warm-by time";
   const thermostatState =
@@ -3734,16 +3717,15 @@ export default function App() {
     inStory && storyCheckpoints.length > 0
       ? storyCheckpoints.map((at) => ({ label: clock12(at.slice(11, 16)), at }))
       : replayTimes;
-  const trend = replayMetrics?.indoor_trend ?? null;
-  const verdict = !replayLoading || deterministicReadiness || verification
-    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null, trend, replayMetrics?.last_hour_change_f ?? null)
+  const recentChangeF = replayMetrics?.recent_change_f ?? null;
+  const verdict =!replayLoading || deterministicReadiness || verification
+    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null, recentChangeF)
     : null;
   const gapTarget = replayMetrics?.target_gap ?? null;
   const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
   const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
   const plannedArrival = contextData?.planned_arrival ?? null;
-  const targetHeld = verification?.stage === "goal_verified" || verification?.stage === "arrival_met";
-  const lead = buildLead(data?.sources, trend, replayMetrics?.last_hour_change_f ?? null, warmByTargetTemp, targetHeld);
+  const lead = buildLead(data?.sources, recentChangeF, warmByTargetTemp);
   const gapCallout = gapCalloutFor(data?.sources);
   const visualEnabled =
     publicMode === false || scenario !== STORY_SCENARIO || storyCheckpoints.includes(selectedAt);
@@ -4207,8 +4189,7 @@ export default function App() {
       <div hidden={page !== "house"}>
         <GlanceTiles
           sources={data?.sources}
-          lastHourChangeF={replayMetrics?.last_hour_change_f ?? null}
-          targetHeld={targetHeld}
+          recentChangeF={recentChangeF}
           targetTemp={warmByTargetTemp}
           targetUnit={warmByTargetUnit}
           plannedArrival={plannedArrival}

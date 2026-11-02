@@ -729,7 +729,7 @@ test("house verdict follows the replay time", async ({ page }) => {
   for (let index = 5; index < checkpoints.length; index += 1) {
     await stepNext(page, checkpoints, index);
   }
-  await expect(page.locator(".verdict-headline")).toContainText("expectation was met");
+  await expect(page.locator(".verdict-headline")).toContainText("The target was met");
 });
 
 test("page has no horizontal scroll at 375px", async ({ page }) => {
@@ -959,22 +959,7 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
       await expect(lead, `lead temperature at ${at}`).toContainText(String(apiLastValue));
       await expect(insideTile.locator(".tile-value"), `inside tile at ${at}`).toContainText(String(apiLastValue));
     }
-    const apiLastHour = metrics.last_hour_change_f as number;
-    const heldAtTarget =
-      apiLastValue !== null &&
-      apiLastValue >= (metrics.target_gap.target_temp as number) &&
-      ["Target verified", "Warm-by target met"].includes((await page.locator(".outcome-status strong").innerText()).trim());
-    const tileSub = insideTile.locator(".tile-sub");
-    if (Math.abs(Math.round(apiLastHour * 10) / 10) <= 0.2 || heldAtTarget) {
-      await expect(lead, `lead holding at ${at}`).toContainText("holding");
-      await expect(lead, `lead never states a rate while holding at ${at}`).not.toContainText("F an hour");
-      await expect(tileSub, `tile holding at ${at}`).toContainText("holding");
-    } else {
-      const word = apiLastHour < 0 ? "falling" : "rising";
-      const rate = Math.abs(Math.round(apiLastHour * 10) / 10);
-      await expect(lead, `lead uses the last-hour change at ${at}`).toContainText(`${word} ${rate} F an hour`);
-      await expect(tileSub, `tile trend at ${at}`).toContainText(word);
-    }
+    await expect(lead, `no per-hour rate at ${at}`).not.toContainText("an hour");
 
     if (index < 3) {
       await expect(page.locator(".outcome-status strong"), `no follow-up yet at ${at}`).toHaveText(
@@ -1477,26 +1462,58 @@ test("every visible clock is 12-hour and each thing keeps one name", async ({ pa
 test("the whole guided story reads correctly from 7:20 PM", async ({ page }) => {
   test.setTimeout(120_000);
   const checkpoints = await startStory(page);
-  const expected: Array<[string, string, string, string]> = [
-    ["7:20 PM ET", "Plan confirmed, on track", "69 F", "No follow-up scheduled yet"],
-    ["9:00 PM ET", "Evening, still on track", "68.4 F", "No follow-up scheduled yet"],
-    ["9:41 PM ET", "Noticed: 2 F below target", "66 F", "No follow-up scheduled yet"],
-    ["10:46 PM ET", "6 F below target, so ARIA asks the caregiver", "62 F", "Unable to verify"],
-    ["11:31 PM ET", "Technician on site, room still falling", "58", "Thermostat not reporting"],
-    ["12:21 AM ET", "Thermostat reporting again", "56", "Thermostat reporting restored"],
-    ["12:31 AM ET", "Warming observed", "5", "Warming observed"],
-    ["1:41 AM ET", "Target verified", "68", "Target verified"],
-    ["1:51 AM ET", "Technician's report arrives", "68", "Target verified"],
-    ["7:01 AM ET", "Warm-by target met", "68", "Warm-by target met"],
+  const onTrack = "The house is on track to be warm by 7:00 AM.";
+  const cooling = "The house is cooling. It may not be warm by 7:00 AM.";
+  const warming = "The house is warming, but it may not be warm by 7:00 AM.";
+  const verified = "The house reached 68 F and held it. The target is verified.";
+  const expected: Array<[string, string, string, string, string]> = [
+    ["7:20 PM ET", "Plan confirmed, on track", "69 F", "No follow-up scheduled yet", onTrack],
+    ["9:00 PM ET", "Evening, still on track", "68.4 F", "No follow-up scheduled yet", onTrack],
+    ["9:41 PM ET", "Noticed: 2 F below target", "66 F and falling", "No follow-up scheduled yet", cooling],
+    ["10:46 PM ET", "6 F below target, so ARIA asks the caregiver", "62 F and falling", "Unable to verify", cooling],
+    ["11:31 PM ET", "Technician on site, room still falling", "59.3 F and falling", "Thermostat not reporting", cooling],
+    ["12:21 AM ET", "Thermostat reporting again", "57.6 F and rising", "Thermostat reporting restored", warming],
+    ["12:31 AM ET", "Warming observed", "59.7 F and rising", "Warming observed", warming],
+    ["1:41 AM ET", "Target verified", "holding at 68 F", "Target verified", verified],
+    ["1:51 AM ET", "Technician's report arrives", "holding at 68.4 F", "Target verified", verified],
+    ["7:01 AM ET", "Warm-by target met", "holding at 68.2 F", "Warm-by target met", "The house was warm by 7:00 AM. The target was met."],
   ];
   expect(checkpoints).toHaveLength(expected.length);
-  for (const [index, [time, title, room, stage]] of expected.entries()) {
+  for (const [index, [time, title, room, stage, headline]] of expected.entries()) {
     if (index > 0) await stepNext(page, checkpoints, index);
     await expect(page.locator(".story-progress")).toContainText(time);
     await expect(page.locator(".story-panel h2")).toHaveText(title);
     await expect(page.locator(".verdict-lead")).toContainText(room);
+    await expect(page.locator(".verdict-headline"), `headline at ${time}`).toHaveText(headline);
     await expect(page.locator(".outcome-status strong")).toHaveText(stage);
     await expect(page.getByTestId("caregiver-permission"), `caregiver request at ${time}`).toHaveCount(index < 3 ? 0 : 1);
+  }
+});
+
+test("the declined path reads correctly at every step", async ({ page }) => {
+  test.setTimeout(120_000);
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 3; index += 1) await stepNext(page, checkpoints, index);
+  await page.getByTestId("caregiver-permission").getByRole("button", { name: "Decline (as the caregiver)" }).click();
+  await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText("Declined");
+  const cooling = "The house is cooling. It may not be warm by 7:00 AM.";
+  await expect(page.locator(".story-panel h2")).toHaveText("Caregiver declines HVAC contact");
+  await expect(page.locator(".verdict-headline")).toHaveText(cooling);
+  const expected: Array<[string, string, string, string]> = [
+    ["11:31 PM ET", "No repair arranged, room still falling", "and falling", cooling],
+    ["12:21 AM ET", "Thermostat still silent, house still cold", "56.3 F and falling", cooling],
+    ["12:31 AM ET", "No warming observed", "55.7 F and falling", cooling],
+    ["1:41 AM ET", "Target not verified", "52 F and falling", cooling],
+    ["1:51 AM ET", "No report: nobody was contacted", "52", "The house is holding at 52 F. It may not be warm by 7:00 AM."],
+    ["7:01 AM ET", "Warm-by target missed", "51.4 F", "The house missed the 7:00 AM ET warm-by time: 51.4 F in the living room against the 68 F target."],
+  ];
+  for (const [offset, [time, title, room, headline]] of expected.entries()) {
+    await stepNext(page, checkpoints, offset + 4);
+    await expect(page.locator(".story-progress")).toContainText(time);
+    await expect(page.locator(".story-panel h2")).toHaveText(title);
+    await expect(page.locator(".verdict-lead")).toContainText(room);
+    await expect(page.locator(".verdict-headline"), `declined headline at ${time}`).toHaveText(headline);
+    await expect(page.locator(".story-panel")).not.toContainText("technician arrived");
   }
 });
 
@@ -1527,13 +1544,6 @@ test("at 12:31 AM a declined request shows no warming anywhere", async ({ page }
   await expect(page.locator(".verification-progression li").nth(1)).toHaveText("Warming observed — Not reached");
 });
 
-// Waiting on the buildVerdict merge: the at-risk headline still says cooling while the room rises.
-test.fixme("a rising room while still at risk is not called cooling", async ({ page }) => {
-  const checkpoints = await startStory(page);
-  for (let index = 1; index <= 6; index += 1) await stepNext(page, checkpoints, index);
-  await expect(page.locator(".verdict-headline")).toHaveText("The house is warming, but it may not be warm by 7:00.");
-});
-
 test("story completion points to the Reasoning proof", async ({ page }) => {
   const checkpoints = await startStory(page);
   for (let index = 1; index < checkpoints.length; index += 1) {
@@ -1549,162 +1559,3 @@ test("story completion points to the Reasoning proof", async ({ page }) => {
   await expect(page.getByTestId("trace-map")).toBeVisible();
 });
 
-async function metricsAt(page: Page, at: string): Promise<any> {
-  const response = await page.request.get(
-    `/api/metrics?scenario=care_home_v1&at=${encodeURIComponent(at)}`,
-  );
-  expect(response.ok()).toBe(true);
-  return response.json();
-}
-
-async function roomNewestAt(page: Page, at: string): Promise<{ value: number | null; unit: string | null }> {
-  const response = await page.request.get(
-    `/api/sources?scenario=care_home_v1&at=${encodeURIComponent(at)}`,
-  );
-  expect(response.ok()).toBe(true);
-  const body = await response.json();
-  const room = (body.sources as Array<{ source: string; newest_value: number | null; newest_unit: string | null }>).find(
-    (entry) => entry.source === "room_sensor",
-  );
-  return { value: room?.newest_value ?? null, unit: room?.newest_unit ?? null };
-}
-
-function expectedAtRiskHeadline(metrics: any, room: { value: number | null; unit: string | null }): string {
-  const trend = metrics.indoor_trend;
-  const lastHour = metrics.last_hour_change_f as number | null;
-  if (typeof lastHour === "number" && Math.abs(lastHour) <= 0.2) {
-    if (room.value === null) return "The house may not be warm by 7:00.";
-    return `The house is holding at ${room.value}${room.unit ? ` ${room.unit}` : ""}. It may not be warm by 7:00.`;
-  }
-  const rate = trend.rate_per_hour as number | null;
-  const sufficient = trend.sufficient as boolean;
-  if (typeof rate === "number" && sufficient) {
-    if (rate < 0) return "The house is cooling. It may not be warm by 7:00.";
-    if (rate > 0) return "The house is warming, but it may not be warm by 7:00.";
-    if (room.value === null) return "The house may not be warm by 7:00.";
-    return `The house is holding at ${room.value}${room.unit ? ` ${room.unit}` : ""}. It may not be warm by 7:00.`;
-  }
-  return "The house may not be warm by 7:00.";
-}
-
-test("at-risk headline states the direction the room readings show in the approve path", async ({ page }) => {
-  test.setTimeout(180_000);
-  const checkpoints = await startStory(page);
-  expect(checkpoints).toHaveLength(10);
-  const headline = page.locator(".verdict-headline");
-  const checked: string[] = [];
-  for (let index = 0; index < checkpoints.length; index += 1) {
-    if (index > 0) await stepNext(page, checkpoints, index);
-    const at = checkpoints[index];
-    if (index === 3) {
-      await page.getByTestId("caregiver-permission").getByRole("button", { name: "Approve (as the caregiver)" }).click();
-      await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText(
-        "Approved by the caregiver at",
-      );
-    }
-    const metrics = await metricsAt(page, at);
-    if (index <= 1) {
-      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
-        "The house is on track to be warm by 7:00.",
-      );
-      continue;
-    }
-    if (index === 7 || index === 8) {
-      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
-        "The house reached 68 F and held it — the goal is verified.",
-      );
-      continue;
-    }
-    if (index === 9) {
-      await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(
-        "The house was warm by 7:00 — the expectation was met.",
-      );
-      continue;
-    }
-    if (metrics.computed_readiness !== "at_risk") continue;
-    checked.push(at);
-    const room = await roomNewestAt(page, at);
-    const expected = expectedAtRiskHeadline(metrics, room);
-    await expect.poll(async () => headline.textContent(), `headline at ${at}`).toBe(expected);
-    const text = (await headline.textContent()) ?? "";
-    const lastHour = metrics.last_hour_change_f as number | null;
-    if (at.includes("23:30")) {
-      expect(text, "cooling still shown at 23:30").toContain("cooling");
-    }
-    for (const stamp of ["02:31", "02:45", "04:21", "04:51"]) {
-      if (at.includes(stamp) && !(typeof lastHour === "number" && lastHour < 0)) {
-        expect(text, `no cooling headline at ${at}`).not.toContain("cooling");
-      }
-    }
-    if (at.includes("04:51")) {
-      await expect(page.locator(".tiles .tile").nth(0).locator(".tile-sub"), "tile rises at 04:51").toContainText(
-        "rising",
-      );
-      await expect(page.locator(".verdict-lead"), "lead rises at 04:51").toContainText("rising");
-      expect(text, "warming headline at 04:51").toContain("warming");
-    }
-  }
-  for (const stamp of ["23:30", "02:31", "02:45", "04:21", "04:51"]) {
-    expect(checked.some((at) => at.includes(stamp)), `at-risk step checked at ${stamp}`).toBe(true);
-  }
-});
-
-test("decline-path headline tracks the slow 0.2 F an hour fall", async ({ page }) => {
-  test.setTimeout(180_000);
-  const checkpoints = await startStory(page);
-  expect(checkpoints).toHaveLength(10);
-  const headline = page.locator(".verdict-headline");
-  const atIndex = (stamp: string): number => {
-    const found = checkpoints.findIndex((entry) => entry.includes(stamp));
-    expect(found, `checkpoint ${stamp}`).toBeGreaterThan(0);
-    return found;
-  };
-  const at0231 = atIndex("02:31");
-  for (let index = 1; index <= at0231; index += 1) {
-    await stepNext(page, checkpoints, index);
-  }
-  let metrics = await metricsAt(page, checkpoints[at0231]);
-  expect(metrics.computed_readiness).toBe("at_risk");
-  await expect.poll(async () => headline.textContent(), "headline at 02:31").toBe(
-    expectedAtRiskHeadline(metrics, await roomNewestAt(page, checkpoints[at0231])),
-  );
-  expect((await headline.textContent()) ?? "", "holding at 02:31").toContain("holding at 52 F");
-  await page.getByTestId("caregiver-permission").getByRole("button", { name: "Decline (as the caregiver)" }).click();
-  await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText(
-    "Declined by the caregiver at",
-  );
-  let current = at0231;
-  for (const stamp of ["04:51", "06:21"]) {
-    const target = atIndex(stamp);
-    for (let index = current + 1; index <= target; index += 1) {
-      await stepNext(page, checkpoints, index);
-    }
-    current = target;
-    metrics = await metricsAt(page, checkpoints[target]);
-    expect(metrics.computed_readiness, `readiness at ${stamp}`).toBe("at_risk");
-    const rate = metrics.indoor_trend.rate_per_hour as number | null;
-    expect(typeof rate, `rate served at ${stamp}`).toBe("number");
-    expect(rate as number, `slow fall served at ${stamp}`).toBeLessThan(0);
-    const room = await roomNewestAt(page, checkpoints[target]);
-    await expect.poll(async () => headline.textContent(), `headline at ${stamp}`).toBe(
-      expectedAtRiskHeadline(metrics, room),
-    );
-    expect((await headline.textContent()) ?? "", `no warming without a visit at ${stamp}`).not.toContain("warming");
-    if (stamp === "04:51") {
-      expect((await headline.textContent()) ?? "", "cooling on the decline fall at 04:51").toBe(
-        "The house is cooling. It may not be warm by 7:00.",
-      );
-    }
-    if (stamp === "06:21") {
-      expect((await headline.textContent()) ?? "", "cooling on the decline fall at 06:21").toBe(
-        "The house is cooling. It may not be warm by 7:00.",
-      );
-    }
-  }
-  const end = atIndex("07:01");
-  for (let index = current + 1; index <= end; index += 1) {
-    await stepNext(page, checkpoints, index);
-  }
-  await expect.poll(async () => headline.textContent(), "headline at 07:01").toContain("missed the");
-  await expect(headline, "missed warm-by time at 07:01").toContainText("warm-by time");
-});

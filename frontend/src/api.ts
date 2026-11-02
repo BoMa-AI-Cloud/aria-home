@@ -158,6 +158,7 @@ export interface ReplayMetrics {
   indoor_trend: IndoorTrend;
   target_gap: TargetGap | null;
   last_hour_change_f: number | null;
+  recent_change_f?: number | null;
 }
 
 export interface MetricsResponse {
