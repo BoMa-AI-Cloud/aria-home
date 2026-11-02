@@ -113,3 +113,16 @@ def test_no_old_timeline_left_in_the_story_data():
     manifest = json.loads((FIXTURE / "manifest.json").read_text(encoding="utf-8"))
     assert not old.search(manifest["description"])
     assert not old.search((BACKEND / "fixtures" / "voice" / "technician-note-script.txt").read_text(encoding="utf-8"))
+
+
+def _frame_at(scn, when):
+    seen = [item for item in scn.visuals if item.received_at <= when]
+    return max(seen, key=lambda item: item.observed_at).image_id if seen else None
+
+
+def test_camera_frames_fit_the_moment():
+    scn = scenario()
+    assert _frame_at(scn, at(17, "00:21")) != "care/care-v3-thermostat-blank"
+    assert _frame_at(scn, at(17, "01:51")) != "care/care-v6-warm-morning"
+    assert _frame_at(scn, at(17, "07:01")) == "care/care-v6-warm-morning"
+    assert _frame_at(declined_view(scn), at(17, "07:01")) != "care/care-v6-warm-morning"

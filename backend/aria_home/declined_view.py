@@ -117,4 +117,5 @@ def declined_view(scenario):
                 continue
         records.append(record)
     events = [e for e in (getattr(scenario, "events", None) or []) if e.kind not in REMOVED_EVENT_KINDS]
-    return replace(scenario, records=records, events=events, declined_view=True)
+    visuals = [item for item in (getattr(scenario, "visuals", None) or []) if "warm-morning" not in str(getattr(item, "image_id", ""))]
+    return replace(scenario, records=records, events=events, visuals=visuals, declined_view=True)
