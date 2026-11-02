@@ -68,7 +68,7 @@ The story is 10 steps about one winter night:
   That closes nothing.
 - The thermostat goes silent at 11:00 PM.
 - On Approve: the repair ends at 12:15 AM and the room rises. ARIA waits for
-  independent readings and verifies at 1:40 AM that 68 F was held.
+  independent readings and verifies at 1:41 AM that 68 F was held.
 - On Decline: nobody is contacted — no visit, report or voice note — the room
   falls to 52 F with readings still checked each step, and 7:00 states the
   miss against the 68 F goal.

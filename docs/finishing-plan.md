@@ -7,7 +7,7 @@ including the audit items below, are proposals to verify, not requirements.
 
 Note 2026-11-02: the night now has 10 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
 and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves at 10:47 PM and a technician is on site at
-11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:40 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
+11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:41 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. Meta's Muse models wrote most of the
 application code; Claude (Anthropic) wrote that alert rule and the final wording pass under Brad's direction, recorded
 in [operator-log.md](build-log/operator-log.md). Dated results below stay as they were measured.
@@ -196,7 +196,7 @@ Model-contribution table (to replace the README's long paragraph; verify each ro
 | muse-spark-1.3 | explains the code's readiness and verification in plain words, citing evidence ids | recorded (live is operator-only) | `backend/eval/recorded/`, claim checks in code | readiness agreement is enforced, so it is not independent accuracy |
 | muse-spark-1.3 (watcher) | notices anomalies with cited evidence; one revision after a failed check | recorded | watcher recordings; model-value eval C | first attempts failed checks in 9 of 12 unseen simulated scenarios, run as one batch |
 | muse-wonder-1.0 | second review of each recorded answer for unsupported claims | recorded, bound to the exact answer | reviews files; model-value eval B (12/12 planted claims, 0/12 false alarms) | planted claims used four fixed templates |
-| muse-voice-transcribe-1.0 | transcribes the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261031.json` | a report, never a measurement |
+| muse-voice-transcribe-1.0 | transcribes the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261102.json` | a report, never a measurement |
 | sam-3.1 | segments the mechanical-room camera frames | recorded over synthetic images | visual recordings | missed the frost; no detection is not an all-clear |
 | muse-image-1.0 | generated the synthetic camera images | asset generation only | fixtures | never called at runtime |
 

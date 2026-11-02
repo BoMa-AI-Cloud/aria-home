@@ -21,7 +21,7 @@ inference"; no real message is sent and no paid inference runs.
 | 00:21 | Outcome "Thermostat reporting restored" with later stages Not reached; room 57.6 F. Reconnection alone proves nothing. Simulated service-visit card (23:30–00:15, "does not by itself close anything"). |
 | 00:31 | Outcome "Warming observed" from independent room readings (56.6 F at 00:15 to 59.7 F at 00:30). Still not "Temperature goal verified". |
 | 01:41 | Outcome "Temperature goal verified" with "Latest reading used: observed … received …" and the evaluation time. Target first reached 01:10, held 30 minutes through 01:40, under 3 hours after the 22:46 ask. No HVAC completion report card and no voice-note row yet. |
-| 01:51 | "HVAC completion report" card, labelled "Corroboration only, does not set the outcome", event 01:45, available 01:50; technician voice-note row "Corroboration only", saying the furnace restarted about 12:15 [CONFIRM after the new voice note]. They change no outcome. |
+| 01:51 | "HVAC completion report" card, labelled "Corroboration only, does not set the outcome", event 01:45, available 01:50; technician voice-note row "Corroboration only", saying the furnace restarted about 12:15. They change no outcome. |
 | 07:01 | Outcome "Warm-by expectation met" and the update ("reached and held 68 F before the warm-by time"). Evaluated at 07:01 from readings received by the 07:00 warm-by time (latest 68.0 F at 06:55), not assumed from 01:41. |
 
 Declined branch (same checkpoints, caregiver declines at 22:46): no HVAC request is sent (the HVAC card reads refused, "caregiver declined"); no technician, service-visit card, completion-report card or voice-note row appears at any later step; the room keeps falling to 52.0 F by about 01:30, holds, then eases down 0.2 F/hr from 04:00 (51.4 F at 07:01); the thermostat never returns; verification stays "Thermostat telemetry missing" with the outcome still checking ("awaiting measurement"); 07:01 states the miss against the 68 F goal with the actual reading. Rewinding before the decision shows the original night.
@@ -37,10 +37,10 @@ known then — scenario/time changes reveal no future state (no later outcomes,
 notifications, acks or report cards). A notification created later is absent
 from earlier projections, not recreated there.
 
-Visual evidence: replay `care_home_v1` at 23:31 and 07:01 and confirm the
+Visual evidence: replay `care_home_v1` at 00:21 and 07:01 and confirm the
 "Visual evidence (synthetic image)" section shows
 "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)",
-with the night frames labelled "Missed by the model"; images never enter any
+with the frost frames labelled "Missed by the model"; images never enter any
 notification. The `visual_*` scenarios keep the same treatment: confirm the
 image loads at a UTC `at` and at positive and negative UTC offsets (the
 returned `image_url` is fetched exactly and serves identical bytes), with the
