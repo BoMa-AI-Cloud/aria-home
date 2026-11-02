@@ -213,7 +213,7 @@ def test_only_missing_rerecords_provider_error_rejection(tmp_path):
     _seed_watchers(tmp_path / "watchers", ["provider error: bad_response (HTTP 402)"])
     scenario = load_scenario(rcw.SCENARIOS_DIR / rcw.CARE_SCENARIO_ID)
     needed, skipped = rcw._missing_plan(rcw._plan(scenario), tmp_path / "watchers")
-    assert len(needed) == 10 and skipped == 0
+    assert len(needed) == 11 and skipped == 0
     assert is_unreadable_rejection({"final_result": "rejected", "failed_checks": ["provider error: bad_response (HTTP 402)"]}) is False
 
 
@@ -221,4 +221,4 @@ def test_only_missing_keeps_mixed_provider_and_code_rejection(tmp_path):
     _seed_watchers(tmp_path / "watchers", ["provider error: timeout", "observation value does not match evidence r1"])
     scenario = load_scenario(rcw.SCENARIOS_DIR / rcw.CARE_SCENARIO_ID)
     needed, skipped = rcw._missing_plan(rcw._plan(scenario), tmp_path / "watchers")
-    assert needed == [] and skipped == 10
+    assert needed == [] and skipped == 11
