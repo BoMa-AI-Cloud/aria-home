@@ -4,7 +4,7 @@ Generated from git history for commit c22f366 and later docs. Every tracked file
 
 Who wrote the code is measured separately in [code authorship](evidence/code-authorship.md).
 
-812 tracked files, grouped by folder:
+812 tracked files, grouped by folder. The table counts 810 of them: two recordings moved to `backend/eval/superseded/` show their earlier path in git history, first added 2026-10-29 and 2026-10-31:
 
 | Folder | Files | First added | Latest added |
 |---|---:|---|---|
