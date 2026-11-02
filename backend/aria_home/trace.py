@@ -19,7 +19,7 @@ from .eligibility import (
 from .evidence import freshness, source_status
 from .investigator import build_evidence_pack, inference_identity
 from .metrics import temperature_trend
-from .notifications import _get, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
+from .notifications import ALERT_GAP_F, _get, caregiver_alert_level, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
 from .outcomes import follow_up_for
 from .public_demo import parsed_checkpoints
 from .recorded import find_recorded, load_recorded_answers, public_investigation
@@ -359,7 +359,7 @@ def _scripted_ask_time(scenario, at):
         except Exception:
             continue
         readiness = pack.get("readiness") if isinstance(pack.get("readiness"), dict) else {}
-        if readiness.get("status") not in ("at_risk", "cannot_tell"):
+        if caregiver_alert_level(readiness) != "alert":
             continue
         try:
             context = context_as_of(scenario, checkpoint)
@@ -498,7 +498,7 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
         prev = checkpoint
     window = [e for e in events_as_of(scenario, at) if _get(e, "available_at") is not None and _get(e, "available_at") > prev and _get(e, "available_at") <= at]
     if choice == "declined":
-        window = [e for e in window if _get(e, "kind") not in ("caregiver_hvac_authorized", "hvac_request", "service_visit", "hvac_completion_report")]
+        window = [e for e in window if _get(e, "kind") not in ("caregiver_hvac_authorized", "hvac_request", "technician_arrival", "service_visit", "hvac_completion_report")]
     visible = visible_records(getattr(scenario, "records", None) or [], at)
     room = [r for r in visible if _get(r, "source") is SourceKind.room_sensor and _get(r, "quantity") == "indoor_temp" and isinstance(_get(r, "value"), (int, float))]
     latest_room = max(room, key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id")))) if room else None
@@ -558,6 +558,9 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
         pack = {}
     readiness = pack.get("readiness") if isinstance(pack, dict) else None
     status = readiness.get("status") if isinstance(readiness, dict) else "unknown"
+    if scenario.manifest.id == "care_home_v1" and caregiver_alert_level(readiness) == "notice" and isinstance(target, (int, float)) and latest_room is not None:
+        below = target - _get(latest_room, "value")
+        return {"text": f"Noticed: room {room_text} is {below:g} F below the {target:g} F target. No one is asked yet; ARIA asks at {ALERT_GAP_F:g} F below", "source": "computed:notice"}
     words = "warm-by time passed" if status == "arrival_passed" else str(status).replace("_", " ")
     trend_clause = ""
     try:

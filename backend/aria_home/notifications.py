@@ -46,6 +46,34 @@ DEFAULT_CAREGIVER_ACCESS_NOTE = "Access arranged through the family caregiver (s
 DEFAULT_CAREGIVER_CONTACT_LABEL = "family caregiver on file (synthetic label)"
 
 
+# Configured settings for the care story, not safety boundaries.
+NOTICE_GAP_F = 2.0
+ALERT_GAP_F = 6.0
+ALERT_BACKSTOP_H = 2.0
+
+
+def caregiver_alert_level(readiness):
+    """none, notice or alert. Notice records it and asks nobody; alert asks the caregiver.
+
+    The backstop asks when the house is at risk close to the warm-by time, so a
+    room sitting just above the alert gap at 6:55 is not missed. A gap that
+    cannot be read rounds toward asking.
+    """
+    status = _get(readiness, "status")
+    if status == "cannot_tell":
+        return "alert"
+    if status != "at_risk":
+        return "none"
+    inputs = _get(readiness, "inputs") or {}
+    gap = inputs.get("gap_f") if isinstance(inputs, dict) else None
+    hours = inputs.get("hours_to_arrival") if isinstance(inputs, dict) else None
+    if not isinstance(gap, (int, float)) or gap <= -ALERT_GAP_F:
+        return "alert"
+    if isinstance(hours, (int, float)) and 0 <= hours <= ALERT_BACKSTOP_H:
+        return "alert"
+    return "notice" if gap <= -NOTICE_GAP_F else "none"
+
+
 def _uses_caregiver(scenario):
     manifest = _get(scenario, "manifest")
     return _get(manifest, "id") in CAREGIVER_SCENARIOS
@@ -257,6 +285,8 @@ def decide_notifications(investigation=None, readiness=None, verification=None, 
     decisions.append(_decision("homeowner", homeowner["kind"], reason is None, reason, homeowner, investigation_id))
     if status in ("at_risk", "cannot_tell"):
         if _uses_caregiver(scenario):
+            if caregiver_alert_level(readiness) != "alert":
+                return decisions
             caregiver = build_payload("family_caregiver", investigation, readiness, verification, context, events, now, scenario)
             if caregiver_is_authorized(context):
                 decisions.append(_decision("family_caregiver", caregiver["kind"], True, None, caregiver, investigation_id))
