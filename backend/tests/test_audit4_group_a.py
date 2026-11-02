@@ -458,4 +458,4 @@ def test_temperature_success_carries_no_causal_repair_claim(tmp_path):
     result, _ = _verify(target, at(21, 1))
     assert result["stage"] == "arrival_met"
     assert not any("caus" in reason.lower() or "repair" in reason.lower() for reason in result["reasons"])
-    assert any("separate equipment observation" in reason for reason in result["reasons"])
+    assert any("describes the equipment" in reason or "does not prove heating" in reason for reason in result["reasons"])

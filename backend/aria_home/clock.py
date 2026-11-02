@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Protocol, runtime_checkable
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 def ensure_aware(value: datetime, name: str = "datetime") -> datetime:
@@ -8,6 +9,33 @@ def ensure_aware(value: datetime, name: str = "datetime") -> datetime:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError(f"{name} must be timezone-aware (UTC expected)")
     return value
+
+
+def plain_time(value, timezone_name=None) -> str:
+    """A clock time for sentences, such as 7:03 PM, in the scenario's timezone when one is given."""
+    if isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+    if timezone_name and value.tzinfo is not None:
+        try:
+            value = value.astimezone(ZoneInfo(timezone_name))
+        except ZoneInfoNotFoundError:
+            pass
+    hour = value.hour % 12 or 12
+    return f"{hour}:{value.minute:02d} {'AM' if value.hour < 12 else 'PM'}"
+
+
+def plain_duration(seconds) -> str:
+    """A length of time for sentences: minutes up to two hours, then hours and minutes."""
+    total_min = int(round(float(seconds) / 60.0))
+    if float(seconds) < 60:
+        return "under 1 min"
+    if total_min < 120:
+        return f"{total_min} min"
+    hours, minutes = divmod(total_min, 60)
+    return f"{hours} h {minutes} min" if minutes else f"{hours} h"
 
 
 @runtime_checkable

@@ -11,7 +11,7 @@ The model investigation contract is `inv-v5` (reworded from `inv-v4` to name the
 | Condition | Cases | Readiness correct | Wrong | Unsupported | Target at arrival correct (scored) | Verification correct (scored) | Fully correct |
 |---|---|---|---|---|---|---|---|
 | combined | 22 | 22 | 0 | 0 | 7 (7) | 10 (10) | 22 |
-| thermostat_only | 22 | 16 | 0 | 10 | 7 (7) | 2 (10) | 12 |
+| thermostat_only | 22 | 18 | 0 | 10 | 7 (7) | 2 (10) | 12 |
 | room_sensor_only | 22 | 17 | 0 | 18 | 2 (7) | 2 (10) | 4 |
 | electrical_only | 22 | 9 | 0 | 20 | 0 (7) | 2 (10) | 2 |
 | calendar_only | 22 | 9 | 0 | 20 | 0 (7) | 2 (10) | 2 |
@@ -80,26 +80,26 @@ The model investigation contract is `inv-v5` (reworded from `inv-v4` to name the
 | demo_video_v1@21:01 | room_sensor_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: met) | no (unsupported) |
 | demo_video_v1@21:01 | electrical_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
 | demo_video_v1@21:01 | calendar_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: unknown) | no (unsupported) |
-| care_home_v1@02:31 | combined | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
-| care_home_v1@02:31 | thermostat_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@02:31 | room_sensor_only | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
-| care_home_v1@02:31 | electrical_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@02:31 | calendar_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@04:21 | combined | at_risk / reporting_restored | at_risk / reporting_restored | yes |
-| care_home_v1@04:21 | thermostat_only | at_risk / reporting_restored | cannot_tell / unable_to_verify | no (unsupported) |
-| care_home_v1@04:21 | room_sensor_only | at_risk / reporting_restored | at_risk / telemetry_missing | no (unsupported) |
-| care_home_v1@04:21 | electrical_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@04:21 | calendar_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@04:51 | combined | at_risk / warming_observed | at_risk / warming_observed | yes |
-| care_home_v1@04:51 | thermostat_only | at_risk / warming_observed | cannot_tell / unable_to_verify | no (unsupported) |
-| care_home_v1@04:51 | room_sensor_only | at_risk / warming_observed | at_risk / telemetry_missing | no (unsupported) |
-| care_home_v1@04:51 | electrical_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@04:51 | calendar_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@06:21 | combined | on_track / goal_verified | on_track / goal_verified | yes |
-| care_home_v1@06:21 | thermostat_only | on_track / goal_verified | on_track / unable_to_verify | no (unsupported) |
-| care_home_v1@06:21 | room_sensor_only | on_track / goal_verified | on_track / telemetry_missing | no (unsupported) |
-| care_home_v1@06:21 | electrical_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
-| care_home_v1@06:21 | calendar_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@23:31 | combined | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| care_home_v1@23:31 | thermostat_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@23:31 | room_sensor_only | at_risk / telemetry_missing | at_risk / telemetry_missing | yes |
+| care_home_v1@23:31 | electrical_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@23:31 | calendar_only | at_risk / telemetry_missing | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@00:21 | combined | at_risk / reporting_restored | at_risk / reporting_restored | yes |
+| care_home_v1@00:21 | thermostat_only | at_risk / reporting_restored | at_risk / unable_to_verify | no (unsupported) |
+| care_home_v1@00:21 | room_sensor_only | at_risk / reporting_restored | at_risk / telemetry_missing | no (unsupported) |
+| care_home_v1@00:21 | electrical_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@00:21 | calendar_only | at_risk / reporting_restored | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@00:31 | combined | at_risk / warming_observed | at_risk / warming_observed | yes |
+| care_home_v1@00:31 | thermostat_only | at_risk / warming_observed | at_risk / unable_to_verify | no (unsupported) |
+| care_home_v1@00:31 | room_sensor_only | at_risk / warming_observed | at_risk / telemetry_missing | no (unsupported) |
+| care_home_v1@00:31 | electrical_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@00:31 | calendar_only | at_risk / warming_observed | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@01:41 | combined | on_track / goal_verified | on_track / goal_verified | yes |
+| care_home_v1@01:41 | thermostat_only | on_track / goal_verified | on_track / unable_to_verify | no (unsupported) |
+| care_home_v1@01:41 | room_sensor_only | on_track / goal_verified | on_track / telemetry_missing | no (unsupported) |
+| care_home_v1@01:41 | electrical_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
+| care_home_v1@01:41 | calendar_only | on_track / goal_verified | cannot_tell / telemetry_missing | no (unsupported) |
 | care_home_v1@07:01 | combined | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / arrival_met (target at arrival: met) | yes |
 | care_home_v1@07:01 | thermostat_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / unable_to_verify (target at arrival: met) | no (unsupported) |
 | care_home_v1@07:01 | room_sensor_only | arrival_passed / arrival_met (target at arrival: met) | arrival_passed / telemetry_missing (target at arrival: met) | no (unsupported) |
@@ -176,11 +176,11 @@ The model investigation contract is `inv-v5` (reworded from `inv-v4` to name the
 - thermostat_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing.
-- thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/reporting_restored.
+- thermostat_only gives unsupported answer (at_risk/unable_to_verify) where combined gives the expected at_risk/reporting_restored.
 - room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored.
-- thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/warming_observed.
+- thermostat_only gives unsupported answer (at_risk/unable_to_verify) where combined gives the expected at_risk/warming_observed.
 - room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/warming_observed.
 - electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
 - calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed.
@@ -207,8 +207,8 @@ The model investigation contract is `inv-v5` (reworded from `inv-v4` to name the
 - room_sensor_only gives unsupported answer (arrival_passed/None) where combined gives the expected arrival_passed/None.
 - electrical_only gives unsupported answer (arrival_passed/None) where combined gives the expected arrival_passed/None.
 - calendar_only gives unsupported answer (arrival_passed/None) where combined gives the expected arrival_passed/None.
-- electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.
-- electrical_only at care_home_v1@02:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.
+- electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the room readings to show no warming.
+- electrical_only at care_home_v1@23:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the room readings to show no warming.
 
 ## Care camera fixtures (recorded replay)
 
@@ -230,10 +230,9 @@ Correction records: 3; each began with a first attempt that failed code checks; 
 ## Reading this
 
 - Combined matches every expected readiness label and every scored verification stage; the single-source conditions do not, mostly by falling back to `cannot_tell` / `telemetry_missing` / `unable_to_verify` (unsupported), not by asserting the opposite readiness.
-- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (02:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is hours old, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.
+- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (23:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is stale by evaluation time. The combined view still has fresh independent room readings showing no warming.
 - Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.
 - A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.
-
 ## Live model condition (2026-10-26)
 
 Note: the live runs below predate the care story and used the trip-home scenarios (`demo_v1`, `demo_video_v1` and related fixtures); they are kept verbatim as historical runs and are not re-scored against `care_home_v1`.

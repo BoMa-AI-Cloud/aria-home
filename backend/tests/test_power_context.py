@@ -60,8 +60,8 @@ def test_p1_demo():
     assert result.mains.value == "not_available"
     assert result.lineage.lineage_count == 1
     assert result.lineage.meter_ids == ["demo-house-meter-1"]
-    assert "Cannot exclude a lost service leg." in result.limitations
-    assert "Breaker or equipment supply problems are not observable from branch readings." in result.limitations
+    assert "Electrical readings cannot show a lost supply leg." in result.limitations
+    assert "Readings from individual circuits cannot show a breaker or equipment supply problem." in result.limitations
     assert "Interruptions outside this window are not covered." in result.limitations
     assert "Backup-power configuration unknown." in result.limitations
     _assert_no_banned(result)

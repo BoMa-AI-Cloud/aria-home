@@ -351,8 +351,8 @@ def power_context(records, window_start, now, noise_floor_w=NOISE_FLOOR_W, backu
 
     limitations: list[str] = []
     if not _both_legs_measured_fresh_nonzero(deduped, now):
-        limitations.append("Cannot exclude a lost service leg.")
-    limitations.append("Breaker or equipment supply problems are not observable from branch readings.")
+        limitations.append("Electrical readings cannot show a lost supply leg.")
+    limitations.append("Readings from individual circuits cannot show a breaker or equipment supply problem.")
     limitations.append("Interruptions outside this window are not covered.")
     if backup_status is BackupStatus.unknown:
         limitations.append("Backup-power configuration unknown.")

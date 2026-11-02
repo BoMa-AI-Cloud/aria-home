@@ -17,7 +17,7 @@
     },
     "thermostat_only": {
       "cases": 22,
-      "readiness_correct": 16,
+      "readiness_correct": 18,
       "readiness_wrong": 0,
       "readiness_unsupported": 10,
       "target_at_arrival_scored": 7,
@@ -444,7 +444,7 @@
       "detail": "calendar_only gives unsupported answer (arrival_passed/telemetry_missing) where combined gives the expected arrival_passed/arrival_met."
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "condition": "thermostat_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -454,7 +454,7 @@
       "detail": "thermostat_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "condition": "electrical_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -464,7 +464,7 @@
       "detail": "electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "condition": "calendar_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -474,17 +474,17 @@
       "detail": "calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/telemetry_missing."
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "condition": "thermostat_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
+      "got_readiness": "at_risk",
       "expected_verification": "reporting_restored",
       "got_verification": "unable_to_verify",
-      "detail": "thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/reporting_restored."
+      "detail": "thermostat_only gives unsupported answer (at_risk/unable_to_verify) where combined gives the expected at_risk/reporting_restored."
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -494,7 +494,7 @@
       "detail": "room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/reporting_restored."
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "condition": "electrical_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -504,7 +504,7 @@
       "detail": "electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored."
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "condition": "calendar_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -514,17 +514,17 @@
       "detail": "calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/reporting_restored."
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "condition": "thermostat_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
+      "got_readiness": "at_risk",
       "expected_verification": "warming_observed",
       "got_verification": "unable_to_verify",
-      "detail": "thermostat_only gives unsupported answer (cannot_tell/unable_to_verify) where combined gives the expected at_risk/warming_observed."
+      "detail": "thermostat_only gives unsupported answer (at_risk/unable_to_verify) where combined gives the expected at_risk/warming_observed."
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -534,7 +534,7 @@
       "detail": "room_sensor_only gives unsupported answer (at_risk/telemetry_missing) where combined gives the expected at_risk/warming_observed."
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "condition": "electrical_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -544,7 +544,7 @@
       "detail": "electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed."
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "condition": "calendar_only",
       "kind": "unsupported",
       "expected_readiness": "at_risk",
@@ -554,7 +554,7 @@
       "detail": "calendar_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected at_risk/warming_observed."
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "condition": "thermostat_only",
       "kind": "unsupported",
       "expected_readiness": "on_track",
@@ -564,7 +564,7 @@
       "detail": "thermostat_only gives unsupported answer (on_track/unable_to_verify) where combined gives the expected on_track/goal_verified."
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "condition": "room_sensor_only",
       "kind": "unsupported",
       "expected_readiness": "on_track",
@@ -574,7 +574,7 @@
       "detail": "room_sensor_only gives unsupported answer (on_track/telemetry_missing) where combined gives the expected on_track/goal_verified."
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "condition": "electrical_only",
       "kind": "unsupported",
       "expected_readiness": "on_track",
@@ -584,7 +584,7 @@
       "detail": "electrical_only gives unsupported answer (cannot_tell/telemetry_missing) where combined gives the expected on_track/goal_verified."
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "condition": "calendar_only",
       "kind": "unsupported",
       "expected_readiness": "on_track",
@@ -788,14 +788,14 @@
       "condition": "electrical_only",
       "kind": "unsupported_claim",
       "claim": "useful_heat",
-      "detail": "electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming."
+      "detail": "electrical_only at demo_video_v1@16:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the room readings to show no warming."
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "condition": "electrical_only",
       "kind": "unsupported_claim",
       "claim": "useful_heat",
-      "detail": "electrical_only at care_home_v1@02:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming."
+      "detail": "electrical_only at care_home_v1@23:31 can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the room readings to show no warming."
     }
   ],
   "rows": [
@@ -2600,9 +2600,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T02:31:00-05:00",
+      "at": "2026-01-16T23:31:00-05:00",
       "condition": "combined",
       "sources_kept": "all",
       "expected_readiness": "at_risk",
@@ -2630,9 +2630,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T02:31:00-05:00",
+      "at": "2026-01-16T23:31:00-05:00",
       "condition": "thermostat_only",
       "sources_kept": "thermostat",
       "expected_readiness": "at_risk",
@@ -2660,9 +2660,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T02:31:00-05:00",
+      "at": "2026-01-16T23:31:00-05:00",
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "at_risk",
@@ -2690,9 +2690,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T02:31:00-05:00",
+      "at": "2026-01-16T23:31:00-05:00",
       "condition": "electrical_only",
       "sources_kept": "electrical",
       "expected_readiness": "at_risk",
@@ -2720,9 +2720,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@02:31",
+      "case_id": "care_home_v1@23:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T02:31:00-05:00",
+      "at": "2026-01-16T23:31:00-05:00",
       "condition": "calendar_only",
       "sources_kept": "calendar",
       "expected_readiness": "at_risk",
@@ -2750,9 +2750,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:21:00-05:00",
+      "at": "2026-01-17T00:21:00-05:00",
       "condition": "combined",
       "sources_kept": "all",
       "expected_readiness": "at_risk",
@@ -2780,14 +2780,14 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:21:00-05:00",
+      "at": "2026-01-17T00:21:00-05:00",
       "condition": "thermostat_only",
       "sources_kept": "thermostat",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
-      "readiness_correct": false,
+      "got_readiness": "at_risk",
+      "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -2810,9 +2810,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:21:00-05:00",
+      "at": "2026-01-17T00:21:00-05:00",
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "at_risk",
@@ -2840,9 +2840,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:21:00-05:00",
+      "at": "2026-01-17T00:21:00-05:00",
       "condition": "electrical_only",
       "sources_kept": "electrical",
       "expected_readiness": "at_risk",
@@ -2870,9 +2870,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:21",
+      "case_id": "care_home_v1@00:21",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:21:00-05:00",
+      "at": "2026-01-17T00:21:00-05:00",
       "condition": "calendar_only",
       "sources_kept": "calendar",
       "expected_readiness": "at_risk",
@@ -2900,9 +2900,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:51:00-05:00",
+      "at": "2026-01-17T00:31:00-05:00",
       "condition": "combined",
       "sources_kept": "all",
       "expected_readiness": "at_risk",
@@ -2921,7 +2921,7 @@
         "current_temperature": true,
         "target_temperature": true,
         "target_gap": true,
-        "warming": true,
+        "warming": false,
         "electrical_activity": true,
         "useful_heat": false,
         "power_continuity_weighs_against_total_loss": true,
@@ -2930,14 +2930,14 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:51:00-05:00",
+      "at": "2026-01-17T00:31:00-05:00",
       "condition": "thermostat_only",
       "sources_kept": "thermostat",
       "expected_readiness": "at_risk",
-      "got_readiness": "cannot_tell",
-      "readiness_correct": false,
+      "got_readiness": "at_risk",
+      "readiness_correct": true,
       "expected_target_at_arrival": null,
       "target_at_arrival": null,
       "got_target_at_arrival": null,
@@ -2960,9 +2960,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:51:00-05:00",
+      "at": "2026-01-17T00:31:00-05:00",
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "at_risk",
@@ -2981,7 +2981,7 @@
         "current_temperature": true,
         "target_temperature": true,
         "target_gap": true,
-        "warming": true,
+        "warming": false,
         "electrical_activity": false,
         "useful_heat": false,
         "power_continuity_weighs_against_total_loss": false,
@@ -2990,9 +2990,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:51:00-05:00",
+      "at": "2026-01-17T00:31:00-05:00",
       "condition": "electrical_only",
       "sources_kept": "electrical",
       "expected_readiness": "at_risk",
@@ -3020,9 +3020,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@04:51",
+      "case_id": "care_home_v1@00:31",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T04:51:00-05:00",
+      "at": "2026-01-17T00:31:00-05:00",
       "condition": "calendar_only",
       "sources_kept": "calendar",
       "expected_readiness": "at_risk",
@@ -3050,9 +3050,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T06:21:00-05:00",
+      "at": "2026-01-17T01:41:00-05:00",
       "condition": "combined",
       "sources_kept": "all",
       "expected_readiness": "on_track",
@@ -3080,9 +3080,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T06:21:00-05:00",
+      "at": "2026-01-17T01:41:00-05:00",
       "condition": "thermostat_only",
       "sources_kept": "thermostat",
       "expected_readiness": "on_track",
@@ -3110,9 +3110,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T06:21:00-05:00",
+      "at": "2026-01-17T01:41:00-05:00",
       "condition": "room_sensor_only",
       "sources_kept": "room_sensor",
       "expected_readiness": "on_track",
@@ -3140,9 +3140,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T06:21:00-05:00",
+      "at": "2026-01-17T01:41:00-05:00",
       "condition": "electrical_only",
       "sources_kept": "electrical",
       "expected_readiness": "on_track",
@@ -3170,9 +3170,9 @@
       }
     },
     {
-      "case_id": "care_home_v1@06:21",
+      "case_id": "care_home_v1@01:41",
       "scenario": "care_home_v1",
-      "at": "2026-01-17T06:21:00-05:00",
+      "at": "2026-01-17T01:41:00-05:00",
       "condition": "calendar_only",
       "sources_kept": "calendar",
       "expected_readiness": "on_track",
@@ -3221,7 +3221,7 @@
         "current_temperature": true,
         "target_temperature": true,
         "target_gap": true,
-        "warming": true,
+        "warming": false,
         "electrical_activity": true,
         "useful_heat": false,
         "power_continuity_weighs_against_total_loss": true,
@@ -3251,7 +3251,7 @@
         "current_temperature": true,
         "target_temperature": true,
         "target_gap": true,
-        "warming": true,
+        "warming": false,
         "electrical_activity": false,
         "useful_heat": false,
         "power_continuity_weighs_against_total_loss": false,
@@ -3281,7 +3281,7 @@
         "current_temperature": true,
         "target_temperature": true,
         "target_gap": true,
-        "warming": true,
+        "warming": false,
         "electrical_activity": false,
         "useful_heat": false,
         "power_continuity_weighs_against_total_loss": false,
