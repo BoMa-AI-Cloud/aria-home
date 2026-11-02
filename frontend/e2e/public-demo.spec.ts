@@ -600,7 +600,7 @@ test("visual image is identical at UTC and offset representations", async ({ pag
   const response = await page.request.get("/api/scenarios");
   const body = await response.json();
   const story = body.scenarios.find((item: { id: string }) => item.id === "care_home_v1");
-  const at = (story.checkpoints as string[])[3] as string;
+  const at = (story.checkpoints as string[])[4] as string;
   const instant = new Date(at).getTime();
   const utc = new Date(instant).toISOString();
   const aheadWall = new Date(instant + (5 * 60 + 30) * 60000).toISOString().replace(/Z$/, "+05:30");
@@ -1208,7 +1208,7 @@ test("earlier explanations list earlier recorded answers, never as the current o
     return {
       facts: [],
       verified_facts: [],
-      interpretation: `injected interpretation for ${at}`,
+      interpretation: `injected interpretation for ${Date.parse(at)}`,
       hypotheses: [],
       unknowns: [],
       clarification: "No question.",
@@ -1278,7 +1278,7 @@ test("earlier explanations list earlier recorded answers, never as the current o
       { timeout: 30000 },
     )
     .toBe(Date.parse(at));
-  const current = `injected interpretation for ${at}`;
+  const current = `injected interpretation for ${Date.parse(at)}`;
   const section = page.locator('section[aria-labelledby="investigation-heading"]');
   await expect(section.locator(".interpretation p")).toContainText(current);
   const earlier = page.getByTestId("earlier-explanations");
@@ -1291,7 +1291,7 @@ test("earlier explanations list earlier recorded answers, never as the current o
     expect(earlierTime ? Date.parse(earlierTime) : NaN).toBeLessThan(Date.parse(at));
   }
   for (let index = 0; index <= 4; index += 1) {
-    await expect(earlier).toContainText(`injected interpretation for ${checkpoints[index]}`);
+    await expect(earlier).toContainText(`injected interpretation for ${Date.parse(checkpoints[index])}`);
   }
   const earlierText = (await earlier.textContent()) ?? "";
   expect(earlierText).not.toContain(current);
