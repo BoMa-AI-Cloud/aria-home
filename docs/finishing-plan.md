@@ -7,7 +7,7 @@ including the audit items below, are proposals to verify, not requirements.
 
 Note 2026-11-02: the night now has 10 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
 and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves at 10:47 PM and a technician is on site at
-11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:40 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
+11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:41 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. Meta's Muse models wrote most of the
 application code; Claude (Anthropic) wrote that alert rule and the final wording pass under Brad's direction, recorded
 in [operator-log.md](build-log/operator-log.md). Dated results below stay as they were measured.

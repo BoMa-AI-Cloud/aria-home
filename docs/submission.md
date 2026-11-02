@@ -38,7 +38,7 @@ request created, with allowed fields only. The thermostat goes silent at 11:00 P
 — no request, visit, report or voice note — and the room readings are still checked at each later step: the room
 falls to 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
 On the approved path, the room rises at once, and reconnection at 12:20 AM alone proves nothing: the goal is verified at
-1:40 AM from independent readings held for 30 minutes, under 3 hours after the ask, and the technician's 1:50 AM voice note
+1:41 AM from independent readings held for 30 minutes, under 3 hours after the ask, and the technician's 1:51 AM voice note
 counts only as a human report.
 
 Code decides readiness, verification and who is told; Meta models explain and review, never decide. The app has

@@ -1,6 +1,6 @@
 > Note 2026-11-02: the story's times changed. The night has 10 steps: 19:20, 21:00, 21:41, 22:46, 23:31, 00:21, 00:31, 01:41, 01:51, 07:01. ARIA notices at 21:41 (2 F below the target, room 66.0 F, asks nobody) and asks the family caregiver at 22:46 (6 F below, room 62.0 F). A backstop still asks when the house is at risk within 2 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. The demo checks at set story times. Older shot lists (A2, A) are historical.
 >
-> Timing: the caregiver approves at 22:47, the HVAC request goes out at 22:50, the thermostat is silent 23:00–00:20, and a technician is on site 23:30–00:15, 44 minutes after the ask. The room falls to 56.6 F at 00:15, then rises at once, reaches 68 F at 01:10 and is verified at 01:40, under 3 hours after the ask. Report and voice note reach ARIA at 01:50.
+> Timing: the caregiver approves at 22:47, the HVAC request goes out at 22:50, the thermostat is silent 23:00–00:20, and a technician is on site 23:30–00:15, 44 minutes after the ask. The room falls to 56.6 F at 00:15, then rises at once, reaches 68 F at 01:10 and is verified at the 01:41 step, under 3 hours after the ask. Report and voice note appear at the 01:51 step.
 >
 > Who wrote the code: Meta's Muse models wrote most of the application code; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`. Opening lines in A2 and A that credit all code to Muse are out of date and must not be used.
 
@@ -144,7 +144,7 @@ Verify each state on a fresh database (`backend/instance/aria_home.db` deleted),
 | Verification timestamp before report receipt | 01:41 vs 01:51 | implemented | report absent at 01:41; report card at 01:51 shows available 1:50 AM; voice-note row "Corroboration only" |
 | Homeowner update | 07:01 | implemented | "Your home reached and held 68 F before the warm-by time" |
 | Warm-by goal maintained | 07:01 | implemented | "Warm-by expectation met", evaluated from readings received by 07:00 |
-| Care camera frames with recorded misses | 23:31, 07:01 | implemented | night frame "Missed by the model"; "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)" caption |
+| Care camera frames with recorded misses | 00:21, 07:01 | implemented | night frame "Missed by the model"; "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)" caption |
 
 ### A3.5 Minimum build gap plan
 
@@ -280,7 +280,7 @@ real calls.
 | 7 | Independent recovery detection: telemetry resumes → warming → goal verified → still met at warm-by time | Verification stages over later readings, evaluated at each replay time | implemented | replayed | Replay buttons "00:21", "00:31", "01:41", "07:01". Capture Outcome headlines in order: "Thermostat reporting restored" (00:21), "Warming observed" (00:31; the headline must not yet be "Temperature goal verified"), "Temperature goal verified" (01:41), "Warm-by expectation met" (07:01); the progression list shows each stage "Reached" / "Not reached", History accumulates the stages, and "Latest reading used: observed" / "received" is visible. |
 | 8 | HVAC completion report and technician voice note become available to ARIA only after sensor verification | Report records whose available times are after the verified evaluation | implemented (simulated timeline card + human-report row only) | simulated | Replay button "01:41": the Simulated timeline has no "HVAC completion report" card and no "Corroboration only" text. Replay button "01:51": capture the card "HVAC completion report", "SIMULATED", "Corroboration only, does not set the outcome", "Event time", "Available time (received time)". At no replay time does the report change the outcome. |
 | 9 | Ending: concise evidence-backed resident update; warm home at the warm-by time | A resident-facing summary generated from the verified outcome | implemented | replayed | Replay button "07:01". Capture the "Homeowner update" section card: "Your home reached and held 68 F before the warm-by time", "Evaluation time:". It claims goal recovery only, not a proven cause or fault-free equipment. |
-| 10 | Care camera frames with recorded segmentation, including the misses | Replay-only visual evidence gated by received time | implemented | replayed | Replay "23:31": capture the "Visual evidence (synthetic image)" section with "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)" and "Missed by the model". Replay "07:01": the morning frame with no miss label. Images never enter any notification. |
+| 10 | Care camera frames with recorded segmentation, including the misses | Replay-only visual evidence gated by received time | implemented | replayed | Replay "00:21": capture the "Visual evidence (synthetic image)" section with "Synthetic camera frame (muse-image-1.0) - segmentation by sam-3.1 (recorded)" and "Missed by the model". Replay "07:01": the morning frame with no miss label. Images never enter any notification. |
 
 ## C. Scenario timeline
 
