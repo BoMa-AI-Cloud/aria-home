@@ -18,15 +18,15 @@
     "image_id": "care/care-v3-thermostat-blank",
     "file": "care/care-v3-thermostat-blank.webp",
     "phrase": "blank display",
-    "observed_at": "2026-01-17T00:15:00-05:00",
-    "received_at": "2026-01-17T00:15:30-05:00"
+    "observed_at": "2026-01-16T23:45:00-05:00",
+    "received_at": "2026-01-16T23:45:30-05:00"
   },
   {
     "image_id": "care/care-v4-pipe-frost",
     "file": "care/care-v4-pipe-frost.webp",
     "phrase": "frost",
-    "observed_at": "2026-01-17T00:30:00-05:00",
-    "received_at": "2026-01-17T00:30:30-05:00",
+    "observed_at": "2026-01-17T00:18:00-05:00",
+    "received_at": "2026-01-17T00:18:30-05:00",
     "known_miss": true
   },
   {
@@ -40,7 +40,7 @@
     "image_id": "care/care-v6-warm-morning",
     "file": "care/care-v6-warm-morning.webp",
     "phrase": "frost",
-    "observed_at": "2026-01-17T01:50:00-05:00",
-    "received_at": "2026-01-17T01:50:30-05:00"
+    "observed_at": "2026-01-17T06:55:00-05:00",
+    "received_at": "2026-01-17T06:55:30-05:00"
   }
 ]
