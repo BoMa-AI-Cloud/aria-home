@@ -1427,6 +1427,28 @@ main h3 {
 .story-known-line {
   font-size: 0.875rem;
   color: var(--muted);
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.story-record {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.story-record summary {
+  cursor: pointer;
+}
+
+.story-activity-line {
+  margin: 0.25rem 0 0;
+}
+
+.notices-simulated {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
 }
 
 .story-nav {

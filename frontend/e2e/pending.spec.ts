@@ -80,16 +80,16 @@ test("rapid replay changes end on the last selection with no stale overwrite", a
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}`);
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
   const demoControls = page.locator(".demo-controls");
-  await expect(demoControls.getByRole("button", { name: "19:20" })).toBeEnabled({ timeout: 60_000 });
+  await expect(demoControls.getByRole("button", { name: "7:20 PM" })).toBeEnabled({ timeout: 60_000 });
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
-  await demoControls.getByRole("button", { name: "04:51" }).click();
-  await demoControls.getByRole("button", { name: "06:21" }).click();
-  await demoControls.getByRole("button", { name: "07:01" }).click();
+  await demoControls.getByRole("button", { name: "12:31 AM" }).click();
+  await demoControls.getByRole("button", { name: "1:41 AM" }).click();
+  await demoControls.getByRole("button", { name: "7:01 AM" }).click();
   await expect(headerTime).toContainText("7:01 AM ET", { timeout: 30_000 });
-  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met", {
+  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met", {
     timeout: 30_000,
   });
 });
