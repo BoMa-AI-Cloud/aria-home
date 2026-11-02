@@ -1,0 +1,86 @@
+{
+  "answers": [
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T06:41:00Z",
+      "input_revision": "20cc3008bf25c6a0d4cda039f332ce966d203e4171fa265066b831a6a4a69efe",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:27:39.718158+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "metric:indoor_trend",
+            "field": "last_value",
+            "value": 68.0,
+            "unit": "F",
+            "at": "2026-01-17T01:40:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 0.0,
+            "unit": "F",
+            "at": "2026-01-17T01:40:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": "2026-01-17T01:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 68.0 F (at 01:40)",
+          "Target 68.0 F",
+          "At target (0.0 F)",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "The goal is already met and the room is holding, so the home looks ready for the resident by the warm-by time, with the family caregiver as the responder if something looks wrong.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room may stay near the goal while recent electrical activity suggests ongoing system effort, though this remains only a possible sign and not proof of heat",
+            "supporting_ids": [
+              "room-care-1540",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the room stays near the goal through the warm-by time",
+          "What the resident experiences overnight"
+        ],
+        "clarification": "Is the resident comfortable right now?",
+        "follow_up": {
+          "observation": "Observe the room reading again to see if it stays near the goal",
+          "when": "2026-01-17T02:11:00-05:00",
+          "next_check_at": "2026-01-17T02:11:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Electrical readings show activity only and cannot show useful heat",
+          "Individual circuit readings cannot show supply issues outside the monitored window"
+        ]
+      }
+    }
+  ]
+}

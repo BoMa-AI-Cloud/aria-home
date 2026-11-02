@@ -1,0 +1,880 @@
+{
+  "answers": [
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T00:20:00Z",
+      "input_revision": "0061ad0b8594eecd334cb293b02679b2052894a0a9839f2216d98c0009f2bbee",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-0915",
+            "field": "value",
+            "value": 69.0,
+            "unit": "F",
+            "at": "2026-01-16T19:15:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 1.0,
+            "unit": "F",
+            "at": "2026-01-16T19:15:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-living",
+            "field": "max_w",
+            "value": 160.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T19:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 69.0 F (at 19:15)",
+          "Target 68.0 F",
+          "1.0 F above target",
+          "Electrical activity 450.0 W",
+          "Electrical activity 160.0 W",
+          "Electrical activity 5.0 W"
+        ],
+        "interpretation": "The latest fresh indoor reading already meets the target, so the home is warm for the resident ahead of the warm-by time and the room is holding steady. Fresh activity on other monitored circuits weighs against complete property power loss during this window. If anything looks wrong, the family caregiver should respond.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room may stay above the desired level through the warm-by time since the latest fresh reading already meets the desired level and the room is holding steady",
+            "supporting_ids": [
+              "room-care-0915",
+              "metric:target_gap",
+              "confirmation:current"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Quiet draw on one monitored circuit alongside fresh activity elsewhere might suggest idle equipment rather than a property-wide supply issue, though electrical activity alone is not proof of useful heat",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower",
+              "metric:circuit_activity:circuit-kitchen",
+              "power:continuity"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the desired level will change overnight is unknown",
+          "How the indoor level will drift before the warm-by time is unknown",
+          "What heating equipment will do overnight is unknown"
+        ],
+        "clarification": "Is the current warmth comfortable for the resident, or should anything be adjusted for the night?",
+        "follow_up": {
+          "observation": "Observe the next fresh indoor reading and whether it remains at or above the desired level",
+          "when": "2026-01-16T19:50:00-05:00",
+          "next_check_at": "2026-01-16T19:50:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Electrical readings cannot show a lost supply leg.",
+          "Readings from individual circuits cannot show a breaker or equipment supply problem.",
+          "Interruptions outside this window are not covered.",
+          "Backup-power configuration unknown."
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T02:00:00Z",
+      "input_revision": "0b963a2d5a23dfed6e9abeb326ab85ea31a74b39d091dc2c4400e03c10588e43",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1055",
+            "field": "value",
+            "value": 68.4,
+            "unit": "F",
+            "at": "2026-01-16T20:55:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 0.4,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": null
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 68.4 F (at 20:55)",
+          "Target 68.0 F",
+          "0.4 F above target",
+          "Electrical activity 450.0 W"
+        ],
+        "interpretation": "For the resident, the home looks ready for the warm-by time, with the latest fresh indoor reading already meeting the expected level and the room holding steady over the recent short window. Since nothing looks wrong at this check, no response is needed beyond routine monitoring by the family caregiver.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room may stay near the expected level through the warm-by time if the recent holding pattern continues, though overnight conditions could still shift it.",
+            "supporting_ids": [
+              "room-care-1055",
+              "metric:target_gap"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "How the room will drift overnight before the warm-by time",
+          "Which heating equipment serves the home and how it will cycle overnight"
+        ],
+        "clarification": "Has the resident mentioned feeling chilly this evening that the family caregiver should know about?",
+        "follow_up": {
+          "observation": "Observe the next fresh indoor room reading to see that it remains near the expected level",
+          "when": "2026-01-16T21:30:00-05:00",
+          "next_check_at": "2026-01-16T21:30:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Electrical readings show activity only and cannot show heating function",
+          "Heating binding is unknown"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T02:41:00Z",
+      "input_revision": "af056284a94b608717e2dd997c3c3c7f5a182ea6172cc03cc19a77fac7430798",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1140",
+            "field": "value",
+            "value": 66.0,
+            "unit": "F",
+            "at": "2026-01-16T21:40:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -2.0,
+            "unit": "F",
+            "at": "2026-01-16T21:40:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "elec-care-blower-1130",
+            "field": "value",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T21:30:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "elec-care-living-1130",
+            "field": "value",
+            "value": 110.0,
+            "unit": "W",
+            "at": "2026-01-16T21:30:00-05:00"
+          },
+          {
+            "claim_type": "equipment_function",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "active",
+            "value": "unknown",
+            "unit": null,
+            "at": "2026-01-16T21:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 66.0 F (at 21:40)",
+          "Target 68.0 F",
+          "2.0 F below target",
+          "Electrical activity 5.0 W",
+          "Electrical activity 110.0 W",
+          "Equipment function unknown"
+        ],
+        "interpretation": "The room is falling and is below the level hoped for by the warm-by time, so the home may not be warm by the warm-by time. The family caregiver should respond for the resident. The latest room reading of 66.0 F against a hoped-for 68.0 F leaves a gap of -2.0 F, with low draw of 5.0 W on the candidate circuit while another circuit shows 110.0 W, which weighs against full loss yet does not show heating.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room might be losing heat to the cold outdoors faster than any heat being added, which could keep it below the hoped-for level by the warm-by time",
+            "supporting_ids": [
+              "room-care-1140",
+              "metric:target_gap",
+              "wx-care-0600"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Low draw on the candidate circuit alongside activity on other circuits might suggest heating is not currently adding much heat, but electrical activity alone cannot show the reason",
+            "supporting_ids": [
+              "elec-care-blower-1130",
+              "elec-care-living-1130"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether heating is running and delivering useful heat",
+          "Why the room continues to fall despite other circuits showing activity",
+          "Whether doors or windows are open or controls were changed"
+        ],
+        "clarification": "Has the family caregiver noticed any change in heating sounds, controls, or open windows around the resident?",
+        "follow_up": {
+          "observation": "Recheck room temperature and circuit activity to see if the fall continues or turns toward the hoped-for level",
+          "when": "2026-01-16T22:11:00-05:00",
+          "next_check_at": "2026-01-16T22:11:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Electrical readings cannot show a lost supply leg.",
+          "Readings from individual circuits cannot show a breaker or equipment supply problem.",
+          "Interruptions outside this window are not covered.",
+          "Backup-power configuration unknown."
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T03:46:00Z",
+      "input_revision": "bb09192e407236907beda906f87003988e942b30776375a086a0d0edfae3f557",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1245",
+            "field": "value",
+            "value": 62.0,
+            "unit": "F",
+            "at": "2026-01-16T22:45:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -6.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T22:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 62.0 F (at 22:45)",
+          "Target 68.0 F",
+          "6.0 F below target",
+          "Electrical activity 5.0 W"
+        ],
+        "interpretation": "The room is falling now and is still below the level hoped for by the warm-by time, so the family caregiver should look in on the resident. Other monitored circuits show recent activity while the heating-related circuit shows only a low level, and electrical readings alone cannot show that warmth is being delivered. This view of risk by the warm-by time is not a guaranteed prediction.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room might continue to lose warmth through the night, which could leave it below the hoped-for level by the warm-by time.",
+            "supporting_ids": [
+              "room-care-1245",
+              "metric:target_gap"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Low activity on the heating-related circuit while other circuits show activity might suggest that little warmth is being added, though electrical readings alone cannot show why.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower",
+              "metric:circuit_activity:circuit-kitchen"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether warmth is being delivered to the room",
+          "What the room will feel like by the warm-by time",
+          "Why the heating-related circuit shows only a low level"
+        ],
+        "clarification": "Has anything changed in the home this evening, such as windows left open or heating settings adjusted?",
+        "follow_up": {
+          "observation": "Observe the next fresh room reading to see if the room remains falling or begins to hold warmth",
+          "when": "2026-01-16T23:16:00-05:00",
+          "next_check_at": "2026-01-16T23:16:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Electrical readings cannot show a lost supply leg",
+          "Readings from individual circuits cannot show an equipment supply problem",
+          "Future room state cannot be known from past readings alone"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T04:31:00Z",
+      "input_revision": "d907a04e0b3624fdf999e21dfa8ce662d0629f3e7c181e1c05b419e389ff31cc",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1330",
+            "field": "value",
+            "value": 59.3,
+            "unit": "F",
+            "at": "2026-01-16T23:30:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -8.7,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-16T23:30:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-kitchen",
+            "field": "max_w",
+            "value": 450.0,
+            "unit": "W",
+            "at": "2026-01-16T23:30:00-05:00"
+          },
+          {
+            "claim_type": "equipment_function",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "active",
+            "value": "not_observed",
+            "unit": null,
+            "at": "2026-01-16T23:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 59.3 F (at 23:30)",
+          "Target 68.0 F",
+          "8.7 F below target",
+          "Electrical activity 5.0 W",
+          "Electrical activity 450.0 W",
+          "Equipment function not observed"
+        ],
+        "interpretation": "Room is falling in the recent window while the longer average can lag, so the recent fall guides the outlook and the home looks unlikely to meet the expected warmth by the warm-by time, which matches the at risk status. Thermostat is not reporting so room sensor is used for the current view. Visual observation showed no detection for indicator light and absence of a detection is not an all-clear. Fresh activity on other circuits weighs against complete loss, while the candidate circuit shows only low draw which is electrical activity only and not proof of useful heat. If the room stays cool the family caregiver should respond for the resident.",
+        "hypotheses": [
+          {
+            "text": "Possible: Room may continue to lose warmth if heat is not being delivered, with low draw on the candidate circuit coinciding with the fall.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-blower",
+              "room-care-1330"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Other household loads could be masking the heating picture, since fresh activity elsewhere shows supply to parts of the property while the room remains cool.",
+            "supporting_ids": [
+              "metric:circuit_activity:circuit-kitchen",
+              "power:continuity"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether heat is reaching the room",
+          "Why thermostat is not reporting",
+          "What the technician on site is seeing"
+        ],
+        "clarification": "Is the resident currently with the family caregiver and able to stay warm enough while the room is cool?",
+        "follow_up": {
+          "observation": "Observe the room sensor temperature reading to see if the fall continues",
+          "when": "2026-01-17T00:01:00-05:00",
+          "next_check_at": "2026-01-17T00:01:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Thermostat not reporting; room sensor used for current view",
+          "Absence of a visual detection is not an all-clear",
+          "Electrical readings show activity only and cannot show useful heat",
+          "Individual circuit readings cannot show an equipment supply problem"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T05:21:00Z",
+      "input_revision": "dbcb75bbf9df335191fdc7d907a771767c42b01bb622233027f496f0ce23bc5e",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1420",
+            "field": "value",
+            "value": 57.6,
+            "unit": "F",
+            "at": "2026-01-17T00:20:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -10.4,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "elec-care-blower-1400",
+            "field": "value",
+            "value": 5.0,
+            "unit": "W",
+            "at": "2026-01-17T00:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "elec-care-kitchen-1400",
+            "field": "value",
+            "value": 320.0,
+            "unit": "W",
+            "at": "2026-01-17T00:00:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "elec-care-living-1400",
+            "field": "value",
+            "value": 140.0,
+            "unit": "W",
+            "at": "2026-01-17T00:00:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 57.6 F (at 00:20)",
+          "Target 68.0 F",
+          "10.4 F below target",
+          "Electrical activity 5.0 W",
+          "Electrical activity 320.0 W",
+          "Electrical activity 140.0 W"
+        ],
+        "interpretation": "The home looks unlikely to be warm by the warm-by time, so the family caregiver should respond for the resident. The recent room movement is rising while remaining below the desired level, and other circuits show activity while the blower circuit shows low activity. This view is not a guaranteed prediction and absence of frost detection in the synthetic image is not an all-clear.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room might still be responding after the recent on-site visit, with recent movement rising while the longer average lags behind, so continued observation might show change.",
+            "supporting_ids": [
+              "room-care-1420",
+              "metric:indoor_trend"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: Low activity on the blower circuit alongside activity on other circuits might suggest heating output is limited, though electrical activity alone does not show useful heat.",
+            "supporting_ids": [
+              "elec-care-blower-1400",
+              "elec-care-kitchen-1400"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the recent rising movement will continue toward the desired level",
+          "Whether the heating equipment is producing useful heat",
+          "Whether the synthetic image view rules out an issue"
+        ],
+        "clarification": "What comfort needs does the resident have for the remainder of the night?",
+        "follow_up": {
+          "observation": "Observe the next room sensor reading and note the direction of change and level relative to the desired level",
+          "when": "2026-01-17T00:51:00-05:00",
+          "next_check_at": "2026-01-17T00:51:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Synthetic image without detection is not an all-clear",
+          "Electrical activity shows activity only and does not show useful heat",
+          "Individual circuit readings cannot show supply issues for heating equipment"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T05:31:00Z",
+      "input_revision": "6ad1f737fe9381f098d09f8501084ab90359b5069ca1cd8b53d7f46fd76626da",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1430",
+            "field": "value",
+            "value": 59.7,
+            "unit": "F",
+            "at": "2026-01-17T00:30:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": -8.3,
+            "unit": "F",
+            "at": "2026-01-17T00:30:00-05:00"
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": "2026-01-17T00:30:00-05:00"
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 59.7 F (at 00:30)",
+          "Target 68.0 F",
+          "8.3 F below target",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "For the resident, with the family caregiver to respond if something looks wrong, the home looks at risk of not being warm by the warm-by time. The latest room reading of 59.7 remains below the goal of 68.0, leaving a gap of -8.3. Short-term movement is upward, while the longer average can lag behind current movement. Electrical activity of 920.0 was observed, which shows activity only and not useful heat. A synthetic image check showed no detection, and absence of a detection is not an all-clear.",
+        "hypotheses": [
+          {
+            "text": "Possible: The current upward movement might suggest renewed heating effort, but the observed activity alone does not show useful heat reaching the room.",
+            "supporting_ids": [
+              "room-care-1430",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          },
+          {
+            "text": "Possible: The longer average might lag behind the current upward movement, so the gap of -8.3 might narrow if upward movement continues.",
+            "supporting_ids": [
+              "metric:target_gap",
+              "metric:indoor_trend"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the current upward movement will continue to the warm-by time",
+          "Whether useful heat is reaching the room, since electrical activity alone does not show useful heat",
+          "Whether the resident is comfortable at this time"
+        ],
+        "clarification": "Is the resident comfortable right now, and has the family caregiver noticed any change in comfort?",
+        "follow_up": {
+          "observation": "Observe the next room sensor reading to see whether upward movement continues.",
+          "when": "2026-01-17T01:01:00-05:00",
+          "next_check_at": "2026-01-17T01:01:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "at_risk",
+        "limitations": [
+          "Synthetic data limits real-world conclusions",
+          "Electrical readings show activity only and not useful heat",
+          "Absence of visual detection is not an all-clear",
+          "Future movement toward the goal cannot be guaranteed from current readings"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T06:41:00Z",
+      "input_revision": "20cc3008bf25c6a0d4cda039f332ce966d203e4171fa265066b831a6a4a69efe",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "rejected",
+      "rejection_reasons": [
+        "provider error: server_error"
+      ],
+      "output": {
+        "raw_text": ""
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T06:51:00Z",
+      "input_revision": "8c5b9802148f9ed9c23f938b504b801ddeaca969e598cf0e9c484c1bec93d17a",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "current_temperature",
+            "evidence_id": "room-care-1550",
+            "field": "value",
+            "value": 68.4,
+            "unit": "F",
+            "at": "2026-01-17T01:50:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "metric:target_gap",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "target_gap",
+            "evidence_id": "metric:target_gap",
+            "field": "gap",
+            "value": 0.4,
+            "unit": "F",
+            "at": null
+          },
+          {
+            "claim_type": "electrical_activity",
+            "evidence_id": "metric:circuit_activity:circuit-blower",
+            "field": "max_w",
+            "value": 920.0,
+            "unit": "W",
+            "at": null
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature 68.4 F (at 01:50)",
+          "Target 68.0 F",
+          "0.4 F above target",
+          "Electrical activity 920.0 W"
+        ],
+        "interpretation": "Latest fresh reading meets the target with a small positive gap, and the room is holding. For the resident, the home looks ready for the warm-by time, with no new action needed from the family caregiver beyond continued routine checks.",
+        "hypotheses": [
+          {
+            "text": "Possible: The room may be holding near the target after earlier recovery, while recent electrical activity suggests equipment was drawing energy, though activity alone does not show useful heat.",
+            "supporting_ids": [
+              "room-care-1550",
+              "metric:circuit_activity:circuit-blower"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "Whether the room will remain near the target through the warm-by time",
+          "Whether the resident feels comfortable at the current level"
+        ],
+        "clarification": "Is the resident comfortable in the home at this time?",
+        "follow_up": {
+          "observation": "Check the next fresh indoor reading to see if the room remains near the target through the warm-by time",
+          "when": "2026-01-17T02:21:00-05:00",
+          "next_check_at": "2026-01-17T02:21:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "on_track",
+        "limitations": [
+          "Electrical readings show activity only and cannot show useful heat or supply issues",
+          "Single-point sensing may not reflect every part of the home"
+        ]
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T12:01:00Z",
+      "input_revision": "9814867088124bd27e0bb214bc8307c7d6d2108043513d0a9e6ffccfe6054075",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API",
+      "prompt_version": "inv-v6",
+      "readiness_policy_version": "readiness-policy-v4",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "status": "accepted",
+      "output": {
+        "facts": [
+          {
+            "claim_type": "temperature_at_arrival",
+            "evidence_id": "room-care-2055",
+            "field": "value",
+            "value": 68.0,
+            "unit": "F",
+            "at": "2026-01-17T06:55:00-05:00"
+          },
+          {
+            "claim_type": "target_temperature",
+            "evidence_id": "confirmation:current",
+            "field": "target_temp",
+            "value": 68.0,
+            "unit": "F",
+            "at": null
+          }
+        ],
+        "verified_facts": [
+          "Indoor temperature at the warm-by time 68.0 F (at 06:55)",
+          "Target 68.0 F"
+        ],
+        "interpretation": "The warm-by time has passed, and the evaluated reading at the warm-by time meets the target, so the home was warm by the warm-by time for the resident. No further response beyond routine awareness is needed from the family caregiver.",
+        "hypotheses": [
+          {
+            "text": "Possible: The conditions near the warm-by time may reflect holding near the target with routine variation.",
+            "supporting_ids": [
+              "room-care-2055"
+            ],
+            "conflicting_ids": []
+          }
+        ],
+        "unknowns": [
+          "It is unknown how indoor conditions evolve after the warm-by time.",
+          "It is unknown whether the resident has noted any comfort concerns since the warm-by time."
+        ],
+        "clarification": "Has the resident shared any comfort concerns since the warm-by time?",
+        "follow_up": {
+          "observation": "Observe the next room sensor reading for awareness of comfort for the resident.",
+          "when": "2026-01-17T07:31:00-05:00",
+          "next_check_at": "2026-01-17T07:31:00-05:00",
+          "schedule_status": "scheduled",
+          "deadline_passed": false
+        },
+        "readiness": "arrival_passed",
+        "limitations": [
+          "Electrical readings cannot show a lost supply leg.",
+          "Readings from individual circuits cannot show supply problems for specific equipment."
+        ]
+      }
+    }
+  ]
+}

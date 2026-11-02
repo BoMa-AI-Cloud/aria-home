@@ -1,0 +1,37 @@
+{
+  "watchers": [
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T05:31:00Z",
+      "input_revision": "6ad1f737fe9381f098d09f8501084ab90359b5069ca1cd8b53d7f46fd76626da",
+      "laws_version": "laws-v1",
+      "watcher_prompt_version": "watch-v2",
+      "model_id": "muse-spark-1.3",
+      "provider_route": "meta live via Meta Model API (messages)",
+      "code_snapshot": "b79eb9a49e9ff4ff1c458f2f51b4db62ccea3b3b",
+      "recorded_at": "2026-11-02T16:28:13.988237+00:00",
+      "status": "rejected",
+      "final_result": "rejected",
+      "failed_checks": [
+        "observation 0 has unknown kind: 'temperature_rise'"
+      ],
+      "output": {
+        "observations": [
+          {
+            "kind": "temperature_drop",
+            "claim": "Room temp 59.7F at 00:30, 8.3F below 68F target",
+            "evidence_ids": [
+              "room-care-1430",
+              "metric:target_gap"
+            ],
+            "values": {
+              "value": 59.7,
+              "unit": "F",
+              "at": "2026-01-17T00:30:00-05:00"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

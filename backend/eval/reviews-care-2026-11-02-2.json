@@ -1,0 +1,157 @@
+{
+  "reviews": [
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T00:20:00Z",
+      "input_revision": "0061ad0b8594eecd334cb293b02679b2052894a0a9839f2216d98c0009f2bbee",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "30b43c4cc3c3f7904705eaee5d0b03861c71a1ee75b1c26bb7e4077a944671d0",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T02:00:00Z",
+      "input_revision": "0b963a2d5a23dfed6e9abeb326ab85ea31a74b39d091dc2c4400e03c10588e43",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "149dcda3d67d3f5b3bb26dc19ea25687d88c0669d071375edd85bed954b6e18c",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T02:41:00Z",
+      "input_revision": "af056284a94b608717e2dd997c3c3c7f5a182ea6172cc03cc19a77fac7430798",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "5102b600aa3c300f221deee404bd2a0290bd78a3cd380699dd7e2e04c754d7ef",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T03:46:00Z",
+      "input_revision": "bb09192e407236907beda906f87003988e942b30776375a086a0d0edfae3f557",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "4a3f631d9b2118dc7b8f3b0934f6c070629049314fb5d56fff6077f1f7e25075",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T04:31:00Z",
+      "input_revision": "d907a04e0b3624fdf999e21dfa8ce662d0629f3e7c181e1c05b419e389ff31cc",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "b9ba3b3c86001814b7433a8d20938157852bdf08de487f0b7814e449ede1f2da",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T05:21:00Z",
+      "input_revision": "dbcb75bbf9df335191fdc7d907a771767c42b01bb622233027f496f0ce23bc5e",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "82aec3bc99f515a49a229af564916668b9e1193ddb5254e0447c720038e11f6a",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T05:31:00Z",
+      "input_revision": "6ad1f737fe9381f098d09f8501084ab90359b5069ca1cd8b53d7f46fd76626da",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "4e8d394f7c5e439aee86db9429585348b8798ae6f0ef6e562937f72a82e2751a",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T06:51:00Z",
+      "input_revision": "8c5b9802148f9ed9c23f938b504b801ddeaca969e598cf0e9c484c1bec93d17a",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "e17a7b7df9aac6a6393f190e5dfee0a5b09587e76f29daaa14e98623c428dd45",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    },
+    {
+      "scenario_id": "care_home_v1",
+      "evaluated_at_utc": "2026-01-17T12:01:00Z",
+      "input_revision": "9814867088124bd27e0bb214bc8307c7d6d2108043513d0a9e6ffccfe6054075",
+      "model_id": "muse-wonder-1.0",
+      "review_contract_version": "review-v1",
+      "reviewed_model_id": "muse-spark-1.3",
+      "reviewed_prompt_version": "inv-v6",
+      "reviewed_readiness_policy_version": "readiness-policy-v4",
+      "answer_digest": "61db9e9f996b888105055088fc6e50b25ec403eba08e68c86f2f23e5a8068915",
+      "provider_route": "meta live via Meta Model API (responses)",
+      "recorded_at": "2026-11-02T16:17:20.347489+00:00",
+      "review": {
+        "verdict": "no_issues",
+        "issues": []
+      }
+    }
+  ]
+}
