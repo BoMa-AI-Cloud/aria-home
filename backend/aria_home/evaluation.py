@@ -372,12 +372,13 @@ def _care_visual_rows():
 
 
 def watcher_correction_rates(directory=None):
-    """First-pass rejection rate and after-correction pass rate from recordings.
+    """Count watcher correction records and how many verified after revision.
 
-    Computed from backend/eval/corrections-*.json records only. No watcher
-    runs have been recorded yet, so this currently reports zero runs and says
-    so; the rates are placeholders until the operator records an approved
-    batch through this code.
+    Computed from backend/eval/corrections-*.json records only. A record
+    exists only when a first attempt failed code checks, so these counts
+    are not a rejection rate across all watcher runs; the first-attempt
+    rejection rate on unseen nights is measured by Comparison C in
+    docs/model-value-eval.md.
     """
     import glob as _glob
 
@@ -394,23 +395,19 @@ def watcher_correction_rates(directory=None):
             records.append(payload)
     if not records:
         return {
-            "recorded_runs": 0,
-            "first_pass_rejections": 0,
-            "first_pass_rejection_rate": None,
-            "after_correction_passes": 0,
-            "after_correction_pass_rate": None,
-            "note": "none recorded yet: no watcher runs have been recorded, so both rates are placeholders",
+            "correction_records": 0,
+            "first_attempts_failed": 0,
+            "verified_after_revision": 0,
+            "note": "none recorded yet: no correction records in backend/eval/corrections-*.json",
         }
-    rejected_first = sum(1 for r in records if (r.get("failed_checks") or []))
-    passed_after = sum(1 for r in records if r.get("final_result") in ("confirmed", "corrected and verified"))
+    failed_first = sum(1 for r in records if (r.get("failed_checks") or []))
+    verified = sum(1 for r in records if r.get("final_result") in ("confirmed", "corrected and verified"))
     total = len(records)
     return {
-        "recorded_runs": total,
-        "first_pass_rejections": rejected_first,
-        "first_pass_rejection_rate": rejected_first / total,
-        "after_correction_passes": passed_after,
-        "after_correction_pass_rate": passed_after / total,
-        "note": "computed from recorded correction records only",
+        "correction_records": total,
+        "first_attempts_failed": failed_first,
+        "verified_after_revision": verified,
+        "note": "computed from recorded correction records only; a record exists only when a first attempt failed, so this is not a rejection rate across all watcher runs",
     }
 
 
@@ -462,20 +459,21 @@ def render_markdown(results):
         lines.append(f"| {image} | {phrase} | {count} | {note} |")
     lines += [
         "",
-        "## Watcher correction rates (recorded runs only)",
+        "## Watcher correction records",
         "",
     ]
     rates = watcher_correction_rates()
-    if rates["recorded_runs"] == 0:
+    if rates["correction_records"] == 0:
         lines += [
-            "No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs), after-correction pass rate n/a (0 runs).",
-            "Once the operator records an approved batch through `aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as separate measures, computed from `backend/eval/corrections-*.json`.",
+            "No watcher correction records have been recorded yet (`backend/eval/corrections-*.json` holds none).",
+            "Once the operator records an approved batch through `aria_home.watcher`, this section counts the correction records and how many verified after revision.",
         ]
     else:
         lines.append(
-            f"Recorded runs: {rates['recorded_runs']}; first-pass rejections: {rates['first_pass_rejections']} "
-            f"(rate {rates['first_pass_rejection_rate']:.2f}); passes after correction: {rates['after_correction_passes']} "
-            f"(rate {rates['after_correction_pass_rate']:.2f})."
+            f"Correction records: {rates['correction_records']}; each began with a first attempt that failed code checks; "
+            f"{rates['verified_after_revision']} verified after one revision. A record exists only when a first attempt "
+            "failed, so this is not a rejection rate across all watcher runs. "
+            "Comparison C in docs/model-value-eval.md measures that on unseen nights."
         )
     lines += [
         "",

@@ -167,3 +167,44 @@ def test_cli_offline_writes_both_files(tmp_path):
     assert "not a benchmark of real homes" in text
     assert "demo_video_v1@16:31" in text
     assert "| Condition |" in text
+
+
+def test_watcher_correction_section_counts_records_not_runs(offline):
+    from aria_home.evaluation import render_markdown, watcher_correction_rates
+
+    rates = watcher_correction_rates()
+    assert rates["correction_records"] == 3
+    assert rates["first_attempts_failed"] == 3
+    assert rates["verified_after_revision"] == 3
+    text = render_markdown(offline)
+    assert "## Watcher correction records" in text
+    assert "Recorded runs" not in text
+    assert "rate 1.00" not in text
+    assert f"Correction records: {rates['correction_records']}" in text
+    assert f"{rates['verified_after_revision']} verified after one revision" in text
+    assert "not a rejection rate across all watcher runs" in text
+
+
+def test_watcher_correction_rates_counts_come_from_records(tmp_path):
+    from aria_home.evaluation import watcher_correction_rates
+
+    payload = {"records": [
+        {"failed_checks": ["bad value"], "final_result": "corrected and verified"},
+        {"failed_checks": [], "final_result": "confirmed"},
+        {"failed_checks": ["bad value"], "final_result": "rejected"},
+    ]}
+    (tmp_path / "corrections-test.json").write_text(json.dumps(payload), encoding="utf-8")
+    rates = watcher_correction_rates(directory=tmp_path)
+    assert rates["correction_records"] == 3
+    assert rates["first_attempts_failed"] == 2
+    assert rates["verified_after_revision"] == 2
+
+
+def test_watcher_correction_rates_empty_directory(tmp_path):
+    from aria_home.evaluation import watcher_correction_rates
+
+    rates = watcher_correction_rates(directory=tmp_path)
+    assert rates["correction_records"] == 0
+    assert rates["first_attempts_failed"] == 0
+    assert rates["verified_after_revision"] == 0
+    assert "rate" not in rates["note"]

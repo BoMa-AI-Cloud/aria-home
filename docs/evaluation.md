@@ -223,9 +223,9 @@ The six synthetic home-camera frames attached to `care_home_v1` (`backend/fixtur
 | care-v5-dry-floor | water puddle | 0 | yes (negative control) |
 | care-v6-warm-morning | frost | 0 | yes (no frost present) |
 
-## Watcher correction rates (recorded runs only)
+## Watcher correction records
 
-Recorded runs: 3; first-pass rejections: 3 (rate 1.00); passes after correction: 3 (rate 1.00).
+Correction records: 3; each began with a first attempt that failed code checks; 3 verified after one revision. A record exists only when a first attempt failed, so this is not a rejection rate across all watcher runs. Comparison C in docs/model-value-eval.md measures that on unseen nights.
 
 ## Reading this
 
@@ -355,10 +355,7 @@ completion, observed 2026-01-16T20:40-05:00) without entering any measurement
 source list, eligibility, verification stage, or notification payload. Until
 then this section stays a placeholder.
 
-## Watcher correction rates (placeholder, 2026-10-29)
+## Watcher runs on the current night (2026-11-02)
 
-No watcher runs have been recorded yet, so both rates are placeholders: first-pass rejection rate n/a (0 runs),
-after-correction pass rate n/a (0 runs). Once the operator records an approved batch through
-`aria_home.watcher`, this section reports the first-pass rejection rate and the after-correction pass rate as
-separate measures, computed from `backend/eval/corrections-*.json`. The offline report already renders this
-section the same way (see `watcher_correction_rates` in `backend/aria_home/evaluation.py`).
+First batch on commit 2e6d701, one pass per checkpoint: 9 of 10 confirmed on the first attempt, and 04:51 was rejected for invalid JSON, then confirmed on a retry. A second 23:30 pass, run on purpose to look for a correction, cited stale evidence, failed the code's checks, revised once and verified. Both 23:30 passes are in `backend/eval/`, and the app shows the newer verified one, so the correction on screen is a selected take and not a typical rate. Comparison C in [the model-value evaluation](model-value-eval.md) measures first attempts on unseen nights.
+
