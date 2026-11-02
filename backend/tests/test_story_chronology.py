@@ -6,7 +6,7 @@ from pathlib import Path
 
 from aria_home.declined_view import declined_view
 from aria_home.public_demo import CHECKPOINTS
-from aria_home.scenario import load_scenario
+from aria_home.scenario import load_scenario, visual_as_of
 from aria_home.transcribe import find_recorded_transcript, load_recorded_transcripts
 
 BACKEND = Path(__file__).resolve().parent.parent
@@ -116,8 +116,8 @@ def test_no_old_timeline_left_in_the_story_data():
 
 
 def _frame_at(scn, when):
-    seen = [item for item in scn.visuals if item.received_at <= when]
-    return max(seen, key=lambda item: item.observed_at).image_id if seen else None
+    item = visual_as_of(scn, when)
+    return item["image_id"] if item else None
 
 
 def test_camera_frames_fit_the_moment():
