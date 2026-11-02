@@ -196,7 +196,7 @@ Model-contribution table (to replace the README's long paragraph; verify each ro
 | muse-spark-1.3 | explains the code's readiness and verification in plain words, citing evidence ids | recorded (live is operator-only) | `backend/eval/recorded/`, claim checks in code | readiness agreement is enforced, so it is not independent accuracy |
 | muse-spark-1.3 (watcher) | notices anomalies with cited evidence; one revision after a failed check | recorded | watcher recordings; model-value eval C | first attempts failed checks in 9 of 12 unseen simulated scenarios, run as one batch |
 | muse-wonder-1.0 | second review of each recorded answer for unsupported claims | recorded, bound to the exact answer | reviews files; model-value eval B (12/12 planted claims, 0/12 false alarms) | planted claims used four fixed templates |
-| muse-voice-transcribe-1.0 | transcribes the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261031.json` | a report, never a measurement |
+| muse-voice-transcribe-1.0 | transcribes the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261102.json` | a report, never a measurement |
 | sam-3.1 | segments the mechanical-room camera frames | recorded over synthetic images | visual recordings | missed the frost; no detection is not an all-clear |
 | muse-image-1.0 | generated the synthetic camera images | asset generation only | fixtures | never called at runtime |
 
