@@ -2,7 +2,7 @@
 
 import math
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .clock import ensure_aware
 from .contracts import EvidenceRecord, SourceKind
@@ -260,3 +260,10 @@ def circuit_activity(
         "fresh": is_fresh(sample_records[-1], now) if sample_records else False,
         "is_fresh": is_fresh(sample_records[-1], now) if sample_records else False,
     }
+
+
+def recent_change_f(records, zone, now):
+    """The temperature change over the last 15 minutes, or None when it cannot be measured."""
+    recent = temperature_trend(records, zone, now - timedelta(minutes=15), now, now)
+    change = recent.get("change") if recent.get("sample_count", 0) >= 2 else None
+    return round(change, 1) if change is not None else None

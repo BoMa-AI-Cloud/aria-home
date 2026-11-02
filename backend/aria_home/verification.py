@@ -1,11 +1,12 @@
 import math
 from datetime import datetime, timedelta
 
-from .clock import ensure_aware
+from .clock import ensure_aware, plain_duration, plain_time
 from .contracts import Availability, EvidenceKind, SourceKind
 from .eligibility import circuit_records, eligible_records, indoor_records, is_fresh, is_measurement_eligible, measurement_conflict_groups, normalized_measurement_value
 from .evidence import freshness
 from .metrics import NOISE_FLOOR_W
+from .notifications import CAREGIVER_SCENARIOS
 
 GOAL_HOLD_S = 1800
 MAX_GAP_CADENCE_MULTIPLIER = 2
@@ -25,6 +26,14 @@ def _get(obj, name, default=None):
 
 def _is_number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
+
+
+def _scenario_words(scenario):
+    """How this scenario names the temperature and tells the time in its sentences."""
+    manifest = _get(scenario, "manifest") if not isinstance(scenario, (list, tuple)) else None
+    noun = "target" if _get(manifest, "id") in CAREGIVER_SCENARIOS else "goal"
+    timezone_name = _get(manifest, "timezone")
+    return noun, lambda value: plain_time(value, timezone_name)
 
 
 def _in_target_unit(value, unit, target_unit):
@@ -207,6 +216,9 @@ def verify_recovery(scenario, followup, now):
     target_unit = _get(followup, "target_unit")
     min_samples = int(_get(followup, "min_samples"))
     min_rise_f = float(_get(followup, "min_rise_f"))
+    noun, clock = _scenario_words(scenario)
+    hold = plain_duration(GOAL_HOLD_S)
+    target_text = f"{target_temp:g} {target_unit}"
 
     if isinstance(scenario, (list, tuple)):
         all_records = list(scenario)
@@ -219,7 +231,7 @@ def verify_recovery(scenario, followup, now):
     corroboration_ids = [e.id for e in events if e.kind in CORROBORATION_EVENT_KINDS]
     corroboration_reasons = []
     if corroboration_ids:
-        corroboration_reasons.append("hvac completion report is visible as corroboration only; it does not change the stage")
+        corroboration_reasons.append("HVAC completion report received: a report, not proof; it does not change the result")
 
     conflict_groups_all = _room_conflict_groups(records, zone)
     conflict_times_all = {item["observed_at"] for item in conflict_groups_all}
@@ -233,9 +245,9 @@ def verify_recovery(scenario, followup, now):
         key=lambda r: (r.observed_at, r.received_at, r.id),
     )
     if not thermostat or freshness(thermostat[-1], now) is not Availability.available:
-        reasons = ["no fresh thermostat telemetry"]
+        reasons = ["thermostat not reporting"]
         if thermostat:
-            reasons.append(f"newest thermostat telemetry is {freshness(thermostat[-1], now).value}")
+            reasons.append(f"its latest reading is {freshness(thermostat[-1], now).value}")
         reasons.extend(corroboration_reasons)
         early_room = _room_records(records, zone)
         latest_early = _reading_payload(early_room[-1]) if early_room else None
@@ -250,7 +262,7 @@ def verify_recovery(scenario, followup, now):
             gap_s = gap
             post_gap = [r for r in thermostat if r.observed_at >= later.observed_at]
     restored_ids = [r.id for r in post_gap]
-    restored_reasons = ["fresh thermostat telemetry after a gap"] if gap_s is not None else ["fresh thermostat telemetry is available"]
+    restored_reasons = ["thermostat reporting again after a gap"] if gap_s is not None else ["thermostat is reporting"]
 
     room_all = _room_records(records, zone)
     latest_room = _reading_payload(room_all[-1]) if room_all else None
@@ -261,7 +273,7 @@ def verify_recovery(scenario, followup, now):
     if freshness(room_all[-1], now) is not Availability.available:
         reasons = restored_reasons + [f"room-sensor readings are {freshness(room_all[-1], now).value}"] + corroboration_reasons
         if historical_verified_at is not None:
-            reasons.append(f"temperature goal was verified at {historical_verified_at.isoformat()} but current maintenance cannot be verified from stale or missing readings")
+            reasons.append(f"temperature {noun} was verified at {clock(historical_verified_at)}, but stale or missing readings cannot show it still holds")
         return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room, goal_verified_at=historical_verified_at)
 
     arrival = _arrival(scenario, followup, now)
@@ -276,7 +288,7 @@ def verify_recovery(scenario, followup, now):
         if late_start:
             reasons = restored_reasons + ["no room-sensor readings observed by the warm-by time"] + corroboration_reasons
         else:
-            reasons = restored_reasons + ["no room-sensor readings after the follow-up was created"] + corroboration_reasons
+            reasons = restored_reasons + ["no room-sensor readings yet since this check began"] + corroboration_reasons
         return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_room, goal_verified_at=historical_verified_at)
     latest_used = _reading_payload(room_base[-1])
 
@@ -327,32 +339,32 @@ def verify_recovery(scenario, followup, now):
 
     equipment_reasons = []
     if state_supports:
-        equipment_reasons.append("reported thermostat state supports heating as a separate equipment observation")
+        equipment_reasons.append("the thermostat reports heating; this describes the equipment, not the room temperature")
     elif state_non_heating:
-        equipment_reasons.append(f"reported thermostat state {state_value!r} is a separate equipment observation and does not determine the temperature result")
+        equipment_reasons.append(f"the thermostat reports {state_value}; this describes the equipment and does not decide the temperature result")
     if circuit_support_ids:
-        equipment_reasons.append("mapped circuit activity is supporting only as a separate equipment observation and does not prove heating")
+        equipment_reasons.append("the heating circuit is drawing power; this does not prove heating")
     elif circuit_checked and circuit_quiet:
-        equipment_reasons.append("mapped heating circuit is quiet as a separate equipment observation and does not determine the temperature result")
+        equipment_reasons.append("the heating circuit is quiet; this does not decide the temperature result")
 
     if verified_at is not None:
         if analysis["conflicts_after"]:
             when = analysis["conflicts_after"][0]
-            reasons = restored_reasons + [f"conflicting room-sensor readings at {when.isoformat()} after the temperature goal was verified; the conflicting readings are not resolved by record order"] + corroboration_reasons
+            reasons = restored_reasons + [f"conflicting room-sensor readings at {clock(when)} after the temperature {noun} was verified; ARIA does not pick one by record order"] + corroboration_reasons
             return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
         goal_ids = [r.id for r in segment]
-        goal_reasons = restored_reasons + equipment_reasons + ["independent room-sensor readings show the temperature goal held"] + [f"every room-sensor reading held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s before the deadline"]
+        goal_reasons = restored_reasons + equipment_reasons + [f"independent room-sensor readings show the temperature {noun} held"] + [f"every room-sensor reading held at or above {target_text} for {hold} before the deadline"]
         if analysis["dips_after"]:
             dip = analysis["dips_after"][-1]
             dip_value = _in_target_unit(dip.value, dip.unit, target_unit)
-            reasons = goal_reasons + [f"room-sensor reading {dip.id} at {dip.observed_at.isoformat()} is {dip_value} {target_unit}, below the {target_temp} {target_unit} target, after the goal was verified at {verified_at.isoformat()}; the goal is no longer maintained and a new full {GOAL_HOLD_S} s hold is required"] + corroboration_reasons
+            reasons = goal_reasons + [f"room-sensor reading {dip.id} at {clock(dip.observed_at)} is {dip_value:g} {target_unit}, below the {target_text} target, after the {noun} was verified at {clock(verified_at)}; the {noun} is no longer maintained and a new full {hold} hold is required"] + corroboration_reasons
             support = list(dict.fromkeys(goal_ids + [r.id for r in analysis["dips_after"]] + [r.id for r in analysis["segment"]]))
             return _result("goal_not_maintained", reasons, support, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
         if arrival is None or now < arrival:
             if analysis["gaps_after"]:
                 earlier, later = analysis["gaps_after"][0]
                 gap_value = (later.observed_at - earlier.observed_at).total_seconds()
-                reason = f"room-sensor coverage after verification is incomplete: gap of {gap_value:.0f} s from {earlier.observed_at.isoformat()} to {later.observed_at.isoformat()} exceeds {MAX_GAP_CADENCE_MULTIPLIER}x cadence; current goal maintenance cannot be verified and a new full {GOAL_HOLD_S} s hold is required"
+                reason = f"room-sensor readings after verification are incomplete: a gap of {plain_duration(gap_value)} from {clock(earlier.observed_at)} to {clock(later.observed_at)} is more than twice the expected time between readings; the {noun} cannot be shown to still hold and a new full {hold} hold is required"
                 return _result("unable_to_verify", goal_reasons + [reason] + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
             return _result("goal_verified", goal_reasons + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
         arrival_room = [r for r in room_base if r.observed_at <= arrival]
@@ -360,54 +372,54 @@ def verify_recovery(scenario, followup, now):
         arrival_analysis = _goal_analysis(arrival_room, followup, arrival_conflicts)
         verified_at_arrival = arrival_analysis["verified_at"]
         if verified_at_arrival is None:
-            return _result("goal_verified", goal_reasons + ["the temperature goal was verified after the warm-by time"] + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
+            return _result("goal_verified", goal_reasons + [f"the temperature {noun} was verified after the warm-by time"] + corroboration_reasons, goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at)
         arrival_segment = arrival_analysis["verified_segment"]
         arrival_goal_ids = [r.id for r in arrival_segment]
         if any(arrival_segment[0].observed_at <= t <= arrival for t in arrival_analysis["conflict_times"]):
             when = next(t for t in arrival_analysis["conflict_times"] if arrival_segment[0].observed_at <= t <= arrival)
-            reasons = goal_reasons + [f"conflicting room-sensor readings at {when.isoformat()} between verification and the warm-by time; the conflicting readings are not resolved by record order"] + corroboration_reasons
+            reasons = goal_reasons + [f"conflicting room-sensor readings at {clock(when)} between verification and the warm-by time; ARIA does not pick one by record order"] + corroboration_reasons
             return _result("unable_to_verify", reasons, arrival_goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at_arrival)
         if arrival_analysis["conflicts_after"]:
             when = arrival_analysis["conflicts_after"][0]
-            reasons = goal_reasons + [f"conflicting room-sensor readings at {when.isoformat()} between verification and the warm-by time; the conflicting readings are not resolved by record order"] + corroboration_reasons
+            reasons = goal_reasons + [f"conflicting room-sensor readings at {clock(when)} between verification and the warm-by time; ARIA does not pick one by record order"] + corroboration_reasons
             return _result("unable_to_verify", reasons, arrival_goal_ids, now, corroboration_ids, latest_used, goal_verified_at=verified_at_arrival)
         through_arrival = [r for r in room_all if verified_at_arrival <= r.observed_at <= arrival]
         arrival_latest = _reading_payload(through_arrival[-1]) if through_arrival else latest_used
         if not through_arrival:
-            return _result("unable_to_verify", goal_reasons + ["room-sensor coverage from verification through the warm-by time is incomplete: no eligible room-sensor readings at or before the warm-by time; readings observed after the warm-by time do not cover the interval before the warm-by time"] + corroboration_reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
+            return _result("unable_to_verify", goal_reasons + ["room-sensor readings from verification through the warm-by time are incomplete: none were usable at or before the warm-by time; later readings do not cover the time before it"] + corroboration_reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
         cadence_s = next((r.expected_cadence_s for r in through_arrival if r.expected_cadence_s is not None), None)
         if cadence_s is None:
             cadence_s = next((r.expected_cadence_s for r in arrival_segment if r.expected_cadence_s is not None), None)
         if cadence_s is None:
             cadence_s = _get(followup, "cadence_s")
         if cadence_s is None:
-            return _result("unable_to_verify", goal_reasons + ["room-sensor coverage from verification through the warm-by time cannot be verified: expected cadence is unavailable"] + corroboration_reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
+            return _result("unable_to_verify", goal_reasons + ["room-sensor readings from verification through the warm-by time cannot be checked: the expected time between readings is unknown"] + corroboration_reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
         max_gap_s = MAX_GAP_CADENCE_MULTIPLIER * cadence_s
         coverage_points = [verified_at_arrival] + [r.observed_at for r in through_arrival] + [arrival]
         for start, end in zip(coverage_points, coverage_points[1:]):
             gap_value = (end - start).total_seconds()
             if gap_value > max_gap_s:
-                reason = f"room-sensor coverage from verification through the warm-by time is incomplete: gap of {gap_value:.0f} s from {start.isoformat()} to {end.isoformat()} exceeds {MAX_GAP_CADENCE_MULTIPLIER}x cadence ({max_gap_s:.0f} s); readings observed after the warm-by time do not cover the interval before the warm-by time"
+                reason = f"room-sensor readings from verification through the warm-by time are incomplete: a gap of {plain_duration(gap_value)} from {clock(start)} to {clock(end)} is more than twice the expected time between readings ({plain_duration(max_gap_s)}); later readings do not cover the time before the warm-by time"
                 return _result("unable_to_verify", goal_reasons + [reason] + corroboration_reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
         if any(_in_target_unit(r.value, r.unit, target_unit) < target_temp for r in through_arrival):
             if verified_at > arrival:
-                return _result("goal_verified", goal_reasons + ["the temperature goal was verified after the warm-by time"] + corroboration_reasons, goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at)
+                return _result("goal_verified", goal_reasons + [f"the temperature {noun} was verified after the warm-by time"] + corroboration_reasons, goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at)
             dip = next(r for r in through_arrival if _in_target_unit(r.value, r.unit, target_unit) < target_temp)
-            reasons = goal_reasons + [f"room-sensor reading {dip.id} at {dip.observed_at.isoformat()} is below the {target_temp} {target_unit} target before the warm-by time, after the goal was verified at {verified_at_arrival.isoformat()}; the goal is no longer maintained and a new full {GOAL_HOLD_S} s hold is required"] + corroboration_reasons
+            reasons = goal_reasons + [f"room-sensor reading {dip.id} at {clock(dip.observed_at)} is below the {target_text} target before the warm-by time, after the {noun} was verified at {clock(verified_at_arrival)}; the {noun} is no longer maintained and a new full {hold} hold is required"] + corroboration_reasons
             return _result("goal_not_maintained", reasons, arrival_goal_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival)
         arrival_ids = list(dict.fromkeys(arrival_goal_ids + [r.id for r in through_arrival]))
-        return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the warm-by time is at or above the target with no coverage gap over 2x cadence"] + corroboration_reasons, arrival_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival, arrival_met_at=arrival)
+        return _result("arrival_met", goal_reasons + ["every room-sensor reading from verification through the warm-by time is at or above the target, with no gap of more than twice the expected time between readings"] + corroboration_reasons, arrival_ids, now, corroboration_ids, arrival_latest, goal_verified_at=verified_at_arrival, arrival_met_at=arrival)
 
     candidate = _goal_analysis(room_base, followup, set())
     if candidate["verified_at"] is not None and candidate["verified_segment"]:
         seg_start = candidate["verified_segment"][0].observed_at
         inside = [t for t in sorted(conflict_times_after) if seg_start <= t <= candidate["verified_at"]]
         if inside:
-            reasons = restored_reasons + [f"conflicting room-sensor readings at {inside[0].isoformat()} inside the required hold interval; the conflicting readings are not resolved by record order"] + corroboration_reasons
+            reasons = restored_reasons + [f"conflicting room-sensor readings at {clock(inside[0])} during the required hold; ARIA does not pick one by record order"] + corroboration_reasons
             return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at if historical_verified_at and historical_verified_at < seg_start else None)
 
     if late_start:
-        reasons = restored_reasons + [f"the temperature goal was not held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s before the warm-by time"] + corroboration_reasons
+        reasons = restored_reasons + [f"the temperature {noun} was not held at or above {target_text} for {hold} before the warm-by time"] + corroboration_reasons
         return _result("unable_to_verify", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
 
     rise_f = None
@@ -418,13 +430,13 @@ def verify_recovery(scenario, followup, now):
         rise_f = _rise_f(low.value, low.unit, last.value, last.unit, target_unit)
     warming_reasons = list(restored_reasons)
     if len(room_base) < min_samples:
-        warming_reasons.append(f"only {len(room_base)} room-sensor readings after the follow-up was created; {min_samples} required for warming")
+        warming_reasons.append(f"only {len(room_base)} room-sensor readings since this check began; {min_samples} required to show warming")
     if rise_f is None or rise_f < min_rise_f:
-        warming_reasons.append(f"room-sensor rise {rise_f} F is below the required {min_rise_f} F" if rise_f is not None else "room-sensor rise is unavailable")
+        warming_reasons.append(f"room-sensor rise of {rise_f:g} F is below the required {min_rise_f:g} F" if rise_f is not None else "room-sensor rise is unavailable")
     warming_reasons.extend(equipment_reasons)
     warming_reasons.extend(corroboration_reasons)
     if analysis["segment"] and len(room_base) >= min_samples and _in_target_unit(room_base[-1].value, room_base[-1].unit, target_unit) >= target_temp and (rise_f is None or rise_f < min_rise_f):
-        reasons = restored_reasons + equipment_reasons + [f"temperature is at or above the target but has not been held for {GOAL_HOLD_S} s"] + corroboration_reasons
+        reasons = restored_reasons + equipment_reasons + [f"temperature is at or above the target but has not been held for {hold}"] + corroboration_reasons
         return _result("reporting_restored", reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
     if len(room_base) < min_samples or rise_f is None or rise_f < min_rise_f:
         return _result("reporting_restored", warming_reasons, restored_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
@@ -433,7 +445,7 @@ def verify_recovery(scenario, followup, now):
         warming_ids.append(state_record.id)
     warming_ids.extend(circuit_support_ids)
     warming_reasons.append("independent room-sensor readings show warming")
-    reasons = warming_reasons + [f"temperature goal has not been held at or above {target_temp} {target_unit} for {GOAL_HOLD_S} s without a gap over {MAX_GAP_CADENCE_MULTIPLIER}x cadence before the deadline"]
+    reasons = warming_reasons + [f"temperature {noun} has not been held at or above {target_text} for {hold} before the deadline, without a gap of more than twice the expected time between readings"]
     return _result("warming_observed", reasons, warming_ids, now, corroboration_ids, latest_used, goal_verified_at=historical_verified_at)
 
 
@@ -475,6 +487,7 @@ def build_evidence_timeline(scenario, followup, now, caregiver_decision=None):
     target_unit = _get(followup, "target_unit")
     min_samples = int(_get(followup, "min_samples"))
     min_rise_f = float(_get(followup, "min_rise_f"))
+    noun, _ = _scenario_words(scenario)
     if isinstance(scenario, (list, tuple)):
         all_records = list(scenario)
         all_events = []
@@ -525,7 +538,7 @@ def build_evidence_timeline(scenario, followup, now, caregiver_decision=None):
     if verified_at is not None and verified_segment:
         last = verified_segment[-1]
         first_known = max(r.received_at for r in verified_segment)
-        entries.append(_timeline_entry("goal_verified", "Hold completed and goal verified", [r.id for r in verified_segment], verified_at, last.received_at, first_known))
+        entries.append(_timeline_entry("goal_verified", f"Hold completed and {noun} verified", [r.id for r in verified_segment], verified_at, last.received_at, first_known))
 
     declined = _declined_as_of(caregiver_decision, now)
     for event in sorted(events, key=lambda e: (e.available_at, e.event_time, e.id)):

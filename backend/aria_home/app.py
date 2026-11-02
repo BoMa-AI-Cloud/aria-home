@@ -18,7 +18,7 @@ from aria_home.watcher import load_correction_records, load_recorded_watchers, p
 from aria_home.contracts import Availability, SourceKind
 from aria_home.eligibility import eligible_records
 from aria_home.evidence import freshness, source_status
-from aria_home.metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
+from aria_home.metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend, recent_change_f
 from aria_home.investigator import Investigation, build_evidence_pack, inference_identity, investigate
 from aria_home.outcomes import evaluate_outcome, follow_up_for
 from aria_home.store import Store
@@ -96,7 +96,9 @@ def _replay_metrics(scn, at):
 
     last_hour_change_f is display-only: the change over the last hour of the
     shown trend, so a flat last hour reads as holding even when the 3-hour
-    rate is still falling. It never enters evidence packs or identities.
+    rate is still falling. recent_change_f is the same over the last 15
+    minutes, for saying which way the room is going right now. Neither enters
+    evidence packs or identities.
     """
     start = at - timedelta(hours=3)
     ctx = context_as_of(scn, at)
@@ -109,7 +111,7 @@ def _replay_metrics(scn, at):
         gap = target_gap(trend, ctx.confirmation.target_temp, ctx.confirmation.target_unit)
     last_hour = temperature_trend(visible, zone, at - timedelta(hours=1), at, at)
     last_hour_change = last_hour.get("change") if last_hour.get("sample_count", 0) >= 2 else None
-    return {"indoor_trend": _jsonable(trend), "target_gap": _jsonable(gap), "last_hour_change_f": last_hour_change}
+    return {"indoor_trend": _jsonable(trend), "target_gap": _jsonable(gap), "last_hour_change_f": last_hour_change, "recent_change_f": recent_change_f(visible, zone, at)}
 
 
 def _human_report_for_display(scn, at):
@@ -442,6 +444,7 @@ def create_app():
                 "indoor_trend": _jsonable(trend),
                 "target_gap": _jsonable(gap),
                 "last_hour_change_f": replay_metrics.get("last_hour_change_f"),
+                "recent_change_f": replay_metrics.get("recent_change_f"),
                 "circuits": circuits,
                 "trip": trip_payload,
                 "confirmation": confirmation_payload,

@@ -88,7 +88,7 @@ def test_permission_text_uses_only_visible_readings():
     assert text.startswith("ARIA Home (synthetic scenario): your mother's home is cooling (")
     assert "52 F" in text
     assert "16 F below the 68 F target" in text
-    assert "thermostat not reporting since 01:30" in text
+    assert "thermostat not reporting since 1:30 AM" in text
     assert "temperature unknown" not in text and "since unknown" not in text
     assert text.endswith("May I contact the HVAC company? Approve or decline in ARIA Home.")
     early = caregiver_permission_text(scn, datetime.datetime(2026, 1, 16, 0, 0, tzinfo=ET))

@@ -1,8 +1,8 @@
 """The care story's alert ladder and the warming low.
 
 Expected values are written by hand from scenarios/care_home_v1/room_sensor.json:
-the room reads 66.0 F at 21:41, 62.0 F at 22:46, sits at its 52.0 F low through
-the night and reads 54.5 F at 04:50, against a 68 F target.
+the room reads 66.0 F at 21:41, 62.0 F at 22:46, falls to its 56.6 F low at 00:15
+and reads 59.7 F at 00:30, against a 68 F target.
 """
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -21,8 +21,8 @@ CARE = "care_home_v1"
 AT_2100 = "2026-01-16T21:00:00-05:00"
 AT_2141 = "2026-01-16T21:41:00-05:00"
 AT_2246 = "2026-01-16T22:46:00-05:00"
-AT_0451 = "2026-01-17T04:51:00-05:00"
-REQUEST_62 = "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)"
+AT_0031 = "2026-01-17T00:31:00-05:00"
+REQUEST_62 = "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 4:00 PM)"
 
 
 def _readiness(status, gap=None, hours=None):
@@ -124,19 +124,19 @@ def _follow_up_from_2246(scenario):
     return follow_up_for(scenario, "alert-ladder", datetime.fromisoformat(AT_2246))
 
 
-def test_0451_is_warming_observed_from_the_low():
+def test_0031_is_warming_observed_from_the_low():
     scenario = _care()
-    result = verify_recovery(scenario, _follow_up_from_2246(scenario), datetime.fromisoformat(AT_0451))
+    result = verify_recovery(scenario, _follow_up_from_2246(scenario), datetime.fromisoformat(AT_0031))
     assert result["stage"] == "warming_observed"
 
 
-def test_timeline_first_warming_is_about_0450():
+def test_timeline_first_warming_is_at_0025():
     scenario = _care()
-    entries = build_evidence_timeline(scenario, _follow_up_from_2246(scenario), datetime.fromisoformat(AT_0451))
+    entries = build_evidence_timeline(scenario, _follow_up_from_2246(scenario), datetime.fromisoformat(AT_0031))
     warming = [e for e in entries if e["kind"] == "warming_observed"]
-    assert warming, "no warming entry on the timeline by 04:51"
+    assert warming, "no warming entry on the timeline by 00:31"
     observed = warming[0]["observed_at"]
-    assert datetime.fromisoformat("2026-01-17T04:40:00-05:00") < observed <= datetime.fromisoformat("2026-01-17T04:51:00-05:00")
+    assert observed == datetime.fromisoformat("2026-01-17T00:25:00-05:00")
 
 
 def test_a_room_that_keeps_falling_never_reaches_warming():

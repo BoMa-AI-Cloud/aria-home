@@ -1,10 +1,17 @@
+import os
 from datetime import datetime, timezone
 
 import pytest
 
 from aria_home.contracts import EvidenceRecord
+from aria_home.public_demo import LIVE_FLAGS
 
 BASE = datetime(2026, 1, 16, 20, 0, tzinfo=timezone.utc)
+
+# A developer's shell may have live integrations on; no test may inherit them.
+# Tests that exercise the fail-closed check set the flag themselves.
+for _flag in LIVE_FLAGS:
+    os.environ.pop(_flag, None)
 
 
 @pytest.fixture

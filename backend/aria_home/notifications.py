@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from .clock import plain_time
 from .contracts import Availability, SourceKind
 from .eligibility import eligible_records
 from .evidence import freshness
@@ -28,8 +29,14 @@ READINESS_IN_WORDS = {
     "cannot_tell": "Cannot tell yet whether the property will be ready by the warm-by time, based on the verified facts.",
 }
 
+CARE_READINESS_IN_WORDS = {
+    "on_track": "On track: the home should be warm by the warm-by time, based on the verified facts.",
+    "at_risk": "At risk: the home may not be warm by the warm-by time, based on the verified facts.",
+    "cannot_tell": "Cannot tell yet whether the home will be warm by the warm-by time, based on the verified facts.",
+}
+
 STAGE_IN_WORDS = {
-    "telemetry_missing": "Thermostat telemetry is missing.",
+    "telemetry_missing": "The thermostat is not reporting.",
     "reporting_restored": "Thermostat reporting is restored; recovery is not yet verified.",
     "warming_observed": "Warming has been observed in independent readings.",
     "goal_verified": "The temperature goal has been verified.",
@@ -174,6 +181,16 @@ def _access_and_contact(events, scenario=None):
     return str(access), str(contact)
 
 
+def _readiness_words(status, scenario):
+    words = CARE_READINESS_IN_WORDS if _uses_caregiver(scenario) else READINESS_IN_WORDS
+    return words.get(status, words["cannot_tell"])
+
+
+def _stage_words(stage, scenario):
+    words = STAGE_IN_WORDS.get(stage, "Recovery has not been verified yet.") if stage else "Recovery has not been verified yet."
+    return words.replace("temperature goal", "temperature target") if _uses_caregiver(scenario) else words
+
+
 def build_payload(audience, investigation=None, readiness=None, verification=None, context=None, events=None, now=None, scenario=None):
     status = _readiness_status(readiness, investigation)
     stage = _stage(verification)
@@ -185,11 +202,11 @@ def build_payload(audience, investigation=None, readiness=None, verification=Non
             "audience": audience,
             "kind": "investigation_update",
             "readiness": status,
-            "readiness_in_words": READINESS_IN_WORDS.get(status, READINESS_IN_WORDS["cannot_tell"]),
+            "readiness_in_words": _readiness_words(status, scenario),
             "stage": stage,
-            "stage_in_words": STAGE_IN_WORDS.get(stage, "Recovery has not been verified yet.") if stage else "Recovery has not been verified yet.",
+            "stage_in_words": _stage_words(stage, scenario),
             "verified_facts": facts,
-            "what_was_done": ["Investigation evaluated by deterministic code", "Readiness computed by deterministic code"] + (["Recovery verification evaluated by deterministic code"] if verification else []),
+            "what_was_done": ["Investigation checked by code", "Readiness worked out by code"] + (["Recovery check run by code"] if verification else []),
             "evaluated_at": _iso(now),
             "planned_arrival": _iso(_get(trip, "planned_arrival")) if trip is not None else None,
         }
@@ -428,7 +445,7 @@ def _whole(value):
     return str(int(round(float(value))))
 
 
-def _thermostat_clause(records, at):
+def _thermostat_clause(records, at, timezone_name=None):
     temps = sorted(
         [r for r in eligible_records(records, "indoor_temp", now=at, require_value=False) if _get(r, "source") is SourceKind.thermostat],
         key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id"))),
@@ -437,7 +454,7 @@ def _thermostat_clause(records, at):
         return "thermostat not reporting"
     latest = temps[-1]
     if freshness(latest, at) is not Availability.available:
-        return f"thermostat not reporting since {_get(latest, 'observed_at').strftime('%H:%M')}"
+        return f"thermostat not reporting since {plain_time(_get(latest, 'observed_at'), timezone_name)}"
     states = sorted(
         [r for r in records if _get(r, "source") is SourceKind.thermostat and _get(r, "quantity") == "hvac_reported_state"],
         key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id"))),
@@ -452,7 +469,7 @@ def _thermostat_clause(records, at):
         if str(_get(record, "value") or "").lower() != state:
             break
         start = _get(record, "observed_at")
-    return f"furnace reported {state} since {start.strftime('%H:%M')}"
+    return f"furnace reported {state} since {plain_time(start, timezone_name)}"
 
 
 def caregiver_permission_text(scenario, at):
@@ -482,7 +499,7 @@ def caregiver_permission_text(scenario, at):
                 parts.append(f"{_whole(gap['gap'])} F above the {_whole(target)} F target")
             else:
                 parts.append(f"at the {_whole(target)} F target")
-    clause = _thermostat_clause(records, at)
+    clause = _thermostat_clause(records, at, _get(_get(scenario, "manifest"), "timezone"))
     if clause is not None:
         parts.append(clause)
     below = target is None or not isinstance(room_value, (int, float)) or float(room_value) < float(target)
@@ -496,7 +513,7 @@ def caregiver_permission_text(scenario, at):
 
 CAREGIVER_UPDATES = {
     "caregiver_update_hvac_contacted": "HVAC company contacted with the allowed fields only",
-    "caregiver_update_goal_verified": "Temperature goal verified from independent room readings",
+    "caregiver_update_goal_verified": "Temperature target verified from independent room readings",
 }
 
 

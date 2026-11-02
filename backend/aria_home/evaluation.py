@@ -38,10 +38,10 @@ CASES = (
     ("demo_video_v1", "2026-01-16T18:51:00-05:00"),
     ("demo_video_v1", "2026-01-16T20:21:00-05:00"),
     ("demo_video_v1", "2026-01-16T21:01:00-05:00"),
-    ("care_home_v1", "2026-01-17T02:31:00-05:00"),
-    ("care_home_v1", "2026-01-17T04:21:00-05:00"),
-    ("care_home_v1", "2026-01-17T04:51:00-05:00"),
-    ("care_home_v1", "2026-01-17T06:21:00-05:00"),
+    ("care_home_v1", "2026-01-16T23:31:00-05:00"),
+    ("care_home_v1", "2026-01-17T00:21:00-05:00"),
+    ("care_home_v1", "2026-01-17T00:31:00-05:00"),
+    ("care_home_v1", "2026-01-17T01:41:00-05:00"),
     ("care_home_v1", "2026-01-17T07:01:00-05:00"),
     ("visual_water_low_temp_v1", "2026-01-16T18:00:00-05:00"),
     ("visual_frost_missed_v1", "2026-01-16T18:00:00-05:00"),
@@ -254,13 +254,13 @@ def _highlights(rows):
                         "detail": f"{condition} cannot support the {claim} claim that combined supports at {cid}.",
                     })
     for row in rows:
-        if row["condition"] == "electrical_only" and row["claims"]["electrical_activity"] and row["case_id"] in ("demo_video_v1@16:31", "care_home_v1@02:31"):
+        if row["condition"] == "electrical_only" and row["claims"]["electrical_activity"] and row["case_id"] in ("demo_video_v1@16:31", "care_home_v1@23:31"):
             highlights.append({
                 "case_id": row["case_id"],
                 "condition": "electrical_only",
                 "kind": "unsupported_claim",
                 "claim": "useful_heat",
-                "detail": f"electrical_only at {row['case_id']} can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the flat room readings to show no warming.",
+                "detail": f"electrical_only at {row['case_id']} can support an electrical-activity claim (blower circuit watts) but watts alone never support a useful-heat claim; the combined view uses the room readings to show no warming.",
             })
     return highlights
 
@@ -480,7 +480,7 @@ def render_markdown(results):
         "## Reading this",
         "",
         "- Combined matches every expected readiness label and every scored verification stage; the single-source conditions do not, mostly by falling back to `cannot_tell` / `telemetry_missing` / `unable_to_verify` (unsupported), not by asserting the opposite readiness.",
-        "- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (02:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is hours old, stale by evaluation time. The combined view still has fresh independent room readings showing no warming.",
+        "- Thermostat-only during the `demo_video_v1` outage (16:31) or the `care_home_v1` outage (23:31) cannot support a warming or even a current-temperature claim: the last thermostat reading is stale by evaluation time. The combined view still has fresh independent room readings showing no warming.",
         "- Electrical-only can show circuit activity (for example the blower circuit during the outage) but can never support a useful-heat claim; only temperature evidence can show warming.",
         "- A model condition exists in `aria_home.evaluation.run_model_cases` (status, readiness agreement, rejected-claim reasons, latency, tokens per case). Offline tests run it with the mock provider. A live run requires `--live`, `--max-calls N`, and `ARIA_HOME_MODEL_ENABLED=1` together; there are no retries, and timeout/max-tokens come from the existing provider/investigator config.",
         "",

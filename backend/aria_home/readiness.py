@@ -1,6 +1,7 @@
 import math
 from datetime import datetime
 
+from .clock import plain_time
 from .eligibility import freshness_limit_s, is_measurement_eligible, unresolved_conflict_groups
 
 MIN_SAMPLES = 3
@@ -249,7 +250,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     thermostat_missing = has_room_sensor and (
         thermostat_status is None or thermostat_availability in ("missing", "stale", "invalid")
     )
-    thermostat_note = "thermostat telemetry missing; room sensor used" if thermostat_missing else None
+    thermostat_note = "thermostat not reporting; room sensor used" if thermostat_missing else None
 
     inputs = {
         "gap": gap_raw,
@@ -343,7 +344,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         cannot.append("target gap is unavailable")
 
     if indoor_evidence and not eligible_indoor:
-        cannot.append("no eligible indoor measurement: only non-measurement or ineligible-source records are present (human statements may corroborate only)")
+        cannot.append("no usable indoor reading: only reports or unusable sources are present (a person's report is not a measurement)")
     if indoor_conflicts:
         cannot.append("indoor readings are conflicting")
     elif availability == "conflicting":
@@ -455,9 +456,9 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         inputs["arrival_last_value"] = arrival_value
         inputs["arrival_last_observed_at"] = arrival_observed.isoformat() if arrival_observed else None
         if outcome == "met":
-            reason = f"Warm-by time has passed: the target was met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, at or above the {_fmt_num(target_temp)} {target_unit} target)."
+            reason = f"Warm-by time has passed: the target was met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {plain_time(arrival_observed)}, at or above the {_fmt_num(target_temp)} {target_unit} target)."
         elif outcome == "not_met":
-            reason = f"Warm-by time has passed: the target was not met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {arrival_observed.isoformat()}, below the {_fmt_num(target_temp)} {target_unit} target)."
+            reason = f"Warm-by time has passed: the target was not met at the warm-by time (latest reading received by the warm-by time was {_fmt_num(arrival_value)} {arrival_unit} at {plain_time(arrival_observed)}, below the {_fmt_num(target_temp)} {target_unit} target)."
         else:
             reason = "Warm-by time has passed: whether the target was met at the warm-by time is unknown (no fresh indoor reading was received by the warm-by time)."
         return _result("arrival_passed", [reason], inputs, target_at_arrival=outcome)
@@ -509,7 +510,7 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
     if small_gap and sustained and with_margin:
         if thermostat_note:
             reasons.append(thermostat_note)
-        reasons.append("gap is small and sustained warming over the trend window would close it before the warm-by time with margin")
+        reasons.append("the gap is small and steady warming should close it before the warm-by time, with time to spare")
         return _result("on_track", reasons, inputs, target_at_arrival=None)
 
     if thermostat_note:
@@ -528,9 +529,9 @@ def compute_readiness(pack=None, now=None, flags=None, **kwargs):
         else:
             reasons.append(f"observed trend is {_fmt_signed(rate_value)} F per hour")
     if not small_gap:
-        reasons.append(f"gap exceeds the small-gap threshold of {_fmt_num(SMALL_GAP_F)} F")
+        reasons.append(f"the gap is more than {_fmt_num(SMALL_GAP_F)} F")
     elif not sustained:
-        reasons.append("warming is not sustained over the minimum window and rise thresholds")
+        reasons.append("warming has not lasted long enough or risen enough to count")
     elif not with_margin:
-        reasons.append("projected warming does not close the gap before the warm-by time with margin")
+        reasons.append("at this rate, warming will not close the gap in time")
     return _result("at_risk", reasons, inputs, target_at_arrival=None)
