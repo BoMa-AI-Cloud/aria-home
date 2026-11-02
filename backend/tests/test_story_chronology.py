@@ -126,3 +126,13 @@ def test_camera_frames_fit_the_moment():
     assert _frame_at(scn, at(17, "01:51")) != "care/care-v6-warm-morning"
     assert _frame_at(scn, at(17, "07:01")) == "care/care-v6-warm-morning"
     assert _frame_at(declined_view(scn), at(17, "07:01")) != "care/care-v6-warm-morning"
+
+
+def test_hvac_notice_carries_the_time_the_request_went_out(monkeypatch):
+    import aria_home.notifications as notifications
+
+    seen = []
+    monkeypatch.setattr(notifications, "_persist_decisions", lambda store, inv, decisions, created_at: seen.append(created_at) or [{}])
+    monkeypatch.setattr(notifications, "_deterministic_created_at", lambda *args: at(16, "23:01"))
+    notifications.create_hvac_notification(None, scenario(), "inv", None, {"status": "at_risk"}, at(16, "23:31"))
+    assert seen == [at(16, "22:50")]

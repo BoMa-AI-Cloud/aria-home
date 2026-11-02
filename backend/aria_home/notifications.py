@@ -427,6 +427,10 @@ def create_hvac_notification(store, scenario, investigation_id, investigation, r
         else:
             gate_at = next((_get(e, "available_at") for e in (getattr(scenario, "events", None) or []) if _get(e, "kind") in HVAC_AUTH_EVENT_KINDS), None)
         created_at = _deterministic_created_at(store, scenario, investigation_id, gate_at, at)
+        if _uses_caregiver(scenario):
+            # The notice carries the time the story says the request went out, not the next scheduled check.
+            request_time = next((_get(e, "event_time") for e in events if _get(e, "kind") == "hvac_request"), None)
+            created_at = request_time if request_time is not None else created_at
     return _persist_decisions(store, investigation_id, [decision], created_at)[0]
 
 

@@ -1590,7 +1590,7 @@ const STORY_STEP_GUIDANCE = [
   "The resident, an older adult, lives alone and agreed to share home status with a family caregiver: nothing medical, no location tracking, no fall sensing.",
   "The room has eased a little and is still above target. ARIA tells no one.",
   "No one is asked yet; ARIA asks at 6 F below. Both numbers are configured settings, not safety limits.",
-  "ARIA tells the resident and asks the caregiver before contacting anyone else. Try Approve or Decline on the card below; the readings decide the outcome either way.",
+  "ARIA tells the resident and asks the caregiver before contacting anyone else. Try Approve or Decline on the card below. Each one changes what happens next.",
   "In this recorded story the caregiver approved at 10:47 PM, and only then did the simulated HVAC request go out, at 10:50 PM. The technician arrived at 11:30 PM, 44 minutes after ARIA asked.",
   "The technician left at 12:15 AM and the thermostat came back at 12:20 AM. Neither proves the house is warming; only the room sensor can.",
   "The room sensor shows the living room climbing from its low of about 56.5 F. It still has a way to go to reach the target.",
@@ -1649,7 +1649,7 @@ const MODEL_CONTRIBUTIONS = [
   },
   {
     model: "muse-spark-1.3 (anomaly watcher)",
-    role: "Recorded anomaly observations over the same evidence, each confirmed by the evidence check",
+    role: "Recorded anomaly observations over the same evidence. Code rejects any that fail the evidence check, and the rejection is shown",
     status: "Shown on the Laws view with code detections and provenance; never lowers risk",
   },
   {
