@@ -45,7 +45,7 @@ def test_arrival_mock_answer_passes(name, at):
     result = investigate(scenario, at_dt, MockProvider())
     assert result.status == "ok", result.reasons
     assert result.output.readiness == "arrival_passed"
-    assert result.prompt_version == "inv-v5"
+    assert result.prompt_version == "inv-v6"
     assert not [f for f in result.output.facts if f.claim_type == "current_temperature"]
     assert any(f.claim_type == "temperature_at_arrival" for f in result.output.facts)
     assert any("at the warm-by time" in s for s in result.output.verified_facts)
@@ -151,13 +151,13 @@ def test_valid_output_passes():
     assert result.status == "ok"
     assert result.output is not None
     assert result.provider_mode == "mock"
-    assert result.prompt_version == "inv-v5"
+    assert result.prompt_version == "inv-v6"
     assert fake.calls[0][2] == 12000
 
 def test_prompt_warm_by_wording_exact():
     from aria_home.investigator import PROMPT_VERSION, SYSTEM_PROMPT
-    assert PROMPT_VERSION == "inv-v5"
-    assert "(prompt version inv-v5)" in SYSTEM_PROMPT
+    assert PROMPT_VERSION == "inv-v6"
+    assert "(prompt version inv-v6)" in SYSTEM_PROMPT
     assert "inv-v4" not in SYSTEM_PROMPT
     assert "inv-v3" not in SYSTEM_PROMPT
     for new in (

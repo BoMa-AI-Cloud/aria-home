@@ -1,7 +1,7 @@
 """Old recordings never match the restructured story: exact identity everywhere.
 
 The curve rewrite changed every input_revision since 16:00 and the prompt
-moved to inv-v5, so previously recorded answers, reviews, watcher runs and
+moved to inv-v6, so previously recorded answers, reviews, watcher runs and
 corrections must all read as missing — never as matching.
 """
 import json
@@ -48,7 +48,7 @@ def test_old_prompt_answer_never_matches():
             "output": {"interpretation": "stale"},
         }
     }
-    assert PROMPT_VERSION == "inv-v5"
+    assert PROMPT_VERSION == "inv-v6"
     assert find_recorded([old], identity["scenario_id"], identity["evaluated_at_utc"], identity["input_revision"]) is None
 
 

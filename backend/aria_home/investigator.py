@@ -13,15 +13,15 @@ from .clock import ensure_aware
 from .contracts import SourceKind
 from .eligibility import circuit_records, current_pool, eligible_records, freshness_limit_s, indoor_records, is_current_record, is_fresh, is_measurement_eligible, latest_eligible, measurement_conflict_groups, unresolved_after
 from .evidence import source_status
-from .metrics import NOISE_FLOOR_W, circuit_activity, target_gap, temperature_trend
+from .metrics import NOISE_FLOOR_W, circuit_activity, recent_change_f, target_gap, temperature_trend
 from .notifications import CAREGIVER_SCENARIOS
 from .power_context import BANNED_PHRASES, power_context
 from .provider import get_provider, normalized_provider_identity
 from .readiness import READINESS_POLICY_VERSION, STALE_READING_AGE_S, compute_readiness
 from .scheduling import MAX_FOLLOW_UP_DELAY, MIN_FOLLOW_UP_DELAY, compute_follow_up_schedule, compute_next_check_at, validate_follow_up_time
-from .scenario import context_as_of, visible_records, visual_as_of
+from .scenario import context_as_of, events_as_of, visible_records, visual_as_of
 
-PROMPT_VERSION = "inv-v5"
+PROMPT_VERSION = "inv-v6"
 INPUT_REVISION_VERSION = "input-revision-v2"
 INFERENCE_IDENTITY_VERSION = "inference-identity-v3"
 
@@ -46,9 +46,10 @@ def investigation_max_tokens(explicit=None):
         )
     return value, None
 
-SYSTEM_PROMPT = """You are the ARIA Home investigation synthesizer (prompt version inv-v5).
+SYSTEM_PROMPT = """You are the ARIA Home investigation synthesizer (prompt version inv-v6).
 Answer: will the home be warm by the warm-by time, and if something looks wrong, who should respond?
 The evidence pack names who should respond (responder.label) and who lives in the home (responder.occupant): name them only as the pack says, and write "warm-by time" in prose. Field, claim, and enum names containing arrival, trip, or manager are internal names and never belong in prose.
+The pack's room_direction says which way the room is moving now, from the last 15 minutes; metric:indoor_trend is a 3-hour average and can lag behind it. Never describe the room as falling or cooling when room_direction is rising, or as rising when it is falling. actions_so_far lists what has already happened tonight, such as the caregiver's answer, the technician being on site, or the repair ending: never ask anyone to do something it shows is already done.
 Use ONLY the evidence ids given in the evidence pack.
 Return structured facts, not factual prose. Each fact is {claim_type, evidence_id, field, value, unit, at}
 where at is an optional ISO-8601 time. claim_type is one of: current_temperature, temperature_at_arrival,
@@ -86,6 +87,7 @@ ClaimType = Literal["current_temperature", "temperature_at_arrival", "target_tem
 CERTAINTY_PHRASES = ("confirmed", "definitely", "has failed", "is broken", "caused by")
 CARE_HOME_SCENARIO_ID = "care_home_v1"
 CARE_PROSE_BANNED_WORDING = ("manager", "planned arrival")
+FALLING_WORDS = re.compile(r"\b(falling|cooling|cooled|dropping|declining|downward|moving lower|trending down)\b", re.I)
 EQUIPMENT_FUNCTION_VALUES = ("not_observed", "unknown")
 
 class _Strict(BaseModel):
@@ -218,6 +220,30 @@ def _responder_for_scenario(scenario) -> dict:
     return {"role": "property_manager", "label": "property manager", "occupant": "homeowner"}
 
 
+def room_direction(records, zone, gap, at) -> dict:
+    """Which way the room is moving now, from the last 15 minutes. Near or above target with small moves is holding."""
+    change = recent_change_f(records, zone, at)
+    gap_f = gap.get("gap") if isinstance(gap, dict) else None
+    if change is None:
+        word = "unknown"
+    elif abs(change) <= 0.2 or (isinstance(gap_f, (int, float)) and 0 <= gap_f <= 1.0):
+        word = "holding"
+    else:
+        word = "rising" if change > 0 else "falling"
+    return {"direction": word, "change_f": change, "window_minutes": 15}
+
+
+def _actions_so_far(scenario, at) -> list:
+    if getattr(scenario.manifest, "id", None) not in CAREGIVER_SCENARIOS:
+        return []
+    actions = []
+    for event in events_as_of(scenario, at):
+        label = (event.payload or {}).get("label") if isinstance(getattr(event, "payload", None), dict) else None
+        if event.kind != "confirmation_request":
+            actions.append({"at": event.available_at.isoformat(), "kind": event.kind, "label": label})
+    return actions
+
+
 def _build_unrounded_evidence_pack(scenario, at) -> dict:
     ensure_aware(at, "at")
     start = at - timedelta(hours=3)
@@ -258,6 +284,8 @@ def _build_unrounded_evidence_pack(scenario, at) -> dict:
         confirmation = {"trip_id": c.trip_id, "property_id": c.property_id, "target_temp": c.target_temp, "target_unit": c.target_unit, "notify_homeowner": c.notify_homeowner, "manager_authorized": c.manager_authorized, "confirmed_at": c.confirmed_at.isoformat(), "revision_id": c.revision_id, "trip_revision": c.trip_revision, "trip_revision_id": c.trip_revision_id}
         evidence.append({"id": "confirmation:current", "type": "confirmation", "data": confirmation})
     pack = {"prompt_version": PROMPT_VERSION, "scenario_id": scenario.manifest.id, "responder": _responder_for_scenario(scenario), "at": at.isoformat(), "window": {"start": start.isoformat(), "end": at.isoformat()}, "data_mode": mode.value, "trip": trip, "confirmation": confirmation, "readiness_flags": dict(ctx.flags), "flags": dict(ctx.flags), "context_flags": dict(ctx.flags), "as_of": {"at": at.isoformat(), "flags": dict(ctx.flags), "trip_revision_id": ctx.trip.revision_id if ctx.trip else None, "confirmation_visible": confirmation is not None}, "source_statuses": _jsonable(statuses), "metrics": {"zone": zone, "indoor_trend": trend_j, "target_gap": gap_j, "circuits": circuits_j}, "power_context": pc_j, "evidence": evidence, "evidence_ids": [e["id"] for e in evidence], "visual_evidence": visual_as_of(scenario, at)}
+    pack["room_direction"] = room_direction(visible, zone, gap, at)
+    pack["actions_so_far"] = _actions_so_far(scenario, at)
     readiness = compute_readiness(pack, at, flags=dict(ctx.flags))
     pack["readiness"] = dict(readiness)
     pack["canonical_readiness"] = dict(readiness)
@@ -818,6 +846,9 @@ def _responder_wording_reasons(parsed, pack):
     for phrase in CARE_PROSE_BANNED_WORDING:
         if any(phrase in (text or "").lower() for text in texts):
             reasons.append(f"care_home_v1 prose must use this story's words: {phrase!r} does not belong in model-written prose (name the responder only as the evidence pack's responder says)")
+    direction = pack.get("room_direction") if isinstance(pack.get("room_direction"), dict) else {}
+    if direction.get("direction") == "rising" and any(FALLING_WORDS.search(text or "") for text in texts):
+        reasons.append("the room is rising over the last 15 minutes: model-written prose must not describe it as falling or cooling")
     return reasons
 
 def validate(output, pack) -> list[str]:

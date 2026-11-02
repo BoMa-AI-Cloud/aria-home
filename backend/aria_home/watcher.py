@@ -37,7 +37,7 @@ from . import laws as laws_module
 from .investigator import build_evidence_pack, inference_identity
 from .provider import ALLOWED_MODEL_IDS, build_request
 
-WATCHER_PROMPT_VERSION = "watch-v1"
+WATCHER_PROMPT_VERSION = "watch-v2"
 WATCHER_MODEL_ID = "muse-spark-1.3"
 WATCHER_BASE_URL = "https://api.meta.ai"
 WATCHER_MAX_TOKENS = 512
@@ -98,9 +98,10 @@ def _parse_watcher_text(text):
         return None, [NO_TEXT_REASON]
     return parse_watcher_output(text)
 
-WATCHER_SYSTEM_PROMPT = """You are the ARIA Home anomaly watcher (prompt version watch-v1).
+WATCHER_SYSTEM_PROMPT = """You are the ARIA Home anomaly watcher (prompt version watch-v2).
 You receive an as-of window of all visible evidence for one home (room, thermostat, circuits, weather, visual).
 No question is being asked about any specific problem: report only what looks anomalous, or nothing.
+The pack's room_direction says which way the room is moving now, from the last 15 minutes; metric:indoor_trend is a 3-hour average and can lag behind it. Never describe the room as falling or cooling when room_direction is rising, or as rising when it is falling. actions_so_far lists what has already happened tonight, such as the caregiver's answer, the technician being on site, or the repair ending: never ask anyone to do something it shows is already done.
 Reply with JSON only, matching this schema exactly (no extra fields):
 {"observations": [{"kind": "temperature_drop" | "telemetry_gap" | "equipment_quiet" | "visual_detection" | "other", "claim": "<= 200 characters", "evidence_ids": ["<ids from the pack only>"], "values": {"value": number | str | bool, "unit": str | null, "at": ISO-8601 datetime str | null}}]}.
 An empty list is an acceptable answer when nothing looks anomalous. Cite only evidence ids from the pack.
@@ -272,11 +273,17 @@ def verify_observation(obs, pack, at):
     reasons = []
     by_id = _evidence_by_id(pack)
     window_start = at - timedelta(hours=WINDOW_HOURS)
+    direction = pack.get("room_direction") if isinstance(pack.get("room_direction"), dict) else {}
+    if obs.get("kind") == "temperature_drop" and direction.get("direction") == "rising":
+        reasons.append(f"the room is rising over the last 15 minutes ({direction.get('change_f')} F): a temperature_drop observation contradicts it")
     for evidence_id in obs["evidence_ids"]:
         item = by_id.get(evidence_id)
         if item is None:
             reasons.append(f"unknown evidence id: {evidence_id}")
             continue
+        data = item.get("data") if isinstance(item.get("data"), dict) else {}
+        if str(evidence_id).startswith("source:") and obs.get("kind") != "telemetry_gap" and data.get("availability") not in (None, "available"):
+            reasons.append(f"evidence {evidence_id} is not current at the evaluation time (status {data.get('availability')})")
         received = laws_module._parse_time(item.get("received_at") or (item.get("data") or {}).get("received_at") if isinstance(item.get("data"), dict) else item.get("received_at"))
         if received is not None and received > at:
             reasons.append(f"evidence {evidence_id} is not visible as of the evaluation time")

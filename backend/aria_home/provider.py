@@ -222,7 +222,7 @@ class MockProvider:
             text_in = " ".join(str(m.get("content", "")) if isinstance(m, dict) else str(m) for m in messages)
         elif prompt is not None:
             text_in = str(prompt)
-        if "inv-v5" in text_in:
+        if "inv-v6" in text_in:
             import json as _json
             from datetime import datetime as _dt, timedelta as _td
 
