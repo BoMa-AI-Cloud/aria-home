@@ -66,7 +66,7 @@ FOLLOWUP_CREATED_AT = {
     "demo_revised_v1": "2026-01-16T18:00:00-05:00",
     "demo_cancelled_v1": "2026-01-16T18:00:00-05:00",
     "demo_video_v1": "2026-01-16T16:31:00-05:00",
-    "care_home_v1": "2026-01-17T02:31:00-05:00",
+    "care_home_v1": "2026-01-16T22:46:00-05:00",
 }
 
 WARMING_STAGES = ("warming_observed", "goal_verified", "arrival_met")

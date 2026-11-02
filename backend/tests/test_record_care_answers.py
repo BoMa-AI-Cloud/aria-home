@@ -71,7 +71,7 @@ def test_dry_run_makes_zero_calls(tmp_path):
     assert rc == 0
     assert provider.calls == 0
     assert review_calls == []
-    assert len(REAL_POINTS) == 10
+    assert len(REAL_POINTS) == 11
     for point in REAL_POINTS:
         assert point in text
     assert "dry run" in text
@@ -87,7 +87,7 @@ def test_live_without_max_calls_refuses(tmp_path):
 
 def test_live_without_snapshot_refuses(tmp_path):
     provider = FakeLiveProvider()
-    rc, _, _, _ = _run(["--live", "--max-calls", "20"], tmp_path, provider, [])
+    rc, _, _, _ = _run(["--live", "--max-calls", "22"], tmp_path, provider, [])
     assert rc == 2
     assert provider.calls == 0
 
@@ -122,12 +122,12 @@ def test_files_load_serve_and_hide_key(tmp_path):
     provider = FakeLiveProvider()
     review_calls = []
     rc, text, recorded, reviews = _run(
-        ["--live", "--max-calls", "20", "--code-snapshot", "test-snap"],
+        ["--live", "--max-calls", "22", "--code-snapshot", "test-snap"],
         tmp_path, provider, review_calls,
     )
     assert rc == 0
     entries = load_recorded_answers(recorded)
-    assert len(entries) == 10
+    assert len(entries) == 11
     for item in entries:
         answer = item["answer"]
         for field in ("scenario_id", "evaluated_at_utc", "input_revision", "model_id", "provider_route", "prompt_version", "readiness_policy_version", "code_snapshot", "recorded_at", "output"):
@@ -210,7 +210,7 @@ def test_rejected_status_refused_even_with_valid_output():
 
 def test_second_run_never_overwrites(tmp_path):
     provider = FakeLiveProvider()
-    args = ["--live", "--max-calls", "20", "--code-snapshot", "s"]
+    args = ["--live", "--max-calls", "22", "--code-snapshot", "s"]
     _run(args, tmp_path, provider, [])
     _run(args, tmp_path, provider, [])
     names = sorted(p.name for p in (tmp_path / "recorded").glob("*.json"))
@@ -221,7 +221,7 @@ def test_app_serves_recorded_answer_and_review(tmp_path, monkeypatch):
     provider = FakeLiveProvider()
     review_calls = []
     rc, _, recorded, reviews = _run(
-        ["--live", "--max-calls", "20", "--code-snapshot", "test-snap"],
+        ["--live", "--max-calls", "22", "--code-snapshot", "test-snap"],
         tmp_path, provider, review_calls,
     )
     assert rc == 0
@@ -357,32 +357,32 @@ def _run_only_missing(tmp_path, provider, review_calls, max_calls):
     return rc, "\n".join(lines)
 
 
-def test_only_missing_plans_nine_answers_plus_ten_reviews(tmp_path):
+def test_only_missing_plans_ten_answers_plus_eleven_reviews(tmp_path):
     recorded = tmp_path / "recorded"
     recorded.mkdir()
     (recorded / "care-2026-10-29.json").write_text(json.dumps({"answers": _seed_mixed_answers()}), encoding="utf-8")
     (tmp_path / "reviews").mkdir()
     provider = FakeLiveProvider()
     review_calls = []
-    rc, text = _run_only_missing(tmp_path, provider, review_calls, 18)
+    rc, text = _run_only_missing(tmp_path, provider, review_calls, 20)
     assert rc == 2
     assert provider.calls == 0
     assert review_calls == []
-    assert "planned 19 calls exceed --max-calls 18" in text
+    assert "planned 21 calls exceed --max-calls 20" in text
 
 
-def test_only_missing_records_nine_answers_and_ten_reviews(tmp_path):
+def test_only_missing_records_ten_answers_and_eleven_reviews(tmp_path):
     recorded = tmp_path / "recorded"
     recorded.mkdir()
     (recorded / "care-2026-10-29.json").write_text(json.dumps({"answers": _seed_mixed_answers()}), encoding="utf-8")
     (tmp_path / "reviews").mkdir()
     provider = FakeLiveProvider()
     review_calls = []
-    rc, text = _run_only_missing(tmp_path, provider, review_calls, 19)
+    rc, text = _run_only_missing(tmp_path, provider, review_calls, 21)
     assert rc == 0
-    assert provider.calls == 9
-    assert len(review_calls) == 10
-    assert "model calls made: 19" in text
+    assert provider.calls == 10
+    assert len(review_calls) == 11
+    assert "model calls made: 21" in text
 
 
 def test_only_missing_dry_run_reports_exact_remaining():

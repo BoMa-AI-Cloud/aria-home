@@ -424,8 +424,10 @@ def verify_recovery(scenario, followup, now):
 
     rise_f = None
     if room_base:
-        first, last = room_base[0], room_base[-1]
-        rise_f = _rise_f(first.value, first.unit, last.value, last.unit, target_unit)
+        # A room that fell further after the follow-up began warms from its low, not from where it started.
+        last = room_base[-1]
+        low = min(room_base, key=lambda r: _in_target_unit(r.value, r.unit, target_unit))
+        rise_f = _rise_f(low.value, low.unit, last.value, last.unit, target_unit)
     warming_reasons = list(restored_reasons)
     if len(room_base) < min_samples:
         warming_reasons.append(f"only {len(room_base)} room-sensor readings since this check began; {min_samples} required to show warming")
@@ -515,14 +517,14 @@ def build_evidence_timeline(scenario, followup, now, caregiver_decision=None):
     room_all = _room_records(records, zone)
     room_after = [r for r in room_all if r.observed_at > created_at and (deadline is None or r.observed_at <= deadline)]
     if room_after:
-        first = room_after[0]
         for index, record in enumerate(room_after):
             if index + 1 < min_samples:
                 continue
-            rise_f = _rise_f(first.value, first.unit, record.value, record.unit, target_unit)
+            low = min(room_after[: index + 1], key=lambda r: _in_target_unit(r.value, r.unit, target_unit))
+            rise_f = _rise_f(low.value, low.unit, record.value, record.unit, target_unit)
             if rise_f is not None and rise_f >= min_rise_f:
                 first_known = max(r.received_at for r in room_after[: index + 1])
-                entries.append(_timeline_entry("warming_observed", "Warming first observed", [first.id, record.id], record.observed_at, record.received_at, first_known))
+                entries.append(_timeline_entry("warming_observed", "Warming first observed", [low.id, record.id], record.observed_at, record.received_at, first_known))
                 break
         for record in room_after:
             if _in_target_unit(record.value, record.unit, target_unit) >= target_temp:
