@@ -83,12 +83,16 @@ const CARE_START_AT = "2026-01-16T19:20:00-05:00";
 
 const REPLAY_START_AT = "2026-01-16T18:00:00-05:00";
 
-const REPLAY_TIMES = [
-  { label: "18:00", at: "2026-01-16T18:00:00-05:00" },
-  { label: "18:30", at: "2026-01-16T18:30:00-05:00" },
-  { label: "19:00", at: "2026-01-16T19:00:00-05:00" },
-  { label: "20:31", at: "2026-01-16T20:31:00-05:00" },
-];
+function clock12(hhmm: string): string {
+  const [hour, minute] = hhmm.split(":");
+  const value = Number(hour);
+  return `${value % 12 || 12}:${minute} ${value >= 12 ? "PM" : "AM"}`;
+}
+
+const REPLAY_TIMES = ["18:00", "18:30", "19:00", "20:31"].map((time) => ({
+  label: clock12(time),
+  at: `2026-01-16T${time}:00-05:00`,
+}));
 
 const VIDEO_REPLAY_TIMES = [
   "09:20",
@@ -101,28 +105,29 @@ const VIDEO_REPLAY_TIMES = [
   "20:21",
   "20:46",
   "21:01",
-].map((label) => ({ label, at: `2026-01-16T${label}:00-05:00` }));
+].map((time) => ({ label: clock12(time), at: `2026-01-16T${time}:00-05:00` }));
 
 const CARE_REPLAY_TIMES = [
-  { day: "2026-01-16", label: "19:20" },
-  { day: "2026-01-16", label: "21:00" },
-  { day: "2026-01-16", label: "23:30" },
-  { day: "2026-01-17", label: "02:31" },
-  { day: "2026-01-17", label: "02:45" },
-  { day: "2026-01-17", label: "04:21" },
-  { day: "2026-01-17", label: "04:51" },
-  { day: "2026-01-17", label: "06:21" },
-  { day: "2026-01-17", label: "06:45" },
-  { day: "2026-01-17", label: "07:01" },
-].map(({ day, label }) => ({ label, at: `${day}T${label}:00-05:00` }));
+  { day: "2026-01-16", time: "19:20" },
+  { day: "2026-01-16", time: "21:00" },
+  { day: "2026-01-16", time: "21:41" },
+  { day: "2026-01-16", time: "22:46" },
+  { day: "2026-01-17", time: "02:31" },
+  { day: "2026-01-17", time: "02:45" },
+  { day: "2026-01-17", time: "04:21" },
+  { day: "2026-01-17", time: "04:51" },
+  { day: "2026-01-17", time: "06:21" },
+  { day: "2026-01-17", time: "06:45" },
+  { day: "2026-01-17", time: "07:01" },
+].map(({ day, time }) => ({ label: clock12(time), at: `${day}T${time}:00-05:00` }));
 
 const VERIFICATION_LABEL: Record<VerificationStage, string> = {
-  telemetry_missing: "Thermostat telemetry missing",
+  telemetry_missing: "Thermostat not reporting",
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
-  goal_verified: "Temperature goal verified",
-  goal_not_maintained: "Temperature goal no longer maintained",
-  arrival_met: "Warm-by expectation met",
+  goal_verified: "Target verified",
+  goal_not_maintained: "Target no longer held",
+  arrival_met: "Warm-by target met",
   unable_to_verify: "Unable to verify",
 };
 
@@ -190,13 +195,41 @@ function formatTimestamp(value: string | null): string {
     ? value
     : `${new Intl.DateTimeFormat("en-US", {
         timeZone: PROPERTY_TIMEZONE,
-        year: "numeric",
-        month: "numeric",
+        month: "short",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
       }).format(date)} ET`;
+}
+
+const ISO_TIME = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?/g;
+const CLOCK_24 = /\b([01]\d|2[0-3]):([0-5]\d)\b(?!\s*[AP]M)/g;
+
+function plainClock(text: string): string {
+  return text
+    .replace(ISO_TIME, (iso) => formatTimestamp(iso))
+    .replace(CLOCK_24, (_match, hour: string, minute: string) => clock12(`${hour}:${minute}`));
+}
+
+const PLAIN_WORDS: Array<[RegExp, string]> = [
+  [/\b[Tt]emperature goal\b/g, "target"],
+  [/\bgoal\b/g, "target"],
+  [/\bGoal\b/g, "Target"],
+  [/\bwarm-by expectation\b/gi, "target"],
+  [/\bthe expectation\b/g, "the target"],
+  [/\bliving area\b/gi, "living room"],
+  [/\bthe property\b/g, "the house"],
+  [/\bThe property\b/g, "The house"],
+  [/\bhomeowner\b/g, "resident"],
+  [/\bHomeowner\b/g, "Resident"],
+  [/\btelemetry\b/g, "readings"],
+  [/\bcorroboration only\b/g, "supporting only"],
+  [/\bdemo-house\b/g, "the house"],
+];
+
+function plainWords(text: string): string {
+  return PLAIN_WORDS.reduce((current, [word, plain]) => current.replace(word, plain), plainClock(text));
 }
 
 const PAYLOAD_LABELS: Record<string, string> = {
@@ -210,8 +243,8 @@ const PAYLOAD_LABELS: Record<string, string> = {
   what_was_done: "What was done",
   evaluated_at: "Evaluated at",
   planned_arrival: "Warm-by time",
-  property_label: "Property",
-  property: "Property",
+  property_label: "House",
+  property: "House",
   requested_action: "Requested action",
   access_note: "Access note",
   manager_contact_label: "Contact on file",
@@ -250,28 +283,29 @@ const EVENT_KIND_LABELS: Record<string, string> = {
 };
 
 const VALUE_LABELS: Record<string, string> = {
-  homeowner: "Homeowner",
+  homeowner: "Resident",
   property_manager: "Property manager",
   family_caregiver: "Family caregiver",
   hvac_company: "HVAC company",
-  investigation_update: "Investigation update",
+  investigation_update: "Update",
   manager_alert: "Manager alert",
   caregiver_alert: "Caregiver alert",
   caregiver_update_hvac_contacted: "Caregiver update: HVAC contacted",
-  caregiver_update_goal_verified: "Caregiver update: temperature goal verified",
+  caregiver_update_goal_verified: "Caregiver update: target verified",
   informational: "For information",
   hvac_request: "HVAC request",
   on_track: "On track",
   at_risk: "At risk",
   cannot_tell: "Cannot tell",
   arrival_passed: "Warm-by time passed",
-  telemetry_missing: "Thermostat telemetry missing",
+  telemetry_missing: "Thermostat not reporting",
   reporting_restored: "Thermostat reporting restored",
   warming_observed: "Warming observed",
-  goal_verified: "Temperature goal verified",
-  goal_not_maintained: "Temperature goal no longer maintained",
-  arrival_met: "Warm-by expectation met",
+  goal_verified: "Target verified",
+  goal_not_maintained: "Target no longer held",
+  arrival_met: "Warm-by target met",
   unable_to_verify: "Unable to verify",
+  "demo-house": "A synthetic house in Petoskey, Michigan",
 };
 
 function humanLabel(key: string): string {
@@ -316,7 +350,7 @@ function ContextNotes({
     notes.push("Context note: Outdated confirmation — confirmation is outdated for the current warm-by plan.");
   if (flags?.trip_mismatched)
     notes.push("Context note: Warm-by plan and confirmation mismatch — they do not match.");
-  if (deadlinePassed) notes.push("Context note: Follow-up deadline passed (deadline_passed).");
+  if (deadlinePassed) notes.push("Context note: Follow-up deadline passed.");
   if (scheduleStatus) notes.push(`Follow-up schedule status: ${scheduleStatus}.`);
   if (notes.length === 0) return null;
   return (
@@ -348,7 +382,7 @@ function ReadinessBlock({
           <summary>Reasons ({readiness.reasons.length})</summary>
           <ul>
             {readiness.reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
+              <li key={reason}>{plainClock(reason)}</li>
             ))}
           </ul>
         </details>
@@ -436,13 +470,13 @@ function PowerContextBlock({ summary }: { summary: InvestigationSummary }) {  co
   return (
     <div className="power-context">
       <h3>Power context</h3>
-      {statement && <p>{statement}</p>}
+      {statement && <p>{plainClock(statement)}</p>}
       {limitations.length > 0 && (
         <details className="limits-details">
           <summary>Limitations ({limitations.length})</summary>
           <ul>
             {limitations.map((limitation) => (
-              <li key={limitation}>{limitation}</li>
+              <li key={limitation}>{plainClock(limitation)}</li>
             ))}
           </ul>
         </details>
@@ -467,10 +501,10 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
         <p className="confirmed-plan-status">
           {flags?.confirmation_outdated ? "Confirmation outdated" : flags?.trip_cancelled ? "Warm-by plan cancelled" : flags?.trip_mismatched ? "Warm-by plan and confirmation do not match" : "Not yet confirmed"}
         </p>
-        {data.reason_in_words && data.reason_in_words !== "Not yet confirmed" && <p>{data.reason_in_words}</p>}
+        {data.reason_in_words && data.reason_in_words !== "Not yet confirmed" && <p>{plainWords(data.reason_in_words)}</p>}
         {flags?.confirmation_outdated && <p>Confirmation outdated for the current warm-by plan — the confirmed plan no longer matches the current revision.</p>}
         <p>
-          Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
+          As of <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
         </p>
       </div>
     );
@@ -480,11 +514,11 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
     data.target_temperature ??
     (data.target_temp !== undefined ? `${formatTargetTemp(data.target_temp)} ${data.target_unit ?? "F"}` : null);
   return (
-    <div className="confirmed-plan">
+    <div className="confirmed-plan" data-revision={data.revision_id ?? undefined}>
       <dl className="card-facts">
         <div>
-          <dt>Property</dt>
-          <dd>{data.property_label ?? data.property_id ?? data.trip?.property_id ?? "—"}</dd>
+          <dt>House</dt>
+          <dd>{formatPayloadValue(data.property_label ?? data.property_id ?? data.trip?.property_id ?? "—")}</dd>
         </div>
         {data.planned_arrival && (
           <div>
@@ -515,8 +549,8 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
           </div>
         )}
         <div>
-          <dt>Homeowner notification</dt>
-          <dd>{data.notify_homeowner ? "Yes — notify homeowner" : "No — do not notify homeowner"}</dd>
+          <dt>Resident notices</dt>
+          <dd>{data.notify_homeowner ? "Yes, keep the resident informed" : "No, do not notify the resident"}</dd>
         </div>
         <div className="key-plan-row">
           <dt>{data.scenario === "care_home_v1" ? "Caregiver coordination" : "Manager coordination"}</dt>
@@ -530,17 +564,11 @@ function ConfirmedPlanSection({ data, error }: { data: ContextResponse | null; e
             </dd>
           </div>
         )}
-        {data.revision_id && (
-          <div>
-            <dt>Revision</dt>
-            <dd>{data.revision_id}</dd>
-          </div>
-        )}
       </dl>
       {allowances.length > 0 && <p>Planned times and allowances are scenario estimates, not live claims.</p>}
-      {data.arrival_plan?.derivation && <p>{data.arrival_plan.derivation}</p>}
+      {data.arrival_plan?.derivation && <p>{plainClock(data.arrival_plan.derivation)}</p>}
       <p>
-        Evaluation time: <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
+        As of <time dateTime={data.at}>{formatTimestamp(data.at)}</time>
       </p>
     </div>
   );
@@ -576,7 +604,7 @@ function InvestigationSection({
               <p>
                 Evaluation time: <time dateTime={item.evaluated_at}>{formatTimestamp(item.evaluated_at)}</time>
               </p>
-              <p>{item.output?.interpretation}</p>
+              <p>{plainClock(item.output?.interpretation ?? "")}</p>
             </li>
           ))}
         </ul>
@@ -648,7 +676,7 @@ function InvestigationSection({
         {data.reasons.length > 0 && (
           <ul className="reasons">
             {data.reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
+              <li key={reason}>{plainClock(reason)}</li>
             ))}
           </ul>
         )}
@@ -686,7 +714,7 @@ function InvestigationSection({
             <summary>Facts ({output.verified_facts.length})</summary>
             <ul>
               {output.verified_facts.map((fact) => (
-                <li key={fact}>{fact}</li>
+                <li key={fact}>{plainClock(fact)}</li>
               ))}
             </ul>
           </details>
@@ -697,13 +725,13 @@ function InvestigationSection({
 
       <div className="investigation-block interpretation">
         <h3>Interpretation (model-written, not verified)</h3>
-        <p>{output.interpretation}</p>
+        <p>{plainClock(output.interpretation)}</p>
         {output.limitations.length > 0 && (
           <details className="limits-details">
             <summary>Limitations ({output.limitations.length})</summary>
             <ul>
               {output.limitations.map((limitation) => (
-                <li key={limitation}>{limitation}</li>
+                <li key={limitation}>{plainClock(limitation)}</li>
               ))}
             </ul>
           </details>
@@ -719,7 +747,7 @@ function InvestigationSection({
             <ul className="hypotheses">
               {output.hypotheses.map((hypothesis, index) => (
                 <li key={`${hypothesis.text}-${index}`}>
-                  <p className="hypothesis-label">{hypothesis.text}</p>
+                  <p className="hypothesis-label">{plainClock(hypothesis.text)}</p>
                   {hypothesis.supporting_ids.length > 0 && (
                     <p>
                       Supporting:{" "}
@@ -756,7 +784,7 @@ function InvestigationSection({
         ) : (
           <ul>
             {output.unknowns.map((unknown) => (
-              <li key={unknown}>{unknown}</li>
+              <li key={unknown}>{plainClock(unknown)}</li>
             ))}
           </ul>
         )}
@@ -765,14 +793,14 @@ function InvestigationSection({
       <details className="investigation-details">
         <summary>One question for you</summary>
         <h3>One question for you</h3>
-        <p>{output.clarification}</p>
+        <p>{plainClock(output.clarification)}</p>
       </details>
 
       <details className="investigation-details">
         <summary>Next check</summary>
         <h3>Next check</h3>
         <p>
-          {output.follow_up.observation}
+          {plainClock(output.follow_up.observation)}
           {output.follow_up.when ? ` (${formatTimestamp(output.follow_up.when)})` : ""}
         </p>
       </details>
@@ -848,25 +876,14 @@ function OutcomeSection({
           <p className="outcome-status verification-stage" aria-live="polite">
             Status: <strong>{VERIFICATION_LABEL[verification.stage]}</strong>
           </p>
-          <p className="follow-up-rule">Follow-up rule: {OUTCOME_LABEL[outcome.status]}</p>
-          {latestReading ? (
+          {latestReading && (
             <p className="latest-reading-used">
               Latest reading used: observed{" "}
               <time dateTime={latestReading.observed_at}>{formatTimestamp(latestReading.observed_at)}</time>{" "}
               received{" "}
               <time dateTime={latestReading.received_at}>{formatTimestamp(latestReading.received_at)}</time>
             </p>
-          ) : (
-            <p className="latest-reading-used">Latest reading used: No reading</p>
           )}
-          <dl className="outcome-facts stage-times">
-            <div>
-              <dt>Evaluation (replay) time</dt>
-              <dd>
-                <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
-              </dd>
-            </div>
-          </dl>
           <ol className="verification-progression">
             {VERIFICATION_PROGRESSION.map((stage, index) => {
               const reached = stageOrder !== undefined && index <= stageOrder;
@@ -885,55 +902,57 @@ function OutcomeSection({
       )}
       {replayAt && (
         <p className="outcome-time">
-          Replay time: <time dateTime={replayAt}>{formatTimestamp(replayAt)}</time>
+          As of <time dateTime={replayAt}>{formatTimestamp(replayAt)}</time>
         </p>
       )}
-      <dl className="outcome-facts">
-        <div>
-          <dt>Readings</dt>
-          <dd>{outcome.sample_count}</dd>
-        </div>
-        <div>
-          <dt>First value</dt>
-          <dd>{outcome.first_value === null ? "No reading" : `${outcome.first_value}${valueUnit}`}</dd>
-        </div>
-        <div>
-          <dt>Last value</dt>
-          <dd>{outcome.last_value === null ? "No reading" : `${outcome.last_value}${valueUnit}`}</dd>
-        </div>
-      </dl>
-      {outcome.note && <p className="outcome-note">{outcome.note}</p>}
-      <details className="history-details">
-        <summary>History</summary>
-        {verification ? (
-        verificationHistory.length === 0 ? (
-          <p>No replay steps yet.</p>
-        ) : (
-          <ul className="outcome-history">
-            {verificationHistory.map((entry) => (
-              <li key={entry.evaluated_at}>
-                <time dateTime={entry.evaluated_at}>{formatTimestamp(entry.evaluated_at)}</time>
-                {" — "}
-                {VERIFICATION_LABEL[entry.stage]}
-                {entry.sample_count !== null ? ` (${entry.sample_count} readings)` : ""}
-              </li>
-            ))}
-          </ul>
-        )
-      ) : history.length === 0 ? (
-        <p>No replay steps yet.</p>
+      {outcome.sample_count === 0 ? (
+        <p className="outcome-no-readings">
+          No readings yet since ARIA started this check. Earlier readings are under The house right now.
+        </p>
       ) : (
-        <ul className="outcome-history">
-          {history.map((entry) => (
-            <li key={entry.evaluated_at}>
-              <time dateTime={entry.evaluated_at}>{formatTimestamp(entry.evaluated_at)}</time>
-              {" — "}
-              {OUTCOME_LABEL[entry.status]} ({entry.sample_count} readings)
-            </li>
-          ))}
-        </ul>
+        <dl className="outcome-facts">
+          <div>
+            <dt>Readings so far</dt>
+            <dd>{outcome.sample_count}</dd>
+          </div>
+          <div>
+            <dt>First value</dt>
+            <dd>{outcome.first_value === null ? "No reading" : `${outcome.first_value}${valueUnit}`}</dd>
+          </div>
+          <div>
+            <dt>Last value</dt>
+            <dd>{outcome.last_value === null ? "No reading" : `${outcome.last_value}${valueUnit}`}</dd>
+          </div>
+        </dl>
       )}
-      </details>
+      {outcome.note && <p className="outcome-note">{plainWords(outcome.note)}</p>}
+      {(verification ? verificationHistory.length > 0 : history.length > 0) && (
+        <details className="history-details">
+          <summary>History</summary>
+          {verification ? (
+            <ul className="outcome-history">
+              {verificationHistory.map((entry) => (
+                <li key={entry.evaluated_at}>
+                  <time dateTime={entry.evaluated_at}>{formatTimestamp(entry.evaluated_at)}</time>
+                  {" — "}
+                  {VERIFICATION_LABEL[entry.stage]}
+                  {entry.sample_count !== null ? ` (${entry.sample_count} readings)` : ""}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="outcome-history">
+              {history.map((entry) => (
+                <li key={entry.evaluated_at}>
+                  <time dateTime={entry.evaluated_at}>{formatTimestamp(entry.evaluated_at)}</time>
+                  {" — "}
+                  {OUTCOME_LABEL[entry.status]} ({entry.sample_count} readings)
+                </li>
+              ))}
+            </ul>
+          )}
+        </details>
+      )}
     </div>
   );
 }
@@ -946,8 +965,8 @@ function EvidenceTimelineSection({ entries }: { entries: EvidenceTimelineEntry[]
       <ol className="evidence-timeline">
         {entries.map((entry) => (
           <li key={entry.kind} className="evidence-timeline-entry">
-            <p className="evidence-timeline-label">{entry.label}</p>
-            {entry.corroboration_only && <p className="corroboration-only">Corroboration only</p>}
+            <p className="evidence-timeline-label">{plainWords(entry.label)}</p>
+            {entry.corroboration_only && <p className="corroboration-only">Supporting only</p>}
             <details className="evidence-details">
               <summary>Entry details</summary>
               <dl className="card-facts">
@@ -986,7 +1005,7 @@ function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedRevie
   return (
     <div className="investigation-block recorded-review">
       {legacy && (
-        <p role="note">Review recorded before answer binding (legacy, not bound to this exact answer)</p>
+        <p role="note">This review was recorded before reviews were tied to one exact answer, so it may not match this one.</p>
       )}
       {mismatch && <p role="note">Review does not match this answer — no review shown.</p>}
       {review ? (
@@ -1011,8 +1030,8 @@ function RecordedReviewBlock({ recordedReview }: { recordedReview: RecordedRevie
       )}
       <p className="provenance">
         Model: {provenance.model_id} — route {provenance.provider_route}, recorded{" "}
-        {provenance.recorded_at ?? "unknown"}, reviewing {provenance.reviewed_model_id ?? "unknown"} at{" "}
-        {provenance.reviewed_at ?? "unknown"}. Validation:{" "}
+        {plainClock(provenance.recorded_at ?? "unknown")}, reviewing {provenance.reviewed_model_id ?? "unknown"} at{" "}
+        {plainClock(provenance.reviewed_at ?? "unknown")}. Validation:{" "}
         {provenance.validation.passed ? "passed" : `failed — ${provenance.validation.reasons.join("; ")}`}
       </p>
       <p className="corroboration-only">A matching review is a bounded check, not proof the narrative is true. A review never changes readiness, verification, or the answer.</p>
@@ -1026,7 +1045,7 @@ function HumanReportSection({ report }: { report: HumanReportPayload | null }) {
     <div className="investigation-block human-report">
       <h3>Technician voice-note report</h3>
       <p>{report.transcript}</p>
-      <p className="corroboration-only">Human report, not a sensor measurement. Corroboration only.</p>
+      <p className="corroboration-only">Human report, not a sensor measurement. Supporting only.</p>
       <dl className="card-facts">
         <div>
           <dt>Observed</dt>
@@ -1043,7 +1062,7 @@ function HumanReportSection({ report }: { report: HumanReportPayload | null }) {
       </dl>
       <p className="provenance">
         Model: {report.provenance.model_id} — route {report.provenance.provider_route}, recorded{" "}
-        {report.provenance.recorded_at ?? "unknown"}, audio fixture {report.provenance.audio_fixture}.
+        {plainClock(report.provenance.recorded_at ?? "unknown")}, audio fixture {report.provenance.audio_fixture}.
       </p>
     </div>
   );
@@ -1073,7 +1092,7 @@ function EvidenceSourcesTable({ sources }: { sources: SourceStatus[] }) {
                 : `${status.newest_value}${status.newest_unit ? ` ${status.newest_unit}` : ""}`;
             return (
               <tr key={status.source} data-source={status.source} className={`availability-${status.availability}`}>
-                <td>{status.source}</td>
+                <td>{humanLabel(status.source)}</td>
                 <td>
                   <span className="dot" aria-hidden="true" /> Status:{" "}
                   <strong>{AVAILABILITY_LABEL[status.availability]}</strong>
@@ -1083,7 +1102,7 @@ function EvidenceSourcesTable({ sources }: { sources: SourceStatus[] }) {
                   newest observed {formatTimestamp(status.newest_observed_at)}, age{" "}
                   {formatAge(status.age_s)}
                   {(status.missing_count ?? 0) > 0 ? ` (Missing readings: ${status.missing_count})` : ""}
-                  {status.source === "weather" && !missing ? " Forecast, not an on-property measurement." : ""}
+                  {status.source === "weather" && !missing ? " Forecast, not a measurement at the house." : ""}
                   {status.source === "human_report" ? " Human report, not a sensor measurement." : ""}
                   {status.notes.length > 0 && (
                     <details className="source-notes-details">
@@ -1118,14 +1137,14 @@ function formatPayloadValue(value: unknown): string {
       const spaced = value.replace(/_/g, " ");
       return spaced.charAt(0).toUpperCase() + spaced.slice(1);
     }
-    return value;
+    return plainWords(value);
   }
   return String(value);
 }
 
 function formatWatcherValue(value: unknown): string {
   if (value === null || value === undefined) return "—";
-  if (typeof value === "string") return value === "" ? "—" : value;
+  if (typeof value === "string") return value === "" ? "—" : plainClock(value);
   if (typeof value === "number" || typeof value === "boolean") return String(value);
   if (Array.isArray(value)) {
     if (value.length === 0) return "none";
@@ -1183,7 +1202,9 @@ function PayloadFacts({ payload }: { payload: Record<string, unknown> }) {
           </div>
         ))}
       </dl>
-      <p className="fields-sent">fields sent: {keys.join(", ")}</p>
+      <p className="fields-sent" data-fields={keys.join(",")}>
+        fields sent: {keys.map(humanLabel).join(", ")}
+      </p>
     </>
   );
 }
@@ -1235,7 +1256,7 @@ function SimulatedTimeline({ events, replayAt, caregiverDeclinedAt }: { events: 
               </dl>
               {event.kind === "scene_acknowledged" && <p>Acknowledged, physical success unknown</p>}
               {event.kind === "hvac_completion_report" && !didNotHappen && (
-                <p>Corroboration only, does not set the outcome</p>
+                <p>Supporting only, does not set the outcome</p>
               )}
               {didNotHappen && (
                 <p>Did not happen: the caregiver declined HVAC contact — shown for the record only.</p>
@@ -1252,7 +1273,7 @@ function SimulatedTimeline({ events, replayAt, caregiverDeclinedAt }: { events: 
 }
 
 const NOTIFICATION_AUDIENCE_LABEL: Record<NotificationAudience, string> = {
-  homeowner: "Homeowner",
+  homeowner: "Resident",
   property_manager: "Property manager",
   family_caregiver: "Family caregiver",
   hvac_company: "HVAC company",
@@ -1262,7 +1283,7 @@ const REFUSAL_REASON_LABEL: Record<string, string> = {
   manager_not_authorized: "property manager not authorized",
   manager_hvac_not_authorized: "manager has not authorized HVAC contact",
   caregiver_not_authorized: "family caregiver not authorized",
-  caregiver_hvac_not_authorized: "caregiver has not authorized HVAC contact",
+  caregiver_hvac_not_authorized: "the caregiver had not approved HVAC contact",
   caregiver_declined: "the caregiver declined HVAC contact",
 };
 
@@ -1271,7 +1292,7 @@ function refusalReasonInWords(notification: Notification): string {
   return REFUSAL_REASON_LABEL[reason] ?? reason.replace(/_/g, " ");
 }
 
-function whatsappLine(whatsapp: NotificationWhatsapp | null | undefined): string {
+function whatsappLine(whatsapp: NotificationWhatsapp | null | undefined): string | null {
   const state = whatsapp?.state ?? "";
   if (state === "accepted_by_api") {
     const id = whatsapp?.message_id ? ` (message id ${whatsapp.message_id})` : "";
@@ -1283,11 +1304,11 @@ function whatsappLine(whatsapp: NotificationWhatsapp | null | undefined): string
   if (state.startsWith("failed:")) {
     return `Delivery failed (${state.slice("failed:".length)}); the notice stays simulated`;
   }
-  return "Simulated, no message was sent";
+  return null;
 }
 
 function notificationStateInWords(notification: Notification): string {
-  if (notification.state === "refused") return `Refused: ${refusalReasonInWords(notification)}`;
+  if (notification.state === "refused") return `Nothing was sent: ${refusalReasonInWords(notification)}`;
   if (notification.state === "simulated_delivered") return "Simulated delivery";
   if (notification.state === "queued") return "Simulated delivery";
   return notification.state.replace(/_/g, " ");
@@ -1316,16 +1337,15 @@ function caregiverStatusParts(permission: CaregiverPermission): {
     };
   }
   return {
-    prefix: "No answer yet — asked at",
-    whenText: permission.requested_at ? formatTimestamp(permission.requested_at) : "an unknown time",
+    prefix: "No answer yet",
+    whenText: "",
     whenDateTime: null,
     effect: "ARIA will not contact HVAC until the caregiver answers.",
   };
 }
 
-function caregiverStatusCopy(permission: CaregiverPermission): { headline: string; effect: string } {
-  const parts = caregiverStatusParts(permission);
-  return { headline: `${parts.prefix} ${parts.whenText}.`, effect: parts.effect };
+function permissionSourceInWords(source: string): string {
+  return source.includes("recorded story") ? "in the recorded story" : source;
 }
 
 function CaregiverPermissionCard({
@@ -1343,26 +1363,26 @@ function CaregiverPermissionCard({
   onSendWhatsapp: () => void;
   sending: boolean;
 }) {
-  const copy = caregiverStatusCopy(permission);
   const parts = caregiverStatusParts(permission);
   const dotTone = permission.status === "approved" ? "ok" : permission.status === "declined" ? "risk" : "watch";
   return (
     <article className="caregiver-permission-card" aria-label="Caregiver permission" data-testid="caregiver-permission">
       <h3 className="card-title">Permission request to the family caregiver</h3>
-      <blockquote className="permission-text">{permission.text}</blockquote>
+      <blockquote className="permission-text">{plainClock(permission.text)}</blockquote>
       <p className="permission-asked">
-        Asked at <time dateTime={permission.requested_at}>{formatTimestamp(permission.requested_at)}</time> — the
-        original request, kept word-for-word at every later step.
+        Asked at <time dateTime={permission.requested_at}>{formatTimestamp(permission.requested_at)}</time>. This
+        request stays as first written, whatever later readings show.
       </p>
       <p className={`permission-status permission-${permission.status}`} role="status">
-        <span className={`status-dot status-dot-${dotTone}`} aria-hidden="true" /> {parts.prefix}{" "}
+        <span className={`status-dot status-dot-${dotTone}`} aria-hidden="true" /> {parts.prefix}
+        {parts.whenText && " "}
         {parts.whenDateTime ? (
           <time dateTime={parts.whenDateTime}>{parts.whenText}</time>
         ) : (
           parts.whenText
         )}
-        . {copy.effect}
-        {permission.source && <span className="permission-source"> ({permission.source})</span>}
+        . {parts.effect}
+        {permission.source && <span className="permission-source"> ({permissionSourceInWords(permission.source)})</span>}
       </p>
       <p className="permission-note">{permission.note}</p>
       {permission.status === "waiting" && (
@@ -1476,14 +1496,13 @@ function HomeownerUpdateCard({
   if (!factsSupport && verification.supporting_ids.length === 0) return null;
   return (
     <section aria-labelledby="homeowner-update-heading" className={sectionClassName}>
-      <h2 id="homeowner-update-heading">Homeowner update</h2>
-      <article className="homeowner-update-card" aria-label="Homeowner update">
+      <h2 id="homeowner-update-heading">Resident update</h2>
+      <article className="homeowner-update-card" aria-label="Resident update">
         <p className="homeowner-update">
           Your home reached and held {tempLabel} before the warm-by time
         </p>
         <p>
-          Evaluation time:{" "}
-          <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
+          As of <time dateTime={verification.evaluated_at}>{formatTimestamp(verification.evaluated_at)}</time>
         </p>
       </article>
     </section>
@@ -1557,49 +1576,56 @@ const BRAD_HOOK =
 const STORY_SCENARIO = "care_home_v1";
 
 const STORY_STEP_TITLES = [
-  "Warm-by plan confirmed, on track",
-  "Evening decline, still on track",
-  "Flagged at risk, caregiver asked",
-  "Thermostat telemetry missing",
+  "Plan confirmed, on track",
+  "Evening, still on track",
+  "Noticed: 2 F below target",
+  "6 F below target, so ARIA asks the caregiver",
+  "Thermostat stops reporting",
   "Caregiver approves HVAC contact",
-  "Thermostat reporting restored",
+  "Thermostat reporting again",
   "Warming observed",
-  "Temperature goal verified",
-  "Completion report as corroboration",
-  "Warm-by expectation met",
+  "Target verified",
+  "Technician's report arrives",
+  "Warm-by target met",
 ];
 
 const STORY_STEP_GUIDANCE = [
-  "An older adult lives alone in demo-house. The household warm-by expectation is 07:00 at 68 F, recorded with the resident's consent: home status and observations may go to the resident and an adult-child family caregiver, nothing medical, no location tracking, no fall sensing. The plan is confirmed at 19:20 with caregiver coordination allowed; readiness is on track with the living area near 69 F.",
-  "By 21:00 the living area has eased to about 68.4 F and readiness is still on track. Nothing has been flagged yet, so there is no follow-up, no caregiver request, and no HVAC notice.",
-  "At 23:30 ARIA Home flags at risk: the room is near 59.6 F, about 8 F below the 68 F goal, with the furnace reported idle since 16:00. It notifies the resident and the family caregiver. Only scoped audiences are notified: the caregiver notice carries allowed fields only. ARIA then asks the caregiver: may it contact the HVAC company? Try Approve or Decline on the permission card: HVAC is contacted only after approval, and the Outcome headline never changes.",
-  "Overnight the thermostat stops reporting (outage 01:30-04:20); an independent room sensor shows the living area near 52 F.",
-  "The caregiver explicitly authorizes contacting the HVAC company on file (in the recorded story, unless you declined at the previous step); only then is the simulated HVAC request allowed, carrying property, access note, and observations only, and the caregiver is told it was sent.",
-  "Thermostat reporting is restored, but reconnection alone proves nothing; verification is still pending.",
-  "Independent room readings show warming; the thermostat trend alone never decides this.",
-  "Independent readings held the 68 F goal through the full 30-minute hold: verified before the warm-by time, with the reading and evaluation times shown.",
-  "The HVAC completion report arrives after verification, as corroboration only; it changes no outcome.",
-  "The warm-by time is evaluated from readings received by 07:00, not assumed from verification.",
+  "The resident, an older adult, lives alone and agreed to share home status with a family caregiver: nothing medical, no location tracking, no fall sensing.",
+  "The room has eased a little and is still above target. ARIA tells no one.",
+  "No one is asked yet; ARIA asks at 6 F below. Both numbers are configured settings, not safety limits.",
+  "ARIA tells the resident and asks the caregiver before contacting anyone else. Try Approve or Decline on the card below; the readings decide the outcome either way.",
+  "The separate room sensor keeps reporting, so ARIA can still see the living room.",
+  "In this recorded story the caregiver answers now. Only that approval lets ARIA send the HVAC company a simulated request.",
+  "A technician visited from 3:30 to 4:15 AM. Neither the visit nor the thermostat coming back proves the house is warming; only the room sensor can.",
+  "The room sensor shows the living room climbing from its overnight low. It still has a long way to go to reach the target.",
+  "Independent room readings stayed at or above target for the full 30-minute hold, ahead of the warm-by time.",
+  "It arrives after the room was already verified, so it changes nothing. It is supporting information only.",
+  "ARIA checks the readings received by 7:00 AM rather than relying on the earlier verification.",
 ];
 
 const DECLINED_STORY_STEP_TITLES: Record<number, string> = {
-  3: "Thermostat telemetry missing, no repair arranged",
-  4: "Caregiver declines HVAC contact",
-  5: "Thermostat still silent, house still cold",
-  6: "No warming observed",
-  7: "Temperature goal not verified",
-  8: "No completion report: nobody was contacted",
-  9: "Warm-by expectation missed",
+  3: "Caregiver declines HVAC contact",
+  4: "Thermostat stops reporting, no repair arranged",
+  5: "HVAC contact declined",
+  6: "Thermostat still silent, house still cold",
+  7: "No warming observed",
+  8: "Target not verified",
+  9: "No report: nobody was contacted",
+  10: "Warm-by target missed",
 };
 
 const DECLINED_STORY_STEP_GUIDANCE: Record<number, string> = {
-  3: "Overnight the thermostat stops reporting; the independent room sensor holds near 52 F. No repair has been arranged, so there is no visit to expect.",
-  4: "The caregiver declines HVAC contact, so no HVAC request is sent and no visit is scheduled. The independent room sensor shows the living area still near 52 F, below the 68 F goal.",
-  5: "The thermostat is still silent and the room is still near 52 F. Silence proves nothing either way; verification stays pending.",
-  6: "Independent room readings show no warming; the house holds near 52 F with no warming signature.",
-  7: "The independent room sensor shows the living area near 52 F, below the 68 F goal, so the goal is not verified.",
-  8: "Nobody was contacted, so there is no completion report and no technician visit. The record shows readings only.",
+  3: "ARIA will not contact the HVAC company. It keeps checking the room sensor.",
+  4: "No repair has been arranged, so there is no visit to expect. The room sensor keeps reporting.",
+  5: "No HVAC request goes out and no visit is scheduled. ARIA keeps checking the room sensor.",
+  6: "Silence proves nothing either way, so nothing can be verified yet.",
+  7: "The room sensor shows no rise.",
+  8: "The room is far below the target, so there is nothing to verify.",
+  9: "With nobody contacted, there is no technician and no report. The record shows readings only.",
 };
+
+const AUTHORSHIP_LINE =
+  "Meta's Muse models wrote most of ARIA Home's code, and Claude (Anthropic) wrote the rest under the direction of its author, Brad. docs/build-log/ is the record.";
 
 const MODEL_CONTRIBUTIONS = [
   {
@@ -1620,12 +1646,12 @@ const MODEL_CONTRIBUTIONS = [
   {
     model: "muse-wonder-1.0 (second review)",
     role: "Recorded structured second review of a displayed muse-spark-1.3 answer",
-    status: "Bound to the exact displayed answer; legacy reviews are labelled unbound; never changes readiness, verification, or validity",
+    status: "Tied to the exact answer on screen; never changes readiness, verification, or validity",
   },
   {
     model: "muse-voice-transcribe-1.0 (human report)",
     role: "Recorded transcript of the synthetic technician voice note as a human-report record",
-    status: "Corroboration only; never a measurement, outcome, or verification input",
+    status: "Supporting only; never a measurement, outcome, or verification input",
   },
   {
     model: "muse-spark-1.3 (anomaly watcher)",
@@ -1634,7 +1660,7 @@ const MODEL_CONTRIBUTIONS = [
   },
   {
     model: "muse-wonder-1.0 and muse-spark-1.3",
-    role: "Wrote the application code",
+    role: "Wrote most of the application code",
     status: "Authorship; no runtime role",
   },
 ];
@@ -1674,7 +1700,7 @@ function LawsView({ scenario, at, onBack, active }: { scenario: string; at: stri
         laws never enforce.
       </p>
       <button type="button" className="ghost-button" onClick={onBack}>
-        Back to investigation
+        Back to House
       </button>
       {error && (
         <p role="alert" className="error">
@@ -1749,7 +1775,7 @@ function LawsView({ scenario, at, onBack, active }: { scenario: string; at: stri
           {watcher.provenance && (
             <p>
               Model: {watcher.provenance.model_id} — route {watcher.provenance.provider_route}, recorded{" "}
-              {watcher.provenance.recorded_at ?? "unknown"}, prompt{" "}
+              {plainClock(watcher.provenance.recorded_at ?? "unknown")}, prompt{" "}
               {watcher.provenance.watcher_prompt_version}, input revision{" "}
               {watcher.provenance.input_revision}, laws {watcher.provenance.laws_version}.
             </p>
@@ -1876,7 +1902,7 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
       x: colX[0],
       y: 10 + (trace.sources.length + 1) * (nodeH + gap),
       label: "human report, not a measurement",
-      sub: "corroboration only",
+      sub: "supporting only",
       color: TRACE_SOURCE_COLORS.human_report ?? "#92400e",
       state: "stale",
       detail: `${String(trace.human_report.payload.transcript ?? "").slice(0, 300)} (${trace.human_report.note})`,
@@ -1972,7 +1998,7 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
       : (trace.watcher.model_note ?? "no model observations for this snapshot"),
   });
   if (trace.human_report) {
-    edges.push({ id: "edge-human-verification", from: "human", to: "verification", state: "stale", label: "human report as corroboration only", detail: "a human report never counts as a sensor measurement" });
+    edges.push({ id: "edge-human-verification", from: "human", to: "verification", state: "stale", label: "human report, supporting only", detail: "a human report never counts as a sensor measurement" });
   }
   edges.push({ id: "edge-pack-watcher", from: "pack", to: "watcher", state: "info", label: "observations checked against the pack", detail: trace.watcher.model_note ?? "watcher observations verified against the evidence pack" });
 
@@ -1998,7 +2024,7 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
       x: colX[3],
       y: 10 + trace.notices.length * (nodeH + gap),
       label: permissionLabel,
-      sub: `${permissionEffect} — asked at ${askedAt}`,
+      sub: permissionEffect,
       color: "#0e7490",
       state: permissionState,
       detail: `${permission.text} Asked at ${askedAt}. (${permission.note})`,
@@ -2023,7 +2049,11 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
 
   const counts = [trace.sources.length + 2, trace.checks.length, decisionCount + 1, trace.notices.length + (trace.permission ? 1 : 0)];
   const height = Math.max(...counts) * (nodeH + gap) + 20;
-  return { nodes, edges, height: Math.max(height, 220) };
+  return {
+    nodes: nodes.map((node) => ({ ...node, label: plainClock(node.label), sub: plainClock(node.sub), detail: plainClock(node.detail) })),
+    edges: edges.map((edge) => ({ ...edge, detail: plainClock(edge.detail) })),
+    height: Math.max(height, 220),
+  };
 }
 
 function traceEdgePath(nodes: TraceMapNode[], from: string, to: string): string {
@@ -2088,7 +2118,7 @@ function TraceView({ scenario, at, times, onSelectAt, onBack, active, investigat
         <p>Showing the recorded story; your own choices appear once you start an investigation.</p>
       )}
       <button type="button" className="ghost-button" onClick={onBack}>
-        Back
+        Back to House
       </button>
       <div className="trace-times" role="group" aria-label="Trace replay time">
         {times.map((time) => (
@@ -2180,16 +2210,16 @@ function TraceView({ scenario, at, times, onSelectAt, onBack, active, investigat
                 key={step.seq}
                 data-state={traceNodeState(step.state)}
                 data-testid={`trace-step-${step.seq}`}
-                onClick={() => setSelected({ title: step.label, state: step.state, detail: step.detail })}
+                onClick={() => setSelected({ title: step.label, state: step.state, detail: plainClock(step.detail) })}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") setSelected({ title: step.label, state: step.state, detail: step.detail });
+                  if (event.key === "Enter" || event.key === " ") setSelected({ title: step.label, state: step.state, detail: plainClock(step.detail) });
                 }}
                 tabIndex={0}
                 role="button"
-                aria-label={`${step.label}: ${step.detail}`}
+                aria-label={`${step.label}: ${plainClock(step.detail)}`}
               >
                 <span className={`trace-dot trace-dot-${traceNodeState(step.state)}`} aria-hidden="true" />
-                {step.label} — {step.detail}
+                {step.label} — {plainClock(step.detail)}
               </li>
             ))}
             </ol>
@@ -2236,15 +2266,7 @@ function formatLongTime(value: string | null): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   const weekday = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, weekday: "long" }).format(date);
-  const day = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, day: "numeric" }).format(date);
-  const month = new Intl.DateTimeFormat("en-US", { timeZone: PROPERTY_TIMEZONE, month: "long" }).format(date);
-  const time = new Intl.DateTimeFormat("en-US", {
-    timeZone: PROPERTY_TIMEZONE,
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(date);
-  return `${weekday} ${day} ${month}, ${time}, ET`;
+  return `${weekday}, ${formatTimestamp(value)}`;
 }
 
 interface Verdict {
@@ -2303,40 +2325,46 @@ function sourceByKind(sources: SourceStatus[] | undefined, kind: SourceKind): So
   return sources?.find((status) => status.source === kind) ?? null;
 }
 
-function trendWord(trend: IndoorTrend | null, lastHourChangeF: number | null): string {
-  if (typeof lastHourChangeF === "number" && Math.abs(lastHourChangeF) <= 0.2) return "holding";
-  const rate = trend?.rate_per_hour;
-  if (typeof rate === "number" && trend?.sufficient) {
-    if (rate < 0) return "falling";
-    if (rate > 0) return "rising";
-    return "steady";
-  }
-  return "trend unknown";
+function roomMovement(
+  room: SourceStatus | null,
+  lastHourChangeF: number | null,
+  targetTemp: number | null,
+  targetHeld: boolean,
+): { word: "holding" | "falling" | "rising" | "trend unknown"; rate: number } {
+  if (typeof lastHourChangeF !== "number") return { word: "trend unknown", rate: 0 };
+  const rate = Math.abs(Math.round(lastHourChangeF * 10) / 10);
+  const heldAtTarget =
+    targetHeld &&
+    targetTemp !== null &&
+    typeof room?.newest_value === "number" &&
+    room.newest_value >= targetTemp;
+  if (rate <= 0.2 || heldAtTarget) return { word: "holding", rate };
+  return { word: lastHourChangeF < 0 ? "falling" : "rising", rate };
 }
 
 function buildLead(
   sources: SourceStatus[] | undefined,
   trend: IndoorTrend | null,
   lastHourChangeF: number | null,
+  targetTemp: number | null,
+  targetHeld: boolean,
 ): string | null {
   const parts: string[] = [];
   const room = sourceByKind(sources, "room_sensor");
   if (room && room.newest_value !== null && room.newest_value !== undefined) {
     const unit = room.newest_unit ? ` ${room.newest_unit}` : "";
+    const movement = roomMovement(room, lastHourChangeF, targetTemp, targetHeld);
     let roomPart: string;
-    if (typeof lastHourChangeF === "number" && Math.abs(lastHourChangeF) <= 0.2) {
+    if (movement.word === "holding") {
       roomPart = `Living room holding at ${room.newest_value}${unit}`;
       const fallen = trend?.change;
       if (typeof fallen === "number" && trend?.sufficient && fallen < 0) {
         roomPart += `, down ${Math.abs(Math.round(fallen * 10) / 10)} F over the last 3 hours`;
       }
-    } else {
+    } else if (movement.word === "trend unknown") {
       roomPart = `Living room ${room.newest_value}${unit}`;
-      const rate = trend?.rate_per_hour;
-      if (typeof rate === "number" && trend?.sufficient) {
-        if (rate < 0) roomPart += ` and falling ${Math.abs(Math.round(rate * 10) / 10)} F an hour`;
-        else if (rate > 0) roomPart += ` and rising ${Math.round(rate * 10) / 10} F an hour`;
-      }
+    } else {
+      roomPart = `Living room ${room.newest_value}${unit} and ${movement.word} ${movement.rate} F an hour`;
     }
     parts.push(roomPart);
   }
@@ -2418,8 +2446,8 @@ function CameraTile({ scenario, at, enabled }: { scenario: string; at: string; e
 
 function GlanceTiles({
   sources,
-  trend,
   lastHourChangeF,
+  targetHeld,
   targetTemp,
   targetUnit,
   plannedArrival,
@@ -2429,8 +2457,8 @@ function GlanceTiles({
   visualEnabled,
 }: {
   sources: SourceStatus[] | undefined;
-  trend: IndoorTrend | null;
   lastHourChangeF: number | null;
+  targetHeld: boolean;
   targetTemp: number | null;
   targetUnit: string | null;
   plannedArrival: string | null;
@@ -2445,8 +2473,8 @@ function GlanceTiles({
     room && room.newest_value !== null && room.newest_value !== undefined
       ? `${room.newest_value}${room.newest_unit ? ` ${room.newest_unit}` : ""}`
       : "No reading";
-  const insideTrend = trendWord(trend, lastHourChangeF);
-  const targetLabel = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "the goal";
+  const insideTrend = roomMovement(room, lastHourChangeF, targetTemp, targetHeld).word;
+  const targetLabel = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "the target";
   const arrivalLabel = plannedArrival ? shortTimeLabel(plannedArrival) : "the warm-by time";
   const thermostatState =
     !thermostat || thermostat.availability === "available"
@@ -2480,7 +2508,7 @@ function GlanceTiles({
           <p className="tile-value">
             {targetLabel} by {arrivalLabel}
           </p>
-          <p className="tile-sub">warm-by expectation</p>
+          <p className="tile-sub">target in the plan</p>
         </li>
         <li className="tile">
           <p className="tile-title">
@@ -2521,6 +2549,18 @@ function NoticeArticle({
     NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience;
   const acks = notification.acks ?? [];
   const ack = acks.length > 0 ? acks[acks.length - 1] : null;
+  const delivery = whatsappLine(notification.whatsapp);
+  if (notification.state === "refused") {
+    return (
+      <article className="notification-card" aria-label={`${audienceLabel} notification`}>
+        <h3 className="card-title">{audienceLabel}</h3>
+        <p className="notification-state">
+          Nothing was sent at <time dateTime={notification.created_at}>{shortTimeLabel(notification.created_at)}</time>:{" "}
+          {refusalReasonInWords(notification)}.
+        </p>
+      </article>
+    );
+  }
   return (
     <article
       className="notification-card"
@@ -2534,9 +2574,7 @@ function NoticeArticle({
           {formatTimestamp(notification.created_at)}
         </time>
       </p>
-      <p>
-        {whatsappLine(notification.whatsapp)}
-      </p>
+      {delivery && <p>{delivery}</p>}
       <details className="notice-message-details">
         <summary>Show the simulated message</summary>
         <h4 className="notice-facts-heading">Facts when this notice was created ({shortTimeLabel(notification.created_at)})</h4>
@@ -2601,7 +2639,7 @@ function KnowRow({
           <span className="know-row-title">{title}</span>
           <span className="know-row-meta">{meta}</span>
         </button>
-        {open && <div className="know-row-detail">{children}</div>}
+        {open && children && <div className="know-row-detail">{children}</div>}
       </div>
     </li>
   );
@@ -2622,7 +2660,9 @@ function WhoKnows({
   sendingWhatsappId,
   homeownerReady,
   sectionClassName,
+  at,
 }: {
+  at: string;
   permission: CaregiverPermission | null;
   onDecide: (decision: "approve" | "decline") => void;
   deciding: boolean;
@@ -2643,9 +2683,16 @@ function WhoKnows({
   const homeownerNotices = notifications.filter((item) => item.audience === "homeowner");
   const managerNotices = notifications.filter((item) => item.audience === "property_manager");
   const articleProps = { onAck, ackingId, whatsappConfigured, onSendWhatsapp: onSendWhatsappFor, sendingWhatsappId };
-  const caregiverClause = permission
-    ? `${caregiverStatusCopy(permission).headline} ${caregiverStatusCopy(permission).effect}`
-    : "No caregiver request at this step — no HVAC decision to make.";
+  const caregiverMeta =
+    permission?.status === "approved" ? "Approved" : permission?.status === "declined" ? "Declined" : "No answer yet";
+  const allSimulated = notifications.every((item) => whatsappLine(item.whatsapp) === null);
+  const homeownerMeta = homeownerReady
+    ? "Warm-by target met; see the resident update below."
+    : homeownerNotices.length > 0
+      ? Date.parse(homeownerNotices[homeownerNotices.length - 1].created_at) === Date.parse(at)
+        ? `Told at this step, ${shortTimeLabel(at)}.`
+        : `Told earlier, at ${shortTimeLabel(homeownerNotices[homeownerNotices.length - 1].created_at)}. No new update at this step.`
+      : "Nothing sent to the resident yet.";
   return (
     <section aria-labelledby="who-knows-heading" className={sectionClassName}>
       <p className="section-label">Notices</p>
@@ -2658,12 +2705,14 @@ function WhoKnows({
       {!permission && notifications.length === 0 && !notificationsError ? (
         <p>No notices visible at this step.</p>
       ) : (
+      <>
+      {allSimulated && <p className="notices-simulated">These notices are simulated. No message was sent.</p>}
       <ul className="know-rows">
         {permission && (
           <KnowRow
             tone={permission.status === "approved" ? "ok" : permission.status === "declined" ? "risk" : "watch"}
             title="Family caregiver"
-            meta={caregiverStatusCopy(permission).headline}
+            meta={caregiverMeta}
           >
             <CaregiverPermissionCard
               permission={permission}
@@ -2690,40 +2739,23 @@ function WhoKnows({
             title="HVAC company"
             meta={
               hvacNotices.some((item) => item.state === "simulated_delivered")
-                ? `Simulated request sent — fields sent: ${Object.keys(
-                  hvacNotices.find((item) => item.state === "simulated_delivered")?.payload ?? {},
-                ).join(", ")}. ${caregiverClause}`
+                ? "Simulated request sent."
                 : hvacNotices.length > 0
-                  ? `No request sent: ${refusalReasonInWords(hvacNotices[hvacNotices.length - 1])}. ${caregiverClause}`
-                  : `No HVAC request at this time. ${caregiverClause}`
+                  ? "No request sent."
+                  : "No HVAC request at this time."
             }
           >
-            <p>{caregiverClause}</p>
-            {hvacNotices.length === 0 ? (
-              <p>No HVAC request at this time.</p>
-            ) : (
+            {hvacNotices.length > 0 &&
               hvacNotices.map((notification) => (
                 <NoticeArticle key={notification.id} notification={notification} {...articleProps} />
-              ))
-            )}
+              ))}
           </KnowRow>
         )}
-        <KnowRow
-          tone={homeownerReady ? "ok" : "unknown"}
-          title="Resident and homeowner update"
-          meta={
-            homeownerReady
-              ? "Warm-by expectation met — see the homeowner update below."
-              : "No homeowner update at this step."
-          }
-        >
-          {homeownerNotices.length === 0 ? (
-            <p>No homeowner update at this step.</p>
-          ) : (
+        <KnowRow tone={homeownerReady ? "ok" : "unknown"} title="Resident" meta={homeownerMeta}>
+          {homeownerNotices.length > 0 &&
             homeownerNotices.map((notification) => (
               <NoticeArticle key={notification.id} notification={notification} {...articleProps} />
-            ))
-          )}
+            ))}
         </KnowRow>
         {managerNotices.map((notification) => (
           <KnowRow key={notification.id} tone="unknown" title="Property manager" meta={notificationStateInWords(notification)}>
@@ -2731,6 +2763,7 @@ function WhoKnows({
           </KnowRow>
         ))}
       </ul>
+      </>
       )}
     </section>
   );
@@ -2798,7 +2831,7 @@ function CodeChecks({ scenario, at, active }: { scenario: string; at: string; ac
                       <p className="know-row-title">
                         {check.check} on {check.target} — failed
                       </p>
-                      <p className="know-row-meta">{check.reason}</p>
+                      <p className="know-row-meta">{plainClock(check.reason)}</p>
                     </div>
                   </li>
                 ))}
@@ -2819,7 +2852,7 @@ function CodeChecks({ scenario, at, active }: { scenario: string; at: string; ac
                         <p className="know-row-title">
                           {check.check} on {check.target} — passed
                         </p>
-                        <p className="know-row-meta">{check.reason}</p>
+                        <p className="know-row-meta">{plainClock(check.reason)}</p>
                       </div>
                     </li>
                   ))}
@@ -2841,7 +2874,7 @@ function CodeChecks({ scenario, at, active }: { scenario: string; at: string; ac
                         <p className="know-row-title">
                           {check.check} on {check.target} — not run
                         </p>
-                        <p className="know-row-meta">{check.reason}</p>
+                        <p className="know-row-meta">{plainClock(check.reason)}</p>
                       </div>
                     </li>
                   ))}
@@ -2864,9 +2897,11 @@ function AppHeader({
   selectedAt,
   onStep,
   canStep,
+  stepButtons,
   theme,
   onToggleTheme,
 }: {
+  stepButtons: boolean;
   page: HousePage;
   onPage: (next: HousePage) => void;
   showNav: boolean;
@@ -2909,25 +2944,29 @@ function AppHeader({
           </p>
           {showNav && (
             <div className="stepper" role="group" aria-label="Replay time">
-              <button
-                type="button"
-                onClick={() => index > 0 && onStep(times[index - 1].at)}
-                disabled={!canBack}
-                aria-label="Go back one replay step"
-              >
-                Back
-              </button>
+              {stepButtons && (
+                <button
+                  type="button"
+                  onClick={() => index > 0 && onStep(times[index - 1].at)}
+                  disabled={!canBack}
+                  aria-label="Go back one replay step"
+                >
+                  Back
+                </button>
+              )}
               <span className="eval-time" role="status">
                 {shortTimeLabel(selectedAt)}
               </span>
-              <button
-                type="button"
-                onClick={() => index >= 0 && index < times.length - 1 && onStep(times[index + 1].at)}
-                disabled={!canNext}
-                aria-label="Go forward one replay step"
-              >
-                Next
-              </button>
+              {stepButtons && (
+                <button
+                  type="button"
+                  onClick={() => index >= 0 && index < times.length - 1 && onStep(times[index + 1].at)}
+                  disabled={!canNext}
+                  aria-label="Go forward one replay step"
+                >
+                  Next
+                </button>
+              )}
             </div>
           )}
           <button
@@ -3641,18 +3680,33 @@ export default function App() {
     storyRoom && storyRoom.newest_value !== null && storyRoom.newest_value !== undefined
       ? `${storyRoom.newest_value}${storyRoom.newest_unit ? ` ${storyRoom.newest_unit}` : ""}`
       : "no reading";
+  const approvedAlready =
+    caregiverPermission?.status === "approved" &&
+    caregiverPermission.decided_at !== null &&
+    Date.parse(caregiverPermission.decided_at) < Date.parse(selectedAt);
+  const storyApprovedEarly = caregiverPermission?.status === "approved" && caregiverPermission.source?.includes("recorded story") !== true;
   const storyTitle = declinedAtThisStep && storyIdx >= 3
     ? (DECLINED_STORY_STEP_TITLES[storyIdx] ?? STORY_STEP_TITLES[storyIdx] ?? "")
-    : storyIdx === 4 && !declinedAtThisStep && caregiverPermission?.status !== "approved"
-      ? "Waiting on the caregiver — no HVAC contact yet"
-      : (STORY_STEP_TITLES[storyIdx] ?? "");
+    : storyIdx === 3 && caregiverPermission?.status === "approved"
+      ? "Caregiver approves HVAC contact"
+      : storyIdx === 5 && approvedAlready
+        ? "HVAC company already contacted"
+        : storyIdx === 5 && caregiverPermission?.status !== "approved"
+          ? "Waiting on the caregiver"
+          : (STORY_STEP_TITLES[storyIdx] ?? "");
   const storyGuidance = declinedAtThisStep && storyIdx >= 3
-    ? storyIdx === 9
-      ? `The 07:00 warm-by time passes with the living area at ${storyRoomLabel} against the 68 F goal — the expectation is missed. Nobody was contacted, so no visit, report, or voice note exists at any step after the decline.`
+    ? storyIdx === 10
+      ? `The 7:00 AM warm-by time passes with the living room at ${storyRoomLabel}. Nobody was contacted, so no visit or report exists.`
       : (DECLINED_STORY_STEP_GUIDANCE[storyIdx] ?? STORY_STEP_GUIDANCE[storyIdx] ?? "")
-    : storyIdx === 4 && !declinedAtThisStep && caregiverPermission?.status !== "approved"
-      ? "The recorded story authorizes HVAC contact at this step; in this replay nothing is sent until the caregiver answers on the permission card."
-      : (STORY_STEP_GUIDANCE[storyIdx] ?? "");
+    : storyIdx === 3 && caregiverPermission?.status === "approved"
+      ? "ARIA may now send the HVAC company a simulated request. The readings still decide the outcome."
+      : storyIdx === 5 && approvedAlready
+        ? "You approved as the caregiver earlier, so the simulated request has already gone out. ARIA now waits for later readings."
+        : storyIdx === 5 && storyApprovedEarly
+          ? "You approved as the caregiver, so ARIA sent the HVAC company a simulated request."
+          : storyIdx === 5 && caregiverPermission?.status !== "approved"
+            ? "Nothing goes to the HVAC company until the caregiver answers on the card below."
+            : (STORY_STEP_GUIDANCE[storyIdx] ?? "");
   const earlierInvestigations = inStory
     ? storyCheckpoints
       .slice(0, Math.min(storyIndex, storyCheckpoints.length))
@@ -3678,7 +3732,7 @@ export default function App() {
         : REPLAY_TIMES;
   const stepperTimes =
     inStory && storyCheckpoints.length > 0
-      ? storyCheckpoints.map((at) => ({ label: at.slice(11, 16), at }))
+      ? storyCheckpoints.map((at) => ({ label: clock12(at.slice(11, 16)), at }))
       : replayTimes;
   const verdict = !replayLoading || deterministicReadiness || verification
     ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null)
@@ -3688,7 +3742,8 @@ export default function App() {
   const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
   const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
   const plannedArrival = contextData?.planned_arrival ?? null;
-  const lead = buildLead(data?.sources, trend, replayMetrics?.last_hour_change_f ?? null);
+  const targetHeld = verification?.stage === "goal_verified" || verification?.stage === "arrival_met";
+  const lead = buildLead(data?.sources, trend, replayMetrics?.last_hour_change_f ?? null, warmByTargetTemp, targetHeld);
   const gapCallout = gapCalloutFor(data?.sources);
   const visualEnabled =
     publicMode === false || scenario !== STORY_SCENARIO || storyCheckpoints.includes(selectedAt);
@@ -3715,7 +3770,7 @@ export default function App() {
   })();
   const pillText =
     scenario === STORY_SCENARIO
-      ? "Synthetic demo · demo-house, Petoskey"
+      ? "Synthetic demo · a house in Petoskey"
       : `Synthetic demo · ${scenario}`;
   const homeownerReady = verification?.stage === "arrival_met" && followUpTargetTemp !== null;
 
@@ -3769,8 +3824,8 @@ export default function App() {
         tone: status ? availabilityTone(status.availability) : ("unknown" as StatusTone),
         note:
           kind === "weather"
-            ? "Forecast, not an on-property measurement."
-            : status?.notes[0] ?? (status ? `newest observed ${formatTimestamp(status.newest_observed_at)}` : "no readings"),
+            ? "Forecast, not a measurement at the house."
+            : status?.notes[0] ?? (status ? `Latest reading ${formatTimestamp(status.newest_observed_at)}` : "No readings"),
       };
     }),
   ];
@@ -3800,12 +3855,13 @@ export default function App() {
           page="house"
           onPage={() => undefined}
           showNav={false}
-          pillText="Synthetic demo · demo-house, Petoskey"
+          pillText="Synthetic demo · a house in Petoskey"
           pillTone="unknown"
           times={[]}
           selectedAt={storyCheckpoints[0] ?? CARE_START_AT}
           onStep={() => undefined}
           canStep={false}
+          stepButtons={false}
           theme={theme}
           onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
         />
@@ -3815,12 +3871,12 @@ export default function App() {
             <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
             <p>ARIA Home replays a synthetic winter night and shows how it gets the right person moving when something looks wrong.</p>
             <div className="household-card">
-              <p>Built during the Hackathon: all of ARIA Home's code, written with Meta's Muse models. Pre-existing: only the name ARIA and planning notes.</p>
+              <p>Built during the Hackathon. {AUTHORSHIP_LINE} Pre-existing: only the name ARIA and planning notes.</p>
               <p>muse-spark-1.3 explains, muse-wonder-1.0 reviews, muse-voice-transcribe-1.0 transcribes, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames. Code decides; models never do.</p>
             </div>
             <blockquote className="brad-hook">{BRAD_HOOK}</blockquote>
             <div className="household-card">
-              <p>demo-house · Petoskey, Michigan · synthetic · warm-by 68 F at 7:00 · caregiver: her daughter</p>
+              <p>The story: a synthetic house in Petoskey, Michigan. An older woman lives there alone and her daughter is the family caregiver. Target: 68 F by 7:00 AM.</p>
             </div>
             <div className="landing-actions">
               <button type="button" className="btn-primary" onClick={startStory} autoFocus>
@@ -3859,6 +3915,7 @@ export default function App() {
         selectedAt={selectedAt}
         onStep={handleReplayTime}
         canStep={investigationId !== null}
+        stepButtons={!inStory}
         theme={theme}
         onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
       />
@@ -3879,7 +3936,7 @@ export default function App() {
         <p className="verdict-eyebrow">{formatLongTime(selectedAt)}</p>
         {verdict ? (
           <>
-            <h1 className="verdict-headline">{verdict.headline}</h1>
+            <h1 className="verdict-headline">{plainWords(verdict.headline)}</h1>
             {lead && <p className="verdict-lead">{lead}</p>}
             {gapCallout && (
               <div className="gap-callout" role="note">
@@ -3900,30 +3957,33 @@ export default function App() {
           </p>
           <h2 id="story-heading" aria-label={`Step ${Math.min(storyIndex + 1, storyCheckpoints.length)} of ${storyCheckpoints.length} — ${storyTitle} (The warm-by story)`}>{storyTitle}</h2>
           <p>{storyGuidance}</p>
-          {evidenceTimeline.length > 0 && (
-            <p className="story-known-line">
-              Known at this step:{" "}
-              {evidenceTimeline
-                .map(
-                  (entry) =>
-                    `${entry.label} — observed ${formatTimestamp(entry.observed_at)}, first known ${formatTimestamp(entry.first_known_at)}${entry.corroboration_only ? " (corroboration only)" : ""}`,
-                )
-                .join("; ")}
-            </p>
-          )}
-          <p className="story-caregiver-caption" data-testid="story-caregiver-caption" role="status">
-            {caregiverPermission
-              ? `${caregiverStatusCopy(caregiverPermission).headline} ${caregiverStatusCopy(caregiverPermission).effect} Asked at ${formatTimestamp(caregiverPermission.requested_at)}.`
-              : "No caregiver request at this step."}
-          </p>
-          {activity && (
-            <p className="story-activity-line" data-testid="story-activity-line" role="status">
-              Activity: {activity.text} <span className="story-activity-source">(source: {activity.source})</span>
-            </p>
+          {(activity || evidenceTimeline.length > 0) && (
+            <details className="story-record">
+              <summary>What ARIA recorded at this step</summary>
+              {activity && (
+                <p className="story-activity-line" data-testid="story-activity-line">
+                  {plainWords(activity.text)}{" "}
+                  <span className="story-activity-source">
+                    ({activity.source.startsWith("event:") ? "from a simulated event" : "computed by code"})
+                  </span>
+                </p>
+              )}
+              {evidenceTimeline.length > 0 && (
+                <ul className="story-known-line">
+                  {evidenceTimeline.map((entry) => (
+                    <li key={entry.kind}>
+                      {plainWords(entry.label)}: observed {shortTimeLabel(entry.observed_at)}, first known{" "}
+                      {shortTimeLabel(entry.first_known_at)}
+                      {entry.corroboration_only ? " (supporting only)" : ""}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </details>
           )}
           <div className="story-nav" data-story-waiting={storyWaiting ? "true" : "false"}>
             <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId || storyWaiting}>
-              Rewind to start
+              Back to start
             </button>
             <button
               type="button"
@@ -3949,11 +4009,11 @@ export default function App() {
             <>
             <p className="story-complete" role="status">
               {verification?.stage === "arrival_met" || verification?.stage === "goal_verified" ? (
-                <>Story complete — the home reached and held 68 F before the 07:00 warm-by time. Explore the evidence or reset your session to run it again.</>
+                <>Story complete. The house reached and held 68 F before the 7:00 AM warm-by time. Explore the evidence or reset your session to run it again.</>
               ) : declinedAtThisStep ? (
-                <>Story complete — the caregiver declined HVAC contact, so no repair was arranged; the living area sits at {storyRoomLabel} against the 68 F goal at the 07:00 warm-by time. Explore the evidence or reset your session to run it again.</>
+                <>Story complete. The caregiver declined HVAC contact, so no repair was arranged; the living room sits at {storyRoomLabel} against the 68 F target at the 7:00 AM warm-by time. Explore the evidence or reset your session to run it again.</>
               ) : (
-                <>Story complete — the 07:00 warm-by time passed with the living area at {storyRoomLabel} against the 68 F goal. Explore the evidence or reset your session to run it again.</>
+                <>Story complete. The 7:00 AM warm-by time passed with the living room at {storyRoomLabel} against the 68 F target. Explore the evidence or reset your session to run it again.</>
               )}
             </p>
               <p className="story-proof" role="status">
@@ -3991,7 +4051,7 @@ export default function App() {
               <ul>
                 {data.sources.map((status) => (
                   <li key={status.source}>
-                    {status.source}: {AVAILABILITY_LABEL[status.availability]} — newest observed{" "}
+                    {humanLabel(status.source)}: {AVAILABILITY_LABEL[status.availability]} — newest observed{" "}
                     {formatTimestamp(status.newest_observed_at)}, age {formatAge(status.age_s)}
                     {status.notes.length > 0 ? ` (${status.notes.join("; ")})` : ""} (synthetic,
                     received by {formatTimestamp(data.at)})
@@ -4009,7 +4069,7 @@ export default function App() {
                 <p>Status: {READINESS_LABEL[deterministicReadiness.status]}</p>
                 <ul>
                   {deterministicReadiness.reasons.map((reason) => (
-                    <li key={reason}>{reason}</li>
+                    <li key={reason}>{plainWords(reason)}</li>
                   ))}
                 </ul>
               </>
@@ -4024,7 +4084,7 @@ export default function App() {
                 <p>Stage: {VERIFICATION_LABEL[verification.stage]}</p>
                 <ul>
                   {verification.reasons.map((reason) => (
-                    <li key={reason}>{reason}</li>
+                    <li key={reason}>{plainWords(reason)}</li>
                   ))}
                 </ul>
                 <p>Only later measurements advance a stage; acknowledgements, visits and the HVAC report do not.</p>
@@ -4040,11 +4100,11 @@ export default function App() {
                     ? "Recorded model response (not live inference)."
                     : "MOCK - example answer, not live inference."}
                 </p>
-                <p>{reasoningInvestigation.output.interpretation}</p>
+                <p>{plainClock(reasoningInvestigation.output.interpretation)}</p>
                 {reasoningInvestigation.output.limitations.length > 0 && (
                   <ul>
                     {reasoningInvestigation.output.limitations.map((limitation) => (
-                      <li key={limitation}>{limitation}</li>
+                      <li key={limitation}>{plainClock(limitation)}</li>
                     ))}
                   </ul>
                 )}
@@ -4052,7 +4112,7 @@ export default function App() {
                   <p>
                     Model: {String(recordedProvenance["model_id"] ?? "unknown")} — route{" "}
                     {String(recordedProvenance["provider_route"] ?? "unknown")}, recorded{" "}
-                    {String(recordedProvenance["recorded_at"] ?? "unknown")}, input revision{" "}
+                    {plainClock(String(recordedProvenance["recorded_at"] ?? "unknown"))}, input revision{" "}
                     {String(recordedProvenance["input_revision"] ?? "unknown")}, code snapshot{" "}
                     {String(recordedProvenance["code_snapshot"] ?? "unknown")}.
                   </p>
@@ -4066,7 +4126,7 @@ export default function App() {
                 {deterministicReadiness && (
                   <ul>
                     {deterministicReadiness.reasons.map((reason) => (
-                      <li key={reason}>{reason}</li>
+                      <li key={reason}>{plainWords(reason)}</li>
                     ))}
                   </ul>
                 )}
@@ -4082,8 +4142,10 @@ export default function App() {
                 {visibleNotifications.map((notification) => (
                   <li key={notification.id}>
                     {NOTIFICATION_AUDIENCE_LABEL[notification.audience] ?? notification.audience}:{" "}
-                    {notificationStateInWords(notification)} — fields sent:{" "}
-                    {Object.keys(notification.payload).join(", ")}
+                    {notificationStateInWords(notification)}
+                    {notification.state === "refused"
+                      ? ""
+                      : ` — fields sent: ${Object.keys(notification.payload).map(humanLabel).join(", ")}`}
                   </li>
                 ))}
               </ul>
@@ -4098,6 +4160,7 @@ export default function App() {
                 </li>
               ))}
             </ul>
+            <p>{AUTHORSHIP_LINE}</p>
           </section>
         </aside>
       )}
@@ -4144,8 +4207,8 @@ export default function App() {
       <div hidden={page !== "house"}>
         <GlanceTiles
           sources={data?.sources}
-          trend={trend}
           lastHourChangeF={replayMetrics?.last_hour_change_f ?? null}
+          targetHeld={targetHeld}
           targetTemp={warmByTargetTemp}
           targetUnit={warmByTargetUnit}
           plannedArrival={plannedArrival}
@@ -4157,6 +4220,7 @@ export default function App() {
       </div>
       <div hidden={page !== "house"}>
         <WhoKnows
+          at={selectedAt}
           permission={caregiverPermission}
           onDecide={handleCaregiverDecision}
           deciding={decidingPermission}
@@ -4282,7 +4346,7 @@ export default function App() {
         </div>
       )}
       <div className="house-footer-controls" hidden={page !== "house"}>
-        {publicMode === true && view !== "landing" && (
+        {publicMode === true && view !== "landing" && !inStory && (
           <button type="button" className="ghost-button" onClick={backToLanding}>
             Back to start
           </button>
@@ -4384,6 +4448,8 @@ export default function App() {
             </li>
           ))}
         </ul>
+        <h3>Who wrote the code</h3>
+        <p>{AUTHORSHIP_LINE}</p>
       </section>
       {livePower && livePower.status === "ok" && (
         <section aria-labelledby="live-power-heading" hidden={page !== "integrations" || publicMode !== false}>

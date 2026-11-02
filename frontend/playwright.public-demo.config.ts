@@ -38,6 +38,7 @@ export default defineConfig({
         ARIA_HOME_PUBLIC_DEMO: "1",
         ARIA_HOME_PUBLIC_DEMO_DIR: sessionsDir,
         ARIA_HOME_RECORDED_DIR: recordedDir,
+        ARIA_HOME_NEST_LIVE: "",
       },
     },
     {

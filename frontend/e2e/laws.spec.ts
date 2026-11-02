@@ -21,7 +21,7 @@ test("ARIA's Laws view renders laws, watcher observations and corrections", asyn
   await expect(page.locator("section[aria-labelledby='laws-heading']")).toContainText("Corrections");
   await expect(page.locator("section[aria-labelledby='laws-heading']")).toContainText("never lowered by an empty watcher");
 
-  await page.getByRole("button", { name: "Back to investigation" }).click();
+  await page.locator("section[aria-labelledby='laws-heading']").getByRole("button", { name: "Back to House" }).click();
   await expect(page.getByRole("heading", { name: "ARIA’s Laws" })).not.toBeVisible();
 
   expect(failedRequests).toEqual([]);

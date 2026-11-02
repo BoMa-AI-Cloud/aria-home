@@ -59,7 +59,7 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   const demoControls = page.locator(".demo-controls");
-  const time0231 = demoControls.getByRole("button", { name: "02:31" });
+  const time0231 = demoControls.getByRole("button", { name: "2:31 AM" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
   await expect(page.locator("header .eval-time")).toContainText("2:31 AM ET");
@@ -79,7 +79,7 @@ test("synthetic evidence overview renders without errors", async ({ page }) => {
     "52 F",
   );
   await expect(page.locator('tr[data-source="weather"]')).toContainText(
-    "Forecast, not an on-property measurement",
+    "Forecast, not a measurement at the house",
   );
 
   await expect(investigation.getByText(/Readiness:/)).toContainText(
@@ -123,12 +123,12 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
   await expect(outcome).toBeVisible();
 
   await page.getByLabel("Scenario").selectOption({ label: "Manager report, late warming" });
-  const time1900 = demoControls.getByRole("button", { name: "19:00" });
+  const time1900 = demoControls.getByRole("button", { name: "7:00 PM" });
   await expect(time1900).toBeEnabled({ timeout: 60_000 });
   await time1900.click();
   await expect(outcome.getByText("Warming observed").first()).toBeVisible();
 
-  await demoControls.getByRole("button", { name: "20:31" }).click();
+  await demoControls.getByRole("button", { name: "8:31 PM" }).click();
   await expect(outcome.getByText("Warming observed").first()).toBeVisible();
   await expect(outcome).toContainText(
     "An observed change after a reported action does not prove what caused it.",
@@ -143,7 +143,7 @@ test("demo replay controls drive the outcome panel", async ({ page }) => {
   await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
 
   await page.getByLabel("Scenario").selectOption({ label: "No follow-up readings" });
-  const noFollowup2031 = demoControls.getByRole("button", { name: "20:31" });
+  const noFollowup2031 = demoControls.getByRole("button", { name: "8:31 PM" });
   await expect(noFollowup2031).toBeEnabled({ timeout: 60_000 });
   await noFollowup2031.click();
   await expect(outcome.getByText("Unable to verify").first()).toBeVisible();
@@ -170,14 +170,14 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
 
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
 
-  const time0231 = demoControls.getByRole("button", { name: "02:31" });
+  const time0231 = demoControls.getByRole("button", { name: "2:31 AM" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
-  await expect(headline).toContainText("Thermostat telemetry missing");
-  await expect(outcome).toContainText("Follow-up rule:");
+  await expect(headline).toContainText("Thermostat not reporting");
+  await expect(outcome).not.toContainText("Follow-up rule");
   await expect(outcome).toContainText("Latest reading used: observed");
   await expect(outcome).toContainText("received");
-  await expect(outcome).toContainText("Evaluation (replay) time");
+  await expect(outcome.locator(".outcome-time")).toContainText("2:31 AM");
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
@@ -197,51 +197,53 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   await expect(hvacRequest).toHaveCount(0);
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "04:21" }).click();
+  await demoControls.getByRole("button", { name: "4:21 AM" }).click();
   await expect(headline).toContainText("Thermostat reporting restored");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(hvacRequest).toHaveCount(1);
-  await expect(hvacRequest).toContainText("property");
-  await expect(hvacRequest).toContainText("access_note");
-  await expect(hvacRequest).toContainText("manager_contact");
-  await expect(hvacRequest).toContainText("observations");
+  const hvacFields = (await hvacRequest.locator(".fields-sent").getAttribute("data-fields")) ?? "";
+  for (const field of ["property", "access_note", "manager_contact", "observations"]) {
+    expect(hvacFields).toContain(field);
+  }
+  await expect(hvacRequest.locator(".fields-sent")).toContainText("Contact on file");
+  await expect(hvacRequest.locator(".fields-sent")).not.toContainText("manager_contact");
   await expect(hvacRequest).not.toContainText("itinerary");
   await expect(hvacRequest).not.toContainText("email");
   const authorized = timeline.locator("article", { hasText: "Caregiver authorized HVAC contact" });
   await expect(authorized).toHaveCount(1);
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "04:51" }).click();
+  await demoControls.getByRole("button", { name: "4:51 AM" }).click();
   await expect(headline).toContainText("Warming observed");
-  await expect(headline).not.toContainText("Temperature goal verified");
+  await expect(headline).not.toContainText("Target verified");
   await expect(outcome.locator(".outcome-history")).not.toContainText("Target reached");
   await expect(outcome.locator(".outcome-history")).toContainText("Warming observed");
   await expect(outcome.locator(".outcome-history")).toContainText("4:51 AM");
 
-  await demoControls.getByRole("button", { name: "06:21" }).click();
-  await expect(headline).toContainText("Temperature goal verified");
+  await demoControls.getByRole("button", { name: "6:21 AM" }).click();
+  await expect(headline).toContainText("Target verified");
   const evidenceTimeline = page.locator("section", {
     has: page.getByRole("heading", { name: "Evidence timeline" }),
   });
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(4);
   await expect(evidenceTimeline).not.toContainText("HVAC completion report available");
-  await expect(evidenceTimeline).not.toContainText("Corroboration only");
+  await expect(evidenceTimeline).not.toContainText("Supporting only");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   const report = timeline.locator("article", { hasText: "HVAC completion report" });
   await expect(report).toHaveCount(0);
-  await expect(timeline).not.toContainText("Corroboration only");
+  await expect(timeline).not.toContainText("Supporting only");
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "06:45" }).click();
+  await demoControls.getByRole("button", { name: "6:45 AM" }).click();
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(report).toHaveCount(1);
-  await expect(report).toContainText("Corroboration only, does not set the outcome");
+  await expect(report).toContainText("Supporting only, does not set the outcome");
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "07:01" }).click();
-  await expect(headline).toContainText("Warm-by expectation met");
+  await demoControls.getByRole("button", { name: "7:01 AM" }).click();
+  await expect(headline).toContainText("Warm-by target met");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(evidenceTimeline.locator(".evidence-timeline-entry")).toHaveCount(7);
   expect(
@@ -250,7 +252,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
     "Thermostat reporting restored",
     "Warming first observed",
     "Target first reached",
-    "Hold completed and goal verified",
+    "Hold completed and target verified",
     "Technician voice-note report available",
     "HVAC completion report available",
     "Warm-by time checked",
@@ -258,18 +260,17 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
   const voiceNoteRow = evidenceTimeline.locator(".evidence-timeline-entry", {
     hasText: "Technician voice-note report available",
   });
-  await expect(voiceNoteRow).toContainText("Corroboration only");
+  await expect(voiceNoteRow).toContainText("Supporting only");
   await expect(voiceNoteRow).toContainText("6:40 AM ET");
   const reportRow = evidenceTimeline.locator(".evidence-timeline-entry", {
     hasText: "HVAC completion report available",
   });
-  await expect(reportRow).toContainText("Corroboration only");
+  await expect(reportRow).toContainText("Supporting only");
   await expect(reportRow).toContainText("6:45 AM ET");
   await expect(evidenceTimeline.locator(".evidence-timeline-entry").first()).toContainText("4:20 AM ET");
   await expect(evidenceTimeline.locator(".evidence-timeline-entry").last()).toContainText("7:00 AM ET");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   await expect(outcome).toContainText("Latest reading used: observed");
-  await expect(outcome.locator(".stage-times")).not.toContainText("6:40 AM");
   await expect(outcome).not.toContainText("6:40 AM");
   await expect(outcome).toContainText("7:00 AM");
   await expect(page.locator("body")).not.toContainText("0.0342857");
@@ -308,16 +309,16 @@ test("care scenario shows scoped simulated notifications and resident update", a
 
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
 
-  const time0231 = demoControls.getByRole("button", { name: "02:31" });
+  const time0231 = demoControls.getByRole("button", { name: "2:31 AM" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
-  await expect(outcome.locator(".outcome-status")).toContainText("Thermostat telemetry missing");
+  await expect(outcome.locator(".outcome-status")).toContainText("Thermostat not reporting");
 
   const caregiverCard = notifications.locator('article[aria-label="Family caregiver notification"]');
   await expect(caregiverCard).toHaveCount(1);
   await expect(caregiverCard).toContainText("Family caregiver");
   await expect(caregiverCard).toContainText("Simulated delivery");
-  await expect(caregiverCard).toContainText("Simulated, no message was sent");
+  await expect(notifications.locator(".notices-simulated")).toHaveText("These notices are simulated. No message was sent.");
   await expect(caregiverCard).toContainText("Created:");
   await expect(notifications.locator('article[aria-label="Property manager notification"]')).toHaveCount(0);
 
@@ -326,31 +327,33 @@ test("care scenario shows scoped simulated notifications and resident update", a
   if (hvacCount0231 > 0) {
     for (let i = 0; i < hvacCount0231; i += 1) {
       const text = await hvacCards0231.nth(i).innerText();
-      if (!text.includes("Refused:")) throw new Error("HVAC card at 02:31 must be absent or refused");
+      if (!text.includes("Nothing was sent")) throw new Error("HVAC card at 02:31 must be absent or refused");
     }
-    await expect(hvacCards0231.first()).toContainText("Refused:");
-    await expect(hvacCards0231.first()).toContainText("caregiver has not authorized HVAC contact");
+    await expect(hvacCards0231.first()).toContainText("Nothing was sent");
+    await expect(hvacCards0231.first()).toContainText("the caregiver had not approved HVAC contact");
+    await expect(hvacCards0231.first()).not.toContainText("fields sent");
+    await expect(hvacCards0231.first()).not.toContainText("Created:");
   }
 
-  await demoControls.getByRole("button", { name: "02:45" }).click();
+  await demoControls.getByRole("button", { name: "2:45 AM" }).click();
   const deliveredHvac = notifications.locator('article[aria-label="HVAC company notification"]', {
     hasText: "Simulated delivery",
   });
   await expect(deliveredHvac).toHaveCount(1);
   await expect(deliveredHvac).toContainText("HVAC company");
-  await expect(deliveredHvac).toContainText("property_label");
-  await expect(deliveredHvac).toContainText("access_note");
-  await expect(deliveredHvac).toContainText("manager_contact_label");
-  await expect(deliveredHvac).toContainText("relevant_observations");
+  const deliveredFields = (await deliveredHvac.locator(".fields-sent").getAttribute("data-fields")) ?? "";
+  for (const field of ["property_label", "access_note", "manager_contact_label", "relevant_observations"]) {
+    expect(deliveredFields).toContain(field);
+  }
+  await expect(deliveredHvac).not.toContainText("manager_contact_label");
   await expect(deliveredHvac).not.toContainText("itinerary");
   await expect(deliveredHvac).not.toContainText("email");
-  await expect(deliveredHvac).toContainText("Simulated, no message was sent");
   await expect(deliveredHvac).toContainText("fields sent:");
   await expect(deliveredHvac).toContainText("Contact on file");
   await expect(deliveredHvac).toContainText("family caregiver on file");
   await expect(page.locator("body")).not.toContainText("None");
   await expect(page.locator("body")).not.toContainText("Email_flight_confirmation");
-  const homeownerCard = notifications.locator('article[aria-label="Homeowner notification"]');
+  const homeownerCard = notifications.locator('article[aria-label="Resident notification"]');
   if ((await homeownerCard.count()) > 0) {
     await expect(homeownerCard.first()).toContainText("Readiness");
     await expect(homeownerCard.first()).toContainText("Warm-by time");
@@ -366,17 +369,17 @@ test("care scenario shows scoped simulated notifications and resident update", a
   await expect(caregiverCard).toContainText("Acknowledged, not resolved");
   await expect(outcome.locator(".outcome-status")).toContainText(headlineBefore);
 
-  await demoControls.getByRole("button", { name: "07:01" }).click();
-  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
-  const homeownerUpdate = page.locator('article[aria-label="Homeowner update"]');
+  await demoControls.getByRole("button", { name: "7:01 AM" }).click();
+  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met");
+  const homeownerUpdate = page.locator('article[aria-label="Resident update"]');
   await expect(homeownerUpdate).toContainText("Your home reached and held 68 F before the warm-by time");
-  await expect(homeownerUpdate).toContainText("Evaluation time:");
+  await expect(homeownerUpdate).toContainText("As of");
 
   const cards = notifications.locator(".notification-card");
   const cardCount = await cards.count();
   expect(cardCount).toBeGreaterThan(0);
   for (let i = 0; i < cardCount; i += 1) {
-    await expect(cards.nth(i)).toContainText("Simulated");
+    await expect(cards.nth(i)).toContainText(/Simulated|Nothing was sent/);
   }
 
   expect(failedRequests).toEqual([]);
@@ -388,15 +391,17 @@ test("care scenario shows warm-by plan and consent at 19:20", async ({ page }) =
   await expect(plan).toBeVisible();
   await plan.locator("summary").click();
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
-  await expect(plan).toContainText("demo-house");
+  await expect(plan).toContainText("Petoskey");
+  await expect(plan).not.toContainText("demo-house");
   await expect(plan).toContainText("Warm-by time");
   await expect(plan).toContainText("7:00 AM");
   await expect(plan).not.toContainText("scenario estimates");
   await expect(plan).toContainText("68 F");
-  await expect(plan).toContainText("notify homeowner");
+  await expect(plan).toContainText("keep the resident informed");
   await expect(plan).toContainText("Caregiver coordination allowed");
   await expect(plan).toContainText("7:20 PM");
-  await expect(plan).toContainText("warmby-care-001-rev1");
+  await expect(plan.locator(".confirmed-plan")).toHaveAttribute("data-revision", "warmby-care-001-rev1");
+  await expect(plan).not.toContainText("warmby-care-001-rev1");
   await expect(plan).not.toContainText("Not yet confirmed");
 });
 
@@ -451,7 +456,7 @@ test("keyboard replay to 07:01 shows warm-by expectation met", async ({ page }) 
   await page.goto("/");
 
   const scenario = page.getByLabel("Scenario");
-  const replay0701 = page.getByRole("button", { name: "Replay to 07:01" });
+  const replay0701 = page.getByRole("button", { name: "Replay to 7:01 AM" });
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
@@ -471,7 +476,7 @@ test("keyboard replay to 07:01 shows warm-by expectation met", async ({ page }) 
   }
   await expect(replay0701).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
+  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met");
 });
 
 test("source cards follow scenario, replay advance and rewind in ET", async ({ page }) => {
@@ -495,7 +500,7 @@ test("source cards follow scenario, replay advance and rewind in ET", async ({ p
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
   const demoControls = page.locator(".demo-controls");
-  await demoControls.getByRole("button", { name: "18:21" }).click();
+  await demoControls.getByRole("button", { name: "6:21 PM" }).click();
   await expect(headerTime).toContainText("6:21 PM ET");
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(investigation).toContainText(/Historical investigation/);
@@ -503,7 +508,7 @@ test("source cards follow scenario, replay advance and rewind in ET", async ({ p
   expect(advancedCard).not.toEqual(initialCard);
 
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "16:31" }).click();
+  await demoControls.getByRole("button", { name: "4:31 PM" }).click();
   await expect(headerTime).toContainText("4:31 PM ET");
 });
 
@@ -515,12 +520,12 @@ test("rapid replay selections end on the last selection", async ({ page }) => {
   });
   await page.getByLabel("Scenario").selectOption({ label: "Trip home, thermostat offline (video)" });
   const demoControls = page.locator(".demo-controls");
-  await expect(demoControls.getByRole("button", { name: "16:31" })).toBeEnabled({ timeout: 60_000 });
-  await demoControls.getByRole("button", { name: "19:51" }).click();
-  await demoControls.getByRole("button", { name: "20:21" }).click();
-  await demoControls.getByRole("button", { name: "21:01" }).click();
+  await expect(demoControls.getByRole("button", { name: "4:31 PM" })).toBeEnabled({ timeout: 60_000 });
+  await demoControls.getByRole("button", { name: "7:51 PM" }).click();
+  await demoControls.getByRole("button", { name: "8:21 PM" }).click();
+  await demoControls.getByRole("button", { name: "9:01 PM" }).click();
   await expect(headerTime).toContainText("9:01 PM ET");
-  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by expectation met");
+  await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met");
 });
 
 test("scenario times show ET in both browser timezones", async ({ page }) => {
@@ -569,7 +574,7 @@ test("care scenario shows camera frames with recorded misses", async ({ page }) 
   });
   const demoControls = page.locator(".demo-controls");
 
-  await demoControls.getByRole("button", { name: "02:31" }).click();
+  await demoControls.getByRole("button", { name: "2:31 AM" }).click();
   await tabs.getByRole("button", { name: "Reasoning" }).click();
   await expect(visual).toBeVisible();
   await expect(visual).toContainText(
@@ -581,7 +586,7 @@ test("care scenario shows camera frames with recorded misses", async ({ page }) 
   await expect(visual.getByText(/Readiness:/)).toContainText("At risk");
 
   await tabs.getByRole("button", { name: "House" }).click();
-  await demoControls.getByRole("button", { name: "07:01" }).click();
+  await demoControls.getByRole("button", { name: "7:01 AM" }).click();
   await tabs.getByRole("button", { name: "Reasoning" }).click();
   await expect(visual.locator("img")).toBeVisible();
   await expect(visual.locator("svg rect")).toHaveCount(0);
@@ -602,11 +607,11 @@ test("caregiver approves before ARIA contacts the HVAC company", async ({ page }
   await page.goto("/");
   const demoControls = page.locator(".demo-controls");
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
-  const time0231 = demoControls.getByRole("button", { name: "02:31" });
+  const time0231 = demoControls.getByRole("button", { name: "2:31 AM" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
   const card = page.getByTestId("caregiver-permission");
-  await expect(card).toContainText("your mother's home is cooling (52 F, 16 F below the 68 F target, thermostat not reporting since 01:30)");
+  await expect(card).toContainText("your mother's home is cooling (52 F, 16 F below the 68 F target, thermostat not reporting since 1:30 AM)");
   await expect(card).toContainText("No answer yet");
   const delivered = page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" });
   await expect(delivered).toHaveCount(0);
@@ -620,16 +625,16 @@ test("caregiver declines and no HVAC request is made", async ({ page }) => {
   await page.goto("/");
   const demoControls = page.locator(".demo-controls");
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
-  const time0231 = demoControls.getByRole("button", { name: "02:31" });
+  const time0231 = demoControls.getByRole("button", { name: "2:31 AM" });
   await expect(time0231).toBeEnabled({ timeout: 60_000 });
   await time0231.click();
   const card = page.getByTestId("caregiver-permission");
   await card.getByRole("button", { name: "Decline (as the caregiver)" }).click();
   await expect(card).toContainText("Declined by the caregiver");
-  await demoControls.getByRole("button", { name: "02:45" }).click();
+  await demoControls.getByRole("button", { name: "2:45 AM" }).click();
   await expect(page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" })).toHaveCount(0);
   await expect(page.locator("body")).toContainText("the caregiver declined HVAC contact");
-  for (const label of ["04:21", "04:51", "06:21", "06:45", "07:01"]) {
+  for (const label of ["4:21 AM", "4:51 AM", "6:21 AM", "6:45 AM", "7:01 AM"]) {
     await demoControls.getByRole("button", { name: label }).click();
     await expect(page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" })).toHaveCount(0);
   }
