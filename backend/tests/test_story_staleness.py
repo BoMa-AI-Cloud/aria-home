@@ -23,7 +23,7 @@ from aria_home.watcher import (
 
 SCENARIOS_DIR = Path(__file__).resolve().parent.parent / "scenarios"
 CARE = "care_home_v1"
-AT = "2026-01-16T23:30:00-05:00"
+AT = "2026-01-16T22:46:00-05:00"
 
 
 def _care():

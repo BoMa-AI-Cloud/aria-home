@@ -73,10 +73,10 @@ def test_dry_run_makes_zero_calls(tmp_path):
     rc, text, watchers, _ = _run([], tmp_path, provider)
     assert rc == 0
     assert provider.calls == 0
-    assert len(REAL_POINTS) == 10
+    assert len(REAL_POINTS) == 11
     for point in REAL_POINTS:
         assert point in text
-    assert "up to 20" in text
+    assert "up to 22" in text
     assert "dry run" in text
     assert not watchers.exists() or list(watchers.glob("*.json")) == []
 
@@ -92,7 +92,7 @@ def test_cap_below_plan_refuses_before_any_call(tmp_path):
         ["--live", "--max-calls", "15", "--code-snapshot", "abc"], tmp_path, provider)
     assert rc == 2
     assert provider.calls == 0
-    assert "planned 20 calls exceed --max-calls 15" in text
+    assert "planned 22 calls exceed --max-calls 15" in text
     assert not watchers.exists() or list(watchers.glob("*.json")) == []
 
 
@@ -112,11 +112,11 @@ def test_failed_first_attempt_gets_exactly_one_revision(tmp_path, monkeypatch):
 def test_files_load_and_serve_at_matching_checkpoint(tmp_path, monkeypatch):
     provider = QuietProvider()
     rc, text, watchers, _ = _run(
-        ["--live", "--max-calls", "20", "--code-snapshot", "test-snap"], tmp_path, provider)
+        ["--live", "--max-calls", "22", "--code-snapshot", "test-snap"], tmp_path, provider)
     assert rc == 0
-    assert provider.calls == 10
+    assert provider.calls == 11
     entries = load_recorded_watchers(watchers)
-    assert len(entries) == 10
+    assert len(entries) == 11
     first = entries[0]["entry"]
     assert first["scenario_id"] == CARE
     assert first["code_snapshot"] == "test-snap"
@@ -185,7 +185,7 @@ def test_timeout_and_budget_reach_fake_seams(tmp_path, monkeypatch):
 
 def test_second_run_never_overwrites(tmp_path):
     provider = QuietProvider()
-    args = ["--live", "--max-calls", "20", "--code-snapshot", "s"]
+    args = ["--live", "--max-calls", "22", "--code-snapshot", "s"]
     _run(args, tmp_path, provider)
     _run(args, tmp_path, provider)
     names = sorted(p.name for p in (tmp_path / "watchers").glob("*.json"))
@@ -194,11 +194,11 @@ def test_second_run_never_overwrites(tmp_path):
 
 def test_only_missing_skips_recorded_checkpoint(tmp_path, monkeypatch):
     provider = QuietProvider()
-    _run(["--live", "--max-calls", "20", "--code-snapshot", "s"], tmp_path, provider)
+    _run(["--live", "--max-calls", "22", "--code-snapshot", "s"], tmp_path, provider)
     again = QuietProvider()
     lines = []
     rc = rcw.main(
-        ["--live", "--only-missing", "--max-calls", "20", "--code-snapshot", "s",
+        ["--live", "--only-missing", "--max-calls", "22", "--code-snapshot", "s",
          "--watchers-dir", str(tmp_path / "watchers"),
          "--corrections-dir", str(tmp_path / "corrections"),
          "--date", "2026-10-30"],
@@ -254,7 +254,7 @@ def test_only_missing_dry_run_rerecords_only_unreadable(tmp_path):
     assert rc == 0
     assert provider.calls == 0
     assert "planned calls: up to 4 (2 first + up to 2 revisions)" in text
-    assert "only-missing: skipped 8 recorded watcher(s); 2 checkpoint(s) still needed" in text
+    assert "only-missing: skipped 9 recorded watcher(s); 2 checkpoint(s) still needed" in text
 
 
 def test_only_missing_rerecords_thinking_only_rejection(tmp_path, monkeypatch):

@@ -45,7 +45,7 @@ def _followup_or_none(scn, at):
 
 
 def test_trace_matches_sources_and_readiness_at_every_checkpoint(scn):
-    assert len(CHECKPOINTS) == 10
+    assert len(CHECKPOINTS) == 11
     for iso in CHECKPOINTS:
         at = _at(iso)
         pack = build_evidence_pack(scn, at)
@@ -226,8 +226,8 @@ def test_permission_step_follows_the_caregiver_and_never_shows_the_future(scn):
     assert waiting["permission"]["status"] == "waiting"
     assert waiting["permission"]["decided_at"] is None
     assert [s["label"] for s in waiting["steps"] if s["kind"] == "permission"] == ["caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers"]
-    assert waiting["permission"]["requested_at"].startswith("2026-01-16T23:30")
-    assert "60 F" in waiting["permission"]["text"]
+    assert waiting["permission"]["requested_at"].startswith("2026-01-16T22:46")
+    assert "62 F" in waiting["permission"]["text"]
     assert "16:00" in waiting["permission"]["text"]
     assert "52 F" not in waiting["permission"]["text"]
     approved = build_trace(scn, _at("2026-01-17T02:45:00-05:00"))
