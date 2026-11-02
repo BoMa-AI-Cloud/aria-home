@@ -1,6 +1,6 @@
 """The frozen caregiver request is identical at every checkpoint after it is raised, in all three branches.
 
-The story raises the request at 19:20 ("54 F, 14 F below the 68 F target,
+The story raises the request at 23:30 ("60 F, 8 F below the 68 F target,
 furnace reported idle since 16:00"). Walking
 every later checkpoint — with no decision, with an approval at 02:31, or with a
 decline at 02:31 — keeps the original text and the original asked time; only the
@@ -8,9 +8,9 @@ status (and the decision time) changes. The trace agrees with the follow-ups.
 """
 from aria_home.app import create_app
 
-T1903 = "2026-01-16T19:03:00-05:00"
-T1915 = "2026-01-16T19:15:00-05:00"
 T1920 = "2026-01-16T19:20:00-05:00"
+T2100 = "2026-01-16T21:00:00-05:00"
+T2330 = "2026-01-16T23:30:00-05:00"
 T0231 = "2026-01-17T02:31:00-05:00"
 T0245 = "2026-01-17T02:45:00-05:00"
 T0421 = "2026-01-17T04:21:00-05:00"
@@ -18,7 +18,7 @@ T0451 = "2026-01-17T04:51:00-05:00"
 T0621 = "2026-01-17T06:21:00-05:00"
 T0645 = "2026-01-17T06:45:00-05:00"
 T0701 = "2026-01-17T07:01:00-05:00"
-CHECKPOINTS = (T1903, T1915, T1920, T0231, T0245, T0421, T0451, T0621, T0645, T0701)
+CHECKPOINTS = (T1920, T2100, T2330, T0231, T0245, T0421, T0451, T0621, T0645, T0701)
 RAISED_ONWARDS = CHECKPOINTS[2:]
 
 
@@ -28,7 +28,7 @@ def _client(tmp_path, monkeypatch, name="api.db"):
 
 
 def _start(client):
-    resp = client.post(f"/api/investigations?scenario=care_home_v1&at={T1920}")
+    resp = client.post(f"/api/investigations?scenario=care_home_v1&at={T2330}")
     assert resp.status_code == 200
     return resp.get_json()["investigation_id"]
 
@@ -61,9 +61,9 @@ def test_frozen_request_identical_without_decision(tmp_path, monkeypatch):
     for at in RAISED_ONWARDS:
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
-        assert "54 F" in permission["text"], at
+        assert "60 F" in permission["text"], at
         assert "16:00" in permission["text"], at
-        assert permission["requested_at"].startswith("2026-01-16T19:20"), at
+        assert permission["requested_at"].startswith("2026-01-16T23:30"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0245:
             assert permission["status"] == "waiting", at
@@ -89,9 +89,9 @@ def test_frozen_request_identical_after_approval(tmp_path, monkeypatch):
     for at in RAISED_ONWARDS:
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
-        assert "54 F" in permission["text"], at
+        assert "60 F" in permission["text"], at
         assert "16:00" in permission["text"], at
-        assert permission["requested_at"].startswith("2026-01-16T19:20"), at
+        assert permission["requested_at"].startswith("2026-01-16T23:30"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0231:
             assert permission["status"] == "waiting", at
@@ -116,9 +116,9 @@ def test_frozen_request_identical_after_decline(tmp_path, monkeypatch):
     for at in RAISED_ONWARDS:
         permission = _follow(client, inv_id, at)["caregiver_permission"]
         assert permission is not None, at
-        assert "54 F" in permission["text"], at
+        assert "60 F" in permission["text"], at
         assert "16:00" in permission["text"], at
-        assert permission["requested_at"].startswith("2026-01-16T19:20"), at
+        assert permission["requested_at"].startswith("2026-01-16T23:30"), at
         seen.add((permission["text"], permission["requested_at"]))
         if at < T0231:
             assert permission["status"] == "waiting", at

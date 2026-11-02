@@ -331,7 +331,7 @@ def _seed_mixed_answers():
             "input_revision": identity["input_revision"],
             "model_id": "muse-spark-1.3",
             "provider_route": "meta live via Meta Model API",
-            "prompt_version": "inv-v3",
+            "prompt_version": "inv-v4",
             "readiness_policy_version": identity["readiness_policy_version"],
             "code_snapshot": "seed",
             "recorded_at": "2026-10-29T12:00:00+00:00",
@@ -392,3 +392,55 @@ def test_only_missing_dry_run_reports_exact_remaining():
     text = "\n".join(lines)
     print("\n" + text)
     assert "only-missing:" in text
+
+
+def test_only_at_dry_run_lists_single_checkpoint(tmp_path):
+    provider = FakeLiveProvider()
+    point = REAL_POINTS[2]
+    rc, text, recorded, _ = _run(["--only-at", point], tmp_path, provider, [])
+    assert rc == 0
+    assert provider.calls == 0
+    assert f"- {point}\n" in text
+    assert "planned calls: up to 2" in text
+    assert "dry run" in text
+    for other in REAL_POINTS:
+        if other != point:
+            assert f"- {other}\n" not in text
+
+
+def test_only_at_records_single_checkpoint_with_fake_provider(tmp_path):
+    provider = FakeLiveProvider()
+    review_calls = []
+    point = REAL_POINTS[2]
+    rc, text, recorded, reviews = _run(
+        ["--live", "--only-at", point, "--max-calls", "2", "--code-snapshot", "s"],
+        tmp_path, provider, review_calls)
+    assert rc == 0
+    assert provider.calls == 1
+    assert len(review_calls) == 1
+    assert "model calls made: 2" in text
+    entries = load_recorded_answers(recorded)
+    assert len(entries) == 1
+    assert entries[0]["answer"]["status"] == "accepted"
+    assert load_recorded_reviews(reviews) and len(load_recorded_reviews(reviews)) == 1
+
+
+def test_only_at_cap_enforced_before_any_call(tmp_path):
+    provider = FakeLiveProvider()
+    review_calls = []
+    rc, text, recorded, _ = _run(
+        ["--live", "--only-at", REAL_POINTS[2], "--max-calls", "1", "--code-snapshot", "s"],
+        tmp_path, provider, review_calls)
+    assert rc == 2
+    assert provider.calls == 0
+    assert review_calls == []
+    assert "exceed --max-calls 1" in text
+    assert not recorded.exists() or list(recorded.glob("*.json")) == []
+
+
+def test_only_at_unknown_checkpoint_refuses(tmp_path):
+    provider = FakeLiveProvider()
+    rc, text, _, _ = _run(["--only-at", "2026-01-16T20:00:00-05:00"], tmp_path, provider, [])
+    assert rc == 2
+    assert provider.calls == 0
+    assert "unknown checkpoint" in text

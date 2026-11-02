@@ -1,5 +1,7 @@
 # Audit 5: decision-map parity (work list)
 
+> Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
+
 Received 2026-10-30 from Brad as an audit of the working tree at commit a2995fd
 plus the earlier audit-repair changes in the working copy. The decision map
 (ARIA's view / GET /api/trace) must agree with the real follow-up and caregiver

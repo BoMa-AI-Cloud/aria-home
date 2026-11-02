@@ -6,17 +6,19 @@ human-report attachment, notification gates). Never calls a model, never
 shows evidence received after the replay moment.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from . import laws as laws_module
 from .contracts import Availability, SourceKind
 from .eligibility import (
+    eligible_records,
     freshness_limit_s,
     normalized_measurement_value,
     unresolved_conflict_groups,
 )
 from .evidence import freshness, source_status
 from .investigator import build_evidence_pack, inference_identity
+from .metrics import temperature_trend
 from .notifications import _get, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
 from .outcomes import follow_up_for
 from .public_demo import parsed_checkpoints
@@ -288,7 +290,7 @@ def _watcher_detail(scenario, at, pack, identities, watcher_entries):
     corrections = [
         {key: record.get(key) for key in ("scenario_id", "evaluated_at_utc", "input_revision", "laws_version", "watcher_prompt_version", "original_claim", "failed_checks", "revision_claim", "final_result")}
         for record in load_correction_records()
-        if isinstance(record, dict) and record.get("scenario_id") == wid["scenario_id"] and record.get("evaluated_at_utc") == wid["evaluated_at_utc"]
+        if isinstance(record, dict) and record.get("scenario_id") == wid["scenario_id"] and record.get("evaluated_at_utc") == wid["evaluated_at_utc"] and record.get("input_revision") == wid["input_revision"] and record.get("laws_version", wid["laws_version"]) == wid["laws_version"] and record.get("watcher_prompt_version", wid["watcher_prompt_version"]) == wid["watcher_prompt_version"]
     ]
     if match is not None and parsed is not None and not reasons:
         shown = _jsonable(parsed["observations"])
@@ -409,6 +411,172 @@ def _permission_trace(scenario, at, events, decisions, caregiver_decision=None, 
     }
 
 
+def _decision_as_of(caregiver_decision, at):
+    """The effective caregiver choice at the replay time: later decisions do not leak backwards."""
+    if caregiver_decision is None:
+        return None, None
+    get = (lambda name: caregiver_decision.get(name)) if isinstance(caregiver_decision, dict) else (lambda name: getattr(caregiver_decision, name, None))
+    if get("decision") not in ("approved", "declined"):
+        return None, None
+    try:
+        decided_at = datetime.fromisoformat(str(get("decided_at")).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None, None
+    if decided_at > at:
+        return None, None
+    return get("decision"), decided_at
+
+
+def _plain_event_label(label):
+    text = label.strip()
+    if text.lower().startswith("simulated "):
+        text = text[len("simulated "):]
+        text = text[:1].upper() + text[1:] if text else text
+    return text
+
+
+def _event_activity_text(scenario, at, event, choice, decided_at, room_text, goal):
+    kind = _get(event, "kind")
+    try:
+        context = context_as_of(scenario, at)
+    except Exception:
+        context = None
+    confirmation = _get(context, "confirmation") if context is not None else None
+    trip = _get(context, "trip") if context is not None else None
+    if kind == "confirmation_request":
+        target = _get(confirmation, "target_temp")
+        unit = _get(confirmation, "target_unit") or "F"
+        arrival = _get(trip, "planned_arrival")
+        when = arrival.strftime("%H:%M") if isinstance(arrival, datetime) else None
+        if target is not None and when is not None:
+            plan = f"{target} {unit} by {when}"
+        elif target is not None:
+            plan = f"{target} {unit}"
+        else:
+            plan = "recorded"
+        return f"Warm-by plan confirmed ({plan}); room {room_text}"
+    if kind == "caregiver_alert":
+        try:
+            pack = build_evidence_pack(scenario, at)
+        except Exception:
+            pack = {}
+        readiness = pack.get("readiness") if isinstance(pack, dict) else None
+        status = readiness.get("status") if isinstance(readiness, dict) else "unknown"
+        words = "warm-by time passed" if status == "arrival_passed" else str(status).replace("_", " ")
+        return f"Readiness {words}: room {room_text}{goal}; permission request sent to the family caregiver"
+    if kind == "caregiver_hvac_authorized":
+        if choice == "approved" and decided_at is not None:
+            return f"Family caregiver approved HVAC contact at {decided_at.strftime('%H:%M')}; HVAC may now be contacted"
+        return "Family caregiver authorized contacting the HVAC company on file"
+    payload = _get(event, "payload") or {}
+    label = payload.get("label") if isinstance(payload, dict) else None
+    if isinstance(label, str) and label.strip():
+        return _plain_event_label(label)
+    return f"{kind} available at {_get(event, 'available_at').strftime('%H:%M')}"
+
+
+def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
+    """One activity line for a replay step, always naming its source.
+
+    The newest scenario event available since the previous checkpoint wins,
+    unless the caregiver declined HVAC contact as of the replay time: contact,
+    visit and report events then never happened, so they are skipped and the
+    line says what is true instead. Otherwise the line is computed from the
+    current readiness, thermostat telemetry, or verification state. Text comes
+    from the event payload or the computed values, never from a label map.
+    A decision recorded later than the replay time never changes the line.
+    """
+    choice, decided_at = _decision_as_of(caregiver_decision, at)
+    try:
+        checkpoints = sorted(parsed_checkpoints(scenario.manifest.id))
+    except Exception:
+        checkpoints = []
+    prev = scenario.manifest.start
+    for checkpoint in checkpoints:
+        if checkpoint >= at:
+            break
+        prev = checkpoint
+    window = [e for e in events_as_of(scenario, at) if _get(e, "available_at") is not None and _get(e, "available_at") > prev and _get(e, "available_at") <= at]
+    if choice == "declined":
+        window = [e for e in window if _get(e, "kind") not in ("caregiver_hvac_authorized", "hvac_request", "service_visit", "hvac_completion_report")]
+    visible = visible_records(getattr(scenario, "records", None) or [], at)
+    room = [r for r in visible if _get(r, "source") is SourceKind.room_sensor and _get(r, "quantity") == "indoor_temp" and isinstance(_get(r, "value"), (int, float))]
+    latest_room = max(room, key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id")))) if room else None
+    room_text = f"{_get(latest_room, 'value')} {_get(latest_room, 'unit')}" if latest_room is not None else "no room reading"
+    try:
+        confirmation = _get(context_as_of(scenario, at), "confirmation")
+    except Exception:
+        confirmation = None
+    target = _get(confirmation, "target_temp")
+    goal = f" against the {target} F goal" if isinstance(target, (int, float)) else ""
+    if choice == "declined":
+        first_after = None
+        for checkpoint in checkpoints:
+            if decided_at is None or checkpoint >= decided_at:
+                first_after = checkpoint
+                break
+        try:
+            declined_pack = build_evidence_pack(scenario, at)
+            declined_readiness = declined_pack.get("readiness") if isinstance(declined_pack, dict) else None
+            declined_status = declined_readiness.get("status") if isinstance(declined_readiness, dict) else None
+        except Exception:
+            declined_status = None
+        warm_by_passed = declined_status == "arrival_passed" or (checkpoints and at >= checkpoints[-1])
+        if first_after is not None and at == first_after:
+            when = decided_at.strftime("%H:%M") if decided_at is not None else "an unknown time"
+            return {"text": f"Caregiver declined HVAC contact at {when}; nobody was contacted. Independent room sensor {room_text}", "source": "computed:caregiver_declined"}
+        if warm_by_passed:
+            return {"text": f"Warm-by time checked: expectation missed; room {room_text}", "source": "computed:arrival_checked"}
+        if isinstance(target, (int, float)):
+            return {"text": f"No contact made; independent room sensor {room_text}, below the {target} F goal", "source": "computed:telemetry"}
+        return {"text": f"No contact made; independent room sensor {room_text}{goal}", "source": "computed:telemetry"}
+    if window:
+        event = max(window, key=lambda e: (_get(e, "available_at"), _get(e, "event_time"), str(_get(e, "id"))))
+        return {"text": _event_activity_text(scenario, at, event, choice, decided_at, room_text, goal), "source": f"event:{_get(event, 'id')}"}
+    if follow_up is not None:
+        try:
+            verification = verify_recovery(scenario, follow_up, at)
+        except Exception:
+            verification = None
+        stage = verification.get("stage") if isinstance(verification, dict) else None
+        if stage is not None and stage != "telemetry_missing":
+            try:
+                entries = list(build_evidence_timeline(scenario, follow_up, at))
+            except Exception:
+                entries = []
+            if choice == "declined":
+                entries = [entry for entry in entries if entry["kind"] != "hvac_completion_report"]
+            if entries:
+                entry = entries[-1]
+                return {"text": entry["label"], "source": f"computed:{entry['kind']}"}
+            words = {"arrival_met": "warm-by expectation met"}.get(stage, stage.replace("_", " "))
+            return {"text": f"Verification {words}; room {room_text}", "source": "computed:verification"}
+        return {"text": f"Thermostat telemetry missing; independent room sensor {room_text}", "source": "computed:telemetry"}
+    try:
+        pack = build_evidence_pack(scenario, at)
+    except Exception:
+        pack = {}
+    readiness = pack.get("readiness") if isinstance(pack, dict) else None
+    status = readiness.get("status") if isinstance(readiness, dict) else "unknown"
+    words = "warm-by time passed" if status == "arrival_passed" else str(status).replace("_", " ")
+    trend_clause = ""
+    try:
+        zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
+    except Exception:
+        zones = []
+    try:
+        trend = temperature_trend(visible, zones[0] if zones else "demo-house/main", at - timedelta(hours=3), at, at)
+    except Exception:
+        trend = {}
+    rate = trend.get("rate_per_hour") if isinstance(trend, dict) else None
+    if isinstance(trend, dict) and trend.get("sufficient") and isinstance(rate, (int, float)) and not isinstance(rate, bool):
+        if rate < 0:
+            trend_clause = f", falling {abs(round(rate * 10) / 10):g} F an hour"
+        elif rate > 0:
+            trend_clause = f", rising {round(rate * 10) / 10:g} F an hour"
+    return {"text": f"Readiness {words}: room {room_text}{goal}{trend_clause}", "source": "computed:readiness"}
+
+
 def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries=None, transcript_entries=None, caregiver_decision=None, investigation_id=None, store=None):
     pack = build_evidence_pack(scenario, at)
     identity = inference_identity(scenario, at)
@@ -440,7 +608,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
         basis = f"visitor investigation {investigation_id}"
         verification = _serialize_verification(inputs["verification"])
         verification["available"] = True
-        timeline = _jsonable(build_evidence_timeline(scenario, followup, at))
+        timeline = _jsonable(build_evidence_timeline(scenario, followup, at, caregiver_decision))
     else:
         try:
             followup = follow_up_for(scenario, identity["investigation_id"], at)
@@ -449,12 +617,12 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
         else:
             verification = _serialize_verification(verify_recovery(scenario, followup, at))
             verification["available"] = True
-            timeline = _jsonable(build_evidence_timeline(scenario, followup, at))
+            timeline = _jsonable(build_evidence_timeline(scenario, followup, at, caregiver_decision))
 
     watcher = _watcher_detail(scenario, at, pack, identity, watcher_entries)
     watcher_summary = public_watcher(scenario, at)
 
-    human = human_report_for(scenario, at, transcript_entries)
+    human = human_report_for(scenario, at, transcript_entries, caregiver_decision)
     if human is None:
         human_trace = None
     else:
@@ -498,9 +666,9 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     if permission is not None:
         decided = permission.get("decided_at") or "an unknown time"
         label = {
-            "waiting": "caregiver permission: no answer yet — ARIA will not contact HVAC until she answers",
+            "waiting": "caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers",
             "approved": f"caregiver permission: approved by the caregiver at {decided} — HVAC may now be contacted",
-            "declined": f"caregiver permission: declined by the caregiver at {decided} — no HVAC request; ARIA keeps monitoring",
+            "declined": f"caregiver permission: declined by the caregiver at {decided} — no HVAC request; verification continues from independent readings",
         }[permission["status"]]
         state = {"waiting": "stale", "approved": "pass", "declined": "fail"}[permission["status"]]
         steps.append({"seq": len(steps), "kind": "permission", "label": label, "state": state, "detail": f"{permission['text']} (asked at {permission['requested_at']}; {permission['note']})", "ref": {"section": "permission", "index": 0}})

@@ -74,6 +74,7 @@ class Scenario:
     arrival_plan: dict | None = None
     visual: dict | None = None
     visuals: list = field(default_factory=list)
+    declined_view: bool = False
 
     @property
     def trip_revisions(self):

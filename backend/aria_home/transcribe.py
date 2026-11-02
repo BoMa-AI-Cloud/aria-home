@@ -18,6 +18,7 @@ call it. Recorded transcripts live in backend/eval/transcripts-*.json.
 import json
 import math
 import os
+from datetime import datetime
 from pathlib import Path
 
 import httpx
@@ -289,8 +290,27 @@ def human_report_timeline_entry(record):
     }
 
 
-def human_report_for(scenario, now, entries=None):
-    """Full human-report attachment for a follow-up response, or None."""
+def _declined_as_of(caregiver_decision, now):
+    if caregiver_decision is None:
+        return False
+    get = (lambda name: caregiver_decision.get(name)) if isinstance(caregiver_decision, dict) else (lambda name: getattr(caregiver_decision, name, None))
+    if get("decision") != "declined":
+        return False
+    try:
+        decided_at = datetime.fromisoformat(str(get("decided_at")).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return False
+    return decided_at <= now
+
+
+def human_report_for(scenario, now, entries=None, caregiver_decision=None):
+    """Full human-report attachment for a follow-up response, or None.
+
+    The note is the technician's voice note, attached at the completion-report
+    time: after a caregiver decline there was no visit, so there is no note.
+    """
+    if _declined_as_of(caregiver_decision, now):
+        return None
     records, entry = transcript_records_for(scenario, entries, now)
     if not records or entry is None:
         return None

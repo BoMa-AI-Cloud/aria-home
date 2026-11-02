@@ -65,7 +65,7 @@ test("scenario change while pending keeps the current context", async ({ page },
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}&e2e_delay_s=6`);
   await expect(page.locator(".banner")).toContainText("SYNTHETIC DATA", { timeout: 30_000 });
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
-  await expect(page.locator("header .eval-time")).toContainText("7:03 PM ET", { timeout: 30_000 });
+  await expect(page.locator("header .eval-time")).toContainText("7:20 PM ET", { timeout: 30_000 });
   const investigation = page.locator("section", {
     has: page.getByRole("heading", { name: "Investigation" }),
   });
@@ -80,7 +80,7 @@ test("rapid replay changes end on the last selection with no stale overwrite", a
   await page.goto(`/?e2e_at=${encodeURIComponent(at)}`);
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
   const demoControls = page.locator(".demo-controls");
-  await expect(demoControls.getByRole("button", { name: "19:03" })).toBeEnabled({ timeout: 60_000 });
+  await expect(demoControls.getByRole("button", { name: "19:20" })).toBeEnabled({ timeout: 60_000 });
   const headerTime = page.locator("header .eval-time");
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),

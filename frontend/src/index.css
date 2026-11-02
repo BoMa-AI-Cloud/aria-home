@@ -1441,6 +1441,50 @@ main h3 {
   color: var(--text);
 }
 
+.story-proof {
+  color: var(--text);
+  margin: 0.5rem 0 0;
+}
+
+.public-landing .landing-letter {
+  margin: 1rem auto;
+}
+
+.public-landing .landing-letter h1 {
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem;
+}
+
+.public-landing .landing-letter > p {
+  margin: 0 0 0.5rem;
+}
+
+.public-landing .brad-hook {
+  font-size: 1rem;
+  margin: 0.75rem 0;
+}
+
+.public-landing .household-card {
+  padding: 0.6rem 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.public-landing .household-card p {
+  overflow-wrap: break-word;
+}
+
+.public-landing .landing-actions {
+  margin: 0.5rem 0;
+}
+
+.public-landing .session-controls {
+  margin-top: 0.25rem;
+}
+
+.public-landing .version-line {
+  margin: 0.5rem 0;
+}
+
 .evidence-drawer {
   border: 1px solid var(--hairline);
   background: var(--panel);

@@ -27,7 +27,7 @@ temperature goal, not a proven repair cause.
   both read from evidence visible at that moment. Approve or Decline in the
   app records a once-only caregiver decision (actor family_caregiver,
   replay-visible); the HVAC request is created only after approval, and a
-  decline blocks it while ARIA keeps monitoring. The same request can be
+  decline blocks it while the room readings are still checked at each later step. The same request can be
   sent once to the owner's test number on WhatsApp (standing in for the
   caregiver) through the explicit opt-in POST. The caregiver then gets
   simulated "HVAC contacted" and "Temperature goal verified" updates. The

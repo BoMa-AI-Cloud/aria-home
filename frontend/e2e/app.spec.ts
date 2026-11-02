@@ -253,7 +253,7 @@ test("care scenario shows verification stages and simulated timeline", async ({ 
     "Hold completed and goal verified",
     "Technician voice-note report available",
     "HVAC completion report available",
-    "Arrival checked",
+    "Warm-by time checked",
   ]);
   const voiceNoteRow = evidenceTimeline.locator(".evidence-timeline-entry", {
     hasText: "Technician voice-note report available",
@@ -388,11 +388,6 @@ test("care scenario shows warm-by plan and consent at 19:20", async ({ page }) =
   await expect(plan).toBeVisible();
   await plan.locator("summary").click();
   await page.getByLabel("Scenario").selectOption({ label: "Winter night, older adult at home (guided story)" });
-  await expect(plan).toContainText("Not yet confirmed");
-  const demoControls = page.locator(".demo-controls");
-  const time1920 = demoControls.getByRole("button", { name: "19:20" });
-  await expect(time1920).toBeEnabled({ timeout: 60_000 });
-  await time1920.click();
   await expect(plan).toContainText("demo-house");
   await expect(plan).toContainText("Warm-by time");
   await expect(plan).toContainText("7:00 AM");
@@ -634,6 +629,27 @@ test("caregiver declines and no HVAC request is made", async ({ page }) => {
   await demoControls.getByRole("button", { name: "02:45" }).click();
   await expect(page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" })).toHaveCount(0);
   await expect(page.locator("body")).toContainText("the caregiver declined HVAC contact");
+  for (const label of ["04:21", "04:51", "06:21", "06:45", "07:01"]) {
+    await demoControls.getByRole("button", { name: label }).click();
+    await expect(page.locator('article[aria-label="HVAC company notification"]', { hasText: "Simulated delivery" })).toHaveCount(0);
+  }
+  await expect(page.locator(".verdict-headline")).toContainText("missed");
+  const declinedText = (await page.locator("body").innerText()) ?? "";
+  for (const banned of [
+    "Technician voice-note report",
+    "igniter",
+    "Igniter",
+    "was replaced",
+    "Service visit",
+    "HVAC completion report",
+    "service_visit",
+    "hvac_completion_report",
+    "caregiver_hvac_authorized",
+    "HVAC may now be contacted",
+    "HVAC contacted",
+  ]) {
+    expect(declinedText, `no occurrence language in the declined path`).not.toContain(banned);
+  }
 });
 
 test("live camera panel stays hidden unless the owner opts in", async ({ page }) => {

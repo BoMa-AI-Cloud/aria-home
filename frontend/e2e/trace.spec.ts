@@ -2,9 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 const CARE_SCENARIO = "Winter night, older adult at home (guided story)";
 const CHECKPOINT_LABELS = [
-  "19:03",
-  "19:15",
   "19:20",
+  "21:00",
+  "23:30",
   "02:31",
   "02:45",
   "04:21",

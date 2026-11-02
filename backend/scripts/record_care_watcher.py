@@ -1,7 +1,8 @@
 """Record the approved care-story anomaly-watcher batch (operator-only).
 
-For 8 care_home_v1 checkpoints (19:20 as a quiet control, then 02:31,
-02:45, 04:21, 04:51, 06:21, 06:45 and 07:01), this runs the watcher through
+For the 10 care_home_v1 checkpoints (19:20 and 21:00 as quiet controls,
+23:30 as the at-risk flag, then 02:31, 02:45, 04:21, 04:51, 06:21, 06:45
+and 07:01), this runs the watcher through
 run_watcher exactly as the app does (one-revision correction loop, code
 verification, laws named on rejection) and records each run. Verified
 corrections are saved through save_correction_record. Inputs and outputs
@@ -12,7 +13,8 @@ N AND --code-snapshot SHA. The key comes only from MODEL_API_KEY and never
 appears in output, files or errors.
 
     python backend/scripts/record_care_watcher.py
-    python backend/scripts/record_care_watcher.py --live --max-calls 16 --code-snapshot <git-HEAD>
+    python backend/scripts/record_care_watcher.py --live --max-calls 20 --code-snapshot <git-HEAD>
+    python backend/scripts/record_care_watcher.py --live --only-at <replay-time> --max-calls 2 --code-snapshot <git-HEAD>
 """
 import argparse
 import json
@@ -46,7 +48,7 @@ from aria_home.watcher import (  # noqa: E402
 )
 
 CARE_SCENARIO_ID = "care_home_v1"
-WATCHER_LABELS = ("19:20", "02:31", "02:45", "04:21", "04:51", "06:21", "06:45", "07:01")
+WATCHER_LABELS = ("19:20", "21:00", "23:30", "02:31", "02:45", "04:21", "04:51", "06:21", "06:45", "07:01")
 WATCHER_PROVIDER_ROUTE = "meta live via Meta Model API (messages)"
 SCENARIOS_DIR = BACKEND_DIR / "scenarios"
 RECORDING_TIMEOUT_S = 180.0
@@ -246,10 +248,17 @@ def main(argv=None, *, provider=None, env=None, out=None, now=None):
     parser.add_argument("--timeout-s", type=float, default=RECORDING_TIMEOUT_S)
     parser.add_argument("--max-tokens", type=int, default=RECORDING_MAX_TOKENS)
     parser.add_argument("--only-missing", action="store_true")
+    parser.add_argument("--only-at", default=None, help="record only this checkpoint (exact replay time from the dry-run list); still capped by --max-calls")
     args = parser.parse_args(argv)
 
     scenario = load_scenario(SCENARIOS_DIR / CARE_SCENARIO_ID)
     plan = _plan(scenario)
+    if args.only_at is not None:
+        match = [item for item in plan if item["at_str"] == args.only_at]
+        if not match:
+            out(_redact(f"unknown checkpoint {args.only_at!r}; expected one of: {', '.join(item['at_str'] for item in plan)}", source_env))
+            return 2
+        plan = match
     watchers_base = Path(args.watchers_dir) if args.watchers_dir else reviews_dir(source_env)
     corrections_base = Path(args.corrections_dir) if args.corrections_dir else corrections_dir(source_env)
     date_str = args.date or _utc_now(now).astimezone(timezone.utc).date().isoformat()

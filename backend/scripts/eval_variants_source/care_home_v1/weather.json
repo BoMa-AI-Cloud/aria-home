@@ -1,0 +1,72 @@
+{
+  "records": [
+    {
+      "id": "wx-care-0600",
+      "source": "weather",
+      "kind": "forecast",
+      "subject": "demo-house",
+      "quantity": "outdoor_temp_forecast",
+      "value": 28,
+      "unit": "F",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:00-05:00",
+      "expected_cadence_s": 21600,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "wx-care-1200",
+      "source": "weather",
+      "kind": "forecast",
+      "subject": "demo-house",
+      "quantity": "outdoor_temp_forecast",
+      "value": 31,
+      "unit": "F",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "received_at": "2026-01-16T22:00:00-05:00",
+      "expected_cadence_s": 21600,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "wx-care-1800",
+      "source": "weather",
+      "kind": "forecast",
+      "subject": "demo-house",
+      "quantity": "outdoor_temp_forecast",
+      "value": 27,
+      "unit": "F",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "received_at": "2026-01-17T04:00:00-05:00",
+      "expected_cadence_s": 21600,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    },
+    {
+      "id": "wx-care-2100",
+      "source": "weather",
+      "kind": "forecast",
+      "subject": "demo-house",
+      "quantity": "outdoor_temp_forecast",
+      "value": 26,
+      "unit": "F",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "received_at": "2026-01-17T07:00:00-05:00",
+      "expected_cadence_s": 21600,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      }
+    }
+  ]
+}

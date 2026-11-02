@@ -1,5 +1,7 @@
 # Gate A evidence: Audit 5 findings reproduced, repaired, retested
 
+> Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
+
 Audit 5 reviewed commit `a2995fd` and reported seven findings. This page shows each one failing on `a2995fd` and fixed on `247cdb5`, with the raw logs in [`docs/evidence/gate-a/`](evidence/gate-a/). Everything here was run offline on synthetic data (Flask test client, temporary databases and session folders, no live calls), except the hosted checks, which ran against the public demo.
 
 How to reproduce: check out each commit and run `python -I docs/evidence/gate-a/gate_a_probe.py <checkout>/backend` (probe output), and copy `backend/tests/test_audit5_*.py` from `247cdb5` into the old checkout before running pytest (regression tests).

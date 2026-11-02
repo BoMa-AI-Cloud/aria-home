@@ -162,7 +162,7 @@ evidence folder.
 - No permission request before the step-3 time; from then on the request text and time are identical at every step in
   all three branches.
 - The activity line at every step names a replay event or computed transition; a test fails if a label has no source.
-- Decline at 02:31: contact refused, and verification at 06:21 is still `goal_verified`. Approve with too little
+- Decline (rule replaced by Brad 2026-11-01): contact refused, no technician or report, and the room never warms, so verification at 06:21 is not verified and the 07:00 expectation is missed. A decline never stops independent checking; the readings alone decide. Approve with too little
   evidence (synthetic variant): contact sent, verification stays unverified.
 - The technician report changes the activity line only, never the outcome.
 - Every recording shown at a checkpoint matches its exact identity; anything else shows the labelled fallback.

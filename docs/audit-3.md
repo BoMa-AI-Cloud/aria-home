@@ -1,5 +1,7 @@
 # Audit 3 defect matrix
 
+> Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
+
 An independent audit of ARIA Home reported 12 defects against `d883778`.
 The operator ran the auditor's probe scripts against that commit with fake
 providers and temporary databases (no live calls); all 12 reproduced

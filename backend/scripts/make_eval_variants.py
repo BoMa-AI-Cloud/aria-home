@@ -24,7 +24,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 SEED = 20261030
-SRC_DIR = BACKEND_DIR / "scenarios" / "care_home_v1"
+SRC_DIR = BACKEND_DIR / "scripts" / "eval_variants_source" / "care_home_v1"
 DEFAULT_OUT = BACKEND_DIR / "scenarios" / "eval_variants"
 TZ = "-05:00"
 DAY1 = "2026-01-16"
@@ -220,7 +220,7 @@ def _in_gap(minute, gap):
 
 
 def _dump(path, payload):
-    path.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def _rewrite_copied(records, code, variant_id):

@@ -121,7 +121,7 @@ def test_investigator_skips_redacted_thinking():
     pack = build_evidence_pack(scenario, AT)
     import json as _json
 
-    prompt = "inv-v3 Evidence pack (JSON):\n" + _json.dumps(pack)
+    prompt = "inv-v4 Evidence pack (JSON):\n" + _json.dumps(pack)
     valid_text = probe.generate(prompt).text
     assert valid_text is not None
 

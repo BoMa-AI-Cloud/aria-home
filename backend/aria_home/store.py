@@ -750,6 +750,27 @@ class Store:
             return None
         return dict(row)
 
+    def declined_as_of(self, scenario_id, at):
+        """The earliest recorded decline for one scenario visible at `at`, else None.
+
+        Investigation-less reads (events, sources, metrics, watcher, trace
+        without an investigation) use this so a visitor who declined sees the
+        declined night everywhere, while other visitors and earlier replay
+        times keep the recorded story.
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT d.* FROM caregiver_decisions d JOIN investigations i ON i.id = d.investigation_id "
+                "WHERE d.decision = 'declined' AND i.scenario = ? ORDER BY d.decided_at, d.investigation_id",
+                (scenario_id,),
+            ).fetchall()
+        if at is not None:
+            cutoff = _parse_dt(at)
+            rows = [r for r in rows if _parse_dt(r["decided_at"]) <= cutoff]
+        if not rows:
+            return None
+        return dict(rows[0])
+
     def list_investigations(self):
         with self._connection() as conn:
             rows = conn.execute("SELECT id FROM investigations ORDER BY created_at, id").fetchall()

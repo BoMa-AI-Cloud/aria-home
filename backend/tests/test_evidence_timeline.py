@@ -41,7 +41,7 @@ def test_evidence_timeline_order_and_verified_before_report():
         "Target first reached",
         "Hold completed and goal verified",
         "HVAC completion report available",
-        "Arrival checked",
+        "Warm-by time checked",
     ]
     by_kind = {e["kind"]: e for e in entries}
     assert by_kind["reporting_restored"]["supporting_ids"] == ["tstat-video-temp-1820"]

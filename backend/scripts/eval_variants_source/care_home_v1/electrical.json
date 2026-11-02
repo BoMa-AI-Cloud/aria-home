@@ -1,0 +1,2308 @@
+{
+  "records": [
+    {
+      "id": "elec-care-blower-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:00:00-05:00",
+      "received_at": "2026-01-16T16:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T16:30:00-05:00",
+      "received_at": "2026-01-16T16:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:00:00-05:00",
+      "received_at": "2026-01-16T17:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T17:30:00-05:00",
+      "received_at": "2026-01-16T17:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:00:00-05:00",
+      "received_at": "2026-01-16T18:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T18:30:00-05:00",
+      "received_at": "2026-01-16T18:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:00:00-05:00",
+      "received_at": "2026-01-16T19:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-0930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T19:30:00-05:00",
+      "received_at": "2026-01-16T19:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:00:00-05:00",
+      "received_at": "2026-01-16T20:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T20:30:00-05:00",
+      "received_at": "2026-01-16T20:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:00:00-05:00",
+      "received_at": "2026-01-16T21:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-16T21:30:00-05:00",
+      "received_at": "2026-01-16T21:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1200",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:00:00-05:00",
+      "received_at": "2026-01-16T22:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1230",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-16T22:30:00-05:00",
+      "received_at": "2026-01-16T22:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1300",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:00:00-05:00",
+      "received_at": "2026-01-16T23:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1330",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-16T23:30:00-05:00",
+      "received_at": "2026-01-16T23:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1400",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:00:00-05:00",
+      "received_at": "2026-01-17T00:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1430",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-17T00:30:00-05:00",
+      "received_at": "2026-01-17T00:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 5,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1500",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:00:00-05:00",
+      "received_at": "2026-01-17T01:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 500,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1530",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-17T01:30:00-05:00",
+      "received_at": "2026-01-17T01:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 550,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1600",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:00:00-05:00",
+      "received_at": "2026-01-17T02:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 480,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1630",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-17T02:30:00-05:00",
+      "received_at": "2026-01-17T02:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 520,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1700",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:00:00-05:00",
+      "received_at": "2026-01-17T03:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 580,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1730",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-17T03:30:00-05:00",
+      "received_at": "2026-01-17T03:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1800",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:00:00-05:00",
+      "received_at": "2026-01-17T04:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 920,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1830",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-17T04:30:00-05:00",
+      "received_at": "2026-01-17T04:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 880,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 450,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1900",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 160,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:00:00-05:00",
+      "received_at": "2026-01-17T05:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 910,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 180,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-1930",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 95,
+      "unit": "W",
+      "observed_at": "2026-01-17T05:30:00-05:00",
+      "received_at": "2026-01-17T05:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 895,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 320,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-2000",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:00:00-05:00",
+      "received_at": "2026-01-17T06:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 915,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 90,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-2030",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 110,
+      "unit": "W",
+      "observed_at": "2026-01-17T06:30:00-05:00",
+      "received_at": "2026-01-17T06:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 900,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 140,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-2100",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 85,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:00:00-05:00",
+      "received_at": "2026-01-17T07:00:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-blower-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-blower",
+      "quantity": "circuit_power",
+      "value": 920,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-blower",
+        "equipment": "blower",
+        "status": "candidate",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-kitchen-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-kitchen",
+      "quantity": "circuit_power",
+      "value": 260,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-kitchen",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    },
+    {
+      "id": "elec-care-living-2130",
+      "source": "electrical",
+      "kind": "measurement",
+      "subject": "circuit-living",
+      "quantity": "circuit_power",
+      "value": 120,
+      "unit": "W",
+      "observed_at": "2026-01-17T07:30:00-05:00",
+      "received_at": "2026-01-17T07:30:20-05:00",
+      "expected_cadence_s": 1800,
+      "mode": "synthetic",
+      "provenance": {
+        "fixture_id": "care_home_v1",
+        "version": "1"
+      },
+      "meter_id": "demo-house-meter-1",
+      "binding": {
+        "circuit_id": "circuit-living",
+        "equipment": null,
+        "status": "unknown",
+        "confirmed_by": null
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import math
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from .clock import ensure_aware
 from .contracts import Availability, EvidenceKind, SourceKind
@@ -450,7 +450,21 @@ def _timeline_entry(kind, label, supporting_ids, observed_at, received_at, first
     }
 
 
-def build_evidence_timeline(scenario, followup, now):
+def _declined_as_of(caregiver_decision, now):
+    """Whether HVAC contact was refused as of `now`; the completion report then never happened."""
+    if caregiver_decision is None:
+        return False
+    get = (lambda name: caregiver_decision.get(name)) if isinstance(caregiver_decision, dict) else (lambda name: getattr(caregiver_decision, name, None))
+    if get("decision") != "declined":
+        return False
+    try:
+        decided_at = datetime.fromisoformat(str(get("decided_at")).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return False
+    return decided_at <= now
+
+
+def build_evidence_timeline(scenario, followup, now, caregiver_decision=None):
     ensure_aware(now, "now")
     created_at = _get(followup, "created_at")
     deadline = _get(followup, "deadline")
@@ -511,8 +525,11 @@ def build_evidence_timeline(scenario, followup, now):
         first_known = max(r.received_at for r in verified_segment)
         entries.append(_timeline_entry("goal_verified", "Hold completed and goal verified", [r.id for r in verified_segment], verified_at, last.received_at, first_known))
 
+    declined = _declined_as_of(caregiver_decision, now)
     for event in sorted(events, key=lambda e: (e.available_at, e.event_time, e.id)):
         if event.kind in CORROBORATION_EVENT_KINDS:
+            if declined:
+                continue
             entries.append(_timeline_entry("hvac_completion_report", "HVAC completion report available", [event.id], event.event_time, event.available_at, event.available_at, corroboration_only=True))
 
     arrival = _arrival(scenario, followup, now)
@@ -524,7 +541,7 @@ def build_evidence_timeline(scenario, followup, now):
             first_known = max(arrival, last.received_at, segment_known)
             if first_known <= now:
                 support = list(dict.fromkeys([r.id for r in verified_segment] + [last.id]))
-                entries.append(_timeline_entry("arrival_checked", "Arrival checked", support, arrival, last.received_at, first_known))
+                entries.append(_timeline_entry("arrival_checked", "Warm-by time checked", support, arrival, last.received_at, first_known))
 
     entries = [e for e in entries if e["first_known_at"] <= now]
     entries.sort(key=lambda e: (e["first_known_at"], e["observed_at"], e["kind"]))

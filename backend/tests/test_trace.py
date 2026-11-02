@@ -221,13 +221,13 @@ def test_trace_public_demo_allows_only_checkpoints(monkeypatch, tmp_path):
 
 
 def test_permission_step_follows_the_caregiver_and_never_shows_the_future(scn):
-    assert build_trace(scn, _at("2026-01-16T19:15:00-05:00"))["permission"] is None
+    assert build_trace(scn, _at("2026-01-16T19:20:00-05:00"))["permission"] is None
     waiting = build_trace(scn, _at(AT_0231))
     assert waiting["permission"]["status"] == "waiting"
     assert waiting["permission"]["decided_at"] is None
-    assert [s["label"] for s in waiting["steps"] if s["kind"] == "permission"] == ["caregiver permission: no answer yet — ARIA will not contact HVAC until she answers"]
-    assert waiting["permission"]["requested_at"].startswith("2026-01-16T19:20")
-    assert "54 F" in waiting["permission"]["text"]
+    assert [s["label"] for s in waiting["steps"] if s["kind"] == "permission"] == ["caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers"]
+    assert waiting["permission"]["requested_at"].startswith("2026-01-16T23:30")
+    assert "60 F" in waiting["permission"]["text"]
     assert "16:00" in waiting["permission"]["text"]
     assert "52 F" not in waiting["permission"]["text"]
     approved = build_trace(scn, _at("2026-01-17T02:45:00-05:00"))

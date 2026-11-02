@@ -45,7 +45,7 @@ def test_arrival_mock_answer_passes(name, at):
     result = investigate(scenario, at_dt, MockProvider())
     assert result.status == "ok", result.reasons
     assert result.output.readiness == "arrival_passed"
-    assert result.prompt_version == "inv-v3"
+    assert result.prompt_version == "inv-v4"
     assert not [f for f in result.output.facts if f.claim_type == "current_temperature"]
     assert any(f.claim_type == "temperature_at_arrival" for f in result.output.facts)
     assert any("at arrival" in s for s in result.output.verified_facts)
@@ -151,8 +151,37 @@ def test_valid_output_passes():
     assert result.status == "ok"
     assert result.output is not None
     assert result.provider_mode == "mock"
-    assert result.prompt_version == "inv-v3"
+    assert result.prompt_version == "inv-v4"
     assert fake.calls[0][2] == 12000
+
+def test_prompt_warm_by_wording_exact():
+    from aria_home.investigator import PROMPT_VERSION, SYSTEM_PROMPT
+    assert PROMPT_VERSION == "inv-v4"
+    assert "(prompt version inv-v4)" in SYSTEM_PROMPT
+    assert "inv-v3" not in SYSTEM_PROMPT
+    for new in (
+        "will the home be warm by the warm-by time",
+        "Only before the warm-by time",
+        "the evaluation time is after the warm-by time",
+        "state the temperature AT THE WARM-BY TIME as a temperature_at_arrival fact",
+        "any post-warm-by-time reading as current",
+    ):
+        assert new in SYSTEM_PROMPT
+    for old in (
+        "when the homeowner arrives",
+        "before the planned arrival",
+        "after the confirmed arrival",
+        "AT ARRIVAL as a",
+        "post-arrival reading",
+    ):
+        assert old not in SYSTEM_PROMPT
+    for kept in (
+        "trip titles",
+        "temperature_at_arrival",
+        "arrival_passed",
+        "Only after the planned arrival (computed readiness arrival_passed)",
+    ):
+        assert kept in SYSTEM_PROMPT
 
 def test_unknown_evidence_id_rejected():
     scenario = _scenario(); at = _at(scenario); pack = build_evidence_pack(scenario, at)

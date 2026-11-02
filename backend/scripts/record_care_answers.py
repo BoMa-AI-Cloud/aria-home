@@ -13,6 +13,7 @@ appears in output, files or errors.
 
     python backend/scripts/record_care_answers.py
     python backend/scripts/record_care_answers.py --live --max-calls 20 --code-snapshot <git-HEAD>
+    python backend/scripts/record_care_answers.py --live --only-at <replay-time> --max-calls 2 --code-snapshot <git-HEAD>
 """
 import argparse
 import json
@@ -245,10 +246,17 @@ def main(argv=None, *, provider=None, http_post=None, env=None, out=None, now=No
     parser.add_argument("--reviews-dir", default=None)
     parser.add_argument("--timeout-s", type=float, default=RECORDING_TIMEOUT_S)
     parser.add_argument("--only-missing", action="store_true")
+    parser.add_argument("--only-at", default=None, help="record only this checkpoint (exact replay time from the dry-run list); still capped by --max-calls")
     args = parser.parse_args(argv)
 
     scenario = load_scenario(SCENARIOS_DIR / CARE_SCENARIO_ID)
     plan = _plan(scenario)
+    if args.only_at is not None:
+        match = [item for item in plan if item["at_str"] == args.only_at]
+        if not match:
+            out(_redact(f"unknown checkpoint {args.only_at!r}; expected one of: {', '.join(item['at_str'] for item in plan)}", source_env))
+            return 2
+        plan = match
     recorded_base = Path(args.recorded_dir) if args.recorded_dir else recorded_dir(source_env)
     reviews_base = Path(args.reviews_dir) if args.reviews_dir else reviews_dir(source_env)
     date_str = args.date or _utc_now(now).astimezone(timezone.utc).date().isoformat()

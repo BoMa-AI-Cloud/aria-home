@@ -23,6 +23,7 @@ import {
   resetPublicSession,
   RecoveryRequiredError,
   sendHvacWhatsapp,
+  type ActivityLine,
   type Availability,
   type CameraSnapshotResponse,
   type CaregiverPermission,
@@ -78,7 +79,7 @@ const VIDEO_SCENARIO = "demo_video_v1";
 const VIDEO_START_AT = "2026-01-16T16:31:00-05:00";
 
 const CARE_SCENARIO = "care_home_v1";
-const CARE_START_AT = "2026-01-16T19:03:00-05:00";
+const CARE_START_AT = "2026-01-16T19:20:00-05:00";
 
 const REPLAY_START_AT = "2026-01-16T18:00:00-05:00";
 
@@ -103,9 +104,9 @@ const VIDEO_REPLAY_TIMES = [
 ].map((label) => ({ label, at: `2026-01-16T${label}:00-05:00` }));
 
 const CARE_REPLAY_TIMES = [
-  { day: "2026-01-16", label: "19:03" },
-  { day: "2026-01-16", label: "19:15" },
   { day: "2026-01-16", label: "19:20" },
+  { day: "2026-01-16", label: "21:00" },
+  { day: "2026-01-16", label: "23:30" },
   { day: "2026-01-17", label: "02:31" },
   { day: "2026-01-17", label: "02:45" },
   { day: "2026-01-17", label: "04:21" },
@@ -1187,7 +1188,15 @@ function PayloadFacts({ payload }: { payload: Record<string, unknown> }) {
   );
 }
 
-function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; replayAt: string | null }) {
+const CONTACT_EVENT_KINDS = new Set([
+  "caregiver_hvac_authorized",
+  "hvac_request",
+  "service_visit",
+  "hvac_completion_report",
+]);
+
+function SimulatedTimeline({ events, replayAt, caregiverDeclinedAt }: { events: ScenarioEvent[]; replayAt: string | null; caregiverDeclinedAt?: string | null }) {
+  const declinedMs = caregiverDeclinedAt ? Date.parse(caregiverDeclinedAt) : NaN;
   return (
     <>
       {replayAt && (
@@ -1201,7 +1210,12 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
         <details className="events-details">
           <summary>Show all {events.length} simulated events</summary>
           <div className="event-cards">
-            {events.map((event) => (
+            {events.map((event) => {
+              const didNotHappen =
+                CONTACT_EVENT_KINDS.has(event.kind) &&
+                !Number.isNaN(declinedMs) &&
+                Date.parse(event.available_at) > declinedMs;
+              return (
             <article key={event.id} className="event-card" aria-label={`${eventKindLabel(event.kind)} event`}>
               <h3 className="card-title">{eventKindLabel(event.kind)}</h3>
               <p className="simulated-tag">SIMULATED</p>
@@ -1220,12 +1234,16 @@ function SimulatedTimeline({ events, replayAt }: { events: ScenarioEvent[]; repl
                 </div>
               </dl>
               {event.kind === "scene_acknowledged" && <p>Acknowledged, physical success unknown</p>}
-              {event.kind === "hvac_completion_report" && (
+              {event.kind === "hvac_completion_report" && !didNotHappen && (
                 <p>Corroboration only, does not set the outcome</p>
+              )}
+              {didNotHappen && (
+                <p>Did not happen: the caregiver declined HVAC contact — shown for the record only.</p>
               )}
               <PayloadFacts payload={event.payload} />
             </article>
-          ))}
+              );
+            })}
           </div>
         </details>
       )}
@@ -1294,14 +1312,14 @@ function caregiverStatusParts(permission: CaregiverPermission): {
       prefix: "Declined by the caregiver at",
       whenText: permission.decided_at ? formatTimestamp(permission.decided_at) : "an unknown time",
       whenDateTime: permission.decided_at ?? null,
-      effect: "No HVAC request; ARIA keeps monitoring.",
+      effect: "No HVAC request; verification continues from independent readings.",
     };
   }
   return {
     prefix: "No answer yet — asked at",
     whenText: permission.requested_at ? formatTimestamp(permission.requested_at) : "an unknown time",
     whenDateTime: null,
-    effect: "ARIA will not contact HVAC until she answers.",
+    effect: "ARIA will not contact HVAC until the caregiver answers.",
   };
 }
 
@@ -1539,10 +1557,10 @@ const BRAD_HOOK =
 const STORY_SCENARIO = "care_home_v1";
 
 const STORY_STEP_TITLES = [
-  "Warm-by plan confirmed, with consent",
-  "Confirmation requested",
-  "House cooling overnight",
-  "Flagged before the warm-by time",
+  "Warm-by plan confirmed, on track",
+  "Evening decline, still on track",
+  "Flagged at risk, caregiver asked",
+  "Thermostat telemetry missing",
   "Caregiver approves HVAC contact",
   "Thermostat reporting restored",
   "Warming observed",
@@ -1552,10 +1570,10 @@ const STORY_STEP_TITLES = [
 ];
 
 const STORY_STEP_GUIDANCE = [
-  "An older adult lives alone in demo-house. The household warm-by expectation is 07:00 at 68 F, recorded with the resident's consent: home status and observations may go to the resident and an adult-child family caregiver, nothing medical, no location tracking, no fall sensing.",
-  "ARIA Home asks for confirmation of the property, the warm-by plan, the target temperature, and caregiver coordination; the plan is confirmed at 19:20 with caregiver coordination allowed.",
-  "Overnight the furnace stops and the thermostat stops reporting; an independent room sensor shows the living area cooling toward 52 F.",
-  "ARIA Home flags the risk before the 07:00 warm-by time and notifies the resident and the family caregiver. Only scoped audiences are notified: the caregiver notice carries allowed fields only. ARIA then asks the caregiver: may it contact the HVAC company? Try Approve or Decline on the permission card: HVAC is contacted only after approval, and the Outcome headline never changes.",
+  "An older adult lives alone in demo-house. The household warm-by expectation is 07:00 at 68 F, recorded with the resident's consent: home status and observations may go to the resident and an adult-child family caregiver, nothing medical, no location tracking, no fall sensing. The plan is confirmed at 19:20 with caregiver coordination allowed; readiness is on track with the living area near 69 F.",
+  "By 21:00 the living area has eased to about 68.4 F and readiness is still on track. Nothing has been flagged yet, so there is no follow-up, no caregiver request, and no HVAC notice.",
+  "At 23:30 ARIA Home flags at risk: the room is near 59.6 F, about 8 F below the 68 F goal, with the furnace reported idle since 16:00. It notifies the resident and the family caregiver. Only scoped audiences are notified: the caregiver notice carries allowed fields only. ARIA then asks the caregiver: may it contact the HVAC company? Try Approve or Decline on the permission card: HVAC is contacted only after approval, and the Outcome headline never changes.",
+  "Overnight the thermostat stops reporting (outage 01:30-04:20); an independent room sensor shows the living area near 52 F.",
   "The caregiver explicitly authorizes contacting the HVAC company on file (in the recorded story, unless you declined at the previous step); only then is the simulated HVAC request allowed, carrying property, access note, and observations only, and the caregiver is told it was sent.",
   "Thermostat reporting is restored, but reconnection alone proves nothing; verification is still pending.",
   "Independent room readings show warming; the thermostat trend alone never decides this.",
@@ -1563,6 +1581,25 @@ const STORY_STEP_GUIDANCE = [
   "The HVAC completion report arrives after verification, as corroboration only; it changes no outcome.",
   "The warm-by time is evaluated from readings received by 07:00, not assumed from verification.",
 ];
+
+const DECLINED_STORY_STEP_TITLES: Record<number, string> = {
+  3: "Thermostat telemetry missing, no repair arranged",
+  4: "Caregiver declines HVAC contact",
+  5: "Thermostat still silent, house still cold",
+  6: "No warming observed",
+  7: "Temperature goal not verified",
+  8: "No completion report: nobody was contacted",
+  9: "Warm-by expectation missed",
+};
+
+const DECLINED_STORY_STEP_GUIDANCE: Record<number, string> = {
+  3: "Overnight the thermostat stops reporting; the independent room sensor holds near 52 F. No repair has been arranged, so there is no visit to expect.",
+  4: "The caregiver declines HVAC contact, so no HVAC request is sent and no visit is scheduled. The independent room sensor shows the living area still near 52 F, below the 68 F goal.",
+  5: "The thermostat is still silent and the room is still near 52 F. Silence proves nothing either way; verification stays pending.",
+  6: "Independent room readings show no warming; the house holds near 52 F with no warming signature.",
+  7: "The independent room sensor shows the living area near 52 F, below the 68 F goal, so the goal is not verified.",
+  8: "Nobody was contacted, so there is no completion report and no technician visit. The record shows readings only.",
+};
 
 const MODEL_CONTRIBUTIONS = [
   {
@@ -1614,7 +1651,7 @@ function LawsView({ scenario, at, onBack, active }: { scenario: string; at: stri
     if (!active) return;
     let cancelled = false;
     setError(null);
-    Promise.all([fetchLaws(), fetchWatcher(scenario, at), fetchCorrections()])
+    Promise.all([fetchLaws(), fetchWatcher(scenario, at), fetchCorrections(scenario, at)])
       .then(([lawsResponse, watcherResponse, correctionsResponse]) => {
         if (cancelled) return;
         setLaws(lawsResponse);
@@ -1727,16 +1764,34 @@ function LawsView({ scenario, at, onBack, active }: { scenario: string; at: stri
       ) : corrections.corrections.length === 0 ? (
         <p>No watcher corrections recorded yet.</p>
       ) : (
-        <ul>
-          {corrections.corrections.map((record: CorrectionRecord, index: number) => (
-            <li key={`${record.scenario_id}-${record.evaluated_at_utc}-${index}`}>
-              {record.scenario_id} at {record.evaluated_at_utc}: {formatWatcherValue(record.final_result)}. Original:{" "}
-              {formatWatcherValue(record.original_claim)}. Failed checks: {formatWatcherValue(record.failed_checks)}.
-              Revision: {formatWatcherValue(record.revision_claim)}. The ledger below is shown to the model as
-              in-context examples only; the model itself is not retrained.
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul>
+            {corrections.corrections.map((record: CorrectionRecord, index: number) => (
+              <li key={`${record.scenario_id}-${record.evaluated_at_utc}-${index}`}>
+                <div>
+                  <strong>When:</strong> <time dateTime={record.evaluated_at_utc}>{formatTimestamp(record.evaluated_at_utc)}</time> — {record.scenario_id}
+                </div>
+                <div>
+                  <strong>What the watcher first said:</strong> {formatWatcherValue(record.original_claim)}
+                </div>
+                <div>
+                  <strong>What code rejected:</strong> {formatWatcherValue(record.failed_checks)}
+                </div>
+                <div>
+                  <strong>What it revised to:</strong> {formatWatcherValue(record.revision_claim)}
+                </div>
+                <div>
+                  <strong>Final status:</strong> {formatWatcherValue(record.final_result)}
+                </div>
+                <details>
+                  <summary>Raw record</summary>
+                  <pre>{JSON.stringify(record, null, 2)}</pre>
+                </details>
+              </li>
+            ))}
+          </ul>
+          <p>These records are shown to the model as in-context examples only; the model itself is not retrained.</p>
+        </>
       )}
       </details>
     </section>
@@ -1934,10 +1989,10 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
           : `Declined by the caregiver at ${decidedAt}`;
     const permissionEffect =
       permission.status === "waiting"
-        ? "ARIA will not contact HVAC until she answers"
+        ? "ARIA will not contact HVAC until the caregiver answers"
         : permission.status === "approved"
           ? "HVAC may now be contacted"
-          : "No HVAC request; ARIA keeps monitoring";
+          : "No HVAC request; verification continues from independent readings";
     nodes.push({
       id: "permission",
       x: colX[3],
@@ -2202,6 +2257,10 @@ function buildVerdict(
   verification: VerificationResult | null,
   targetTemp: number | null,
   targetUnit: string | null,
+  selectedAt: string | null,
+  plannedArrival: string | null,
+  roomValue: number | null,
+  roomUnit: string | null,
 ): Verdict | null {
   if (!readiness && !verification) return null;
   if (verification?.stage === "arrival_met") {
@@ -2218,6 +2277,16 @@ function buildVerdict(
     return { headline: "The house is cooling. It may not be warm by 7:00.", tone: "risk" };
   }
   if (readiness?.status === "arrival_passed") {
+    if (
+      selectedAt !== null && plannedArrival !== null &&
+      !Number.isNaN(Date.parse(selectedAt)) && !Number.isNaN(Date.parse(plannedArrival)) &&
+      Date.parse(selectedAt) >= Date.parse(plannedArrival) &&
+      targetTemp !== null && roomValue !== null
+    ) {
+      const goal = `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}`;
+      const actual = `${roomValue}${roomUnit ? ` ${roomUnit}` : ""}`;
+      return { headline: `The house missed the ${shortTimeLabel(plannedArrival)} warm-by time — ${actual} in the living area against the ${goal} goal.`, tone: "risk" };
+    }
     return { headline: "The warm-by time has passed.", tone: "watch" };
   }
   return { headline: "ARIA can't tell yet.", tone: "unknown" };
@@ -2234,19 +2303,40 @@ function sourceByKind(sources: SourceStatus[] | undefined, kind: SourceKind): So
   return sources?.find((status) => status.source === kind) ?? null;
 }
 
+function trendWord(trend: IndoorTrend | null, lastHourChangeF: number | null): string {
+  if (typeof lastHourChangeF === "number" && Math.abs(lastHourChangeF) <= 0.2) return "holding";
+  const rate = trend?.rate_per_hour;
+  if (typeof rate === "number" && trend?.sufficient) {
+    if (rate < 0) return "falling";
+    if (rate > 0) return "rising";
+    return "steady";
+  }
+  return "trend unknown";
+}
+
 function buildLead(
   sources: SourceStatus[] | undefined,
   trend: IndoorTrend | null,
+  lastHourChangeF: number | null,
 ): string | null {
   const parts: string[] = [];
   const room = sourceByKind(sources, "room_sensor");
   if (room && room.newest_value !== null && room.newest_value !== undefined) {
     const unit = room.newest_unit ? ` ${room.newest_unit}` : "";
-    let roomPart = `Living room ${room.newest_value}${unit}`;
-    const rate = trend?.rate_per_hour;
-    if (typeof rate === "number" && trend?.sufficient) {
-      if (rate < 0) roomPart += ` and falling ${Math.abs(Math.round(rate * 10) / 10)} F an hour`;
-      else if (rate > 0) roomPart += ` and rising ${Math.round(rate * 10) / 10} F an hour`;
+    let roomPart: string;
+    if (typeof lastHourChangeF === "number" && Math.abs(lastHourChangeF) <= 0.2) {
+      roomPart = `Living room holding at ${room.newest_value}${unit}`;
+      const fallen = trend?.change;
+      if (typeof fallen === "number" && trend?.sufficient && fallen < 0) {
+        roomPart += `, down ${Math.abs(Math.round(fallen * 10) / 10)} F over the last 3 hours`;
+      }
+    } else {
+      roomPart = `Living room ${room.newest_value}${unit}`;
+      const rate = trend?.rate_per_hour;
+      if (typeof rate === "number" && trend?.sufficient) {
+        if (rate < 0) roomPart += ` and falling ${Math.abs(Math.round(rate * 10) / 10)} F an hour`;
+        else if (rate > 0) roomPart += ` and rising ${Math.round(rate * 10) / 10} F an hour`;
+      }
     }
     parts.push(roomPart);
   }
@@ -2329,6 +2419,7 @@ function CameraTile({ scenario, at, enabled }: { scenario: string; at: string; e
 function GlanceTiles({
   sources,
   trend,
+  lastHourChangeF,
   targetTemp,
   targetUnit,
   plannedArrival,
@@ -2339,6 +2430,7 @@ function GlanceTiles({
 }: {
   sources: SourceStatus[] | undefined;
   trend: IndoorTrend | null;
+  lastHourChangeF: number | null;
   targetTemp: number | null;
   targetUnit: string | null;
   plannedArrival: string | null;
@@ -2353,15 +2445,7 @@ function GlanceTiles({
     room && room.newest_value !== null && room.newest_value !== undefined
       ? `${room.newest_value}${room.newest_unit ? ` ${room.newest_unit}` : ""}`
       : "No reading";
-  const rate = trend?.rate_per_hour;
-  const insideTrend =
-    typeof rate === "number" && trend?.sufficient
-      ? rate < 0
-        ? "falling"
-        : rate > 0
-          ? "rising"
-          : "steady"
-      : "trend unknown";
+  const insideTrend = trendWord(trend, lastHourChangeF);
   const targetLabel = targetTemp !== null ? `${formatTargetTemp(targetTemp)} ${targetUnit ?? "F"}` : "the goal";
   const arrivalLabel = plannedArrival ? shortTimeLabel(plannedArrival) : "the warm-by time";
   const thermostatState =
@@ -2610,7 +2694,7 @@ function WhoKnows({
                   hvacNotices.find((item) => item.state === "simulated_delivered")?.payload ?? {},
                 ).join(", ")}. ${caregiverClause}`
                 : hvacNotices.length > 0
-                  ? `No request sent: ${refusalReasonInWords(hvacNotices[0])}. ${caregiverClause}`
+                  ? `No request sent: ${refusalReasonInWords(hvacNotices[hvacNotices.length - 1])}. ${caregiverClause}`
                   : `No HVAC request at this time. ${caregiverClause}`
             }
           >
@@ -2886,6 +2970,7 @@ export default function App() {
   const [replayLoading, setReplayLoading] = useState(false);
   const [replayError, setReplayError] = useState<string | null>(null);
   const [verification, setVerification] = useState<VerificationResult | null>(null);
+  const [followUpReadiness, setFollowUpReadiness] = useState<ReadinessResult | null>(null);
   const [evidenceTimeline, setEvidenceTimeline] = useState<EvidenceTimelineEntry[]>([]);
   const [humanReport, setHumanReport] = useState<HumanReportPayload | null>(null);
   const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryEntry[]>([]);
@@ -2902,6 +2987,7 @@ export default function App() {
   const [sourcesLoading, setSourcesLoading] = useState(false);
   const [publicMode, setPublicMode] = useState<boolean | null>(null);
   const [caregiverPermission, setCaregiverPermission] = useState<CaregiverPermission | null>(null);
+  const [activity, setActivity] = useState<ActivityLine | null>(null);
   const [replayMetrics, setReplayMetrics] = useState<ReplayMetrics | null>(null);
   const [recordedReplay, setRecordedReplay] = useState<RecordedInvestigation | null>(null);
   const [recordedByAt, setRecordedByAt] = useState<Record<string, RecordedInvestigation>>({});
@@ -3036,11 +3122,13 @@ export default function App() {
     setVerificationHistory([]);
     setInvestigationId(null);
     setVerification(null);
+    setFollowUpReadiness(null);
     setEvidenceTimeline([]);
     setHumanReport(null);
     setEvents([]);
     setNotifications([]);
     setCaregiverPermission(null);
+    setActivity(null);
     setReplayMetrics(null);
     setRecordedReplay(null);
     setRecordedByAt({});
@@ -3060,6 +3148,7 @@ export default function App() {
         setOutcome(response.outcome);
         setHistory([]);
         if (response.notifications) setNotifications(response.notifications);
+        setActivity(response.activity ?? null);
         setFollowUpUnit(
           typeof response.follow_up?.target_unit === "string"
             ? response.follow_up.target_unit
@@ -3088,10 +3177,12 @@ export default function App() {
             setOutcome(followUp.outcome);
             setHistory(followUp.history);
             setVerification(followUp.verification ?? null);
+            setFollowUpReadiness(followUp.readiness ?? null);
             setEvidenceTimeline(followUp.evidence_timeline ?? []);
             setHumanReport(followUp.human_report ?? null);
             setVerificationHistory(followUp.verification_history ?? []);
             setCaregiverPermission(followUp.caregiver_permission ?? null);
+            setActivity(followUp.activity ?? null);
             setReplayMetrics(followUp.metrics ?? null);
             setRecordedReplay(followUp.recorded_investigation ?? null);
             if (followUp.notifications) {
@@ -3214,12 +3305,14 @@ export default function App() {
     setOutcome(null);
     setHistory([]);
     setVerification(null);
+    setFollowUpReadiness(null);
     setEvidenceTimeline([]);
     setHumanReport(null);
     setVerificationHistory([]);
     setEvents([]);
     setNotifications([]);
     setCaregiverPermission(null);
+    setActivity(null);
     setReplayMetrics(null);
     setRecordedReplay(null);
     setNotificationsError(null);
@@ -3275,6 +3368,7 @@ export default function App() {
       }
       setInvestigationId(created.investigation_id);
       if (created.notifications) setNotifications(created.notifications);
+      setActivity(created.activity ?? null);
       if (created.follow_up === null) {
         setOutcome(created.outcome);
         setReplayAt(at);
@@ -3325,10 +3419,12 @@ export default function App() {
         setOutcome(response.outcome);
         setHistory(response.history);
         setVerification(response.verification ?? null);
+        setFollowUpReadiness(response.readiness ?? null);
         setEvidenceTimeline(response.evidence_timeline ?? []);
         setHumanReport(response.human_report ?? null);
         setVerificationHistory(response.verification_history ?? []);
         setCaregiverPermission(response.caregiver_permission ?? null);
+        setActivity(response.activity ?? null);
         setReplayMetrics(response.metrics ?? null);
         setRecordedReplay(response.recorded_investigation ?? null);
         {
@@ -3533,8 +3629,30 @@ export default function App() {
 
   const inStory = publicMode === true && view === "story" && storyCheckpoints.length > 0;
   const storyAt = inStory ? storyCheckpoints[Math.min(storyIndex, storyCheckpoints.length - 1)] : null;
-  const storyTitle = STORY_STEP_TITLES[Math.min(storyIndex, STORY_STEP_TITLES.length - 1)] ?? "";
-  const storyGuidance = STORY_STEP_GUIDANCE[Math.min(storyIndex, STORY_STEP_GUIDANCE.length - 1)] ?? "";
+  const storyIdx = Math.min(storyIndex, STORY_STEP_TITLES.length - 1);
+  const declinedAtThisStep =
+    caregiverPermission?.status === "declined" &&
+    caregiverPermission.decided_at !== null &&
+    !Number.isNaN(Date.parse(caregiverPermission.decided_at)) &&
+    !Number.isNaN(Date.parse(selectedAt)) &&
+    Date.parse(caregiverPermission.decided_at) <= Date.parse(selectedAt);
+  const storyRoom = sourceByKind(data?.sources, "room_sensor");
+  const storyRoomLabel =
+    storyRoom && storyRoom.newest_value !== null && storyRoom.newest_value !== undefined
+      ? `${storyRoom.newest_value}${storyRoom.newest_unit ? ` ${storyRoom.newest_unit}` : ""}`
+      : "no reading";
+  const storyTitle = declinedAtThisStep && storyIdx >= 3
+    ? (DECLINED_STORY_STEP_TITLES[storyIdx] ?? STORY_STEP_TITLES[storyIdx] ?? "")
+    : storyIdx === 4 && !declinedAtThisStep && caregiverPermission?.status !== "approved"
+      ? "Waiting on the caregiver — no HVAC contact yet"
+      : (STORY_STEP_TITLES[storyIdx] ?? "");
+  const storyGuidance = declinedAtThisStep && storyIdx >= 3
+    ? storyIdx === 9
+      ? `The 07:00 warm-by time passes with the living area at ${storyRoomLabel} against the 68 F goal — the expectation is missed. Nobody was contacted, so no visit, report, or voice note exists at any step after the decline.`
+      : (DECLINED_STORY_STEP_GUIDANCE[storyIdx] ?? STORY_STEP_GUIDANCE[storyIdx] ?? "")
+    : storyIdx === 4 && !declinedAtThisStep && caregiverPermission?.status !== "approved"
+      ? "The recorded story authorizes HVAC contact at this step; in this replay nothing is sent until the caregiver answers on the permission card."
+      : (STORY_STEP_GUIDANCE[storyIdx] ?? "");
   const earlierInvestigations = inStory
     ? storyCheckpoints
       .slice(0, Math.min(storyIndex, storyCheckpoints.length))
@@ -3546,7 +3664,7 @@ export default function App() {
       )
     : [];
   const deterministicReadiness =
-    createdInvestigation?.readiness ?? displayInvestigation?.summary?.readiness ?? null;
+    followUpReadiness ?? createdInvestigation?.readiness ?? displayInvestigation?.summary?.readiness ?? null;
   const recordedProvenance =
     (createdInvestigation?.investigation as unknown as
       | { recorded_provenance?: Record<string, unknown> }
@@ -3563,14 +3681,14 @@ export default function App() {
       ? storyCheckpoints.map((at) => ({ label: at.slice(11, 16), at }))
       : replayTimes;
   const verdict = !replayLoading || deterministicReadiness || verification
-    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit)
+    ? buildVerdict(deterministicReadiness, verification, followUpTargetTemp, followUpUnit, selectedAt, contextData?.planned_arrival ?? null, storyRoom?.newest_value ?? null, storyRoom?.newest_unit ?? null)
     : null;
   const trend = replayMetrics?.indoor_trend ?? null;
   const gapTarget = replayMetrics?.target_gap ?? null;
   const warmByTargetTemp = followUpTargetTemp ?? gapTarget?.target_temp ?? null;
   const warmByTargetUnit = followUpUnit ?? gapTarget?.target_unit ?? null;
   const plannedArrival = contextData?.planned_arrival ?? null;
-  const lead = buildLead(data?.sources, trend);
+  const lead = buildLead(data?.sources, trend, replayMetrics?.last_hour_change_f ?? null);
   const gapCallout = gapCalloutFor(data?.sources);
   const visualEnabled =
     publicMode === false || scenario !== STORY_SCENARIO || storyCheckpoints.includes(selectedAt);
@@ -3695,7 +3813,11 @@ export default function App() {
           <div className="landing-letter">
             <p className="landing-eyebrow">A demo for the Meta AI hackathon</p>
             <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
-            <p>ARIA Home watches a synthetic winter night and gets the right person moving when something looks wrong.</p>
+            <p>ARIA Home replays a synthetic winter night and shows how it gets the right person moving when something looks wrong.</p>
+            <div className="household-card">
+              <p>Built during the Hackathon: all of ARIA Home's code, written with Meta's Muse models. Pre-existing: only the name ARIA and planning notes.</p>
+              <p>muse-spark-1.3 explains, muse-wonder-1.0 reviews, muse-voice-transcribe-1.0 transcribes, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames. Code decides; models never do.</p>
+            </div>
             <blockquote className="brad-hook">{BRAD_HOOK}</blockquote>
             <div className="household-card">
               <p>demo-house · Petoskey, Michigan · synthetic · warm-by 68 F at 7:00 · caregiver: her daughter</p>
@@ -3794,6 +3916,11 @@ export default function App() {
               ? `${caregiverStatusCopy(caregiverPermission).headline} ${caregiverStatusCopy(caregiverPermission).effect} Asked at ${formatTimestamp(caregiverPermission.requested_at)}.`
               : "No caregiver request at this step."}
           </p>
+          {activity && (
+            <p className="story-activity-line" data-testid="story-activity-line" role="status">
+              Activity: {activity.text} <span className="story-activity-source">(source: {activity.source})</span>
+            </p>
+          )}
           <div className="story-nav" data-story-waiting={storyWaiting ? "true" : "false"}>
             <button type="button" className="ghost-button" onClick={() => stepTo(0)} disabled={storyIndex === 0 || !investigationId || storyWaiting}>
               Rewind to start
@@ -3819,10 +3946,24 @@ export default function App() {
             </button>
           </div>
           {storyIndex >= storyCheckpoints.length - 1 && (
+            <>
             <p className="story-complete" role="status">
-              Story complete — the home reached and held 68 F before the 07:00 warm-by time. Explore the evidence or
-              reset your session to run it again.
+              {verification?.stage === "arrival_met" || verification?.stage === "goal_verified" ? (
+                <>Story complete — the home reached and held 68 F before the 07:00 warm-by time. Explore the evidence or reset your session to run it again.</>
+              ) : declinedAtThisStep ? (
+                <>Story complete — the caregiver declined HVAC contact, so no repair was arranged; the living area sits at {storyRoomLabel} against the 68 F goal at the 07:00 warm-by time. Explore the evidence or reset your session to run it again.</>
+              ) : (
+                <>Story complete — the 07:00 warm-by time passed with the living area at {storyRoomLabel} against the 68 F goal. Explore the evidence or reset your session to run it again.</>
+              )}
             </p>
+              <p className="story-proof" role="status">
+                See it for yourself:{" "}
+                <button type="button" className="link-button" onClick={() => setPage("reasoning")}>
+                  Reasoning
+                </button>{" "}
+                shows the code checks, the recorded model answer and its second review.
+              </p>
+            </>
           )}
         </section>
       )}
@@ -4004,6 +4145,7 @@ export default function App() {
         <GlanceTiles
           sources={data?.sources}
           trend={trend}
+          lastHourChangeF={replayMetrics?.last_hour_change_f ?? null}
           targetTemp={warmByTargetTemp}
           targetUnit={warmByTargetUnit}
           plannedArrival={plannedArrival}
@@ -4115,7 +4257,7 @@ export default function App() {
         <SectionBoundary name="Simulated timeline" key={`timeline-${selectedAt}`}>
         <p className="section-label">Simulated events</p>
         <h2 id="timeline-heading">Simulated timeline</h2>
-        <SimulatedTimeline events={events} replayAt={replayAt} />
+        <SimulatedTimeline events={events} replayAt={replayAt} caregiverDeclinedAt={caregiverPermission?.status === "declined" ? (caregiverPermission.decided_at ?? null) : null} />
         </SectionBoundary>
       </section>
 

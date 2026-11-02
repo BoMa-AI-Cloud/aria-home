@@ -134,3 +134,5 @@ Limitation found by this scoring: Spark's prompt (`PROMPT_VERSION`) and the conf
 written for the earlier trip-home story, so its next steps say "manager review before the planned arrival" instead of
 naming the caregiver or the HVAC company. That explains most of the partly scores. Fixing it needs a new prompt version
 and a re-recording of every answer, which is a separate paid batch and has not been done.
+
+Update 2026-11-01: the story change reworded the prompt to inv-v4. Every score above was measured on inv-v3. The new prompt has not been re-scored.

@@ -375,7 +375,11 @@ def load_recorded_reviews(directory=None):
     return entries
 
 
-def find_recorded_review(entries, scenario_id, evaluated_at_utc, input_revision):
+def find_recorded_review(entries, scenario_id, evaluated_at_utc, input_revision, reviewed_prompt_version=None, reviewed_readiness_policy_version=None):
+    from .investigator import PROMPT_VERSION as _current_prompt
+    from .readiness import READINESS_POLICY_VERSION as _current_policy
+    want_prompt = _current_prompt if reviewed_prompt_version is None else reviewed_prompt_version
+    want_policy = _current_policy if reviewed_readiness_policy_version is None else reviewed_readiness_policy_version
     try:
         wanted_at = _norm_time(evaluated_at_utc)
     except (TypeError, ValueError):
@@ -394,6 +398,8 @@ def find_recorded_review(entries, scenario_id, evaluated_at_utc, input_revision)
             and entry.get("input_revision") == input_revision
             and entry.get("model_id", REVIEW_MODEL_ID) in REVIEW_ALLOWED_MODEL_IDS
             and entry.get("review_contract_version", REVIEW_CONTRACT_VERSION) == REVIEW_CONTRACT_VERSION
+            and entry.get("reviewed_prompt_version", want_prompt) == want_prompt
+            and entry.get("reviewed_readiness_policy_version", want_policy) == want_policy
         ):
             return item
     return None

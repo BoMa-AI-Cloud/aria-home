@@ -1,5 +1,7 @@
 # Audit 4: merged independent findings (work list)
 
+> Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
+
 Received 2026-10-29 from Brad as a merged independent audit of baseline af94e2b (repository HEAD at receipt:
 077e849, which differs from the baseline only by a build-log index update). This file is the work list; each row
 is updated with its reproduction, repair, regression test and remaining limitation as the work lands. Status

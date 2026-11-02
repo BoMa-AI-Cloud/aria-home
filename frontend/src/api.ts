@@ -157,6 +157,7 @@ export interface HomeownerConfirmation {
 export interface ReplayMetrics {
   indoor_trend: IndoorTrend;
   target_gap: TargetGap | null;
+  last_hour_change_f: number | null;
 }
 
 export interface MetricsResponse {
@@ -169,6 +170,7 @@ export interface MetricsResponse {
   window: { start: string; end: string };
   indoor_trend: IndoorTrend;
   target_gap: TargetGap | null;
+  last_hour_change_f: number | null;
   circuits: Record<string, CircuitActivity>;
   trip: Trip | null;
   confirmation: HomeownerConfirmation | null;
@@ -698,6 +700,11 @@ export type CreateInvestigationStatus =
   | "deadline_passed"
   | "cannot_tell";
 
+export interface ActivityLine {
+  text: string;
+  source: string;
+}
+
 export interface CreateInvestigationResponse {
   data_mode: DataMode;
   at?: string;
@@ -722,6 +729,7 @@ export interface CreateInvestigationResponse {
   next_check_at: string | null;
   outcome: OutcomeResult | null;
   notifications?: Notification[];
+  activity?: ActivityLine | null;
   metrics?: ReplayMetrics | null;
   error?: string;
 }
@@ -804,11 +812,13 @@ export interface FollowUpResponse {
   supporting_ids: string[];
   history: OutcomeHistoryEntry[];
   verification?: VerificationResult | null;
+  readiness?: ReadinessResult | null;
   verification_history?: VerificationHistoryEntry[];
   evidence_timeline?: EvidenceTimelineEntry[];
   human_report?: HumanReportPayload | null;
   notifications?: Notification[];
   caregiver_permission?: CaregiverPermission | null;
+  activity?: ActivityLine | null;
   metrics?: ReplayMetrics | null;
   recorded_investigation?: RecordedInvestigation | null;
 }
@@ -1236,8 +1246,12 @@ export interface CorrectionsResponse {
   corrections: CorrectionRecord[];
 }
 
-export function fetchCorrections(): Promise<CorrectionsResponse> {
-  return fetchJson<CorrectionsResponse>("/api/corrections");
+export function fetchCorrections(scenario?: string, at?: string): Promise<CorrectionsResponse> {
+  const query =
+    scenario !== undefined && at !== undefined
+      ? `?scenario=${encodeURIComponent(scenario)}&at=${encodeURIComponent(at)}`
+      : "";
+  return fetchJson<CorrectionsResponse>(`/api/corrections${query}`);
 }
 
 export interface TraceReading {

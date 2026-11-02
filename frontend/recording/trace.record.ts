@@ -25,7 +25,7 @@ test.describe("v1-arias-view", () => {
     await show(page, map, 5000);
 
     const times = page.locator(".trace-times");
-    for (const label of ["19:03", "02:31", "02:45", "07:01"]) {
+    for (const label of ["19:20", "02:31", "02:45", "07:01"]) {
       await times.getByRole("button", { name: label }).click();
       await expect(map).toBeVisible({ timeout: 15_000 });
       await show(page, map, 4000);
