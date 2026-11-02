@@ -9,6 +9,7 @@ shows evidence received after the replay moment.
 from datetime import datetime, timedelta
 
 from . import laws as laws_module
+from .clock import plain_duration, plain_time
 from .contracts import Availability, SourceKind
 from .eligibility import (
     eligible_records,
@@ -19,7 +20,7 @@ from .eligibility import (
 from .evidence import freshness, source_status
 from .investigator import build_evidence_pack, inference_identity
 from .metrics import temperature_trend
-from .notifications import ALERT_GAP_F, _get, caregiver_alert_level, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
+from .notifications import ALERT_GAP_F, CAREGIVER_SCENARIOS, _get, caregiver_alert_level, caregiver_is_authorized, caregiver_permission_text, decide_hvac_notification, decide_notifications
 from .outcomes import follow_up_for
 from .public_demo import parsed_checkpoints
 from .recorded import find_recorded, load_recorded_answers, public_investigation
@@ -70,6 +71,46 @@ def investigation_trace_inputs(store, scenario, investigation_id, at):
 TEMP_UNITS = frozenset({"F", "C"})
 POWER_UNITS = frozenset({"W"})
 CONFLICT_QUANTITIES = ("indoor_temp", "circuit_power")
+QUANTITY_WORDS = {"indoor_temp": "indoor temperature", "circuit_power": "circuit power"}
+CARE_AUDIENCE_WORDS = {"homeowner": "resident", "family_caregiver": "family caregiver", "hvac_company": "HVAC company"}
+READINESS_LABELS = {"arrival_passed": "warm-by time passed"}
+STAGE_LABELS = {"telemetry_missing": "thermostat not reporting", "arrival_met": "warm-by goal met"}
+REFUSAL_WORDS = {
+    "homeowner_opted_out": "the resident chose not to get updates",
+    "homeowner_preference_missing": "the resident's update preference is not on file",
+    "caregiver_not_authorized": "the family caregiver is not on file to be asked",
+    "caregiver_hvac_not_authorized": "the family caregiver has not approved contacting HVAC",
+    "caregiver_declined": "the family caregiver declined",
+}
+
+
+def _timezone_name(scenario):
+    return _get(_get(scenario, "manifest"), "timezone")
+
+
+def _clock(scenario, value):
+    return plain_time(value, _timezone_name(scenario))
+
+
+def _words(name):
+    return str(name).replace("_", " ")
+
+
+def _sentence(reasons):
+    return "; ".join(str(reason).rstrip(".") for reason in reasons or [])
+
+
+def _is_care_story(scenario):
+    return _get(_get(scenario, "manifest"), "id") in CAREGIVER_SCENARIOS
+
+
+def _audience_words(scenario, audience):
+    return CARE_AUDIENCE_WORDS.get(audience, _words(audience)) if _is_care_story(scenario) else _words(audience)
+
+
+def _stage_label(scenario, stage):
+    label = STAGE_LABELS.get(stage, _words(stage))
+    return label.replace("goal", "target") if _is_care_story(scenario) else label
 
 
 def _iso(value):
@@ -109,23 +150,23 @@ def _latest_for(records, source):
     return max(candidates, key=lambda r: (_record_values(r)["observed_at"], _record_values(r)["received_at"], _record_values(r)["id"]))
 
 
-def _source_trace(status, latest, at, conflicted_ids):
+def _source_trace(status, latest, at, conflicted_ids, scenario=None):
     detail = _record_values(latest) if latest is not None else None
     if latest is None:
-        freshness_state, freshness_reason = "missing", "no records visible as of the replay time"
+        freshness_state, freshness_reason = "missing", "no readings yet at this time"
     elif latest.value is None:
         freshness_state, freshness_reason = "missing", f"{latest.id} has no value"
     else:
         state = freshness(latest, at)
-        limit = freshness_limit_s(latest)
         age_s = (at - latest.observed_at).total_seconds()
+        limit = "no age limit applies" if latest.expected_cadence_s is None else f"limit {plain_duration(freshness_limit_s(latest))}"
         if state is Availability.available:
             freshness_state = "fresh"
-            freshness_reason = f"{latest.id} observed {latest.observed_at.isoformat()}, {age_s:.0f}s old (limit {limit:.0f}s)"
+            freshness_reason = f"{latest.id} observed {_clock(scenario, latest.observed_at)}, {plain_duration(age_s)} old ({limit})"
         elif state is Availability.invalid:
-            freshness_state, freshness_reason = "invalid", f"{latest.id} is future-dated beyond the replay time"
+            freshness_state, freshness_reason = "invalid", f"{latest.id} is dated after this moment in the replay"
         elif state is Availability.stale:
-            freshness_state, freshness_reason = "stale", f"{latest.id} observed {latest.observed_at.isoformat()}, {age_s:.0f}s old (limit {limit:.0f}s)"
+            freshness_state, freshness_reason = "stale", f"{latest.id} observed {_clock(scenario, latest.observed_at)}, {plain_duration(age_s)} old ({limit})"
         else:
             freshness_state, freshness_reason = "missing", f"{latest.id} has no usable value"
     conflicted = detail is not None and detail["id"] in conflicted_ids
@@ -157,7 +198,7 @@ def _freshness_checks(source_traces):
     rows = []
     for item in source_traces:
         if item["latest_reading"] is None:
-            rows.append({"check": "freshness", "target": item["source"], "passed": None, "reason": "no records visible as of the replay time"})
+            rows.append({"check": "freshness", "target": item["source"], "passed": None, "reason": "no readings yet at this time"})
         elif item["freshness"] == "fresh":
             rows.append({"check": "freshness", "target": item["source"], "passed": True, "reason": item["freshness_reason"]})
         else:
@@ -177,7 +218,7 @@ def _conflict_checks(visible, at):
             ids = sorted({rid for group in groups for rid in (group.get("ids") or [])})
             rows.append({"check": "conflict", "target": quantity, "passed": False, "reason": f"unresolved contradictory readings block success: {', '.join(ids)}"})
         else:
-            rows.append({"check": "conflict", "target": quantity, "passed": True, "reason": f"no unresolved {quantity} conflicts as of the replay time"})
+            rows.append({"check": "conflict", "target": quantity, "passed": True, "reason": f"no unresolved {QUANTITY_WORDS.get(quantity, quantity)} conflicts at this time"})
     return rows
 
 
@@ -207,7 +248,7 @@ def _units_checks(visible):
         if bad:
             rows.append({"check": "units", "target": source, "passed": False, "reason": "; ".join(bad)})
         else:
-            rows.append({"check": "units", "target": source, "passed": True, "reason": f"all {source} readings use understood units"})
+            rows.append({"check": "units", "target": source, "passed": True, "reason": f"all {_words(source)} readings use understood units"})
     return rows
 
 
@@ -234,7 +275,7 @@ def _law_checks(pack, at, recorded_outputs):
     rows = []
     if not recorded_outputs:
         for law in laws:
-            rows.append({"check": f"law:{law.get('id')}", "target": "no model output", "passed": None, "reason": "no model output at this snapshot; nothing to check"})
+            rows.append({"check": f"law:{law.get('id')}", "target": "no model output", "passed": None, "reason": "no model answer at this time; nothing to check"})
         return rows
     for law in laws:
         func = laws_module.CHECKS.get(law.get("check"))
@@ -340,17 +381,12 @@ def _alert_created_at(store, investigation_id, at):
     return None
 
 
-def _scripted_ask_time(scenario, at):
-    """The first replay moment at or before `at` when the caregiver alert is raised.
-
-    The same predicate as the notification gate (readiness at risk or unknown
-    with caregiver coordination allowed), so the scripted trace freezes the
-    request at the same moment the stored flow does.
-    """
+def _first_ask_time(scenario, at):
+    """The first checkpoint at or before `at` when the caregiver alert is raised, or None."""
     try:
         checkpoints = parsed_checkpoints(scenario.manifest.id)
     except Exception:
-        return at
+        return None
     for checkpoint in checkpoints:
         if checkpoint > at:
             break
@@ -370,7 +406,29 @@ def _scripted_ask_time(scenario, at):
                 return checkpoint
         except Exception:
             continue
-    return at
+    return None
+
+
+def _scripted_ask_time(scenario, at):
+    """The moment the scripted trace freezes the request: the same predicate as
+    the notification gate, so it matches when the stored flow asks."""
+    return _first_ask_time(scenario, at) or at
+
+
+def _notices_exist(scenario, at, decisions, store=None, investigation_id=None):
+    """Whether the House could show a notice at this step.
+
+    `decisions` answers what the gates would allow if a notice were sent. In the
+    care story nothing is sent until the caregiver is asked: before that the app
+    stores no notification rows, so the trace shows none either.
+    """
+    if not _is_care_story(scenario):
+        return True
+    if investigation_id is not None and store is not None:
+        return bool(store.list_notifications(investigation_id, at=at))
+    if any(d["audience"] == "family_caregiver" for d in decisions):
+        return True
+    return _first_ask_time(scenario, at) is not None
 
 
 def _permission_trace(scenario, at, events, decisions, caregiver_decision=None, store=None, investigation_id=None):
@@ -427,6 +485,10 @@ def _decision_as_of(caregiver_decision, at):
     return get("decision"), decided_at
 
 
+def _readiness_lead(status):
+    return "Warm-by time passed" if status == "arrival_passed" else f"Readiness {_words(status)}"
+
+
 def _plain_event_label(label):
     text = label.strip()
     if text.lower().startswith("simulated "):
@@ -447,11 +509,11 @@ def _event_activity_text(scenario, at, event, choice, decided_at, room_text, goa
         target = _get(confirmation, "target_temp")
         unit = _get(confirmation, "target_unit") or "F"
         arrival = _get(trip, "planned_arrival")
-        when = arrival.strftime("%H:%M") if isinstance(arrival, datetime) else None
+        when = _clock(scenario, arrival) if isinstance(arrival, datetime) else None
         if target is not None and when is not None:
-            plan = f"{target} {unit} by {when}"
+            plan = f"{target:g} {unit} by {when}"
         elif target is not None:
-            plan = f"{target} {unit}"
+            plan = f"{target:g} {unit}"
         else:
             plan = "recorded"
         return f"Warm-by plan confirmed ({plan}); room {room_text}"
@@ -462,17 +524,16 @@ def _event_activity_text(scenario, at, event, choice, decided_at, room_text, goa
             pack = {}
         readiness = pack.get("readiness") if isinstance(pack, dict) else None
         status = readiness.get("status") if isinstance(readiness, dict) else "unknown"
-        words = "warm-by time passed" if status == "arrival_passed" else str(status).replace("_", " ")
-        return f"Readiness {words}: room {room_text}{goal}; permission request sent to the family caregiver"
+        return f"{_readiness_lead(status)}: room {room_text}{goal}; permission request sent to the family caregiver"
     if kind == "caregiver_hvac_authorized":
         if choice == "approved" and decided_at is not None:
-            return f"Family caregiver approved HVAC contact at {decided_at.strftime('%H:%M')}; HVAC may now be contacted"
+            return f"Family caregiver approved HVAC contact at {_clock(scenario, decided_at)}; HVAC may now be contacted"
         return "Family caregiver authorized contacting the HVAC company on file"
     payload = _get(event, "payload") or {}
     label = payload.get("label") if isinstance(payload, dict) else None
     if isinstance(label, str) and label.strip():
         return _plain_event_label(label)
-    return f"{kind} available at {_get(event, 'available_at').strftime('%H:%M')}"
+    return f"{_words(kind)} available at {_clock(scenario, _get(event, 'available_at'))}"
 
 
 def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
@@ -482,7 +543,7 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
     unless the caregiver declined HVAC contact as of the replay time: contact,
     visit and report events then never happened, so they are skipped and the
     line says what is true instead. Otherwise the line is computed from the
-    current readiness, thermostat telemetry, or verification state. Text comes
+    current readiness, thermostat reporting, or verification state. Text comes
     from the event payload or the computed values, never from a label map.
     A decision recorded later than the replay time never changes the line.
     """
@@ -508,7 +569,8 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
     except Exception:
         confirmation = None
     target = _get(confirmation, "target_temp")
-    goal = f" against the {target} F goal" if isinstance(target, (int, float)) else ""
+    goal_word = "target" if _is_care_story(scenario) else "goal"
+    goal = f" against the {target:g} F {goal_word}" if isinstance(target, (int, float)) else ""
     if choice == "declined":
         first_after = None
         for checkpoint in checkpoints:
@@ -523,12 +585,12 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
             declined_status = None
         warm_by_passed = declined_status == "arrival_passed" or (checkpoints and at >= checkpoints[-1])
         if first_after is not None and at == first_after:
-            when = decided_at.strftime("%H:%M") if decided_at is not None else "an unknown time"
+            when = _clock(scenario, decided_at) if decided_at is not None else "an unknown time"
             return {"text": f"Caregiver declined HVAC contact at {when}; nobody was contacted. Independent room sensor {room_text}", "source": "computed:caregiver_declined"}
         if warm_by_passed:
-            return {"text": f"Warm-by time checked: expectation missed; room {room_text}", "source": "computed:arrival_checked"}
+            return {"text": f"Warm-by time checked: {goal_word} missed; room {room_text}", "source": "computed:arrival_checked"}
         if isinstance(target, (int, float)):
-            return {"text": f"No contact made; independent room sensor {room_text}, below the {target} F goal", "source": "computed:telemetry"}
+            return {"text": f"No contact made; independent room sensor {room_text}, below the {target:g} F {goal_word}", "source": "computed:telemetry"}
         return {"text": f"No contact made; independent room sensor {room_text}{goal}", "source": "computed:telemetry"}
     if window:
         event = max(window, key=lambda e: (_get(e, "available_at"), _get(e, "event_time"), str(_get(e, "id"))))
@@ -549,9 +611,9 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
             if entries:
                 entry = entries[-1]
                 return {"text": entry["label"], "source": f"computed:{entry['kind']}"}
-            words = {"arrival_met": "warm-by expectation met"}.get(stage, stage.replace("_", " "))
+            words = {"arrival_met": f"warm-by {goal_word} met", "goal_verified": f"{goal_word} verified", "goal_not_maintained": f"{goal_word} not maintained"}.get(stage, stage.replace("_", " "))
             return {"text": f"Verification {words}; room {room_text}", "source": "computed:verification"}
-        return {"text": f"Thermostat telemetry missing; independent room sensor {room_text}", "source": "computed:telemetry"}
+        return {"text": f"Thermostat not reporting; independent room sensor {room_text}", "source": "computed:telemetry"}
     try:
         pack = build_evidence_pack(scenario, at)
     except Exception:
@@ -561,7 +623,6 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
     if scenario.manifest.id == "care_home_v1" and caregiver_alert_level(readiness) == "notice" and isinstance(target, (int, float)) and latest_room is not None:
         below = target - _get(latest_room, "value")
         return {"text": f"Noticed: room {room_text} is {below:g} F below the {target:g} F target. No one is asked yet; ARIA asks at {ALERT_GAP_F:g} F below", "source": "computed:notice"}
-    words = "warm-by time passed" if status == "arrival_passed" else str(status).replace("_", " ")
     trend_clause = ""
     try:
         zones = sorted({r.subject for r in eligible_records(visible, "indoor_temp", now=at, require_value=False)})
@@ -577,7 +638,7 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
             trend_clause = f", falling {abs(round(rate * 10) / 10):g} F an hour"
         elif rate > 0:
             trend_clause = f", rising {round(rate * 10) / 10:g} F an hour"
-    return {"text": f"Readiness {words}: room {room_text}{goal}{trend_clause}", "source": "computed:readiness"}
+    return {"text": f"{_readiness_lead(status)}: room {room_text}{goal}{trend_clause}", "source": "computed:readiness"}
 
 
 def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries=None, transcript_entries=None, caregiver_decision=None, investigation_id=None, store=None):
@@ -587,7 +648,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     conflicted = _conflicted_ids(visible, at)
 
     statuses = pack.get("source_statuses") or []
-    source_traces = [_source_trace(status, _latest_for(visible, status["source"] if isinstance(status, dict) else status.source.value), at, conflicted) for status in statuses]
+    source_traces = [_source_trace(status, _latest_for(visible, status["source"] if isinstance(status, dict) else status.source.value), at, conflicted, scenario) for status in statuses]
 
     if entries is None:
         entries = load_recorded_answers()
@@ -633,7 +694,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
             "payload": _jsonable(human["payload"]),
             "timeline_entry": _jsonable(human["timeline_entry"]),
             "label": HUMAN_REPORT_LABEL,
-            "note": "human report, not a sensor measurement; corroboration only, never a measurement",
+            "note": "a person's report, not a sensor reading: a report, not proof",
         }
 
     investigation, _provenance = public_investigation(scenario, at, entries)
@@ -643,41 +704,42 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
     decisions = decide_notifications(investigation, readiness, verification_for_notif, context, events, at, scenario, identity["investigation_id"])
     decisions = list(decisions) + [decide_hvac_notification(investigation, readiness, verification_for_notif, context, events, at, scenario, investigation_id or identity["investigation_id"], caregiver_decision=caregiver_decision)]
     permission = _permission_trace(scenario, at, events, decisions, caregiver_decision, store=store, investigation_id=investigation_id)
-    notices = [{"audience": item["audience"], "kind": item["kind"], "allowed": item["allowed"], "reason": item.get("reason"), "payload_keys": sorted((item.get("payload") or {}).keys())} for item in decisions]
+    shown = decisions if _notices_exist(scenario, at, decisions, store, investigation_id) else []
+    notices = [{"audience": item["audience"], "kind": item["kind"], "allowed": item["allowed"], "reason": item.get("reason"), "payload_keys": sorted((item.get("payload") or {}).keys())} for item in shown]
 
     steps = []
     for index, item in enumerate(source_traces):
         state = "pass" if item["availability"] == "available" and item["freshness"] == "fresh" and not item["conflicted"] else "stale" if item["freshness"] in ("stale", "missing") else "fail"
-        steps.append({"seq": len(steps), "kind": "source", "label": f"{item['source']}: {item['availability']}", "state": state, "detail": item["freshness_reason"], "ref": {"section": "sources", "index": index}})
+        steps.append({"seq": len(steps), "kind": "source", "label": f"{_words(item['source'])}: {item['availability']}", "state": state, "detail": item["freshness_reason"], "ref": {"section": "sources", "index": index}})
     for index, row in enumerate(check_rows):
         state = "pass" if row["passed"] is True else "fail" if row["passed"] is False else "stale"
-        steps.append({"seq": len(steps), "kind": "check", "label": f"{row['check']} on {row['target']}", "state": state, "detail": row["reason"], "ref": {"section": "checks", "index": index}})
-    steps.append({"seq": len(steps), "kind": "decision", "label": f"readiness: {readiness.get('status')}", "state": "pass" if readiness.get("status") in ("on_track", "arrival_passed") else "fail" if readiness.get("status") == "at_risk" else "stale", "detail": "; ".join(readiness.get("reasons") or []), "ref": {"section": "readiness", "index": 0}})
+        steps.append({"seq": len(steps), "kind": "check", "label": f"{row['check']} on {_words(row['target'])}", "state": state, "detail": row["reason"], "ref": {"section": "checks", "index": index}})
+    steps.append({"seq": len(steps), "kind": "decision", "label": f"readiness: {READINESS_LABELS.get(readiness.get('status'), _words(readiness.get('status')))}", "state": "pass" if readiness.get("status") in ("on_track", "arrival_passed") else "fail" if readiness.get("status") == "at_risk" else "stale", "detail": _sentence(readiness.get("reasons")), "ref": {"section": "readiness", "index": 0}})
     if verification.get("available"):
-        steps.append({"seq": len(steps), "kind": "decision", "label": f"verification: {verification.get('stage')}", "state": "pass" if verification.get("stage") in ("goal_verified", "arrival_met") else "stale", "detail": "; ".join(verification.get("reasons") or []), "ref": {"section": "verification", "index": 0}})
+        steps.append({"seq": len(steps), "kind": "decision", "label": f"verification: {_stage_label(scenario, verification.get('stage'))}", "state": "pass" if verification.get("stage") in ("goal_verified", "arrival_met") else "stale", "detail": _sentence(verification.get("reasons")), "ref": {"section": "verification", "index": 0}})
     else:
-        steps.append({"seq": len(steps), "kind": "decision", "label": "verification: not available", "state": "stale", "detail": verification.get("reason", ""), "ref": {"section": "verification", "index": 0}})
+        steps.append({"seq": len(steps), "kind": "decision", "label": "verification: not available", "state": "stale", "detail": str(verification.get("reason", "")).split(": ", 1)[-1], "ref": {"section": "verification", "index": 0}})
     for index, obs in enumerate(watcher["observations"]):
         state = "pass" if obs.get("status") == "confirmed" else "fail"
         steps.append({"seq": len(steps), "kind": "model", "label": f"watcher: {obs.get('kind')}", "state": state, "detail": f"{obs.get('claim')} [{obs.get('status')}]", "ref": {"section": "watcher", "index": index}})
     if not watcher["observations"] and not watcher["code_detections"]:
         steps.append({"seq": len(steps), "kind": "model", "label": "no detection, never safe", "state": "quiet", "detail": "no model observation and no code detection at this time; absence of a detection is not an all-clear", "ref": {"section": "watcher", "index": 0}})
     for index, detection in enumerate(watcher["code_detections"]):
-        steps.append({"seq": len(steps), "kind": "code", "label": f"code detection: {detection.get('rule')}", "state": "fail", "detail": detection.get("detail", ""), "ref": {"section": "code_detections", "index": index}})
+        steps.append({"seq": len(steps), "kind": "code", "label": f"code detection: {_words(detection.get('rule'))}", "state": "fail", "detail": detection.get("detail", ""), "ref": {"section": "code_detections", "index": index}})
     if human_trace is not None:
         steps.append({"seq": len(steps), "kind": "human", "label": "human report, not a measurement", "state": "stale", "detail": human_trace["payload"].get("transcript", "")[:200], "ref": {"section": "human", "index": 0}})
     if permission is not None:
-        decided = permission.get("decided_at") or "an unknown time"
+        decided = _clock(scenario, permission["decided_at"]) if permission.get("decided_at") else "an unknown time"
         label = {
             "waiting": "caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers",
             "approved": f"caregiver permission: approved by the caregiver at {decided} — HVAC may now be contacted",
             "declined": f"caregiver permission: declined by the caregiver at {decided} — no HVAC request; verification continues from independent readings",
         }[permission["status"]]
         state = {"waiting": "stale", "approved": "pass", "declined": "fail"}[permission["status"]]
-        steps.append({"seq": len(steps), "kind": "permission", "label": label, "state": state, "detail": f"{permission['text']} (asked at {permission['requested_at']}; {permission['note']})", "ref": {"section": "permission", "index": 0}})
+        steps.append({"seq": len(steps), "kind": "permission", "label": label, "state": state, "detail": f"{permission['text']} (asked at {_clock(scenario, permission['requested_at'])}; {permission['note']})", "ref": {"section": "permission", "index": 0}})
     for index, notice in enumerate(notices):
         state = "pass" if notice["allowed"] else "stale"
-        steps.append({"seq": len(steps), "kind": "notice", "label": f"{notice['audience']}: {'raised' if notice['allowed'] else 'refused'}", "state": state, "detail": notice["reason"] or f"fields: {', '.join(notice['payload_keys'])}", "ref": {"section": "notices", "index": index}})
+        steps.append({"seq": len(steps), "kind": "notice", "label": f"{_audience_words(scenario, notice['audience'])}: {'raised' if notice['allowed'] else 'refused'}", "state": state, "detail": REFUSAL_WORDS.get(notice["reason"], notice["reason"]) or f"fields: {', '.join(notice['payload_keys'])}", "ref": {"section": "notices", "index": index}})
 
     return {
         "trace_version": TRACE_VERSION,
@@ -687,7 +749,7 @@ def build_trace(scenario, at, entries=None, watcher_entries=None, review_entries
         "at": at.isoformat(),
         "input_revision": identity["input_revision"],
         "evaluated_at_utc": identity["evaluated_at_utc"],
-        "as_of_note": "only evidence with received_at at or before the replay time is shown",
+        "as_of_note": "only evidence received by this time is shown",
         "sources": source_traces,
         "checks": check_rows,
         "readiness": {"status": readiness.get("status"), "reasons": list(readiness.get("reasons") or [])},

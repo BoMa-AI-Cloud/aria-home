@@ -29,7 +29,7 @@ CARE_TIMES = [
     "2026-01-17T07:01:00-05:00",
 ]
 
-FROZEN_REQUEST_PART = "your mother's home is cooling (60 F, 8 F below the 68 F target, furnace reported idle since 16:00)"
+FROZEN_REQUEST_PART = "your mother's home is cooling (60 F, 8 F below the 68 F target, furnace reported idle since 4:00 PM)"
 
 
 def _care():

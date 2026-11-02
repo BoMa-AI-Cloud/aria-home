@@ -93,7 +93,7 @@ def test_demo_video_recovery_stages_through_api(tmp_path, monkeypatch):
     assert v["stage"] == "goal_verified"
     assert v["corroboration_ids"] == [REPORT_ID]
     assert REPORT_ID not in v["supporting_ids"]
-    assert any("corroboration only" in reason for reason in v["reasons"])
+    assert any("a report, not proof" in reason for reason in v["reasons"])
 
     v = _verification(client, inv_id, "2026-01-16T21:01:00-05:00")
     assert v["stage"] == "arrival_met"

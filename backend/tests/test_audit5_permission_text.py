@@ -3,9 +3,9 @@
 The request text (and the WhatsApp text) must describe the evidence visible at
 the moment ARIA asked — the alert creation time — not the replay time. The
 story raises the request at 23:30 ("60 F, 8 F below the 68 F target,
-furnace reported idle since 16:00"); replaying
+furnace reported idle since 4:00 PM"); replaying
 the same investigation at 02:31 or later keeps that frozen text instead of
-re-reading the later evidence ("52 F ... 01:30"). Before the request is raised
+re-reading the later evidence ("52 F ... 1:30 AM"). Before the request is raised
 (19:20, 21:00) there is no card.
 """
 from aria_home import whatsapp
@@ -46,7 +46,7 @@ def test_followup_permission_text_uses_evidence_visible_when_asked(tmp_path, mon
     inv_id = _start(client, T0231)
     text = _permission_at(client, inv_id, T0231)["text"]
     assert "52 F" in text
-    assert "thermostat not reporting since 01:30" in text
+    assert "thermostat not reporting since 1:30 AM" in text
     assert "54 F" not in text
 
 
@@ -55,11 +55,11 @@ def test_followup_permission_text_frozen_at_creation_on_replay(tmp_path, monkeyp
     inv_id = _start(client, T2330)
     permission = _permission_at(client, inv_id, T0231)
     assert permission["requested_at"].startswith("2026-01-16T23:30")
-    assert "is cooling (60 F, 8 F below the 68 F target, furnace reported idle since 16:00)" in permission["text"]
-    assert "furnace reported idle since 16:00" in permission["text"]
-    assert "16:00" in permission["text"]
+    assert "is cooling (60 F, 8 F below the 68 F target, furnace reported idle since 4:00 PM)" in permission["text"]
+    assert "furnace reported idle since 4:00 PM" in permission["text"]
+    assert "4:00 PM" in permission["text"]
     assert "52 F" not in permission["text"]
-    assert "01:30" not in permission["text"]
+    assert "1:30 AM" not in permission["text"]
 
 
 def test_followup_permission_text_stays_frozen_at_later_replays(tmp_path, monkeypatch):
@@ -68,7 +68,7 @@ def test_followup_permission_text_stays_frozen_at_later_replays(tmp_path, monkey
     for at, absent in ((T0451, "04:50"), (T0621, "06:20")):
         text = _permission_at(client, inv_id, at)["text"]
         assert "60 F" in text
-        assert "16:00" in text
+        assert "4:00 PM" in text
         assert absent not in text
 
 
@@ -95,9 +95,9 @@ def test_decision_response_carries_frozen_text(tmp_path, monkeypatch):
     assert resp.status_code == 201
     text = resp.get_json()["caregiver_permission"]["text"]
     assert "60 F" in text
-    assert "16:00" in text
+    assert "4:00 PM" in text
     assert "52 F" not in text
-    assert "01:30" not in text
+    assert "1:30 AM" not in text
 
 
 class _FakeHttp:
@@ -127,6 +127,6 @@ def test_permission_whatsapp_body_uses_frozen_text(tmp_path, monkeypatch):
     text = fake.calls[0]["body"]["text"]["body"]
     assert card_text in text
     assert "60 F" in text
-    assert "16:00" in text
+    assert "4:00 PM" in text
     assert "52 F" not in text
-    assert "01:30" not in text
+    assert "1:30 AM" not in text

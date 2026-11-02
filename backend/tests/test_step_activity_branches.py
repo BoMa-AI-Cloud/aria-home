@@ -100,7 +100,7 @@ def test_activity_no_decision_branch(tmp_path, monkeypatch):
     client, investigation_id = _setup_branch(tmp_path, monkeypatch)
     lines = _activities(client, investigation_id)
     assert lines[CARE_TIMES[0]] == {
-        "text": "Warm-by plan confirmed (68.0 F by 07:00); room 69.0 F",
+        "text": "Warm-by plan confirmed (68 F by 7:00 AM); room 69.0 F",
         "source": "event:evt-care-confirmation-request",
     }
     assert lines[CARE_TIMES[1]]["source"] == "computed:readiness"
@@ -122,7 +122,7 @@ def test_activity_decline_branch(tmp_path, monkeypatch):
     lines = _activities(client, investigation_id)
     assert PERMISSION_LINE in lines[CARE_TIMES[2]]["text"]
     assert lines[CARE_TIMES[3]]["source"] == "computed:caregiver_declined"
-    assert "Caregiver declined HVAC contact at 02:31" in lines[CARE_TIMES[3]]["text"]
+    assert "Caregiver declined HVAC contact at 2:31 AM" in lines[CARE_TIMES[3]]["text"]
     assert "nobody was contacted" in lines[CARE_TIMES[3]]["text"]
     assert AUTH_LINE not in lines[CARE_TIMES[4]]["text"]
     assert lines[CARE_TIMES[5]]["source"] == "computed:telemetry"
@@ -132,7 +132,7 @@ def test_activity_decline_branch(tmp_path, monkeypatch):
         assert "completion report" not in lines[at]["text"].lower()
         assert "technician visit" not in lines[at]["text"].lower()
     assert lines[CARE_TIMES[9]]["source"] == "computed:arrival_checked"
-    assert lines[CARE_TIMES[9]]["text"].startswith("Warm-by time checked: expectation missed")
+    assert lines[CARE_TIMES[9]]["text"].startswith("Warm-by time checked: target missed")
     follow = client.get(f"/api/follow-ups/{investigation_id}", query_string={"at": CARE_TIMES[7]}).get_json()
     assert follow["verification"]["stage"] != "goal_verified"
     assert follow["verification"]["stage"] != "warming_observed"
@@ -145,7 +145,7 @@ def test_activity_approve_branch(tmp_path, monkeypatch):
     lines = _activities(client, investigation_id)
     assert PERMISSION_LINE in lines[CARE_TIMES[2]]["text"]
     assert lines[CARE_TIMES[4]] == {
-        "text": "Family caregiver approved HVAC contact at 02:31; HVAC may now be contacted",
+        "text": "Family caregiver approved HVAC contact at 2:31 AM; HVAC may now be contacted",
         "source": "event:evt-care-caregiver-hvac-authorized",
     }
     assert lines[CARE_TIMES[5]] == {"text": VISIT_LINE, "source": "event:evt-care-service-visit"}
@@ -196,7 +196,7 @@ def test_activity_unit_fallbacks():
     approved = {"decision": "approved", "actor": "family_caregiver", "decided_at": "2026-01-17T02:31:00-05:00"}
     line = step_activity(scenario, datetime.fromisoformat(CARE_TIMES[4]), None, approved)
     assert line == {
-        "text": "Family caregiver approved HVAC contact at 02:31; HVAC may now be contacted",
+        "text": "Family caregiver approved HVAC contact at 2:31 AM; HVAC may now be contacted",
         "source": "event:evt-care-caregiver-hvac-authorized",
     }
 

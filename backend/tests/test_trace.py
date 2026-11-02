@@ -89,6 +89,7 @@ def test_trace_matches_verification_and_timeline(scn):
 
 
 def test_trace_matches_watcher_human_and_notices(scn):
+    asked = False
     for iso in CHECKPOINTS:
         at = _at(iso)
         trace = build_trace(scn, at)
@@ -106,7 +107,8 @@ def test_trace_matches_watcher_human_and_notices(scn):
         verification_for_notif = {k: v for k, v in verification.items() if k != "available"} if verification.get("available") else None
         expected = decide_notifications(investigation, pack["readiness"], verification_for_notif, context_as_of(scn, at), events_as_of(scn, at), at, scn, inference_identity(scn, at)["investigation_id"])
         expected = list(expected) + [decide_hvac_notification(investigation, pack["readiness"], verification_for_notif, context_as_of(scn, at), events_as_of(scn, at), at, scn, inference_identity(scn, at)["investigation_id"])]
-        assert [(n["audience"], n["allowed"], n["reason"]) for n in trace["notices"]] == [(d["audience"], d["allowed"], d.get("reason")) for d in expected]
+        asked = asked or any(d["audience"] == "family_caregiver" for d in expected)
+        assert [(n["audience"], n["allowed"], n["reason"]) for n in trace["notices"]] == [(d["audience"], d["allowed"], d.get("reason")) for d in (expected if asked else [])]
         assert any("human report, not a measurement" in step["label"] or step["kind"] != "human" for step in trace["steps"])
         if human is not None:
             assert any(step["kind"] == "human" and "not a measurement" in step["label"] for step in trace["steps"])
@@ -228,7 +230,7 @@ def test_permission_step_follows_the_caregiver_and_never_shows_the_future(scn):
     assert [s["label"] for s in waiting["steps"] if s["kind"] == "permission"] == ["caregiver permission: no answer yet — ARIA will not contact HVAC until the caregiver answers"]
     assert waiting["permission"]["requested_at"].startswith("2026-01-16T23:30")
     assert "60 F" in waiting["permission"]["text"]
-    assert "16:00" in waiting["permission"]["text"]
+    assert "4:00 PM" in waiting["permission"]["text"]
     assert "52 F" not in waiting["permission"]["text"]
     approved = build_trace(scn, _at("2026-01-17T02:45:00-05:00"))
     assert approved["permission"]["status"] == "approved"
