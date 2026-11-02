@@ -313,12 +313,12 @@ def _care_visual_at(stamp):
 
 def test_care_frames_visible_at_story_times():
     assert _care_visual_at("2026-01-16T19:20:00-05:00") is None
-    assert _care_visual_at("2026-01-17T02:31:00-05:00")["image_id"] == "care/care-v1-window-frost"
-    assert _care_visual_at("2026-01-17T02:45:00-05:00")["image_id"] == "care/care-v2-furnace-off"
-    assert _care_visual_at("2026-01-17T04:21:00-05:00")["image_id"] == "care/care-v3-thermostat-blank"
-    assert _care_visual_at("2026-01-17T04:51:00-05:00")["image_id"] == "care/care-v4-pipe-frost"
-    assert _care_visual_at("2026-01-17T06:21:00-05:00")["image_id"] == "care/care-v5-dry-floor"
-    assert _care_visual_at("2026-01-17T06:45:00-05:00")["image_id"] == "care/care-v6-warm-morning"
+    assert _care_visual_at("2026-01-16T23:11:00-05:00")["image_id"] == "care/care-v1-window-frost"
+    assert _care_visual_at("2026-01-16T23:31:00-05:00")["image_id"] == "care/care-v2-furnace-off"
+    assert _care_visual_at("2026-01-16T23:46:00-05:00")["image_id"] == "care/care-v3-thermostat-blank"
+    assert _care_visual_at("2026-01-17T00:21:00-05:00")["image_id"] == "care/care-v4-pipe-frost"
+    assert _care_visual_at("2026-01-17T01:41:00-05:00")["image_id"] == "care/care-v5-dry-floor"
+    assert _care_visual_at("2026-01-17T01:51:00-05:00")["image_id"] == "care/care-v5-dry-floor"
     assert _care_visual_at("2026-01-17T07:01:00-05:00")["image_id"] == "care/care-v6-warm-morning"
 
 
@@ -326,7 +326,7 @@ def test_care_misses_flagged_and_keep_at_risk():
     scenario = load_scenario(SCENARIOS / "care_home_v1")
     assert len(scenario.visuals) == 6
     assert scenario.visual is None
-    for stamp in ("2026-01-17T02:31:00-05:00", "2026-01-17T04:51:00-05:00"):
+    for stamp in ("2026-01-16T23:11:00-05:00", "2026-01-17T00:21:00-05:00"):
         at = datetime.fromisoformat(stamp)
         pack = build_evidence_pack(scenario, at)
         assert pack["visual_evidence"]["known_miss"] is True
@@ -339,19 +339,19 @@ def test_care_misses_flagged_and_keep_at_risk():
 def test_care_visual_never_decides_or_verifies():
     scenario = load_scenario(SCENARIOS / "care_home_v1")
     expected = {
-        "2026-01-17T02:31:00-05:00": ("at_risk", "telemetry_missing"),
-        "2026-01-17T04:21:00-05:00": ("at_risk", "reporting_restored"),
-        "2026-01-17T04:51:00-05:00": ("at_risk", "warming_observed"),
-        "2026-01-17T06:21:00-05:00": ("on_track", "goal_verified"),
+        "2026-01-16T23:31:00-05:00": ("at_risk", "telemetry_missing"),
+        "2026-01-17T00:21:00-05:00": ("at_risk", "reporting_restored"),
+        "2026-01-17T00:31:00-05:00": ("at_risk", "warming_observed"),
+        "2026-01-17T01:41:00-05:00": ("on_track", "goal_verified"),
         "2026-01-17T07:01:00-05:00": ("arrival_passed", "arrival_met"),
     }
-    created = datetime.fromisoformat("2026-01-17T02:31:00-05:00")
+    created = datetime.fromisoformat("2026-01-16T22:46:00-05:00")
     followup = follow_up_for(scenario, "inv-care-visual", created)
     for stamp, (status, stage) in expected.items():
         at = datetime.fromisoformat(stamp)
         assert compute_readiness(build_evidence_pack(scenario, at), at)["status"] == status
         assert verify_recovery(scenario, followup, at)["stage"] == stage
-    late = datetime.fromisoformat("2026-01-17T06:21:00-05:00")
+    late = datetime.fromisoformat("2026-01-17T01:41:00-05:00")
     stripped = replace(scenario, records=[r for r in scenario.records if r.quantity != "indoor_temp"])
     assert stripped.visuals
     assert compute_readiness(build_evidence_pack(stripped, late), late)["status"] != "on_track"
@@ -359,7 +359,7 @@ def test_care_visual_never_decides_or_verifies():
 
 def test_care_hvac_payload_carries_line_not_image():
     scenario = load_scenario(SCENARIOS / "care_home_v1")
-    at = datetime.fromisoformat("2026-01-17T02:45:00-05:00")
+    at = datetime.fromisoformat("2026-01-16T23:31:00-05:00")
     result = compute_readiness(build_evidence_pack(scenario, at), at)
     payload = build_payload(
         "hvac_company",
@@ -377,10 +377,10 @@ def test_care_hvac_payload_carries_line_not_image():
 
 def test_care_api_visual_caption_image_and_gating():
     client = create_app().test_client()
-    resp = client.get("/api/visual?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00")
+    resp = client.get("/api/visual?scenario=care_home_v1&at=2026-01-17T00:21:00-05:00")
     assert resp.status_code == 200
     visual = resp.get_json()["visual"]
-    assert visual["image_id"] == "care/care-v1-window-frost"
+    assert visual["image_id"] == "care/care-v4-pipe-frost"
     assert visual["object_count"] == 0
     assert visual["known_miss"] is True
     assert visual["caption"] == CARE_CAPTION
@@ -390,7 +390,7 @@ def test_care_api_visual_caption_image_and_gating():
     image = client.get(visual["image_url"])
     assert image.status_code == 200
     assert image.content_type == "image/webp"
-    assert image.data == (FIXTURES_DIR / "care" / "care-v1-window-frost.webp").read_bytes()
+    assert image.data == (FIXTURES_DIR / "care" / "care-v4-pipe-frost.webp").read_bytes()
 
     morning = client.get("/api/visual?scenario=care_home_v1&at=2026-01-17T07:01:00-05:00").get_json()["visual"]
     assert morning["image_id"] == "care/care-v6-warm-morning"

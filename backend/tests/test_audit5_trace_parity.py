@@ -6,14 +6,14 @@ from aria_home.app import create_app
 from aria_home.scenario import load_scenario
 from aria_home.trace import SCRIPTED_BASIS, build_trace
 
-T0231 = "2026-01-17T02:31:00-05:00"
-T0245 = "2026-01-17T02:45:00-05:00"
-T0421 = "2026-01-17T04:21:00-05:00"
-T0451 = "2026-01-17T04:51:00-05:00"
-T0621 = "2026-01-17T06:21:00-05:00"
-T0645 = "2026-01-17T06:45:00-05:00"
+T2246 = "2026-01-16T22:46:00-05:00"
+T2247 = "2026-01-16T22:47:00-05:00"
+T0021 = "2026-01-17T00:21:00-05:00"
+T0031 = "2026-01-17T00:31:00-05:00"
+T0141 = "2026-01-17T01:41:00-05:00"
+T0151 = "2026-01-17T01:51:00-05:00"
 T0701 = "2026-01-17T07:01:00-05:00"
-CHECKPOINTS = (T0231, T0245, T0421, T0451, T0621, T0645, T0701)
+CHECKPOINTS = (T2246, T2247, T0021, T0031, T0141, T0151, T0701)
 
 
 def _client(tmp_path, monkeypatch, name="api.db"):
@@ -22,8 +22,8 @@ def _client(tmp_path, monkeypatch, name="api.db"):
 
 
 def _start(client):
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
-    body = client.get(f"/api/follow-ups/{inv_id}?at={T0231}").get_json()
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
+    body = client.get(f"/api/follow-ups/{inv_id}?at={T2246}").get_json()
     return inv_id, body
 
 
@@ -51,10 +51,10 @@ def test_trace_verification_matches_followup_at_every_checkpoint(tmp_path, monke
 def test_trace_permission_and_hvac_match_decline(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id, body = _start(client)
-    assert _decide(client, body["caregiver_permission"]["notification_id"], "decline", T0231).status_code == 201
-    followup = client.get(f"/api/follow-ups/{inv_id}?at={T0621}").get_json()
+    assert _decide(client, body["caregiver_permission"]["notification_id"], "decline", T2246).status_code == 201
+    followup = client.get(f"/api/follow-ups/{inv_id}?at={T0141}").get_json()
     assert followup["caregiver_permission"]["status"] == "declined"
-    trace = _trace(client, inv_id, T0621)
+    trace = _trace(client, inv_id, T0141)
     assert trace["permission"]["status"] == "declined"
     trace_hvac = _hvac(trace["notices"])
     assert trace_hvac and all(n["allowed"] is False for n in trace_hvac)
@@ -67,10 +67,10 @@ def test_trace_permission_and_hvac_match_decline(tmp_path, monkeypatch):
 def test_trace_permission_and_hvac_match_approve(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id, body = _start(client)
-    assert _decide(client, body["caregiver_permission"]["notification_id"], "approve", T0245).status_code == 201
-    followup = client.get(f"/api/follow-ups/{inv_id}?at={T0645}").get_json()
+    assert _decide(client, body["caregiver_permission"]["notification_id"], "approve", T2247).status_code == 201
+    followup = client.get(f"/api/follow-ups/{inv_id}?at={T0151}").get_json()
     assert followup["caregiver_permission"]["status"] == "approved"
-    trace = _trace(client, inv_id, T0645)
+    trace = _trace(client, inv_id, T0151)
     assert trace["permission"]["status"] == "approved"
     assert any(n["allowed"] is True for n in _hvac(trace["notices"]))
     assert any(r["state"] == "simulated_delivered" for r in _hvac(followup["notifications"]))
@@ -79,15 +79,15 @@ def test_trace_permission_and_hvac_match_approve(tmp_path, monkeypatch):
 def test_trace_rewind_hides_later_decision(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id, body = _start(client)
-    _decide(client, body["caregiver_permission"]["notification_id"], "approve", T0245)
-    trace = _trace(client, inv_id, T0231)
+    _decide(client, body["caregiver_permission"]["notification_id"], "approve", T2247)
+    trace = _trace(client, inv_id, T2246)
     assert trace["permission"]["status"] == "waiting"
     assert all(n["allowed"] is False for n in _hvac(trace["notices"]))
 
 
 def test_trace_unknown_investigation_is_404(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    resp = client.get(f"/api/trace?scenario=care_home_v1&at={T0621}&investigation_id=inv-doesnotexist")
+    resp = client.get(f"/api/trace?scenario=care_home_v1&at={T0141}&investigation_id=inv-doesnotexist")
     assert resp.status_code == 404
 
 
@@ -104,22 +104,22 @@ def _public_client(monkeypatch, tmp_path):
 
 def test_trace_second_visitor_never_sees_first_decision(tmp_path, monkeypatch):
     first = _public_client(monkeypatch, tmp_path)
-    inv_id = first.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
-    body = first.get(f"/api/follow-ups/{inv_id}?at={T0231}").get_json()
-    assert _decide(first, body["caregiver_permission"]["notification_id"], "decline", T0231).status_code == 201
+    inv_id = first.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
+    body = first.get(f"/api/follow-ups/{inv_id}?at={T2246}").get_json()
+    assert _decide(first, body["caregiver_permission"]["notification_id"], "decline", T2246).status_code == 201
     second = create_app().test_client()
-    resp = second.get(f"/api/trace?scenario=care_home_v1&at={T0621}&investigation_id={inv_id}")
+    resp = second.get(f"/api/trace?scenario=care_home_v1&at={T0141}&investigation_id={inv_id}")
     assert resp.status_code == 404
 
 
 def test_trace_reset_clears_visitor_decision(tmp_path, monkeypatch):
     client = _public_client(monkeypatch, tmp_path)
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
-    body = client.get(f"/api/follow-ups/{inv_id}?at={T0231}").get_json()
-    assert _decide(client, body["caregiver_permission"]["notification_id"], "decline", T0231).status_code == 201
-    assert client.get(f"/api/trace?scenario=care_home_v1&at={T0621}&investigation_id={inv_id}").status_code == 200
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
+    body = client.get(f"/api/follow-ups/{inv_id}?at={T2246}").get_json()
+    assert _decide(client, body["caregiver_permission"]["notification_id"], "decline", T2246).status_code == 201
+    assert client.get(f"/api/trace?scenario=care_home_v1&at={T0141}&investigation_id={inv_id}").status_code == 200
     assert client.post("/api/session/reset").status_code == 200
-    assert client.get(f"/api/trace?scenario=care_home_v1&at={T0621}&investigation_id={inv_id}").status_code == 404
+    assert client.get(f"/api/trace?scenario=care_home_v1&at={T0141}&investigation_id={inv_id}").status_code == 404
 
 
 def test_trace_known_investigation_before_followup_is_scripted(tmp_path, monkeypatch):
@@ -138,7 +138,7 @@ def test_trace_known_investigation_before_followup_is_scripted(tmp_path, monkeyp
 
 def test_trace_human_report_changes_no_decision():
     scn = load_scenario(Path(__file__).resolve().parent.parent / "scenarios" / "care_home_v1")
-    at = datetime.fromisoformat(T0645)
+    at = datetime.fromisoformat(T0151)
     with_report = build_trace(scn, at)
     assert with_report["basis"] == SCRIPTED_BASIS
     assert with_report["human_report"] is not None

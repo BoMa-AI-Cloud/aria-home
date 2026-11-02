@@ -4,8 +4,8 @@ The request text (and the WhatsApp text) must describe the evidence visible at
 the moment ARIA asked — the alert creation time — not the replay time. The
 story raises the request at 22:46 ("62 F, 6 F below the 68 F target,
 furnace reported idle since 4:00 PM"); replaying
-the same investigation at 02:31 or later keeps that frozen text instead of
-re-reading the later evidence ("52 F ... 1:30 AM"). Before the request is raised
+the same investigation at 23:31 or later keeps that frozen text instead of
+re-reading the later evidence ("59 F ... 11:00 PM"). Before the request is raised
 (19:20, 21:00, 21:41) there is no card.
 """
 from aria_home import whatsapp
@@ -15,9 +15,9 @@ T1920 = "2026-01-16T19:20:00-05:00"
 T2100 = "2026-01-16T21:00:00-05:00"
 T2141 = "2026-01-16T21:41:00-05:00"
 T2246 = "2026-01-16T22:46:00-05:00"
-T0231 = "2026-01-17T02:31:00-05:00"
-T0451 = "2026-01-17T04:51:00-05:00"
-T0621 = "2026-01-17T06:21:00-05:00"
+T2331 = "2026-01-16T23:31:00-05:00"
+T0031 = "2026-01-17T00:31:00-05:00"
+T0141 = "2026-01-17T01:41:00-05:00"
 
 TOKEN = "test-whatsapp-token-abc123"
 PHONE_ID = "19876543210"
@@ -44,29 +44,29 @@ def _permission_at(client, inv_id, at):
 
 def test_followup_permission_text_uses_evidence_visible_when_asked(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = _start(client, T0231)
-    text = _permission_at(client, inv_id, T0231)["text"]
-    assert "52 F" in text
-    assert "thermostat not reporting since 1:30 AM" in text
+    inv_id = _start(client, T2331)
+    text = _permission_at(client, inv_id, T2331)["text"]
+    assert "59 F" in text
+    assert "thermostat not reporting since 11:00 PM" in text
     assert "54 F" not in text
 
 
 def test_followup_permission_text_frozen_at_creation_on_replay(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id = _start(client, T2246)
-    permission = _permission_at(client, inv_id, T0231)
+    permission = _permission_at(client, inv_id, T2331)
     assert permission["requested_at"].startswith("2026-01-16T22:46")
     assert "is cooling (62 F, 6 F below the 68 F target, furnace reported idle since 4:00 PM)" in permission["text"]
     assert "furnace reported idle since 4:00 PM" in permission["text"]
     assert "4:00 PM" in permission["text"]
-    assert "52 F" not in permission["text"]
-    assert "1:30 AM" not in permission["text"]
+    assert "59 F" not in permission["text"]
+    assert "11:00 PM" not in permission["text"]
 
 
 def test_followup_permission_text_stays_frozen_at_later_replays(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id = _start(client, T2246)
-    for at, absent in ((T0451, "04:50"), (T0621, "06:20")):
+    for at, absent in ((T0031, "59 F"), (T0141, "68 F, ")):
         text = _permission_at(client, inv_id, at)["text"]
         assert "62 F" in text
         assert "4:00 PM" in text
@@ -91,14 +91,14 @@ def test_decision_response_carries_frozen_text(tmp_path, monkeypatch):
     notification_id = _permission_at(client, inv_id, T2246)["notification_id"]
     resp = client.post(
         f"/api/notifications/{notification_id}/caregiver-decision",
-        json={"decision": "approve", "at": T0231},
+        json={"decision": "approve", "at": T2246},
     )
     assert resp.status_code == 201
     text = resp.get_json()["caregiver_permission"]["text"]
     assert "62 F" in text
     assert "4:00 PM" in text
-    assert "52 F" not in text
-    assert "1:30 AM" not in text
+    assert "59 F" not in text
+    assert "11:00 PM" not in text
 
 
 class _FakeHttp:
@@ -122,12 +122,12 @@ def test_permission_whatsapp_body_uses_frozen_text(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     inv_id = _start(client, T2246)
     notification_id = _permission_at(client, inv_id, T2246)["notification_id"]
-    resp = client.post(f"/api/notifications/{notification_id}/whatsapp?at={T0231}")
+    resp = client.post(f"/api/notifications/{notification_id}/whatsapp?at={T2331}")
     assert resp.status_code == 200
-    card_text = _permission_at(client, inv_id, T0231)["text"]
+    card_text = _permission_at(client, inv_id, T2331)["text"]
     text = fake.calls[0]["body"]["text"]["body"]
     assert card_text in text
     assert "62 F" in text
     assert "4:00 PM" in text
-    assert "52 F" not in text
-    assert "1:30 AM" not in text
+    assert "59 F" not in text
+    assert "11:00 PM" not in text

@@ -27,8 +27,8 @@ def _stale(reasons, source_id):
 
 
 def test_available_room_sensor_source_is_fresh():
-    assert not _stale(_reasons("source:room_sensor", "2026-01-17T02:31:00-05:00"), "source:room_sensor")
+    assert not _stale(_reasons("source:room_sensor", "2026-01-16T23:31:00-05:00"), "source:room_sensor")
 
 
 def test_silent_thermostat_source_is_still_stale():
-    assert _stale(_reasons("source:thermostat", "2026-01-17T02:31:00-05:00"), "source:thermostat")
+    assert _stale(_reasons("source:thermostat", "2026-01-17T00:05:00-05:00"), "source:thermostat")

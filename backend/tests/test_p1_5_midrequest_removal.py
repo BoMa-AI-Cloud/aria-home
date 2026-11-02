@@ -2,7 +2,7 @@
 from aria_home.app import create_app
 from aria_home.store import Store
 
-CARE_AT = "2026-01-17T02:31:00-05:00"
+CARE_AT = "2026-01-16T22:46:00-05:00"
 
 
 def _client(tmp_path, monkeypatch):

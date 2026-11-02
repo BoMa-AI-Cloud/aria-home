@@ -3,7 +3,7 @@ from aria_home.app import create_app
 
 CARE = "care_home_v1"
 VIDEO = "demo_video_v1"
-CARE_AT = "2026-01-17T02:31:00-05:00"
+CARE_AT = "2026-01-16T22:46:00-05:00"
 VIDEO_AT = "2026-01-16T16:31:00-05:00"
 
 

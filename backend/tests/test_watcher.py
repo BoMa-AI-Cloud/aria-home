@@ -33,7 +33,7 @@ from aria_home.watcher import (
 )
 
 SCENARIOS_DIR = Path(__file__).resolve().parent.parent / "scenarios"
-AT = datetime.fromisoformat("2026-01-17T02:31:00-05:00")
+AT = datetime.fromisoformat("2026-01-16T23:31:00-05:00")
 
 
 def _care():

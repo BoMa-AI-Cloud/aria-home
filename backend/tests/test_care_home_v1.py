@@ -11,11 +11,12 @@ SCENARIO_DIR = Path(__file__).resolve().parent.parent / "scenarios" / "care_home
 TZ = timezone(timedelta(hours=-5))
 FORBIDDEN = ("trip", "itinerary", "email", "phone", "location", "flight", "health", "medical", "fall")
 
-T0231 = "2026-01-17T02:31:00-05:00"
-T0445 = "2026-01-17T02:45:00-05:00"
-T0421 = "2026-01-17T04:21:00-05:00"
-T0451 = "2026-01-17T04:51:00-05:00"
-T0621 = "2026-01-17T06:21:00-05:00"
+T2246 = "2026-01-16T22:46:00-05:00"
+T2247 = "2026-01-16T22:47:00-05:00"
+T2331 = "2026-01-16T23:31:00-05:00"
+T0021 = "2026-01-17T00:21:00-05:00"
+T0031 = "2026-01-17T00:31:00-05:00"
+T0141 = "2026-01-17T01:41:00-05:00"
 T0701 = "2026-01-17T07:01:00-05:00"
 
 
@@ -25,7 +26,7 @@ def at(day, hour, minute=0, second=0):
 
 def _stage(now):
     scenario = load_scenario(SCENARIO_DIR)
-    followup = follow_up_for(scenario, "inv-care", at(17, 2, 31))
+    followup = follow_up_for(scenario, "inv-care", at(16, 23, 31))
     return verify_recovery(scenario, followup, now)
 
 
@@ -75,10 +76,10 @@ def test_care_scenario_loads_with_warmby_plan():
 
 
 def test_stage_sequence_to_warmby_time():
-    assert _stage(at(17, 2, 31))["stage"] == "telemetry_missing"
-    assert _stage(at(17, 4, 21))["stage"] == "reporting_restored"
-    assert _stage(at(17, 4, 51))["stage"] == "warming_observed"
-    assert _stage(at(17, 6, 21))["stage"] == "goal_verified"
+    assert _stage(at(16, 23, 31))["stage"] == "telemetry_missing"
+    assert _stage(at(17, 0, 21))["stage"] == "reporting_restored"
+    assert _stage(at(17, 0, 31))["stage"] == "warming_observed"
+    assert _stage(at(17, 1, 41))["stage"] == "goal_verified"
     assert _stage(at(17, 7, 1))["stage"] == "arrival_met"
 
 
@@ -100,7 +101,7 @@ def test_late_start_replay_judges_warmby_from_available_readings():
 
 def test_caregiver_replaces_manager_with_own_allowlist_and_refusals(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
     rows = _notifications(client, inv_id)
     audiences = {r["audience"] for r in rows}
     assert "family_caregiver" in audiences
@@ -128,8 +129,8 @@ def test_caregiver_refused_before_confirmation(tmp_path, monkeypatch):
 
 def test_hvac_needs_caregiver_authorisation(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
-    client.get(f"/api/follow-ups/{inv_id}?at={T0231}")
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
+    client.get(f"/api/follow-ups/{inv_id}?at={T2246}")
     rows = _notifications(client, inv_id)
     hvac = [r for r in rows if r["audience"] == "hvac_company"]
     assert hvac and hvac[0]["state"] == "refused"
@@ -147,30 +148,30 @@ def test_hvac_needs_caregiver_authorisation(tmp_path, monkeypatch):
 
 def test_ack_never_resolves(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
 
     def snapshot(stamp):
         body = client.get(f"/api/follow-ups/{inv_id}?at={stamp}").get_json()
         return body["outcome"]["status"], body["verification"]["stage"]
 
-    before_0451 = snapshot(T0451)
-    before_0621 = snapshot(T0621)
+    before_0451 = snapshot(T0031)
+    before_0621 = snapshot(T0141)
 
     rows = _notifications(client, inv_id)
     caregiver = next(r for r in rows if r["audience"] == "family_caregiver")
-    resp = client.post(f"/api/notifications/{caregiver['id']}/ack", json={"actor": "family_caregiver", "at": "2026-01-17T02:40:00-05:00"})
+    resp = client.post(f"/api/notifications/{caregiver['id']}/ack", json={"actor": "family_caregiver", "at": "2026-01-16T23:40:00-05:00"})
     assert resp.status_code == 200
     assert resp.get_json()["message"] == "acknowledged, not resolved"
 
-    assert snapshot(T0451) == before_0451
-    assert snapshot(T0621) == before_0621
-    assert snapshot(T0231)[1] == "telemetry_missing"
+    assert snapshot(T0031) == before_0451
+    assert snapshot(T0141) == before_0621
+    assert snapshot(T2331)[1] == "telemetry_missing"
     acked = next(r for r in _notifications(client, inv_id) if r["id"] == caregiver["id"])
     assert acked["state"] == "simulated_delivered"
 
 
 def test_human_report_never_verifies_and_thermostat_return_proves_nothing():
-    assert _stage(at(17, 4, 21))["stage"] == "reporting_restored"
+    assert _stage(at(17, 0, 21))["stage"] == "reporting_restored"
     late = _stage(at(17, 7, 1))
     assert late["stage"] == "arrival_met"
     assert "evt-care-hvac-completion-report" not in late["supporting_ids"]
@@ -179,19 +180,19 @@ def test_human_report_never_verifies_and_thermostat_return_proves_nothing():
 
 def test_replay_reveals_no_future(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T0231}").get_json()["investigation_id"]
+    inv_id = client.post(f"/api/investigations?scenario=care_home_v1&at={T2246}").get_json()["investigation_id"]
     import json
 
-    body = client.get(f"/api/follow-ups/{inv_id}?at={T0231}").get_json()
+    body = client.get(f"/api/follow-ups/{inv_id}?at={T2246}").get_json()
     text = json.dumps(body)
-    assert body["verification"]["stage"] == "telemetry_missing"
+    assert body["verification"]["stage"] == "unable_to_verify"
     assert '"stage": "arrival_met"' not in text
     assert '"stage": "goal_verified"' not in text
     assert '"stage": "warming_observed"' not in text
-    assert "2026-01-17T06:4" not in text
+    assert "2026-01-17T" not in text.replace("2026-01-17T07:00", "").replace("2026-01-17T09:00", "")
     assert "caregiver_hvac_authorized" not in text
     assert "hvac_completion_report" not in text
-    events = client.get(f"/api/events?scenario=care_home_v1&at={T0231}").get_json()
+    events = client.get(f"/api/events?scenario=care_home_v1&at={T2246}").get_json()
     kinds = {e["kind"] for e in events["events"]}
     assert "caregiver_hvac_authorized" not in kinds
     assert "hvac_request" not in kinds
@@ -211,7 +212,7 @@ def test_public_demo_serves_care_default(tmp_path, monkeypatch):
     assert health["scenario"] == "care_home_v1"
     scenarios = client.get("/api/scenarios").get_json()["scenarios"]
     care = next(s for s in scenarios if s["id"] == "care_home_v1")
-    assert T0231 in care["checkpoints"]
+    assert T2246 in care["checkpoints"]
     assert T0701 in care["checkpoints"]
-    assert client.get(f"/api/sources?scenario=care_home_v1&at={T0231}").status_code == 200
+    assert client.get(f"/api/sources?scenario=care_home_v1&at={T2246}").status_code == 200
     assert client.get("/api/sources?scenario=care_home_v1&at=2026-01-17T03:00:00-05:00").status_code == 400

@@ -187,14 +187,14 @@ def test_snapshot_route_without_segment_never_calls_sam(tmp_path, monkeypatch):
     sam_calls = []
     monkeypatch.setattr(visual.SamLiveProvider, "segment", lambda self, *a, **k: sam_calls.append(a) or {})
     client = _app_client(tmp_path, monkeypatch, **ENV, MODEL_API_KEY="FAKE-MODEL-KEY")
-    before = client.get("/api/investigation?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00").get_json()
+    before = client.get("/api/investigation?scenario=care_home_v1&at=2026-01-16T23:31:00-05:00").get_json()
     body = client.post("/api/camera/snapshot", json={"segment": False}).get_json()
     assert body["camera"]["status"] == "ok"
     assert body["image_url"] == "/api/camera/snapshot/nest-20261029T120000Z.jpg"
     assert "frame_path" not in body["camera"]
     assert body["segmentation"] is None and sam_calls == []
     assert "never evidence" in body["note"]
-    after = client.get("/api/investigation?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00").get_json()
+    after = client.get("/api/investigation?scenario=care_home_v1&at=2026-01-16T23:31:00-05:00").get_json()
     assert before["readiness"]["status"] == "at_risk"
     assert after["readiness"] == before["readiness"]
 

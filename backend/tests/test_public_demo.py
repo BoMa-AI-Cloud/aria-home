@@ -394,15 +394,15 @@ def test_public_caregiver_decision_is_session_scoped_and_simulated(public_env):
     from aria_home.app import create_app as _create
 
     client = _create().test_client()
-    inv_id = client.post("/api/investigations?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00").get_json()["investigation_id"]
-    body = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-17T02:31:00-05:00").get_json()
+    inv_id = client.post("/api/investigations?scenario=care_home_v1&at=2026-01-16T22:46:00-05:00").get_json()["investigation_id"]
+    body = client.get(f"/api/follow-ups/{inv_id}?at=2026-01-16T22:46:00-05:00").get_json()
     notification_id = body["caregiver_permission"]["notification_id"]
-    off_checkpoint = client.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "approve", "at": "2026-01-17T02:33:00-05:00"})
+    off_checkpoint = client.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "approve", "at": "2026-01-16T22:46:30-05:00"})
     assert off_checkpoint.status_code == 400
-    assert client.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "approve", "at": "2026-01-17T02:31:00-05:00"}).status_code == 201
+    assert client.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "approve", "at": "2026-01-16T22:46:00-05:00"}).status_code == 201
     assert client.post(f"/api/notifications/{notification_id}/whatsapp").status_code == 404
     other = _create().test_client()
-    assert other.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "decline", "at": "2026-01-17T02:31:00-05:00"}).status_code == 404
+    assert other.post(f"/api/notifications/{notification_id}/caregiver-decision", json={"decision": "decline", "at": "2026-01-16T22:46:00-05:00"}).status_code == 404
 
 
 def test_disk_bound_default_is_512mib(public_env, monkeypatch):
