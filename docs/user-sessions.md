@@ -63,7 +63,8 @@ The story is 11 steps about one winter night:
   asks nobody.
 - At 10:46 PM the room is 62 F, 6 F below the target. ARIA says "may not be warm
   by 7:00" and asks "May I contact the HVAC company?" Let them choose Approve or Decline
-  themselves, at any step before the scripted 2:45 AM answer.
+  themselves, at this step, before the recorded story answers.
+- On Approve, a technician is on site by 11:30 PM. That closes nothing.
 - The thermostat goes silent at 1:30 and the room reaches 52 F.
 - On Approve: ARIA waits for independent readings and verifies that 68 F was held.
 - On Decline: nobody is contacted — no visit, report or voice note — the room

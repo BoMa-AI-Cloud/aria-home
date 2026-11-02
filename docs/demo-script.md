@@ -1,5 +1,7 @@
 > Note 2026-11-02: the story's times changed. The night has 11 steps. The evening is 19:20, 21:00, 21:41 (notice at 2 F below the target, room 66.0 F, asks nobody) and 22:46 (asks the family caregiver at 6 F below, room 62.0 F). A backstop still asks when the house is at risk within 2 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. The demo checks at set story times. Older shot lists (A2, A) are historical.
 >
+> Timing: in the recorded story the caregiver approves right away (22:47), the HVAC request goes out at 22:50, and a technician is on site at 23:30. The repair finishes at 04:15, and the room keeps falling until then. The 23:31 step replaced the 02:45 step.
+>
 > Who wrote the code: Meta's Muse models wrote most of the application code; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`. Opening lines in A2 and A that credit all code to Muse are out of date and must not be used.
 
 # ARIA Home demo video plan and implementation gap map
@@ -33,10 +35,9 @@ ending is the resident getting up at 07:00 to a warm home, after the goal is ver
 
 **Non-negotiable event order** (scenario times, 2026-01-16/17, -05:00, from `care_home_v1`):
 warm-by plan and consent confirmed (19:20) → room slowly falling, still on track (21:00) → notice at 2 F
-below the target, nobody asked (21:41) → caregiver asked at 6 F below (22:46) → thermostat silent, room
-near 52 F (01:30, seen at 02:31) → caregiver authorizes
-HVAC contact (02:45) → simulated request and technician visit (02:50, 03:30–04:15; neither closes
-anything) → thermostat reporting restored (04:20 observed, 04:21 evaluated; proves nothing alone) →
+below the target, nobody asked (21:41) → caregiver asked at 6 F below (22:46) → caregiver authorizes
+HVAC contact (22:47) → simulated request and technician on site (22:50, 23:30; neither closes anything)
+→ thermostat silent, room near 52 F (01:30, seen at 02:31) → repair finished (03:30–04:15; closes nothing) → thermostat reporting restored (04:20 observed, 04:21 evaluated; proves nothing alone) →
 independent room readings show warming (04:51) → target first reached (05:50) → target held 30 min and
 verified (06:21) → technician voice-note human report (06:40) and HVAC completion report available to
 ARIA (06:45, corroboration only) → warm-by time evaluated from readings received by 07:00 (07:01).
@@ -64,9 +65,9 @@ Status key as at the top of this file. Times are video times.
 | 1 | 0:10-0:24 (14) | A plan exists | Shot 1 evening at home, resident checks the thermostat | Confirmed plan and permissions: demo-house, warm-by 7:00 AM, 68 °F, caregiver coordination allowed, confirmed 7:20 PM; "Confirmation request" card (19:20) | split | AI-generated dramatization; ARIA Home — synthetic scenario; "A plan to check, not a setting to start" | cut | implemented (cards + panel). Check: cards show SIMULATED and available times; panel lists the confirmed fields and permissions together. |
 | 2 | 0:24-0:42 (18) | Consent is recorded | Shot 2 caregiver on the phone at home in the evening | Confirmed plan consent lines: resident everything, caregiver home status and observations, HVAC property/access/observations only | split | "Simulated consent record" | match cut on phone | implemented (fixture + panel). Check: no health data, no medical terms, no location of the person. |
 | 3 | 0:42-0:56 (14) | A notice, nobody asked | Shot 3 dark house exterior at night | 21:41: Readiness "At risk", room 66.0 F, 2 F below the 68 F goal; activity line records the notice and says no one is asked yet | split | "Scenario replay advanced"; "2 F is a setting, not a safety limit" | dissolve | implemented in the backend; CONFIRM on the deployed build. Check: no permission request, no notification. |
-| 4 | 0:56-1:20 (24) | The caregiver is asked; the thermostat goes silent | Shot 4 cold living room cutaway at night (4 s full story, then split) | 22:46: Readiness "At risk" (room 62.0 F, 6 F below the 68 F goal, furnace reported idle since 16:00); "Caregiver alert" card and the frozen caregiver request "May I contact the HVAC company?". Then 02:31: Outcome "Thermostat telemetry missing"; verified facts "Indoor temperature 52.0 F (at 02:30)" from the room sensor | full story → split | "Nobody there may know"; "Scenario replay advanced"; "Old numbers are not current" | slow push-in | implemented in the backend; CONFIRM on the deployed build. Check: no location, activity or health cue anywhere; no thermostat value presented as current. |
-| 5 | 1:20-1:36 (16) | Authorized help | Shot 5 caregiver on a call at night | 02:45: Family caregiver card; HVAC company card with "fields sent:" (property_label, access_note, manager_contact_label, relevant_observations); "Acknowledged, not resolved" | split | "Simulated service contact"; "Approved fields only" | cut | implemented. Check: no itinerary/email/location field; HVAC card absent or refused before 02:45. |
-| 6 | 1:36-1:46 (10) | A professional visit | Shot 6 technician arrives and works | none (story only) | full story | "AI-generated dramatization"; "Simulated service visit" | cut | n/a (dramatization). Check: no repair instructions, no implication ARIA controls equipment. |
+| 4 | 0:56-1:20 (24) | The caregiver is asked | Shot 4 cold living room cutaway at night (4 s full story, then split) | 22:46: Readiness "At risk" (room 62.0 F, 6 F below the 68 F goal, furnace reported idle since 16:00); "Caregiver alert" card and the frozen caregiver request "May I contact the HVAC company?" | full story → split | "Nobody there may know"; "Scenario replay advanced" | slow push-in | implemented in the backend; CONFIRM on the deployed build. Check: no location, activity or health cue anywhere. |
+| 5 | 1:20-1:36 (16) | Authorized help | Shot 5 caregiver on a call at night | 23:31: Family caregiver card; HVAC company card with "fields sent:" (property_label, access_note, manager_contact_label, relevant_observations); "Acknowledged, not resolved" | split | "Simulated service contact"; "Approved fields only" | cut | implemented. Check: no itinerary/email/location field; HVAC card absent or refused at 22:46. |
+| 6 | 1:36-1:46 (10) | A technician is there; the room keeps falling | Shot 6 technician arrives and works | 02:31: Outcome "Thermostat telemetry missing"; verified facts "Indoor temperature 52.0 F (at 02:30)" from the room sensor | full story → split | "AI-generated dramatization"; "Simulated service visit"; "Old numbers are not current" | cut | implemented in the backend; CONFIRM on the deployed build. Check: no repair instructions, no implication ARIA controls equipment; no thermostat value presented as current. |
 | 7 | 1:46-2:04 (18) | Recovery detected independently | Shot 7 technician packs up (2 s), then UI | 04:21 "Thermostat reporting restored" with progression 1 Reached, 2-4 Not reached (narrated as "verification pending"); 04:51 "Warming observed" | split → full UI | "Scenario replay advanced"; "Reconnection alone closes nothing" | wipe to full UI | implemented. Check: 04:21 does not show verified; History lists stages. |
 | 8 | 2:04-2:30 (26) | Goal reached, held, verified | Shot 8 pre-dawn bedroom, resident still asleep, warm light rising | 06:21 "Temperature goal verified" with "Latest reading used: observed … received …" and evaluation time; evidence timeline entries through "Hold completed and goal verified" | full UI → split | "Scenario replay advanced (30-minute hold)"; "ARIA Home — synthetic scenario" | hold, then cut to morning | implemented. Check: 04:51 never shows verified. |
 | 9 | 2:30-2:42 (12) | The report comes after | Shot 9 morning kitchen, phone showing the update | 06:45: "HVAC completion report — Corroboration only, does not set the outcome", event 6:40 AM, available 6:45 AM, verification at 6:21 AM; technician voice-note row "Corroboration only" | split | "Report available after verification" | dissolve | implemented (cards). Check: report absent at 06:21. |
@@ -83,9 +84,9 @@ Target pace about 125 words per minute with pauses; the word counts below leave 
 1. (32 w) An older adult lives alone in a house. On a winter evening, the household confirms its plan: warm by seven, sixty-eight degrees, and a family caregiver to call if something goes wrong.
 2. (31 w) Consent is recorded with the plan: the resident sees everything, the caregiver sees home status and observations, and the heating company would see only the property, access, and what was observed.
 3. (23 w) Through the evening the room cools. At nine forty-one it reads sixty-six, two below the goal. ARIA records a notice and asks nobody.
-4. (49 w) At ten forty-six it reads sixty-two, six below the goal, with the furnace idle since four. The home is at risk and nobody there may know, so ARIA asks. Later the thermostat goes silent. ARIA will not treat old numbers as current; an independent room sensor reads fifty-two degrees.
-5. (33 w) Within the recorded consent, ARIA alerts the family caregiver, who authorizes the heating company on file. The request carries only what is needed: the property, access, and what was observed. Acknowledged, not resolved.
-6. (14 w) A technician visits. ARIA controls no equipment. Each later step still checks the readings.
+4. (29 w) At ten forty-six it reads sixty-two, six below the goal, with the furnace idle since four. The home is at risk and nobody there may know, so ARIA asks.
+5. (36 w) Within the recorded consent, ARIA alerts the family caregiver, who right away authorizes the heating company on file. The request carries only what is needed: the property, access, and what was observed. Acknowledged, not resolved.
+6. (29 w) A technician is there by eleven thirty. ARIA controls no equipment. The room keeps falling and the thermostat goes silent. ARIA reads an independent room sensor: fifty-two degrees.
 7. (31 w) On the next sensor update the thermostat is back. That alone closes nothing; verification is pending. ARIA cross-checks the reported state, the heating circuit, and the room sensor. Then warming appears.
 8. (44 w) Near six the room reaches sixty-eight degrees, and ARIA still waits. A goal is not verified until it holds. Thirty minutes later every reading is still at target. Now it is verified, from sensor evidence alone. One short update is ready for the morning.
 9. (21 w) The technician's spoken note and completion report arrive afterward. Useful corroboration, but after verification, unable to change what the sensors showed.
@@ -134,8 +135,8 @@ Verify each state on a fresh database (`backend/instance/aria_home.db` deleted),
 | Evidence-backed investigation | 02:31 | implemented (mock); **unverified** live under the current readiness rules | verified facts / readiness / interpretation split; MOCK label in frame unless a live take is approved |
 | Notice, nobody asked (room 66.0 F, 2 F below the goal) | 21:41 | implemented in the backend; CONFIRM on the deployed build | activity line records the notice; no permission request, no notification |
 | "Caregiver alert" card and request "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)" | 22:46 | implemented in the backend; CONFIRM on the deployed build | card tagged SIMULATED with event and available times |
-| HVAC-contact approval and scoped request | 02:45 | implemented | HVAC card "fields sent:" shows exactly four fields; refused before 02:45 ("caregiver has not authorized HVAC contact") |
-| Acknowledgement is not resolution | 02:45 | implemented | "Acknowledged, not resolved"; Outcome headline unchanged |
+| HVAC-contact approval and scoped request | 23:31 | implemented in the backend; CONFIRM on the deployed build | HVAC card "fields sent:" shows exactly four fields; "Technician on site" card at 23:30; refused at 22:46 ("caregiver has not authorized HVAC contact") |
+| Acknowledgement is not resolution | 23:31 | implemented | "Acknowledged, not resolved"; Outcome headline unchanged |
 | Simulated service visit (03:30–04:15) | 04:21 state | implemented (timeline card only) | "Service visit", "SIMULATED", label "(does not by itself close anything)" |
 | Thermostat reconnects without resolution | 04:21 | implemented | "Thermostat reporting restored"; later stages Not reached |
 | Warming observed | 04:51 | implemented | headline "Warming observed" |
@@ -274,7 +275,7 @@ real calls.
 | 2a | A notice, nobody asked: room 66.0 F, 2 F below the goal | Activity line from the computed notice level; no request, no notification | implemented in the backend; CONFIRM on the deployed build | synthetic / replayed | Replay button "21:41". Capture the activity line and the readiness "At risk". Confirm no permission request and no notification card. |
 | 3 | Not responding overnight: thermostat telemetry missing while thermostat-independent room readings show no warming | An offline-thermostat interval plus an independent room sensor carrying the trend | implemented | synthetic / replayed | Select "Winter night, older adult at home (guided story)", replay button "02:31". Capture Outcome: "Status: Thermostat telemetry missing", "Follow-up rule:", "Latest reading used: observed" / "received", "Evaluation (replay) time"; Investigation: "Evaluation time:" "2:31 AM". During the outage no fresh thermostat measurement is shown as current. |
 | 4 | Mapped HVAC electrical activity, other circuits fresh, power statement with limitations | Power context: mapped-circuit activity, per-circuit freshness, bounded continuity statement, limitations | partial — the "Power context" block and the "electrical" evidence card are implemented, but there is no labelled blower-channel card; the blower-consistent observation appears as text in the simulated HVAC request observations | replayed | At "02:31" capture Investigation "Power context" and "Limitations:", and the "Evidence sources" card `article[aria-label="electrical source"]` with "Status:". Capture the HVAC request observations text only from shot 5 / the timeline "HVAC request" card at "04:21" ("fields sent:" property, access_note, manager_contact, observations). Never claim useful heat, a fault, or equipment power from watts. |
-| 5 | ARIA alerts the family caregiver inside the recorded consent; caregiver explicitly authorizes HVAC contact; scoped simulated request (no itinerary/email/location) | Notification records with authorization gates and a scoped payload | implemented (simulated) | simulated | Replay button "22:46": capture "Notifications (simulated delivery)", the "Family caregiver" card with "Simulated delivery", "Created:", "Simulated, no message was sent"; any HVAC company card at 22:46 or 02:31 is absent or "Refused: caregiver has not authorized HVAC contact". Replay button "02:45": capture the delivered "HVAC company" card with "fields sent: property_label, access_note, manager_contact_label, relevant_observations" and no itinerary/email/location. Click "Acknowledge (simulated)": capture "Acknowledged, not resolved" and confirm the Outcome headline is unchanged. |
+| 5 | ARIA alerts the family caregiver inside the recorded consent; caregiver explicitly authorizes HVAC contact; scoped simulated request (no itinerary/email/location) | Notification records with authorization gates and a scoped payload | implemented (simulated) | simulated | Replay button "22:46": capture "Notifications (simulated delivery)", the "Family caregiver" card with "Simulated delivery", "Created:", "Simulated, no message was sent"; any HVAC company card at 22:46 or 02:31 is absent or "Refused: caregiver has not authorized HVAC contact". Replay button "23:31": capture the delivered "HVAC company" card with "fields sent: property_label, access_note, manager_contact_label, relevant_observations" and no itinerary/email/location. Click "Acknowledge (simulated)": capture "Acknowledged, not resolved" and confirm the Outcome headline is unchanged. |
 | 6 | Simulated service visit | Visit/repair events | implemented (simulated timeline card only) | simulated | Replay button "04:21" (visit available 04:15). Film the Simulated timeline card only. Capture: "Service visit", "SIMULATED", "Event time", "Available time (received time)", label text "simulated technician visit 03:30-04:15 (does not by itself close anything)". The card changes no outcome by itself; do not claim a repair is proven. |
 | 7 | Independent recovery detection: telemetry resumes → warming → goal verified → still met at warm-by time | Verification stages over later readings, evaluated at each replay time | implemented | replayed | Replay buttons "04:21", "04:51", "06:21", "07:01". Capture Outcome headlines in order: "Thermostat reporting restored" (04:21), "Warming observed" (04:51; the headline must not yet be "Temperature goal verified"), "Temperature goal verified" (06:21), "Warm-by expectation met" (07:01); the progression list shows each stage "Reached" / "Not reached", History accumulates the stages, and "Latest reading used: observed" / "received" is visible. |
 | 8 | HVAC completion report and technician voice note become available to ARIA only after sensor verification | Report records whose available times are after the verified evaluation | implemented (simulated timeline card + human-report row only) | simulated | Replay button "06:21": the Simulated timeline has no "HVAC completion report" card and no "Corroboration only" text. Replay button "06:45": capture the card "HVAC completion report", "SIMULATED", "Corroboration only, does not set the outcome", "Event time", "Available time (received time)". At no replay time does the report change the outcome. |
@@ -303,10 +304,11 @@ received/available time.
 | 3a | Notice: room-sensor reading 66.0 F at 21:41, 2 F below the 68 F goal | — | — | 21:41 "At risk", readiness `at_risk`; a notice in the activity line, no request and no notifications |
 | 4 | Flagged before the warm-by time: room-sensor reading 62.0 F at 22:46, 6 F below the 68 F goal, furnace reported idle since 16:00 | — | — | 22:46 "At risk", readiness `at_risk`; this checkpoint creates the notifications and the frozen caregiver request. 2 F and 6 F are configured settings, not safety limits; a backstop still asks when the house is at risk within 2 hours of the warm-by time |
 | 5 | ARIA alerts the resident and the family caregiver (simulated), inside the 19:20 consent; "Caregiver alert" card; frozen request "May I contact the HVAC company?" ("cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)", asked at 22:46) | alert 22:46 | notification cards created at the 22:46 evaluation | notification cards plus the permission card from the 22:46 evaluation |
+| 7 | Caregiver explicitly authorizes contacting the HVAC company on file (simulated), right away | 22:47 | 22:47 | no HVAC contact before this; HVAC card absent or refused at 22:46 |
+| 8 | Scoped simulated HVAC request: property label, access note, caregiver contact label, relevant observations only | request placed 22:50 | notification card created at the 23:31 evaluation (auth available 22:47); timeline event available 22:52 | 23:31 evaluation shows the delivered card; "fields sent: property_label, access_note, manager_contact_label, relevant_observations" |
+| 8a | Simulated technician on site ("does not by itself close anything") | 23:30 | 23:30 | 23:31 card on the Simulated timeline |
 | 6 | Thermostat outage interval begins: no fresh thermostat telemetry; independent room readings cooling, flat near 52 F | 01:30 (Jan 17) | as each reading arrives | 02:31 "Thermostat telemetry missing" |
-| 7 | Caregiver explicitly authorizes contacting the HVAC company on file (simulated) | 02:45 | 02:45 | no HVAC contact before this; HVAC card absent or refused at 02:31 |
-| 8 | Scoped simulated HVAC request: property label, access note, caregiver contact label, relevant observations only | request placed 02:50 | notification card created at the 02:45 evaluation (auth available 02:45); timeline event available 02:52 | 02:45 evaluation shows the delivered card; "fields sent: property_label, access_note, manager_contact_label, relevant_observations" |
-| 9 | Simulated technician visit | 03:30–04:15 | visit logged 04:15 | not used by ARIA to close anything |
+| 9 | Simulated technician repair | 03:30–04:15 | repair logged 04:15 | not used by ARIA to close anything |
 | 10 | Thermostat reconnection: fresh thermostat telemetry resumes on the next sensor update | 04:20 | 04:20:20 | 04:21 → "Thermostat reporting restored"; does not close the issue |
 | 11 | Warming evidence from later independent readings (52.0 F at 04:35 to 54.5 F at 04:50) | 04:35–04:50 | as readings arrive | 04:51 → "Warming observed" |
 | 12 | Target first reached on independent readings (68 F) | 05:50 | 05:50:20 | 06:21 evaluation (reached, not yet verified on its own) |
@@ -335,7 +337,7 @@ care story approved 2026-10-29):
   verification. In `care_home_v1` the family caregiver replaces the property
   manager: the caregiver sees home status and observations, the HVAC company
   sees property, access note and observations only, and the HVAC request is
-  gated by the caregiver's explicit authorization event at 02:45.
+  gated by the caregiver's explicit authorization event at 22:47.
 - Recorded consent with the confirmed plan: the "Confirmed plan and
   permissions" panel (demo-house, warm-by 7:00 AM, 68 F, caregiver
   coordination allowed, confirmed 7:20 PM, `warmby-care-001-rev1`) plus the
@@ -346,7 +348,7 @@ care story approved 2026-10-29):
   ("Your home reached and held 68 F before the warm-by time"), simulated
   timeline, evidence source cards, scenario selector with "Winter night,
   older adult at home (guided story)" as the default and guided story, with
-  replay times 19:20, 21:00, 21:41, 22:46, 02:31, 02:45, 04:21, 04:51,
+  replay times 19:20, 21:00, 21:41, 22:46, 23:31, 02:31, 04:21, 04:51,
   06:21, 06:45, 07:01, and human-readable labels with exact payload fields still
   checkable via "fields sent".
 - Replay-only visual evidence: synthetic camera frames (muse-image-1.0)
@@ -419,8 +421,8 @@ browser checks in `frontend/e2e/app.spec.ts` cover the on-screen items.
    not assumed from 06:21.
 8. Every authorization precedes the action it permits: household
    confirmation (19:20) < caregiver alert (notification cards from the
-   22:46 evaluation) < caregiver HVAC authorization (02:45) < HVAC request
-   (placed 02:50, delivered card from the 02:45 evaluation).
+   22:46 evaluation) < caregiver HVAC authorization (22:47) < HVAC request
+   (placed 22:50, delivered card from the 23:31 evaluation).
 9. No future-data leakage: for every replay evaluation, only records,
    revisions, confirmations, events, and notifications available at or
    before that time are shown.
@@ -492,7 +494,7 @@ build decisions as built):
   time, as section C/E describe.
 - The simulated HVAC request carries only the built scoped fields
   (property label, access note, caregiver contact label, relevant
-  observations), gated by the caregiver authorization event at 02:45; the
+  observations), gated by the caregiver authorization event at 22:47; the
   technician voice note and HVAC completion report are available to ARIA at
   06:45, after the 06:21 verification, as corroboration only.
 - Independent room sensors and the blower-mapped electrical channel are
@@ -549,11 +551,11 @@ Replay sequence for the video scenario (exact order):
   state.
 - [ ] Click the replay buttons in this order, capturing the Outcome
   headline (and the panels named in section B) at each step:
-  19:20, 21:00, 21:41, 22:46, 02:31, 02:45, 04:21, 04:51, 06:21, 06:45, 07:01.
+  19:20, 21:00, 21:41, 22:46, 23:31, 02:31, 04:21, 04:51, 06:21, 06:45, 07:01.
   Expected headlines: 19:20 "On track" (plan confirmed, nothing wrong yet); 21:00 "On track" (evening decline, still a snapshot: no follow-up, no request); 21:41 "At risk" (notice: room 66.0 F, 2 F below goal, nobody asked); 22:46 "At risk" (room 62.0 F, 6 F below goal, furnace idle since 16:00; caregiver alert and frozen request); 02:31 "Thermostat telemetry missing";
   04:21 "Thermostat reporting restored"; 04:51
   "Warming observed"; 06:21 "Temperature goal verified";
-  07:01 "Warm-by expectation met". At 02:45 capture the delivered HVAC
+  07:01 "Warm-by expectation met". At 23:31 capture the delivered HVAC
   notification card; at 06:45 capture the "HVAC completion report" card
   ("Corroboration only, does not set the outcome") and the technician
   voice-note row, both of which must be absent at 06:21.
@@ -602,7 +604,7 @@ Recording footage:
   whenever the Investigation is in frame.
 - Clips land in `frontend/recordings/` (ignored by git), one `.webm` per
   storyboard segment: `s1-confirm` (19:20 plan and confirmation), `s2-not-responding` (02:31),
-  `s3-authorized-help` (02:31 caregiver alert, 02:45 HVAC request, acknowledgement),
+  `s3-authorized-help` (02:31 caregiver alert, 23:31 HVAC request, acknowledgement),
   `s4-recovery` (04:21, 04:51, 06:21), and `s5-report-and-warmby` (06:45 report, 07:01 warm-by met).
 - The same command also records three title-card clips from
   `frontend/cards.html`: `c1-opening`, `c2-evaluation`, and

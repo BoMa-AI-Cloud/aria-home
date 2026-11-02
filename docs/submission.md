@@ -32,9 +32,9 @@ no sign-in). On a synthetic winter night the evening starts warm and on track, a
 still on track. At 9:41 PM it is 66 F, 2 F below the target: code flags it as at risk, and ARIA records a notice and
 asks nobody. At 10:46 PM it is 62 F, 6 F below, and ARIA asks the family caregiver: "May I contact the HVAC company?"
 The 2 F and 6 F are configured settings, not safety limits, and a backstop still asks when the house is at risk within
-2 hours of the warm-by time. The demo checks at set story times. The thermostat goes silent at 1:30 and the room
-reaches 52 F.
-Only after she approves is the HVAC request created, with allowed fields only; if she declines, no contact is made
+2 hours of the warm-by time. The demo checks at set story times. She approves right away, and only then is the HVAC
+request created, with allowed fields only. A technician is on site by 11:30 PM and finishes the repair at 4:15. Until
+then the room keeps falling: the thermostat goes silent at 1:30 and the room reaches 52 F. If she declines, no contact is made
 — no request, visit, report or voice note — and the room readings are still checked at each later step: the room
 holds 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
 On the approved path, reconnection alone proves nothing: the goal is verified at 6:21 from independent readings held for 30 minutes, and

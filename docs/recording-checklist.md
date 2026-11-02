@@ -17,15 +17,15 @@ inference"; no real message is sent and no paid inference runs.
 | 21:00 | Still on track at 68.4 F, trend falling, no caregiver request, and the activity line names the decline. |
 | 21:41 | At risk at 66.0 F, 2 F below the 68 F target. The activity line records the notice and says no one is asked yet. No permission request and no caregiver or HVAC notification. |
 | 22:46 | At risk at 62.0 F, 6 F below the target. The permission request is created: "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)", asked 10:46 PM. |
+| 23:31 | Family caregiver card (simulated delivery) and the delivered HVAC company card showing exactly "fields sent: property_label, access_note, manager_contact_label, relevant_observations" — allowed fields only, no health/personal details, no itinerary/email/location. The recorded story answers at 22:47 and a "Technician on site" card shows 23:30, "does not by itself close anything". The HVAC card is absent or refused at 22:46 ("caregiver has not authorized HVAC contact"). Click "Acknowledge (simulated)": the card reads "Acknowledged, not resolved" and the Outcome headline does not change — a caregiver ack does not close the issue. |
 | 02:31 | Outcome "Thermostat telemetry missing". Missing telemetry is not a diagnosis: no thermostat value is presented as current; the verified fact cites the room sensor (52.0 F at 02:30, held since 01:30). Readiness "At risk". Power context keeps its limitations; watts are not heat. The 10:46 PM request is unchanged, word for word. |
-| 02:45 | Family caregiver card (simulated delivery) and the delivered HVAC company card showing exactly "fields sent: property_label, access_note, manager_contact_label, relevant_observations" — allowed fields only, no health/personal details, no itinerary/email/location. The HVAC card is absent or refused at 02:31 ("caregiver has not authorized HVAC contact"). Click "Acknowledge (simulated)": the card reads "Acknowledged, not resolved" and the Outcome headline does not change — a caregiver ack does not close the issue. |
-| 04:21 | Outcome "Thermostat reporting restored" with later stages Not reached. Reconnection alone proves nothing; verification is pending. Simulated service-visit card (03:30–04:15, "does not by itself close anything"). |
+| 04:21 | Outcome "Thermostat reporting restored" with later stages Not reached. Reconnection alone proves nothing; verification is pending. Simulated technician-repair card (03:30–04:15, "does not by itself close anything"). |
 | 04:51 | Outcome "Warming observed" from later independent room readings (52.0 F at 04:35 to 54.5 F at 04:50; thermostat absent or stale for the trend). Still not "Temperature goal verified". |
 | 06:21 | Outcome "Temperature goal verified" with "Latest reading used: observed … received …" and the evaluation time. Target first reached 05:50, held 30 minutes through 06:20 — warming and the hold come only from independent temperature measurements. The simulated timeline has no HVAC completion report card and no voice-note row yet. |
 | 06:45 | "HVAC completion report" card appears, labelled "Corroboration only, does not set the outcome", event 06:40, available 06:45; technician voice-note row "Corroboration only". Voice note and report are corroboration: they arrive after verification and change no outcome. |
 | 07:01 | Outcome "Warm-by expectation met" and the homeowner update ("Your home reached and held 68 F before the warm-by time"). The warm-by check respects coverage and availability: it is evaluated at 07:01 from readings received by the 07:00 warm-by time (latest 68.2 F at 06:55), not assumed from 06:21. |
 
-Declined branch (same checkpoints, caregiver declines at 22:46 or 02:31): no HVAC request is sent (the HVAC card reads refused, "caregiver declined"); no service-visit card, completion-report card or voice-note row appears at any later step; the room holds 52.0 F then eases down 0.2 F/hr (51.4 F at 07:01); verification stays "Thermostat telemetry missing" with the outcome still checking ("awaiting measurement"); 07:01 states the miss against the 68 F goal with the actual reading. Rewinding before the decision shows the original night.
+Declined branch (same checkpoints, caregiver declines at 22:46): no HVAC request is sent (the HVAC card reads refused, "caregiver declined"); no service-visit card, completion-report card or voice-note row appears at any later step; the room holds 52.0 F then eases down 0.2 F/hr (51.4 F at 07:01); verification stays "Thermostat telemetry missing" with the outcome still checking ("awaiting measurement"); 07:01 states the miss against the 68 F goal with the actual reading. Rewinding before the decision shows the original night.
 
 2 F and 6 F are configured settings, not safety limits. The backstop still asks when the house is at risk within 2
 hours of the warm-by time; this night reaches 6 F first, so the backstop does not fire before the 22:46 request.
@@ -54,7 +54,7 @@ sent"), and setting `ARIA_HOME_VISUAL_LIVE=1` changes nothing (replay-only).
 
 ARIA's view clip (`v1-arias-view` in `frontend/recording/trace.record.ts`,
 1280x720 dsf2, part of `npm run record:demo`): open "ARIA's view" from the demo
-controls, step 19:20, 02:31, 02:45 and 07:01 — the map redraws at each
+controls, step 19:20, 23:31, 02:31 and 07:01 — the map redraws at each
 checkpoint from `GET /api/trace` only; at 02:31 a failed-check streak stops
 amber-red with its reason and the thermostat node opens its reading on click;
 the ordered steps list is visible at every checkpoint.
@@ -66,7 +66,7 @@ the ordered steps list is visible at every checkpoint.
 `ARIA_HOME_PUBLIC_DEMO=1` with temp sessions/recorded dirs, UTC and
 America/Los_Angeles, 1366x768 and 390x844) drives the same rows through the
 guided story: the 02:31 step shows "Thermostat telemetry missing" with the room-sensor
-fact; the 02:45 step shows the delivered HVAC card with its API-rendered
+fact; the 23:31 step shows the delivered HVAC card with its API-rendered
 "fields sent" line and the ack leaves the Outcome headline unchanged; 04:21
 shows "Thermostat reporting restored" with later stages Not reached; 04:51
 still shows "Warming observed" (not yet verified); 06:21 shows "Temperature

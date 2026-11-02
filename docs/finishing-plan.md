@@ -6,7 +6,8 @@ file is a result: every status names its evidence, and an item without evidence 
 including the audit items below, are proposals to verify, not requirements.
 
 Note 2026-11-02: the night now has 11 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
-and asks the family caregiver at 10:46 PM (62 F, 6 F below); a backstop still asks when the house is at risk within 2
+and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves right away and a technician is on site by
+11:30 PM; the repair finishes at 4:15 AM; a backstop still asks when the house is at risk within 2
 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. Meta's Muse models wrote most of the
 application code; Claude (Anthropic) wrote that alert rule and the final wording pass under Brad's direction, recorded
 in [operator-log.md](build-log/operator-log.md). Dated results below stay as they were measured.
@@ -138,8 +139,8 @@ Constraints (Brad, 2026-10-31):
 | 2 | 21:00 | readiness still on track; trend falling | a decline was noticed in the room readings; readiness unchanged |
 | 3 | 21:41 | readiness at risk; 66.0 F, 2 F below the target | notice recorded; no one is asked |
 | 4 | 22:46 | readiness at risk; 62.0 F, 6 F below the target | permission request created and sent (simulated): "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)" |
-| 5 | 02:31 | at risk; thermostat telemetry missing | waiting for the caregiver's answer, or her decision just recorded |
-| 6 | 02:45 | unchanged by the decision | HVAC contacted with the allowed fields (approved) or contact refused (declined) |
+| 5 | 23:31 | unchanged by the decision | HVAC contacted with the allowed fields and technician on site (approved), or contact refused (declined) |
+| 6 | 02:31 | at risk; thermostat telemetry missing | repair not finished; room sensor still reporting |
 | 7 | 04:21 | thermostat reporting restored; not verified | thermostat reporting resumed; reconnection does not close the issue |
 | 8 | 04:51 | warming observed | independent room sensor shows warming |
 | 9 | 06:21 | goal verified (held 30 minutes) | goal verified from independent readings |
@@ -210,8 +211,8 @@ evidence with its availability time. Not a prerequisite if the current screens a
 
 ### Phase 5: three-minute video (required)
 
-Script v5 (kept outside the repo) follows problem, the notice at 9:41 PM, the ask at 10:46 PM, 52 F with a silent
-thermostat, caregiver choice, a short decline demonstration, a model correction, the evaluation card and the 30-minute
+Script v5 (kept outside the repo) follows problem, the notice at 9:41 PM, the ask at 10:46 PM, the caregiver's approval
+and a technician on site by 11:30 PM, 52 F with a silent thermostat, a short decline demonstration, a model correction, the evaluation card and the 30-minute
 hold. [CONFIRM after the 11-step re-recording: whether a real correction happens, and at which step. Do not invent one.]
 Confirm every stage against the repaired build before recording. Record only from
 the deployed repaired version; label dramatization; music under speech; keep three minutes.
