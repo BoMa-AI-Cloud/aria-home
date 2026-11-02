@@ -27,7 +27,7 @@ from aria_home.scenario import load_scenario
 ROOT = Path(__file__).resolve().parent.parent.parent
 SCENARIOS = Path(__file__).resolve().parent.parent / "scenarios"
 CARE = "care_home_v1"
-AT = "2026-01-17T02:31:00-05:00"
+AT = "2026-01-16T23:31:00-05:00"
 MISMATCH_MESSAGE = "review does not match this answer"
 LEGACY_LABEL = "Review recorded before answer binding (legacy, not bound to this exact answer)"
 LIVE_FLAGS = (

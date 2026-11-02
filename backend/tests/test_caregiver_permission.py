@@ -84,11 +84,11 @@ def test_get_caregiver_decision_hides_future(tmp_path):
 
 def test_permission_text_uses_only_visible_readings():
     scn = load_scenario(CARE)
-    text = caregiver_permission_text(scn, datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET))
+    text = caregiver_permission_text(scn, datetime.datetime(2026, 1, 16, 23, 31, tzinfo=ET))
     assert text.startswith("ARIA Home (synthetic scenario): your mother's home is cooling (")
-    assert "52 F" in text
-    assert "16 F below the 68 F target" in text
-    assert "thermostat not reporting since 1:30 AM" in text
+    assert "59 F" in text
+    assert "9 F below the 68 F target" in text
+    assert "thermostat not reporting since 11:00 PM" in text
     assert "temperature unknown" not in text and "since unknown" not in text
     assert text.endswith("May I contact the HVAC company? Approve or decline in ARIA Home.")
     early = caregiver_permission_text(scn, datetime.datetime(2026, 1, 16, 0, 0, tzinfo=ET))
@@ -114,7 +114,7 @@ def _unit_record(record_id, source, quantity, value, observed, zone="demo-house/
 
 
 def test_permission_text_never_says_cooling_when_trend_rises():
-    at = datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET)
+    at = datetime.datetime(2026, 1, 16, 23, 31, tzinfo=ET)
     records = [
         _unit_record(f"room-{i}", SourceKind.room_sensor, "indoor_temp", 60.0 + i * 0.1, at - datetime.timedelta(hours=3) + datetime.timedelta(minutes=5 * i))
         for i in range(36)
@@ -127,7 +127,7 @@ def test_permission_text_never_says_cooling_when_trend_rises():
 
 
 def test_permission_text_omits_furnace_clause_when_heating():
-    at = datetime.datetime(2026, 1, 17, 2, 31, tzinfo=ET)
+    at = datetime.datetime(2026, 1, 16, 23, 31, tzinfo=ET)
     records = [
         _unit_record("room-1", SourceKind.room_sensor, "indoor_temp", 60.0, at - datetime.timedelta(minutes=10)),
         _unit_record("tstat-1", SourceKind.thermostat, "indoor_temp", 60.0, at - datetime.timedelta(minutes=5)),
@@ -142,10 +142,10 @@ def test_permission_text_omits_furnace_clause_when_heating():
 
 def test_caregiver_updates_follow_hvac_and_verification(tmp_path):
     store = Store(str(tmp_path / "t.db"))
-    hvac = {"state": "simulated_delivered", "created_at": "2026-01-17T02:52:00-05:00", "payload": {"property_label": "demo-house", "access_note": "lockbox"}}
+    hvac = {"state": "simulated_delivered", "created_at": "2026-01-16T22:52:00-05:00", "payload": {"property_label": "demo-house", "access_note": "lockbox"}}
     rows = create_caregiver_updates(store, None, "inv-1", hvac, {"stage": "warming_observed"}, None)
     assert [r["kind"] for r in rows] == ["caregiver_update_hvac_contacted"]
-    rows = create_caregiver_updates(store, None, "inv-1", hvac, {"stage": "goal_verified", "goal_verified_at": "2026-01-17T06:21:00-05:00"}, None)
+    rows = create_caregiver_updates(store, None, "inv-1", hvac, {"stage": "goal_verified", "goal_verified_at": "2026-01-17T01:41:00-05:00"}, None)
     assert [r["kind"] for r in rows] == ["caregiver_update_hvac_contacted", "caregiver_update_goal_verified"]
     assert len(store.list_notifications("inv-1")) == 2
     assert create_caregiver_updates(store, None, "inv-1", {**hvac, "state": "refused"}, None, None) == []

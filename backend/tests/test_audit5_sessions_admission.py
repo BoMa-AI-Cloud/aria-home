@@ -10,9 +10,9 @@ import pytest
 from aria_home import public_demo
 from aria_home.app import create_app
 
-CARE_AT = "2026-01-17T02:31:00-05:00"
-CARE_NEXT = "2026-01-17T02:45:00-05:00"
-OFF_CHECKPOINT = "2026-01-17T02:32:00-05:00"
+CARE_AT = "2026-01-16T22:46:00-05:00"
+CARE_NEXT = "2026-01-16T23:31:00-05:00"
+OFF_CHECKPOINT = "2026-01-16T22:48:00-05:00"
 VIDEO = "demo_video_v1"
 VIDEO_AT = "2026-01-16T16:31:00-05:00"
 
@@ -237,7 +237,7 @@ def test_rejected_investigation_and_whatsapp_leave_tables_unchanged(public_env):
     _, notification_id = _start_care(client)
     db_path = _only_session_db(public_env)
     before = _dump_tables(db_path)
-    assert client.post("/api/investigations?scenario=care_home_v1&at=2026-01-17T02:32:00-05:00").status_code == 400
+    assert client.post("/api/investigations?scenario=care_home_v1&at=2026-01-16T22:48:00-05:00").status_code == 400
     assert client.post(f"/api/notifications/{notification_id}/whatsapp").status_code == 404
     assert _dump_tables(db_path) == before
 
