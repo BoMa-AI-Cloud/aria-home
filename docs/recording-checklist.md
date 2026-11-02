@@ -17,7 +17,7 @@ inference"; no real message is sent and no paid inference runs.
 | 21:00 | Still on track at 68.4 F, trend falling, no caregiver request, and the activity line names the decline. |
 | 21:41 | At risk at 66.0 F, 2 F below the 68 F target. The activity line records the notice and says no one is asked yet. No permission request and no caregiver or HVAC notification. |
 | 22:46 | At risk at 62.0 F, 6 F below the target. The permission request is created: "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)", asked 10:46 PM. |
-| 23:31 | Outcome "Thermostat telemetry missing": room 59.3 F at 23:30, thermostat silent since 23:00, no thermostat value presented as current. Readiness "At risk". The recorded story answered at 22:47. Family caregiver card and the delivered HVAC company card showing exactly "fields sent: property_label, access_note, manager_contact_label, relevant_observations" — allowed fields only, no health/personal details, no itinerary/email/location; at 22:46 the HVAC card is refused. Technician-on-site card at 23:30, 44 minutes after the ask; arrival closes nothing. Click "Acknowledge (simulated)": "Acknowledged, not resolved" and the Outcome headline does not change. The 10:46 PM request is unchanged, word for word. |
+| 23:31 | Outcome "Thermostat telemetry missing": room 59.3 F at 23:30, thermostat silent since 23:00, no thermostat value presented as current. Readiness "At risk". The recorded story answered at 22:47. Family caregiver card and the delivered HVAC company card showing exactly "fields sent: property_label, access_note, manager_contact_label, relevant_observations" — allowed fields only, no health/personal details, no itinerary/email/location; at 22:46 the HVAC card is refused. The HVAC notice reads 10:50 PM. Technician-on-site card at 23:30, 44 minutes after the ask; arrival closes nothing. Click "Acknowledge (simulated)": "Acknowledged, not resolved" and the Outcome headline does not change. The 10:46 PM request is unchanged, word for word. |
 | 00:21 | Outcome "Thermostat reporting restored" with later stages Not reached; room 57.6 F. Reconnection alone proves nothing. Simulated service-visit card (23:30–00:15, "does not by itself close anything"). |
 | 00:31 | Outcome "Warming observed" from independent room readings (56.6 F at 00:15 to 59.7 F at 00:30). Still not "Temperature goal verified". |
 | 01:41 | Outcome "Temperature goal verified" with "Latest reading used: observed … received …" and the evaluation time. Target first reached 01:10, held 30 minutes through 01:40, under 3 hours after the 22:46 ask. No HVAC completion report card and no voice-note row yet. |
@@ -29,8 +29,9 @@ Declined branch (same checkpoints, caregiver declines at 22:46): no HVAC request
 2 F and 6 F are configured settings, not safety limits. The backstop still asks when the house is at risk within 2
 hours of the warm-by time; this night reaches 6 F first, so the backstop does not fire before the 22:46 request.
 
-Watcher correction: [CONFIRM after the 10-step re-recording: whether a real correction happens, and at which step.]
-Film no correction until the new recordings show one.
+Watcher: no verified correction on this night, so film none. Instead, at 12:21 and 12:31 AM the model was caught and nothing it said was accepted: it invented a
+`temperature_rise` category, then revised to `temperature_drop` while the room rose. Code rejected both, and the
+Reasoning tab shows `[rejected]`. The other 8 runs are confirmed, with observations at 21:41, 22:46 and 23:31.
 
 Replay rules (any checkpoint): moving to an earlier time shows only what was
 known then — scenario/time changes reveal no future state (no later outcomes,

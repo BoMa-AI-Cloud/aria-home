@@ -2,7 +2,7 @@
 >
 > Timing: the caregiver approves at 22:47, the HVAC request goes out at 22:50, the thermostat is silent 23:00–00:20, and a technician is on site 23:30–00:15, 44 minutes after the ask. The room falls to 56.6 F at 00:15, then rises at once, reaches 68 F at 01:10 and is verified at the 01:41 step, under 3 hours after the ask. Report and voice note appear at the 01:51 step.
 >
-> Who wrote the code: Meta's Muse models wrote most of the application code; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`. Opening lines in A2 and A that credit all code to Muse are out of date and must not be used.
+> Who wrote the code: Meta's models wrote about 95% of the code and Claude at least 5%, measured from git history (`docs/evidence/code-authorship.md`); Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`. Opening lines in A2 and A that credit all code to Muse are out of date and must not be used.
 
 # ARIA Home demo video plan and implementation gap map
 
@@ -19,7 +19,7 @@ the recording).
 
 ## A3. Story cut, three layers (canonical, 2026-10-29)
 
-This section supersedes A2 and A wherever they conflict. Model recordings for the 10 steps: CONFIRM after re-recording. It is a production plan, not a statement
+This section supersedes A2 and A wherever they conflict. Model recordings for the 10 steps were made on prompts inv-v6 and watch-v2. It is a production plan, not a statement
 that every shot works: each segment carries its implementation status, judged from the code that
 serves the `care_home_v1` scenario. Three layers:
 
@@ -80,7 +80,7 @@ Real-UI share: segments 1-5 and 7-9 carry readable real UI for about 120 of 180 
 
 Target pace about 125 words per minute with pauses; the word counts below leave room to read the UI.
 
-0. (32 w) ARIA's name, notes and designs came first. ARIA Home code was built this week: Meta's models wrote most of it, Claude the alert rule and final wording. Scenes and music: Meta AI.
+0. (28 w) ARIA's name, notes and designs came first. ARIA Home code was built this week: Meta's models wrote about 95%, Claude at least 5%. Scenes and music: Meta AI.
 1. (32 w) An older adult lives alone in a house. On a winter evening, the household confirms its plan: warm by seven, sixty-eight degrees, and a family caregiver to call if something goes wrong.
 2. (31 w) Consent is recorded with the plan: the resident sees everything, the caregiver sees home status and observations, and the heating company would see only the property, access, and what was observed.
 3. (23 w) Through the evening the room cools. At nine forty-one it reads sixty-six, two below the goal. ARIA records a notice and asks nobody.
@@ -270,7 +270,7 @@ real calls.
 
 | # | Viewer sees | Must actually work | Status | Content type | Screen action and exact on-screen text to capture / acceptance check |
 |---|---|---|---|---|---|
-| 1 | ARIA Home page loads with the synthetic-data banner, Investigation section, verified facts vs interpretation, code-computed readiness | Backend investigation (inv-v5 prompt, claim binding, code-rendered verified facts, deterministic readiness) served to the frontend | implemented (mock); unverified (live filming take, see H) | replayed + live inference or labeled mock | Select "Winter night, older adult at home (guided story)". Capture: "SYNTHETIC DATA - demo scenario, not a real home", heading "Investigation", "MOCK - example answer, not live inference", "Verified facts (checked against the evidence)", "Readiness:", "Interpretation (model-written, not verified)", "Provider mode:" line. A live take, if used, is identified as live in section H, never by removing the mock label from a mock take. |
+| 1 | ARIA Home page loads with the synthetic-data banner, Investigation section, verified facts vs interpretation, code-computed readiness | Backend investigation (inv-v6 prompt, claim binding, code-rendered verified facts, deterministic readiness) served to the frontend | implemented (mock); unverified (live filming take, see H) | replayed + live inference or labeled mock | Select "Winter night, older adult at home (guided story)". Capture: "SYNTHETIC DATA - demo scenario, not a real home", heading "Investigation", "MOCK - example answer, not live inference", "Verified facts (checked against the evidence)", "Readiness:", "Interpretation (model-written, not verified)", "Provider mode:" line. A live take, if used, is identified as live in section H, never by removing the mock label from a mock take. |
 | 2 | Recorded consent and the warm-by plan the household confirmed | A consent record gating who may be told what | implemented (fixture + panel) | synthetic / simulated | Film the "Confirmed plan and permissions" panel at 19:20 plus the Simulated timeline card. Capture: "demo-house", "Warm-by time", "7:00 AM", "68 F", "Caregiver coordination allowed", "warmby-care-001-rev1", "Confirmation request", "SIMULATED", "Asks". Narration never claims health, location, or activity sensing. |
 | 2a | A notice, nobody asked: room 66.0 F, 2 F below the goal | Activity line from the computed notice level; no request, no notification | implemented in the backend; CONFIRM on the deployed build | synthetic / replayed | Replay button "21:41". Capture the activity line and the readiness "At risk". Confirm no permission request and no notification card. |
 | 3 | Not responding overnight: thermostat telemetry missing while thermostat-independent room readings show no warming | An offline-thermostat interval plus an independent room sensor carrying the trend | implemented | synthetic / replayed | Select "Winter night, older adult at home (guided story)", replay button "23:31". Capture Outcome: "Status: Thermostat telemetry missing", "Follow-up rule:", "Latest reading used: observed" / "received", "Evaluation (replay) time"; Investigation: "Evaluation time:" "11:31 PM". During the outage no fresh thermostat measurement is shown as current. |
@@ -328,7 +328,7 @@ care story approved 2026-10-29):
   scheduling, outcome rules, and recovery verification stages
   (`telemetry_missing` to `arrival_met`, shown as "Warm-by expectation
   met"), all computed in code. The model cannot change the readiness status.
-- Evidence-pack investigation engine (inv-v5 claim binding, code-rendered
+- Evidence-pack investigation engine (inv-v6 claim binding, code-rendered
   verified facts) with mock and gated live Meta providers.
 - SQLite store with outcome and verification history surviving restarts.
 - Scoped simulated notifications with per-audience allowlists, recorded
@@ -442,7 +442,7 @@ browser checks in `frontend/e2e/app.spec.ts` cover the on-screen items.
   my existing personal-assistant project — the name, planning notes and
   product designs for ARIA Home (such as the power-context rules and the
   evidence contract) pre-existed, and all ARIA Home code shown was written
-  this week: Meta's Muse models wrote most of it, and Claude (Anthropic) wrote
+  this week: Meta's models wrote about 95% of it and Claude at least 5%. Claude (Anthropic) wrote
   the 2 F and 6 F alert rule and the final wording pass under Brad's direction.
 - Label, on screen, at the moment each appears: synthetic data, simulated
   communications, simulated control, and replay time jumps. The existing
@@ -521,7 +521,7 @@ Claims to avoid:
 - That recovery was "instantaneous", that the equipment is fault-free, or that the goal is guaranteed beyond the observed readings.
 - That any call, message, visit, voice note, or report in the video is real.
 - That ARIA monitors continuously (the demo checks at set story times), or that 2 F and 6 F are safety limits (they are configured settings).
-- That inv-v3 scores validate the current inv-v5 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
+- That inv-v3 scores validate the current inv-v6 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
 - That Muse wrote all the code.
 - Only "verified recovery of the monitored temperature goal" — never a proven repair cause. Reconnection alone proves nothing; say "on the next sensor update".
 
