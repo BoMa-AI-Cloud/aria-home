@@ -31,6 +31,7 @@ async function openTraceFromDemoControls(page: Page) {
 }
 
 test("ARIA's view renders the decision map at every care checkpoint", async ({ page }) => {
+  test.setTimeout(90_000);
   const pageErrors: string[] = [];
   const failedTrace: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(String(error)));

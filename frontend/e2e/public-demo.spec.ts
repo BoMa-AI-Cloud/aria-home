@@ -828,20 +828,22 @@ test("reasoning at 02:31 and 07:01 and laws render with no page errors", async (
   expect(consoleErrors).toEqual([]);
 });
 
-test.skip("watcher corrections ledger lists recorded Original: entries", async ({ page }) => {
-  // recording-blocked: needs live-recorded watcher corrections for the new
-  // curve/input_revision (record_care_watcher.py); old-revision records read as missing.
+test("watcher corrections ledger lists recorded Original: entries", async ({ page }) => {
   const checkpoints = await startStory(page);
-  const at0231 = checkpoints.findIndex((checkpoint) => checkpoint.includes("02:31"));
-  expect(at0231).toBeGreaterThan(0);
-  for (let index = 1; index <= at0231; index += 1) {
+  const at2330 = checkpoints.findIndex((checkpoint) => checkpoint.includes("23:30"));
+  expect(at2330).toBeGreaterThan(0);
+  for (let index = 1; index <= at2330; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   await page.getByRole("navigation", { name: "Pages" }).getByRole("button", { name: "Reasoning" }).click();
   await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
   await page.locator("summary", { hasText: /ARIA.*Laws/ }).first().click();
   const laws = page.locator("section[aria-labelledby='laws-heading']");
-  await expect(laws).toContainText("Original:");
+  await laws.locator("summary", { hasText: "Corrections" }).click();
+  await expect(laws).toContainText("What the watcher first said:");
+  await expect(laws).toContainText("Indoor temp 59.6F, 8.4F below 68F target");
+  await expect(laws).toContainText("What it revised to:");
+  await expect(laws).toContainText("corrected and verified");
 });
 
 test("no request leaves the page origin", async ({ page }) => {

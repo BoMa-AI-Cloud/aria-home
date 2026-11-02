@@ -95,7 +95,6 @@ def test_followups_metrics_rates_follow_the_replay_time(story_env):
     assert _follow_ups(client, inv_id, CHECKPOINTS[4])["metrics"]["indoor_trend"]["rate_per_hour"] == pytest.approx(5.5, abs=0.05)
 
 
-@pytest.mark.skip(reason="recording-blocked: needs live-recorded answers+reviews for the new curve/input_revision (record_care_answers.py --only-at 2026-01-17T02:31:00-05:00 and 2026-01-17T06:21:00-05:00)")
 def test_followups_recorded_investigation_matches_replay_time(story_env):
     client = create_app().test_client()
     inv_id = _start(client)

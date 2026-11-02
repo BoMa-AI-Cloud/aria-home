@@ -225,7 +225,7 @@ The six synthetic home-camera frames attached to `care_home_v1` (`backend/fixtur
 
 ## Watcher correction rates (recorded runs only)
 
-Recorded runs: 2; first-pass rejections: 2 (rate 1.00); passes after correction: 2 (rate 1.00).
+Recorded runs: 3; first-pass rejections: 3 (rate 1.00); passes after correction: 3 (rate 1.00).
 
 ## Reading this
 

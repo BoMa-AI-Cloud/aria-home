@@ -204,7 +204,7 @@ evidence with its availability time. Not a prerequisite if the current screens a
 ### Phase 5: three-minute video (required)
 
 Script v4 (`C:\aria-home-private\video\vo\care-v4.json`, approved by Brad 2026-10-31) follows problem, 52 F with a
-silent thermostat, risk, caregiver choice, the real 02:31 correction, the evaluation card and the 30-minute hold. To
+silent thermostat, risk, caregiver choice, the real 23:30 correction, the evaluation card and the 30-minute hold. To
 align it with this plan: add a short decline demonstration (contact refused while sensor verification stays independent,
 using the hosted decline branch), and confirm every stage against the repaired build before recording. Record only from
 the deployed repaired version; label dramatization; music under speech; keep three minutes.
