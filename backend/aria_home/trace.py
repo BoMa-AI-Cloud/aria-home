@@ -559,7 +559,7 @@ def step_activity(scenario, at, follow_up=None, caregiver_decision=None):
         prev = checkpoint
     window = [e for e in events_as_of(scenario, at) if _get(e, "available_at") is not None and _get(e, "available_at") > prev and _get(e, "available_at") <= at]
     if choice == "declined":
-        window = [e for e in window if _get(e, "kind") not in ("caregiver_hvac_authorized", "hvac_request", "service_visit", "hvac_completion_report")]
+        window = [e for e in window if _get(e, "kind") not in ("caregiver_hvac_authorized", "hvac_request", "technician_arrival", "service_visit", "hvac_completion_report")]
     visible = visible_records(getattr(scenario, "records", None) or [], at)
     room = [r for r in visible if _get(r, "source") is SourceKind.room_sensor and _get(r, "quantity") == "indoor_temp" and isinstance(_get(r, "value"), (int, float))]
     latest_room = max(room, key=lambda r: (_get(r, "observed_at"), _get(r, "received_at"), str(_get(r, "id")))) if room else None

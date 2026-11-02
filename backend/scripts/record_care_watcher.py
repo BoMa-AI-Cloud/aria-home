@@ -1,7 +1,7 @@
 """Record the approved care-story anomaly-watcher batch (operator-only).
 
-For the 11 care_home_v1 checkpoints (19:20 and 21:00 as quiet controls,
-21:41 as the 2 F notice, 22:46 as the 6 F alert, then 02:31, 02:45, 04:21, 04:51, 06:21, 06:45
+For the 10 care_home_v1 checkpoints (19:20 and 21:00 as quiet controls,
+21:41 as the 2 F notice, 22:46 as the 6 F alert, then 23:31, 00:21, 00:31, 01:41, 01:51
 and 07:01), this runs the watcher through
 run_watcher exactly as the app does (one-revision correction loop, code
 verification, laws named on rejection) and records each run. Verified
@@ -48,7 +48,7 @@ from aria_home.watcher import (  # noqa: E402
 )
 
 CARE_SCENARIO_ID = "care_home_v1"
-WATCHER_LABELS = ("19:20", "21:00", "21:41", "22:46", "02:31", "02:45", "04:21", "04:51", "06:21", "06:45", "07:01")
+WATCHER_LABELS = ("19:20", "21:00", "21:41", "22:46", "23:31", "00:21", "00:31", "01:41", "01:51", "07:01")
 WATCHER_PROVIDER_ROUTE = "meta live via Meta Model API (messages)"
 SCENARIOS_DIR = BACKEND_DIR / "scenarios"
 RECORDING_TIMEOUT_S = 180.0
