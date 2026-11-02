@@ -5,6 +5,13 @@ items in [public-demo-plan.md](public-demo-plan.md), which stays as the history 
 file is a result: every status names its evidence, and an item without evidence is open. AI-generated suggestions,
 including the audit items below, are proposals to verify, not requirements.
 
+Note 2026-11-02: the night now has 10 steps. ARIA records a notice at 9:41 PM (66 F, 2 F below the target, asks nobody)
+and asks the family caregiver at 10:46 PM (62 F, 6 F below). She approves at 10:47 PM and a technician is on site at
+11:30 PM, 44 minutes after the ask; the repair ends at 12:15 AM and the goal is verified at 1:40 AM, under 3 hours after the ask; a backstop still asks when the house is at risk within 2
+hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. Meta's Muse models wrote most of the
+application code; Claude (Anthropic) wrote that alert rule and the final wording pass under Brad's direction, recorded
+in [operator-log.md](build-log/operator-log.md). Dated results below stay as they were measured.
+
 ## 1. Goal and scope
 
 A reliable, memorable, one-click judge experience around one person, one winter night and a clear problem; meaningful
@@ -113,9 +120,9 @@ Constraints (Brad, 2026-10-31):
   input revision hashes `scenario_fixture_version` and every source's status, including record counts since the
   start of the night (`backend/aria_home/investigator.py:295-323`), so adding or removing a record, or bumping the
   version, would rebind every later checkpoint.
-- Checkpoints: replace 19:03 / 19:15 / 19:20 with three evening steps (proposed 19:20, 21:00, 23:30) in
+- Checkpoints: replace 19:03 / 19:15 / 19:20 with the evening steps (now 19:20, 21:00, 21:41, 22:46) in
   `backend/aria_home/public_demo.py` and `frontend/src/App.tsx` (`CARE_REPLAY_TIMES`, `CARE_START_AT`).
-- Story investigation: created at the first step whose computed readiness creates a follow-up (proposed 23:30),
+- Story investigation: created at the step where ARIA asks the caregiver (now 22:46),
   the same way the pre-investigation snapshots work today (19:03 and 19:15 have no follow-up). Steps before it show
   snapshots with no request.
 - One new activity line on House, derived from replay events and computed transitions only (plan confirmed;
@@ -124,19 +131,19 @@ Constraints (Brad, 2026-10-31):
   warm-by expectation evaluated). No new constants.
 - Docs, tests and the video script follow.
 
-**Proposed checkpoint table** (every cell to be confirmed by the impact check before data is written):
+**Checkpoint table** (updated 2026-11-02 to the 10-step night):
 
 | # | Time | Home condition (computed) | ARIA's latest activity (event or computed transition) |
 |---|---|---|---|
 | 1 | 19:20 | readiness on track for 68 F by 7:00 | plan confirmed with the caregiver contact allowed |
 | 2 | 21:00 | readiness still on track; trend falling | a decline was noticed in the room readings; readiness unchanged |
-| 3 | 23:30 | readiness at risk (projection misses 7:00) | readiness changed to at risk; permission request created and sent (simulated) |
-| 4 | 02:31 | at risk; thermostat telemetry missing | waiting for the caregiver's answer, or her decision just recorded |
-| 5 | 02:45 | unchanged by the decision | HVAC contacted with the allowed fields (approved) or contact refused (declined) |
-| 6 | 04:21 | thermostat reporting restored; not verified | thermostat reporting resumed; reconnection does not close the issue |
-| 7 | 04:51 | warming observed | independent room sensor shows warming |
-| 8 | 06:21 | goal verified (held 30 minutes) | goal verified from independent readings |
-| 9 | 06:45 | unchanged (goal verified) | technician report received, counted as a report only |
+| 3 | 21:41 | readiness at risk; 66.0 F, 2 F below the target | notice recorded; no one is asked |
+| 4 | 22:46 | readiness at risk; 62.0 F, 6 F below the target | permission request created and sent (simulated): "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)" |
+| 5 | 23:31 | at risk; thermostat telemetry missing | HVAC contacted with the allowed fields and technician on site (approved), or contact refused (declined) |
+| 6 | 00:21 | thermostat reporting restored; not verified | repair ended 00:15; thermostat reporting resumed; reconnection does not close the issue |
+| 7 | 00:31 | warming observed | independent room sensor shows warming |
+| 8 | 01:41 | goal verified (held 30 minutes) | goal verified from independent readings |
+| 9 | 01:51 | unchanged (goal verified) | technician report received, counted as a report only |
 | 10 | 07:01 | warm-by expectation met | warm-by expectation evaluated at 7:00 |
 
 **Impact inventory (run before any fixture change; nothing is assumed reusable).** A script compares, at every care
@@ -150,7 +157,7 @@ evidence folder.
 | Watcher runs and correction records | scenario, time, input revision, laws and watcher prompt versions | 02:31-07:01 reusable only if revisions match; evening steps replaced | recomputing the watcher identity |
 | Technician transcript | scenario and model only | reusable (re-recorded 2026-10-31, says about 4:15) | the transcript loader |
 | Visual (sam-3.1) recordings | scenario and synthetic images | expected reusable | the visual loader at each checkpoint |
-| Investigation identity and consent timing | creation time and evidence | changes: the request moves from 19:20 to the step-3 time, with new text | the frozen-request tests in all three branches |
+| Investigation identity and consent timing | creation time and evidence | changes: the request moves from 19:20 to the 22:46 step, with new text | the frozen-request tests in all three branches |
 | Verification after 23:31 | records after the follow-up's creation | must be re-checked, because the follow-up's creation time moves | verification at every later checkpoint |
 | `backend/eval/expected.json` care cases | hand-written expected labels | care times updated by the operator | the offline evaluation |
 | Tests | literal times, request text, checkpoint lists | updated, never weakened | the six-command gate |
@@ -159,7 +166,7 @@ evidence folder.
 **Acceptance tests.**
 - Readiness at each step equals the code's computation from all evidence; no test asserts a status from the 2 F
   threshold alone.
-- No permission request before the step-3 time; from then on the request text and time are identical at every step in
+- No permission request before 22:46; from then on the request text and time are identical at every step in
   all three branches.
 - The activity line at every step names a replay event or computed transition; a test fails if a label has no source.
 - Decline (rule replaced by Brad 2026-11-01): contact refused, no technician or report, and the room never warms, so verification at 06:21 is not verified and the 07:00 expectation is missed. A decline never stops independent checking; the readings alone decide. Approve with too little
@@ -187,7 +194,7 @@ Model-contribution table (to replace the README's long paragraph; verify each ro
 | Model id | Job | Mode | Evidence | Limitation |
 |---|---|---|---|---|
 | muse-spark-1.3 | explains the code's readiness and verification in plain words, citing evidence ids | recorded (live is operator-only) | `backend/eval/recorded/`, claim checks in code | readiness agreement is enforced, so it is not independent accuracy |
-| muse-spark-1.3 (watcher) | notices anomalies with cited evidence; one revision after a failed check | recorded | watcher recordings; model-value eval C | first attempts failed checks in 9 of 12 unseen variants |
+| muse-spark-1.3 (watcher) | notices anomalies with cited evidence; one revision after a failed check | recorded | watcher recordings; model-value eval C | first attempts failed checks in 9 of 12 unseen simulated scenarios, run as one batch |
 | muse-wonder-1.0 | second review of each recorded answer for unsupported claims | recorded, bound to the exact answer | reviews files; model-value eval B (12/12 planted claims, 0/12 false alarms) | planted claims used four fixed templates |
 | muse-voice-transcribe-1.0 | transcribes the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261031.json` | a report, never a measurement |
 | sam-3.1 | segments the mechanical-room camera frames | recorded over synthetic images | visual recordings | missed the frost; no detection is not an all-clear |
@@ -203,10 +210,10 @@ evidence with its availability time. Not a prerequisite if the current screens a
 
 ### Phase 5: three-minute video (required)
 
-Script v4 (`C:\aria-home-private\video\vo\care-v4.json`, approved by Brad 2026-10-31) follows problem, 52 F with a
-silent thermostat, risk, caregiver choice, the real 23:30 correction, the evaluation card and the 30-minute hold. To
-align it with this plan: add a short decline demonstration (contact refused while sensor verification stays independent,
-using the hosted decline branch), and confirm every stage against the repaired build before recording. Record only from
+Script v5 (kept outside the repo) follows problem, the notice at 9:41 PM, the ask at 10:46 PM, the caregiver's approval
+and a technician on site at 11:30 PM, a silent thermostat, a short decline demonstration, a model correction, the evaluation card and the 30-minute
+hold. [CONFIRM after the 10-step re-recording: whether a real correction happens, and at which step. Do not invent one.]
+Confirm every stage against the repaired build before recording. Record only from
 the deployed repaired version; label dramatization; music under speech; keep three minutes.
 
 ### Phase 6: release and submission handoff (required)
@@ -226,6 +233,7 @@ target was 5 PM ET. **Brad to confirm the current official deadline** on the eve
 |---|---|---|
 | P1-1, P1-2, P1-4, P1-5 extension, P1-3 route sweep | Muse (code + tests + red-proofs); operator retests | current uncommitted batch landing first |
 | Phase 2 reconciliation | operator, Muse for fixes | Phase 1 |
+| 2 F and 6 F alert rule, final wording pass | Claude (Anthropic) under Brad's direction, disclosed | none |
 | Model table, README/one-pager | operator with Meta AI drafting | Phase 1 (claims must match code) |
 | Phase 4 | Muse, only if time remains | Phases 1-3 |
 | Video | operator records and edits; Brad reviews | the repaired build deployed |
@@ -271,7 +279,7 @@ public deployment; setting the final freeze date; any change to the official sto
 
 - P1-1 needs frontend lifecycle changes close to the deadline. Fallback: disable Next until the 19:20 create resolves
   (smallest safe change), and leave the queued-step design for later.
-- P1-2 label binding could hide the real 02:31 correction if bound too strictly. Fallback: show "historical correction"
+- P1-2 label binding could hide a real correction if bound too strictly. Fallback: show "historical correction"
   as its own line and never upgrade the current status.
 - Local and CI results can differ (the auditor's trace failures). Fallback: record the exact failing test and keep it
   visible here; never claim the suite is green when it was not.

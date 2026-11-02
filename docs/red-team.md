@@ -1,5 +1,7 @@
 # Red-team notes (illustrative unless a recorded run backs it)
 
+> Note 2026-11-02: the night now has 11 steps: notice at 21:41, ask at 22:46. The 23:30 step in the next note no longer exists.
+
 > Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
 
 Each row pairs a "without this rule" behaviour with the test that proves ARIA Home's actual behaviour. Rows marked **ILLUSTRATIVE** describe a hypothetical failure mode for reasoning only — no recorded run shows ARIA Home doing that, and no recorded run shows another system doing it. Rows marked **RECORDED** point at the recorded evidence file.

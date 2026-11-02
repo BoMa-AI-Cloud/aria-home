@@ -4,7 +4,7 @@ Every task in this project was given to a Claude Code session running a Meta mod
 
 ## Operator
 
-The operator is Claude Code running Anthropic's Claude model, directed by Brad Wentzel. The operator wrote these prompts, reviewed each change against the project's rules, ran tests, builds and the approved live smoke tests, ran `npm install` and `npm install -D @playwright/test` after Brad approved them, made the commits, and corrected docs/timeline.md to exact git commit times on Day 1. All application code was written by the Meta-model sessions listed below. Steps the operator took directly since 2026-10-27 are listed in [operator-log.md](operator-log.md).
+The operator is Claude Code running Anthropic's Claude model, directed by Brad Wentzel. The operator wrote these prompts, reviewed each change against the project's rules, ran tests, builds and the approved live smoke tests, ran `npm install` and `npm install -D @playwright/test` after Brad approved them, made the commits, and corrected docs/timeline.md to exact git commit times on Day 1. Meta's Muse models wrote most of the application code, in the sessions listed below. Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction; that work is recorded in [operator-log.md](operator-log.md), not in the table below. Steps the operator took directly since 2026-10-27 are listed in [operator-log.md](operator-log.md).
 
 ## Tasks
 

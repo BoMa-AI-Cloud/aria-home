@@ -7,7 +7,7 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Requirement | Status / where shown |
 |---|---|
 | Public repo containing only event work | **Disclosed, not proven.** https://github.com/BoMa-AI-Cloud/aria-home — [Existing vs new](existing-vs-new.md) and the README declaration list what is said to be new and what pre-existed (name "ARIA", private planning notes, no code). A README declaration is a disclosure, not proof of authorship. A public repo is also not an open-source licence by itself; the licence is the separate MIT [LICENSE](../LICENSE) added 2026-10-28. |
-| Demo must only highlight what was built during the Hackathon, and judges must clearly identify it (Participant Guide; failure risks disqualification) | **Script opens with this statement; video Pending.** Three-minute video, judged with the code and live product. |
+| Demo must only highlight what was built during the Hackathon, and judges must clearly identify it (Participant Guide; failure risks disqualification) | **Script opens with this statement, including who wrote the code; video Pending.** Three-minute video, judged with the code and live product. |
 | Video link accessible | **Pending** (Brad) |
 | Every team member listed (solo) | **Pending** (Brad, submission form) |
 | Uses Meta's models (Stage One, pass/fail) | **Shown in code.** Runtime calls go through the Meta Model API behind a gated live provider (`backend/aria_home/provider.py`); mock is the default. Using only Meta models at runtime is this project's own design choice, not a guide rule. |
@@ -18,7 +18,7 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Licence | **Shown.** MIT [LICENSE](../LICENSE), Copyright (c) 2026 Bradley Allen Wentzel. Public visibility alone would not grant these rights; the licence file does. |
 | Security posture | **Scoped, not "secure".** See [SECURITY.md](../SECURITY.md): local loopback, synthetic data, simulated delivery, no equipment control. It lists what is checked vs not checked and prerequisites for any shared/real-data deployment. No compliance claim is made. |
 
-## 2. Write-up (final text; updated 2026-10-30, approved by Brad; story passages updated 2026-11-01 per the approved restructure)
+## 2. Write-up (updated 2026-10-30, approved by Brad; story passages updated 2026-11-01; story and code-authorship passages updated 2026-11-02, CONFIRM Brad's approval of this version)
 
 I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering
 what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As
@@ -29,13 +29,17 @@ or emergency service.
 ARIA Home answers one question for an older adult's household: will the home be warm by the warm-by time, and if
 something looks wrong overnight, who should respond? Try it at https://aria-home-demo.onrender.com (synthetic data,
 no sign-in). On a synthetic winter night the evening starts warm and on track, and at 9:00 PM the room is slowly falling but
-still on track. By 11:30 PM it is 60 F, code flags it as at risk before the 07:00 warm-by time, and ARIA asks the
-family caregiver: "May I contact the HVAC company?" The thermostat goes silent at 1:30 and the room reaches 52 F.
-Only after she approves is the HVAC request created, with allowed fields only; if she declines, no contact is made
+still on track. At 9:41 PM it is 66 F, 2 F below the target: code flags it as at risk, and ARIA records a notice and
+asks nobody. At 10:46 PM it is 62 F, 6 F below, and ARIA asks the family caregiver: "May I contact the HVAC company?"
+The 2 F and 6 F are configured settings, not safety limits, and a backstop still asks when the house is at risk within
+2 hours of the warm-by time. The demo checks at set story times. She approves at 10:47 PM, and only then is the HVAC
+request created, with allowed fields only. The thermostat goes silent at 11:00 PM. A technician is on site at 11:30 PM,
+44 minutes after the ask, and finishes at 12:15 AM, with the room at 56.6 F. If she declines, no contact is made
 — no request, visit, report or voice note — and the room readings are still checked at each later step: the room
-holds 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
-On the approved path, reconnection alone proves nothing: the goal is verified at 6:21 from independent readings held for 30 minutes, and
-the technician's 6:45 voice note counts only as a human report.
+falls to 52 F, verification never leaves missing thermostat telemetry, and 07:01 states the miss against the 68 F goal.
+On the approved path, the room rises at once, and reconnection at 12:20 AM alone proves nothing: the goal is verified at
+1:40 AM from independent readings held for 30 minutes, under 3 hours after the ask, and the technician's 1:50 AM voice note
+counts only as a human report.
 
 Code decides readiness, verification and who is told; Meta models explain and review, never decide. The app has
 three pages: House (the verdict and who knows), Reasoning (ARIA's view, a live map of how each decision is made,
@@ -46,22 +50,25 @@ mechanical room. The video shows them in one labelled segment on my own furnace 
 story; sam-3.1 missed a visible red indicator light there, which is why finding nothing is never an all-clear.
 
 Meta models: muse-spark-1.3 explains the code-checked facts at each step under a contract that rejects mismatched
-claims, and watches overnight for anomalies that code then confirms. muse-wonder-1.0 gives a recorded second
+claims, and at each story step looks for anomalies that code then confirms. muse-wonder-1.0 gives a recorded second
 review of each explanation; in a control test it flagged a deliberately falsified reading. sam-3.1 reads the
 synthetic camera frames (recorded); it missed frost, and the miss is shown, which is why "no detection" never lowers
 risk. muse-voice-transcribe-1.0 turns the technician's voice note into text, and muse-image-1.0 made the synthetic
-frames. The application code was written by muse-spark-1.3 and muse-wonder-1.0 through Claude Code as operator;
-while the Model API was unavailable for a few hours, Meta AI in the web chat drafted some code that the operator
-applied and retested. Every prompt and answer is in the public build log.
+frames. Meta's Muse models (muse-spark-1.3 and muse-wonder-1.0, through Claude Code as operator) wrote most of the
+application code; while the Model API was unavailable for a few hours, Meta AI in the web chat drafted some code that
+the operator applied and retested. Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under
+my direction, recorded in docs/build-log/operator-log.md. Every Muse prompt and answer is in the public build log.
 
 Outside audits reported 12, 10 and 7 defects; each was reproduced and repaired with a regression test, and the
 Audit 4 repairs were red-proofed. Recorded-model coverage is per-step (a muse-spark-1.3 answer that passed the
-contract checks, each with a muse-wonder-1.0 review); the 2026-11-01 curve restructure voided all prior recordings,
-so the new 10-checkpoint recording run is still pending and unmatched steps show the labelled "No recorded model
-response for this snapshot" fallback. Offline: 22 synthetic cases across 10 scenarios, combined
+contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 10 steps, on prompt inv-v5
+[CONFIRM after the 10-step re-recording]; a step without a matching recording shows the labelled "No recorded model
+response for this snapshot" fallback, and the derived decline branch shows that fallback at its later changed
+checkpoints. Model-value scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. Offline: 22 synthetic cases across 10 scenarios, combined
 evidence 22/22. Live (muse-spark-1.3, older trip-home scenarios): 11 of 17 valid on the full run, then 5 of 6 on the
 after-arrival rerun; kept verbatim, not re-scored. Limits: small synthetic sample, simulated delivery, no equipment
-control.
+control. Explanation quality from the current prompt has not been measured, and real-world effectiveness has not been
+established.
 
 ## 3. Do not claim (from [Demo video plan](demo-script.md))
 
@@ -72,6 +79,9 @@ control.
 - That recovery was "instantaneous", that the equipment is fault-free, or that the goal is guaranteed beyond the observed readings.
 - That any email, call, message, location, or scene control in the video is real, except the one labelled real-equipment segment, which shows the owner's own furnace and panel.
 - Only "verified recovery of the monitored temperature goal" — never a proven repair cause. Reconnection alone proves nothing; say "on the next sensor update". Missing location is "unavailable", never evidence about her schedule.
+- That ARIA monitors continuously (the demo checks at set story times), or that 2 F and 6 F are safety limits (they are configured settings).
+- That inv-v3 scores validate the current inv-v5 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
+- That Muse wrote all the code. Meta's Muse models wrote most of it; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass.
 - No dollar-loss figures, no "0 hallucinations", no "secure" or "guaranteed" claims.
 
 ## 4. Proposed final freeze and recording schedule (proposed, not assumed — needs Brad's approval)

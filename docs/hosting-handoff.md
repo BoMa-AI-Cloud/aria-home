@@ -1,4 +1,6 @@
-# Hosting handoff (decision recorded, not yet deployed)
+# Hosting handoff (decision recorded; since deployed)
+
+> Note 2026-11-02: this is the plan as written. The site is live at https://aria-home-demo.onrender.com, first deployed 2026-10-30. Statements below that nothing is deployed and that the link is pending are history.
 
 Written 2026-10-29 by the operator for Brad's approval. Decision 2026-10-30: Brad approved the Render paid Starter
 ("we will do the render paid starter"). Nothing here has been deployed yet. The README's hosted link stays
