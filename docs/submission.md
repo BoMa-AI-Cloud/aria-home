@@ -54,17 +54,18 @@ claims, and at each story step looks for anomalies that code then confirms. muse
 review of each explanation; in a control test it flagged a deliberately falsified reading. sam-3.1 reads the
 synthetic camera frames (recorded); it missed frost, and the miss is shown, which is why "no detection" never lowers
 risk. muse-voice-transcribe-1.0 turns the technician's voice note into text, and muse-image-1.0 made the synthetic
-frames. Meta's Muse models (muse-spark-1.3 and muse-wonder-1.0, through Claude Code as operator) wrote most of the
-application code; while the Model API was unavailable for a few hours, Meta AI in the web chat drafted some code that
+frames. Meta's models, mainly muse-spark-1.3 and muse-wonder-1.0 through Claude Code as operator, wrote about 95% of the
+code and Claude at least 5%, measured from git history (docs/evidence/code-authorship.md); while the Model API was unavailable for a few hours, Meta AI in the web chat drafted some code that
 the operator applied and retested. Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under
 my direction, recorded in docs/build-log/operator-log.md. Every Muse prompt and answer is in the public build log.
 
 Outside audits reported 12, 10 and 7 defects; each was reproduced and repaired with a regression test, and the
 Audit 4 repairs were red-proofed. Recorded-model coverage is per-step (a muse-spark-1.3 answer that passed the
-contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 10 steps, on prompt inv-v5
-[CONFIRM after the 10-step re-recording]; a step without a matching recording shows the labelled "No recorded model
+contract checks, each with a muse-wonder-1.0 review). The main story has recordings at all 10 steps, on prompts inv-v6 and
+watch-v2: 10 answers accepted, 10 reviews with no issues, 8 watcher runs confirmed. There is no verified correction on
+this night: at 12:21 and 12:31 AM the model was caught and nothing it said was accepted. A step without a matching recording shows the labelled "No recorded model
 response for this snapshot" fallback, and the derived decline branch shows that fallback at its later changed
-checkpoints. Model-value scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. Offline: 22 synthetic cases across 10 scenarios, combined
+checkpoints. Model-value scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v6. Offline: 22 synthetic cases across 10 scenarios, combined
 evidence 22/22. Live (muse-spark-1.3, older trip-home scenarios): 11 of 17 valid on the full run, then 5 of 6 on the
 after-arrival rerun; kept verbatim, not re-scored. Limits: small synthetic sample, simulated delivery, no equipment
 control. Explanation quality from the current prompt has not been measured, and real-world effectiveness has not been
@@ -80,8 +81,8 @@ established.
 - That any email, call, message, location, or scene control in the video is real, except the one labelled real-equipment segment, which shows the owner's own furnace and panel.
 - Only "verified recovery of the monitored temperature goal" — never a proven repair cause. Reconnection alone proves nothing; say "on the next sensor update". Missing location is "unavailable", never evidence about her schedule.
 - That ARIA monitors continuously (the demo checks at set story times), or that 2 F and 6 F are safety limits (they are configured settings).
-- That inv-v3 scores validate the current inv-v5 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
-- That Muse wrote all the code. Meta's Muse models wrote most of it; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass.
+- That inv-v3 scores validate the current inv-v6 prompt, that every branch has recorded model answers, or that real-world effectiveness is established.
+- That Muse wrote all the code. Meta's models wrote about 95% and Claude at least 5%; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass.
 - No dollar-loss figures, no "0 hallucinations", no "secure" or "guaranteed" claims.
 
 ## 4. Proposed final freeze and recording schedule (proposed, not assumed — needs Brad's approval)

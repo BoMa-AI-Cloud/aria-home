@@ -1,6 +1,6 @@
 # Model-Value Evaluation Report
 
-> Note 2026-11-02: every score in this file was measured on the earlier prompt inv-v3, not re-scored on the current inv-v5. They do not validate the current prompt, and no claim is made that current explanations were measured. The `HUMAN ... =?` rows and `observation_correct` below stay unscored. The Part A table at the end is one pass on inv-v3, drafted by Claude and confirmed by Brad. Human-scored quality of current explanations and real-world effectiveness have not been established.
+> Note 2026-11-02: every score in this file was measured on the earlier prompt inv-v3, not re-scored on the current inv-v6. They do not validate the current prompt, and no claim is made that current explanations were measured. The `HUMAN ... =?` rows and `observation_correct` below stay unscored. The Part A table at the end is one pass on inv-v3, drafted by Claude and confirmed by Brad. Human-scored quality of current explanations and real-world effectiveness have not been established.
 
 Code snapshot: d5a0da3; generated 20261031T181441Z; live variants n=12.
 
@@ -137,4 +137,4 @@ written for the earlier trip-home story, so its next steps say "manager review b
 naming the caregiver or the HVAC company. That explains most of the partly scores. Fixing it needs a new prompt version
 and a re-recording of every answer, which is a separate paid batch and has not been done.
 
-Update 2026-11-01: the story change reworded the prompt to inv-v4, and on 2026-11-02 to inv-v5, which also names the responder. Every score above was measured on inv-v3. Neither newer prompt has been re-scored.
+Update 2026-11-01: the story change reworded the prompt to inv-v4, and on 2026-11-02 to inv-v5, which also names the responder, then to inv-v6, which adds `room_direction` and `actions_so_far`. Every score above was measured on inv-v3. None of the newer prompts has been re-scored.
