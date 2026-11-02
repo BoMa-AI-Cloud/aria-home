@@ -18,7 +18,7 @@ Status words mean what is actually shown: **Shown** = evidence in this repo poin
 | Licence | **Shown.** MIT [LICENSE](../LICENSE), Copyright (c) 2026 Bradley Allen Wentzel. Public visibility alone would not grant these rights; the licence file does. |
 | Security posture | **Scoped, not "secure".** See [SECURITY.md](../SECURITY.md): local loopback, synthetic data, simulated delivery, no equipment control. It lists what is checked vs not checked and prerequisites for any shared/real-data deployment. No compliance claim is made. |
 
-## 2. Write-up (updated 2026-10-30, approved by Brad; story passages updated 2026-11-01; story and code-authorship passages updated 2026-11-02, CONFIRM Brad's approval of this version)
+## 2. Write-up (updated 2026-10-30, approved by Brad; story passages updated 2026-11-01; story and code-authorship passages updated 2026-11-02, approved by Brad 2026-11-02, "for now")
 
 I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering
 what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As
