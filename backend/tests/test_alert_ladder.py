@@ -22,7 +22,7 @@ AT_2100 = "2026-01-16T21:00:00-05:00"
 AT_2141 = "2026-01-16T21:41:00-05:00"
 AT_2246 = "2026-01-16T22:46:00-05:00"
 AT_0451 = "2026-01-17T04:51:00-05:00"
-REQUEST_62 = "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)"
+REQUEST_62 = "cooling (62 F, 6 F below the 68 F target, furnace reported idle since 4:00 PM)"
 
 
 def _readiness(status, gap=None, hours=None):
