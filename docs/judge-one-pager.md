@@ -35,7 +35,7 @@ Code decides readiness, verification and who is told; models explain and review,
 | muse-voice-transcribe-1.0 | Turns the technician's synthetic voice note into a text report. | Count as a measurement |
 | muse-image-1.0 | Generated the synthetic camera frames, offline. | Run in the demo |
 
-Meta's Muse models (muse-spark-1.3 and muse-wonder-1.0) wrote most of the application code; every prompt and answer is in the repository's build log. Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`.
+Meta's models, mainly muse-spark-1.3 and muse-wonder-1.0, wrote about 95% of the code, and Claude at least 5% (measured: docs/evidence/code-authorship.md); every prompt and answer is in the repository's build log. Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in `docs/build-log/operator-log.md`.
 
 ## Measured results
 

@@ -1619,7 +1619,7 @@ const DECLINED_STORY_STEP_GUIDANCE: Record<number, string> = {
 };
 
 const AUTHORSHIP_LINE =
-  "Meta's Muse models wrote most of ARIA Home's code, and Claude (Anthropic) wrote the rest under the direction of its author, Brad. docs/build-log/ is the record.";
+  "Meta's models wrote about 95% of the code and Claude (Anthropic) at least 5%, measured from git history.";
 
 const MODEL_CONTRIBUTIONS = [
   {
@@ -1654,7 +1654,7 @@ const MODEL_CONTRIBUTIONS = [
   },
   {
     model: "muse-wonder-1.0 and muse-spark-1.3",
-    role: "Wrote most of the application code",
+    role: "Wrote about 95% of the code, measured from git history",
     status: "Authorship; no runtime role",
   },
 ];

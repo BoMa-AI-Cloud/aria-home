@@ -8,8 +8,8 @@ canonical JSON of the reviewed answer's output) to equal the digest of the
 answer actually displayed; a mismatch shows no review and says
 "review does not match this answer". Legacy reviews without answer_digest
 (the ten committed ones) are never given a fabricated digest: they are shown
-labelled "Review recorded before answer binding (legacy, not bound to this
-exact answer)".
+labelled "This review was recorded before reviews were tied to one exact
+answer, so it may not match this one."
 """
 import copy
 import hashlib
@@ -29,7 +29,7 @@ SCENARIOS = Path(__file__).resolve().parent.parent / "scenarios"
 CARE = "care_home_v1"
 AT = "2026-01-16T23:31:00-05:00"
 MISMATCH_MESSAGE = "review does not match this answer"
-LEGACY_LABEL = "Review recorded before answer binding (legacy, not bound to this exact answer)"
+LEGACY_LABEL = "This review was recorded before reviews were tied to one exact answer, so it may not match this one."
 LIVE_FLAGS = (
     "ARIA_HOME_MODEL_ENABLED",
     "ARIA_HOME_WHATSAPP_LIVE",

@@ -11,7 +11,7 @@ It is a solo entry in the Meta Global AI Developer Hackathon (Indie Developer tr
 ## At a glance
 - **Built during the Hackathon:** all code in this repository. **Pre-existing:** only the name ARIA and private planning notes and designs.
 - **Meta models:** muse-spark-1.3 explains and looks for anomalies at set story times, muse-wonder-1.0 reviews each answer, muse-voice-transcribe-1.0 transcribes the technician, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames.
-- **Who wrote the code:** Meta's Muse models wrote most of the application code; Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in the [operator log](docs/build-log/operator-log.md). Every Muse prompt and answer is in [docs/build-log/](docs/build-log/README.md).
+- **Who wrote the code:** Meta's models wrote about 95% of the code; Claude (Anthropic) wrote at least 5%, under Brad's direction. Measured from git history: docs/evidence/code-authorship.md.
 - **See the models get caught:** code rejects the watcher's first answer in 9 of 12 unseen simulated scenarios, run as one batch, muse-wonder-1.0 caught 12 of 12 planted false claims (four fixed templates), and sam-3.1 misses are shown as misses. These scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v5.
 - **Code decides, models never do.** ARIA asks the caregiver first, and only independent room readings can verify the goal.
 

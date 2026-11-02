@@ -94,7 +94,6 @@ def test_followups_metrics_rates_follow_the_replay_time(story_env):
     assert _follow_ups(client, inv_id, CHECKPOINTS[3])["metrics"]["indoor_trend"]["rate_per_hour"] > 0
 
 
-@pytest.mark.skip(reason="recording-blocked: no muse-spark-1.3 recording exists yet for the new night's input revision")
 def test_followups_recorded_investigation_matches_replay_time(story_env):
     client = create_app().test_client()
     inv_id = _start(client)

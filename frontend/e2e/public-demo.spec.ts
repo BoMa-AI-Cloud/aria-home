@@ -1313,7 +1313,7 @@ test("explore straight to 01:41 shows verified recovery, 19:20 stays a snapshot"
 test("landing names the hackathon build and Meta models", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("body")).toContainText(
-    "Meta's Muse models wrote most of ARIA Home's code, and Claude (Anthropic) wrote the rest under the direction of its author, Brad. docs/build-log/ is the record. Pre-existing: only the name ARIA and planning notes.",
+    "Meta's models wrote about 95% of the code and Claude (Anthropic) at least 5%, measured from git history."
   );
   await expect(page.locator("body")).not.toContainText("demo-house");
   await expect(page.locator("body")).toContainText("her daughter is the family caregiver");
