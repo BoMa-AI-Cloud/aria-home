@@ -28,7 +28,7 @@ from aria_home.scenario import context_as_of, events_as_of, load_scenario, visib
 from aria_home.readiness import compute_readiness
 from aria_home.scheduling import compute_follow_up_schedule
 from aria_home.verification import build_evidence_timeline, verify_recovery
-from aria_home.notifications import caregiver_permission_text, create_caregiver_updates, create_hvac_notification, create_investigation_notifications
+from aria_home.notifications import caregiver_alert_level, caregiver_permission_text, create_caregiver_updates, create_hvac_notification, create_investigation_notifications
 from aria_home.whatsapp import attempt_caregiver_permission_whatsapp, attempt_hvac_whatsapp_delivery, whatsapp_config_from_env
 from aria_home.emporia import read_live_power
 from aria_home import nest as nest_camera
@@ -759,7 +759,7 @@ def create_app():
         _inference_row = store.get_inference(identity["identity_key"]) or {}
         identity_extra = {"provider": identity.get("provider"), "provider_identity": identity.get("provider"), "identity_version": identity.get("identity_version"), "attempts": _inference_row.get("attempts"), "attempt_history": _inference_row.get("attempt_history", [])}
         _readiness_for_notif = result.evidence_pack.get("readiness") if result.evidence_pack else None
-        _snapshot_only = scn.manifest.id == "care_home_v1" and isinstance(_readiness_for_notif, dict) and _readiness_for_notif.get("status") == "on_track" and _follow_up_anchor(scn, at) == at
+        _snapshot_only = scn.manifest.id == "care_home_v1" and isinstance(_readiness_for_notif, dict) and caregiver_alert_level(_readiness_for_notif) != "alert" and _readiness_for_notif.get("status") in ("on_track", "at_risk") and _follow_up_anchor(scn, at) == at
         notif_rows = [] if _snapshot_only else [_notification_api(r) for r in create_investigation_notifications(store, scn, investigation_id, result, _readiness_for_notif, at)]
         ctx = context_as_of(scn, at)
         arrival = ctx.trip.planned_arrival if ctx.trip else None
