@@ -2,18 +2,19 @@
 
 The request text (and the WhatsApp text) must describe the evidence visible at
 the moment ARIA asked — the alert creation time — not the replay time. The
-story raises the request at 23:30 ("60 F, 8 F below the 68 F target,
+story raises the request at 22:46 ("62 F, 6 F below the 68 F target,
 furnace reported idle since 16:00"); replaying
 the same investigation at 02:31 or later keeps that frozen text instead of
 re-reading the later evidence ("52 F ... 01:30"). Before the request is raised
-(19:20, 21:00) there is no card.
+(19:20, 21:00, 21:41) there is no card.
 """
 from aria_home import whatsapp
 from aria_home.app import create_app
 
 T1920 = "2026-01-16T19:20:00-05:00"
 T2100 = "2026-01-16T21:00:00-05:00"
-T2330 = "2026-01-16T23:30:00-05:00"
+T2141 = "2026-01-16T21:41:00-05:00"
+T2246 = "2026-01-16T22:46:00-05:00"
 T0231 = "2026-01-17T02:31:00-05:00"
 T0451 = "2026-01-17T04:51:00-05:00"
 T0621 = "2026-01-17T06:21:00-05:00"
@@ -52,10 +53,10 @@ def test_followup_permission_text_uses_evidence_visible_when_asked(tmp_path, mon
 
 def test_followup_permission_text_frozen_at_creation_on_replay(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = _start(client, T2330)
+    inv_id = _start(client, T2246)
     permission = _permission_at(client, inv_id, T0231)
-    assert permission["requested_at"].startswith("2026-01-16T23:30")
-    assert "is cooling (60 F, 8 F below the 68 F target, furnace reported idle since 16:00)" in permission["text"]
+    assert permission["requested_at"].startswith("2026-01-16T22:46")
+    assert "is cooling (62 F, 6 F below the 68 F target, furnace reported idle since 16:00)" in permission["text"]
     assert "furnace reported idle since 16:00" in permission["text"]
     assert "16:00" in permission["text"]
     assert "52 F" not in permission["text"]
@@ -64,16 +65,16 @@ def test_followup_permission_text_frozen_at_creation_on_replay(tmp_path, monkeyp
 
 def test_followup_permission_text_stays_frozen_at_later_replays(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = _start(client, T2330)
+    inv_id = _start(client, T2246)
     for at, absent in ((T0451, "04:50"), (T0621, "06:20")):
         text = _permission_at(client, inv_id, at)["text"]
-        assert "60 F" in text
+        assert "62 F" in text
         assert "16:00" in text
         assert absent not in text
 
 
 def test_no_permission_card_before_request_raised(tmp_path, monkeypatch):
-    for name, at in (("early.db", T1920), ("mid.db", T2100)):
+    for name, at in (("early.db", T1920), ("mid.db", T2100), ("notice.db", T2141)):
         client = _client(tmp_path, monkeypatch, name=name)
         created = client.post(f"/api/investigations?scenario=care_home_v1&at={at}").get_json()
         assert [
@@ -86,15 +87,15 @@ def test_no_permission_card_before_request_raised(tmp_path, monkeypatch):
 
 def test_decision_response_carries_frozen_text(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
-    inv_id = _start(client, T2330)
-    notification_id = _permission_at(client, inv_id, T2330)["notification_id"]
+    inv_id = _start(client, T2246)
+    notification_id = _permission_at(client, inv_id, T2246)["notification_id"]
     resp = client.post(
         f"/api/notifications/{notification_id}/caregiver-decision",
         json={"decision": "approve", "at": T0231},
     )
     assert resp.status_code == 201
     text = resp.get_json()["caregiver_permission"]["text"]
-    assert "60 F" in text
+    assert "62 F" in text
     assert "16:00" in text
     assert "52 F" not in text
     assert "01:30" not in text
@@ -119,14 +120,14 @@ def test_permission_whatsapp_body_uses_frozen_text(tmp_path, monkeypatch):
     fake = _FakeHttp()
     monkeypatch.setattr(whatsapp, "_http_post", fake)
     client = _client(tmp_path, monkeypatch)
-    inv_id = _start(client, T2330)
-    notification_id = _permission_at(client, inv_id, T2330)["notification_id"]
+    inv_id = _start(client, T2246)
+    notification_id = _permission_at(client, inv_id, T2246)["notification_id"]
     resp = client.post(f"/api/notifications/{notification_id}/whatsapp?at={T0231}")
     assert resp.status_code == 200
     card_text = _permission_at(client, inv_id, T0231)["text"]
     text = fake.calls[0]["body"]["text"]["body"]
     assert card_text in text
-    assert "60 F" in text
+    assert "62 F" in text
     assert "16:00" in text
     assert "52 F" not in text
     assert "01:30" not in text
