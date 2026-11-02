@@ -39,7 +39,7 @@ Times for commits come from `git log`. EDT = UTC-4.
 
 ## How the code was written
 
-All code was written by Claude Code sessions running Meta models (muse-wonder-1.0 for design and integration, muse-spark-1.3 for routine work). The operator reviewed each change against the project's evidence rules, ran the tests and build, and ran `npm install` after Brad approved it.
+Most of the application code was written by Claude Code sessions running Meta models (muse-wonder-1.0 for design and integration, muse-spark-1.3 for routine work). Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in [operator-log.md](build-log/operator-log.md). The operator reviewed each change against the project's evidence rules, ran the tests and build, and ran `npm install` after Brad approved it.
 
 ## Open organizer questions
 

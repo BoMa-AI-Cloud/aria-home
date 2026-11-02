@@ -57,10 +57,12 @@ Think aloud."
 Do not explain, help or answer questions about the app. If they ask what to
 do, say "Do what you would do at home."
 
-The story is 10 steps about one winter night:
+The story is 11 steps about one winter night:
 - The evening starts warm and on track, then the room slowly falls.
-- At 11:30 PM the room is 60 F. ARIA says "may not be warm by 7:00" and asks
-  "May I contact the HVAC company?" Let them choose Approve or Decline
+- At 9:41 PM the room is 66 F, 2 F below the target. ARIA records a notice and
+  asks nobody.
+- At 10:46 PM the room is 62 F, 6 F below the target. ARIA says "may not be warm
+  by 7:00" and asks "May I contact the HVAC company?" Let them choose Approve or Decline
   themselves, at any step before the scripted 2:45 AM answer.
 - The thermostat goes silent at 1:30 and the room reaches 52 F.
 - On Approve: ARIA waits for independent readings and verifies that 68 F was held.
@@ -78,7 +80,7 @@ Stop at 15 minutes even if they have not finished.
 For each question, mark Correct (C), Partly (P) or Wrong (W).
 
 - **Q1 Correct:** the independent room sensor shows the house is far below
-  the target and not recovering (60 F, then 52 F), and the silent thermostat
+  the target and not recovering (62 F, then 52 F), and the silent thermostat
   alone does not prove that.
 - **Q2 Correct:** decide whether to let ARIA contact the HVAC company on file.
 - **Q3 Correct:** only contacting the HVAC company on file, with the property,
