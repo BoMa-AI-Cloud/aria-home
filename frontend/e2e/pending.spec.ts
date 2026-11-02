@@ -85,8 +85,8 @@ test("rapid replay changes end on the last selection with no stale overwrite", a
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
-  await demoControls.getByRole("button", { name: "4:51 AM" }).click();
-  await demoControls.getByRole("button", { name: "6:21 AM" }).click();
+  await demoControls.getByRole("button", { name: "12:31 AM" }).click();
+  await demoControls.getByRole("button", { name: "1:41 AM" }).click();
   await demoControls.getByRole("button", { name: "7:01 AM" }).click();
   await expect(headerTime).toContainText("7:01 AM ET", { timeout: 30_000 });
   await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met", {

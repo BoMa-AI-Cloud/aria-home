@@ -112,12 +112,11 @@ const CARE_REPLAY_TIMES = [
   { day: "2026-01-16", time: "21:00" },
   { day: "2026-01-16", time: "21:41" },
   { day: "2026-01-16", time: "22:46" },
-  { day: "2026-01-17", time: "02:31" },
-  { day: "2026-01-17", time: "02:45" },
-  { day: "2026-01-17", time: "04:21" },
-  { day: "2026-01-17", time: "04:51" },
-  { day: "2026-01-17", time: "06:21" },
-  { day: "2026-01-17", time: "06:45" },
+  { day: "2026-01-16", time: "23:31" },
+  { day: "2026-01-17", time: "00:21" },
+  { day: "2026-01-17", time: "00:31" },
+  { day: "2026-01-17", time: "01:41" },
+  { day: "2026-01-17", time: "01:51" },
   { day: "2026-01-17", time: "07:01" },
 ].map(({ day, time }) => ({ label: clock12(time), at: `${day}T${time}:00-05:00` }));
 
@@ -1580,8 +1579,7 @@ const STORY_STEP_TITLES = [
   "Evening, still on track",
   "Noticed: 2 F below target",
   "6 F below target, so ARIA asks the caregiver",
-  "Thermostat stops reporting",
-  "Caregiver approves HVAC contact",
+  "Technician on site, room still falling",
   "Thermostat reporting again",
   "Warming observed",
   "Target verified",
@@ -1594,34 +1592,31 @@ const STORY_STEP_GUIDANCE = [
   "The room has eased a little and is still above target. ARIA tells no one.",
   "No one is asked yet; ARIA asks at 6 F below. Both numbers are configured settings, not safety limits.",
   "ARIA tells the resident and asks the caregiver before contacting anyone else. Try Approve or Decline on the card below; the readings decide the outcome either way.",
-  "The separate room sensor keeps reporting, so ARIA can still see the living room.",
-  "In this recorded story the caregiver answers now. Only that approval lets ARIA send the HVAC company a simulated request.",
-  "A technician visited from 3:30 to 4:15 AM. Neither the visit nor the thermostat coming back proves the house is warming; only the room sensor can.",
-  "The room sensor shows the living room climbing from its overnight low. It still has a long way to go to reach the target.",
-  "Independent room readings stayed at or above target for the full 30-minute hold, ahead of the warm-by time.",
-  "It arrives after the room was already verified, so it changes nothing. It is supporting information only.",
+  "In this recorded story the caregiver approved at 10:47 PM, and only then did the simulated HVAC request go out, at 10:50 PM. The technician arrived at 11:30 PM, 44 minutes after ARIA asked.",
+  "The technician left at 12:15 AM and the thermostat came back at 12:20 AM. Neither proves the house is warming; only the room sensor can.",
+  "The room sensor shows the living room climbing from its low of about 56.5 F. It still has a way to go to reach the target.",
+  "Independent room readings stayed at or above target for the full 30-minute hold. The house was warm and proven less than 3 hours after ARIA asked.",
+  "It arrives after the room was already verified, so it changes nothing. It is a report, not proof.",
   "ARIA checks the readings received by 7:00 AM rather than relying on the earlier verification.",
 ];
 
 const DECLINED_STORY_STEP_TITLES: Record<number, string> = {
   3: "Caregiver declines HVAC contact",
-  4: "Thermostat stops reporting, no repair arranged",
-  5: "HVAC contact declined",
-  6: "Thermostat still silent, house still cold",
-  7: "No warming observed",
-  8: "Target not verified",
-  9: "No report: nobody was contacted",
-  10: "Warm-by target missed",
+  4: "No repair arranged, room still falling",
+  5: "Thermostat still silent, house still cold",
+  6: "No warming observed",
+  7: "Target not verified",
+  8: "No report: nobody was contacted",
+  9: "Warm-by target missed",
 };
 
 const DECLINED_STORY_STEP_GUIDANCE: Record<number, string> = {
   3: "ARIA will not contact the HVAC company. It keeps checking the room sensor.",
-  4: "No repair has been arranged, so there is no visit to expect. The room sensor keeps reporting.",
-  5: "No HVAC request goes out and no visit is scheduled. ARIA keeps checking the room sensor.",
-  6: "Silence proves nothing either way, so nothing can be verified yet.",
-  7: "The room sensor shows no rise.",
-  8: "The room is far below the target, so there is nothing to verify.",
-  9: "With nobody contacted, there is no technician and no report. The record shows readings only.",
+  4: "No HVAC request goes out, so no one is coming. The room sensor keeps reporting.",
+  5: "Silence proves nothing either way, so nothing can be verified yet.",
+  6: "The room sensor shows no rise.",
+  7: "The room is far below the target, so there is nothing to verify.",
+  8: "With nobody contacted, there is no technician and no report. The record shows readings only.",
 };
 
 const AUTHORSHIP_LINE =
@@ -2033,17 +2028,21 @@ function buildTraceLayout(trace: TraceResponse): { nodes: TraceMapNode[]; edges:
   }
 
   trace.notices.forEach((notice, index: number) => {
+    const noticeAudience = NOTIFICATION_AUDIENCE_LABEL[notice.audience as NotificationAudience] ?? notice.audience;
+    const noticeWhy = notice.reason
+      ? (REFUSAL_REASON_LABEL[notice.reason] ?? notice.reason.replace(/_/g, " "))
+      : `fields sent: ${notice.payload_keys.map(humanLabel).join(", ")}`;
     nodes.push({
       id: `notice-${index}`,
       x: colX[3],
       y: 10 + index * (nodeH + gap),
-      label: `${notice.audience}: ${notice.allowed ? "raised" : "refused"}`,
-      sub: notice.reason ?? `fields: ${notice.payload_keys.join(", ")}`,
+      label: `${noticeAudience}: ${notice.allowed ? "raised" : "refused"}`,
+      sub: noticeWhy,
       color: notice.allowed ? "#166534" : "#6b7280",
       state: notice.allowed ? "pass" : "stale",
-      detail: notice.reason ?? `simulated payload fields: ${notice.payload_keys.join(", ")}`,
+      detail: noticeWhy,
     });
-    edges.push({ id: `edge-verification-notice-${index}`, from: "verification", to: `notice-${index}`, state: notice.allowed ? "pass" : "stale", label: `${notice.audience} notice ${notice.allowed ? "raised" : "refused"}`, detail: notice.reason ?? `simulated payload fields: ${notice.payload_keys.join(", ")}` });
+    edges.push({ id: `edge-verification-notice-${index}`, from: "verification", to: `notice-${index}`, state: notice.allowed ? "pass" : "stale", label: `${noticeAudience} notice ${notice.allowed ? "raised" : "refused"}`, detail: noticeWhy });
     edges.push({ id: `edge-watcher-notice-${index}`, from: "watcher", to: `notice-${index}`, state: watcherState === "pass" ? "pass" : "quiet", label: "model and code detection into the notice", detail: trace.watcher.observations.length > 0 ? "a confirmed model observation supports the caregiver notice" : "no confirmed model observation; code detections decide" });
   });
 
@@ -3680,33 +3679,22 @@ export default function App() {
     storyRoom && storyRoom.newest_value !== null && storyRoom.newest_value !== undefined
       ? `${storyRoom.newest_value}${storyRoom.newest_unit ? ` ${storyRoom.newest_unit}` : ""}`
       : "no reading";
-  const approvedAlready =
-    caregiverPermission?.status === "approved" &&
-    caregiverPermission.decided_at !== null &&
-    Date.parse(caregiverPermission.decided_at) < Date.parse(selectedAt);
-  const storyApprovedEarly = caregiverPermission?.status === "approved" && caregiverPermission.source?.includes("recorded story") !== true;
+  const visitorApproved =
+    caregiverPermission?.status === "approved" && caregiverPermission.source?.includes("recorded story") !== true;
   const storyTitle = declinedAtThisStep && storyIdx >= 3
     ? (DECLINED_STORY_STEP_TITLES[storyIdx] ?? STORY_STEP_TITLES[storyIdx] ?? "")
     : storyIdx === 3 && caregiverPermission?.status === "approved"
       ? "Caregiver approves HVAC contact"
-      : storyIdx === 5 && approvedAlready
-        ? "HVAC company already contacted"
-        : storyIdx === 5 && caregiverPermission?.status !== "approved"
-          ? "Waiting on the caregiver"
-          : (STORY_STEP_TITLES[storyIdx] ?? "");
+      : (STORY_STEP_TITLES[storyIdx] ?? "");
   const storyGuidance = declinedAtThisStep && storyIdx >= 3
-    ? storyIdx === 10
+    ? storyIdx === 9
       ? `The 7:00 AM warm-by time passes with the living room at ${storyRoomLabel}. Nobody was contacted, so no visit or report exists.`
       : (DECLINED_STORY_STEP_GUIDANCE[storyIdx] ?? STORY_STEP_GUIDANCE[storyIdx] ?? "")
     : storyIdx === 3 && caregiverPermission?.status === "approved"
       ? "ARIA may now send the HVAC company a simulated request. The readings still decide the outcome."
-      : storyIdx === 5 && approvedAlready
-        ? "You approved as the caregiver earlier, so the simulated request has already gone out. ARIA now waits for later readings."
-        : storyIdx === 5 && storyApprovedEarly
-          ? "You approved as the caregiver, so ARIA sent the HVAC company a simulated request."
-          : storyIdx === 5 && caregiverPermission?.status !== "approved"
-            ? "Nothing goes to the HVAC company until the caregiver answers on the card below."
-            : (STORY_STEP_GUIDANCE[storyIdx] ?? "");
+      : storyIdx === 4 && visitorApproved
+        ? "You approved as the caregiver, and only then did the simulated HVAC request go out. The technician arrived at 11:30 PM, 44 minutes after ARIA asked."
+        : (STORY_STEP_GUIDANCE[storyIdx] ?? "");
   const earlierInvestigations = inStory
     ? storyCheckpoints
       .slice(0, Math.min(storyIndex, storyCheckpoints.length))

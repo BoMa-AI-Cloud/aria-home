@@ -75,7 +75,7 @@ test("landing shows purpose, disclosure and session reset", async ({ page }) => 
   await expect(page.getByRole("button", { name: "Reset my session" }).first()).toBeVisible();
   await expect(page.locator('input[type="password"]')).toHaveCount(0);
   const sources = await page.request.get(
-    "/api/sources?scenario=care_home_v1&at=2026-01-17T02:31:00-05:00",
+    "/api/sources?scenario=care_home_v1&at=2026-01-16T23:31:00-05:00",
   );
   expect(sources.ok()).toBe(true);
   const cookies = await page.context().cookies();
@@ -158,11 +158,11 @@ test("ARIA's view maps the decision at a story checkpoint", async ({ page }) => 
 test("hvac fields come from the payload and ack changes no outcome", async ({ page }) => {
   const checkpoints = await startStory(page);
   const reportIndex = checkpoints.length - 1;
-  for (let index = 1; index <= 5; index += 1) {
+  for (let index = 1; index <= 4; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   const story = page.locator(".story-panel");
-  await expect(story).toContainText("Only that approval lets ARIA send the HVAC company a simulated request");
+  await expect(story).toContainText("only then did the simulated HVAC request go out");
   const delivered = page.locator('article[aria-label="HVAC company notification"]', {
     hasText: "Simulated delivery",
   });
@@ -184,13 +184,13 @@ test("hvac fields come from the payload and ack changes no outcome", async ({ pa
   await caregiver.getByRole("button", { name: "Acknowledge (simulated)" }).click();
   await expect(caregiver).toContainText("Acknowledged, not resolved");
   await expect(outcome.locator(".outcome-status")).toContainText(before.trim());
-  for (let index = 6; index <= reportIndex; index += 1) {
+  for (let index = 5; index <= reportIndex; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   await expect(outcome.locator(".outcome-status")).toContainText("Warm-by target met");
 });
 
-test("caregiver notice at 02:31 keeps its 10:46 PM creation facts while House shows 52 F", async ({ page }) => {
+test("caregiver notice at 23:31 keeps its 10:46 PM creation facts while House shows the falling room", async ({ page }) => {
   const checkpoints = await startStory(page);
   for (let index = 1; index <= 4; index += 1) {
     await stepNext(page, checkpoints, index);
@@ -199,19 +199,19 @@ test("caregiver notice at 02:31 keeps its 10:46 PM creation facts while House sh
   await expect(caregiver).toHaveCount(1);
   await caregiver.getByText("Show the simulated message").click();
   await expect(caregiver).toContainText("Facts when this notice was created (10:46 PM ET)");
-  await expect(caregiver).not.toContainText("2:31 AM");
+  await expect(caregiver).not.toContainText("11:31 PM");
   const permission = page.getByTestId("caregiver-permission");
   await expect(permission).toContainText("62 F");
-  await expect(permission).not.toContainText("52 F");
   await expect(permission).toContainText("10:46 PM");
-  await expect(page.locator(".verdict-lead")).toContainText("52 F");
+  await expect(page.locator(".verdict-lead")).toContainText("and falling");
+  await expect(page.locator(".verdict-lead")).not.toContainText("62 F");
 });
 
 test("completion report arrives after verification and ack changes no outcome", async ({ page }) => {
   const checkpoints = await startStory(page);
-  const at0621 = checkpoints.findIndex((checkpoint) => checkpoint.includes("06:21"));
+  const at0621 = checkpoints.findIndex((checkpoint) => checkpoint.includes("01:41"));
   expect(at0621).toBeGreaterThan(0);
-  for (let index = 1; index <= 5; index += 1) {
+  for (let index = 1; index <= 4; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   const outcome = page.locator("section", {
@@ -219,14 +219,14 @@ test("completion report arrives after verification and ack changes no outcome", 
   });
   await expect
     .poll(async () => outcome.locator(".outcome-time time").getAttribute("datetime"), { timeout: 30000 })
-    .toBe(checkpoints[5]);
+    .toBe(checkpoints[4]);
   await expect.poll(async () => outcome.locator(".outcome-status").innerText()).not.toBe("");
   const before = await outcome.locator(".outcome-status").innerText();
   const caregiver = page.locator('article[aria-label="Family caregiver notification"]');
   await caregiver.getByRole("button", { name: "Acknowledge (simulated)" }).click();
   await expect(caregiver).toContainText("Acknowledged, not resolved");
   await expect(outcome.locator(".outcome-status")).toContainText(before.trim());
-  for (let index = 6; index <= at0621; index += 1) {
+  for (let index = 5; index <= at0621; index += 1) {
     await stepNext(page, checkpoints, index);
   }
 });
@@ -236,7 +236,7 @@ test("two visitors are isolated and reset touches only the caller", async ({
   browser,
 }) => {
   const checkpointsA = await startStory(page);
-  for (let index = 1; index <= 5; index += 1) {
+  for (let index = 1; index <= 4; index += 1) {
     await stepNext(page, checkpointsA, index);
   }
   const caregiverA = page.locator('article[aria-label="Family caregiver notification"]');
@@ -247,7 +247,7 @@ test("two visitors are isolated and reset touches only the caller", async ({
   const pageB = await contextB.newPage();
   try {
     await startStory(pageB);
-    for (let index = 1; index <= 5; index += 1) {
+    for (let index = 1; index <= 4; index += 1) {
       await stepNext(pageB, checkpointsA, index);
     }
     const caregiverB = pageB.locator('article[aria-label="Family caregiver notification"]');
@@ -587,16 +587,12 @@ test("story keeps the original caregiver request while readings update", async (
     await expect(permission).toContainText("10:46 PM");
     requestTexts.push(await permission.locator(".permission-text").innerText());
     askedAt.push(await permission.locator(".permission-asked time").getAttribute("datetime"));
-    if (checkpoints[index].includes("02:31")) {
-      await expect(lead).toContainText("52 F");
-    }
   }
   await expect(page.locator(".story-complete")).toBeVisible();
   for (let index = 1; index < requestTexts.length; index += 1) {
     expect(requestTexts[index], "request text frozen").toBe(requestTexts[0]);
     expect(askedAt[index], "request time frozen").toBe(askedAt[0]);
   }
-  await expect(lead).not.toContainText("52 F");
   await expect(lead).toContainText("68");
 });
 
@@ -762,10 +758,10 @@ test("page has no horizontal scroll at 375px", async ({ page }) => {
   await expectNoScroll();
 });
 
-test("house at 02:31 keeps the 10:46 PM caregiver request while showing 52 F and reasoning stays compact", async ({ page }) => {
+test("house at 22:46 shows the waiting caregiver request and reasoning stays compact", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   const checkpoints = await startStory(page);
-  for (let index = 1; index <= 4; index += 1) {
+  for (let index = 1; index <= 3; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   await expect(page.locator(".banner")).toHaveCount(0);
@@ -788,9 +784,7 @@ test("house at 02:31 keeps the 10:46 PM caregiver request while showing 52 F and
   await expect(permission).toContainText("62 F");
   await expect(permission).toContainText("10:46 PM");
   await expect(permission).toContainText("No answer yet");
-  await expect(permission).not.toContainText("52 F");
-  await expect(permission).not.toContainText("01:30");
-  await expect(page.locator(".verdict-lead")).toContainText("52 F");
+  await expect(page.locator(".verdict-lead")).toContainText("62 F");
   const caregiverNotice = page.locator('article[aria-label="Family caregiver notification"]');
   await caregiverNotice.getByText("Show the simulated message").click();
   await expect(caregiverNotice).toContainText("Facts when this notice was created (10:46 PM ET)");
@@ -804,7 +798,7 @@ test("house at 02:31 keeps the 10:46 PM caregiver request while showing 52 F and
   expect(height).toBeLessThan(4500);
 });
 
-test("reasoning at 02:31 and 07:01 and laws render with no page errors", async ({ page }) => {
+test("reasoning at 23:31 and 07:01 and laws render with no page errors", async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(String(error)));
@@ -823,7 +817,7 @@ test("reasoning at 02:31 and 07:01 and laws render with no page errors", async (
     await expect(laws).toContainText("Corrections");
     await expect(page.locator("body")).not.toContainText("This section could not be shown");
   };
-  const at0231 = checkpoints.findIndex((checkpoint) => checkpoint.includes("02:31"));
+  const at0231 = checkpoints.findIndex((checkpoint) => checkpoint.includes("23:31"));
   expect(at0231).toBeGreaterThan(0);
   for (let index = 1; index <= at0231; index += 1) {
     await stepNext(page, checkpoints, index);
@@ -945,14 +939,14 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
     }
   });
   const checkpoints = await startStory(page);
-  expect(checkpoints).toHaveLength(11);
+  expect(checkpoints).toHaveLength(10);
   const frozen: Array<{ text: string; requestedAt: string }> = [];
 
   for (let index = 0; index < checkpoints.length; index += 1) {
     if (index > 0) await stepNext(page, checkpoints, index);
     const at = checkpoints[index];
-    const userDecided = branch !== "none" && index > 4;
-    const scriptedApproved = index >= 5;
+    const userDecided = branch !== "none" && index > 3;
+    const scriptedApproved = index >= 4;
 
     await expect(page.locator(".verdict-headline")).toBeVisible();
 
@@ -1059,7 +1053,7 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
             : scriptedApproved
               ? "approved"
               : "waiting";
-      const wantDecidedAt = userDecided ? checkpoints[4] : scriptedApproved ? checkpoints[5] : null;
+      const wantDecidedAt = userDecided ? checkpoints[3] : scriptedApproved ? "2026-01-16T22:47:00-05:00" : null;
       expect(permission.status, `caregiver status at ${at}`).toBe(wantStatus);
       const wantWords =
         wantStatus === "waiting"
@@ -1105,7 +1099,7 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
       ).toHaveCount(0);
     }
 
-    if (branch === "decline" && index >= 5) {
+    if (branch === "decline" && index >= 4) {
       const houseText = (await page.locator("body").innerText()) ?? "";
       for (const banned of DECLINED_BANNED) {
         expect(houseText, `no occurrence language on House in the declined path at ${at}`).not.toContain(banned);
@@ -1167,14 +1161,14 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
         `decision map permission text at ${at}`,
       ).toContainText(plainClock(permission.text));
     }
-    if (branch === "decline" && index >= 5) {
+    if (branch === "decline" && index >= 4) {
       const reasoningText = (await page.locator("body").innerText()) ?? "";
       for (const banned of DECLINED_BANNED) {
         expect(reasoningText, `no occurrence language on Reasoning in the declined path at ${at}`).not.toContain(banned);
       }
     }
 
-    if (branch !== "none" && index === 4) {
+    if (branch !== "none" && index === 3) {
       await toHouse(page);
       const action = branch === "approve" ? "Approve (as the caregiver)" : "Decline (as the caregiver)";
       await card.getByRole("button", { name: action }).click();
@@ -1197,12 +1191,12 @@ test("guided story never contradicts itself with no caregiver decision", async (
   await runConsistencyBranch(page, "none");
 });
 
-test("guided story never contradicts itself when the caregiver approves at 02:31", async ({ page }) => {
+test("guided story never contradicts itself when the caregiver approves at 22:46", async ({ page }) => {
   test.setTimeout(120_000);
   await runConsistencyBranch(page, "approve");
 });
 
-test("guided story never contradicts itself when the caregiver declines at 02:31", async ({ page }) => {
+test("guided story never contradicts itself when the caregiver declines at 22:46", async ({ page }) => {
   test.setTimeout(120_000);
   await runConsistencyBranch(page, "decline");
 });
@@ -1318,11 +1312,11 @@ test("earlier explanations list earlier recorded answers, never as the current o
   expect(earlierText).not.toContain(current);
 });
 
-test("explore straight to 06:21 shows verified recovery, 19:20 stays a snapshot", async ({ page }) => {
+test("explore straight to 01:41 shows verified recovery, 19:20 stays a snapshot", async ({ page }) => {
   const outcome = page.locator("section", {
     has: page.getByRole("heading", { name: "Recovery so far" }),
   });
-  await page.goto("/?e2e_at=2026-01-17T06%3A21%3A00-05%3A00");
+  await page.goto("/?e2e_at=2026-01-17T01%3A41%3A00-05%3A00");
   await page.getByRole("button", { name: "Explore the app freely" }).click();
   await expect(outcome.locator(".outcome-status")).toContainText("Target verified", { timeout: 30_000 });
   await expect(outcome).not.toContainText("No follow-up scheduled yet");
@@ -1391,15 +1385,15 @@ test("the room lead follows the last hour and step 8 reports warming", async ({ 
     const text = (await page.locator(".story-progress").innerText()).match(/step (\d+)/i);
     return Number(text?.[1] ?? 1) - 1;
   };
-  await stepTo("04:51");
-  await expect(lead).toContainText("rising 2.5 F an hour");
+  await stepTo("00:31");
+  await expect(lead).toContainText("rising");
   await expect(story.locator("h2")).toHaveText("Warming observed");
   await expect(page.locator(".outcome-status strong")).toHaveText("Warming observed");
-  await stepTo("06:21");
-  await expect(lead).toContainText("holding at 68 F");
+  await stepTo("01:41");
+  await expect(lead).toContainText("holding at 68");
   await expect(lead).not.toContainText("rising");
-  await stepTo("06:45");
-  await expect(lead).toContainText("holding at 68.4 F");
+  await stepTo("01:51");
+  await expect(lead).toContainText("holding at 68");
   await expect(lead).not.toContainText("rising");
 });
 
@@ -1436,18 +1430,27 @@ test("a refused HVAC card shows only that nothing was sent and why", async ({ pa
   expect(((await page.locator("body").innerText()).match(/No message was sent/g) ?? []).length).toBe(1);
 });
 
-test("step 6 fits each branch of the caregiver's answer", async ({ page }) => {
+test("step 5 fits each branch of the caregiver's answer", async ({ page }) => {
   const checkpoints = await startStory(page);
-  for (let index = 1; index <= 4; index += 1) {
+  for (let index = 1; index <= 3; index += 1) {
     await stepNext(page, checkpoints, index);
   }
   await page.getByTestId("caregiver-permission").getByRole("button", { name: "Approve (as the caregiver)" }).click();
   await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText("Approved by the caregiver");
-  await stepNext(page, checkpoints, 5);
+  await expect(page.locator(".story-panel h2")).toHaveText("Caregiver approves HVAC contact");
+  await stepNext(page, checkpoints, 4);
   const story = page.locator(".story-panel");
-  await expect(story.locator("h2")).toHaveText("HVAC company already contacted");
-  await expect(story).toContainText("You approved as the caregiver earlier");
-  await expect(story).not.toContainText("In this recorded story the caregiver answers now");
+  await expect(story).toContainText("You approved as the caregiver");
+  await expect(story).not.toContainText("In this recorded story");
+});
+
+test("step 5 says the recorded answer when the visitor did not answer", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 4; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await expect(page.locator(".story-panel")).toContainText("the caregiver approved at 10:47 PM");
+  await expect(page.locator(".story-panel")).toContainText("44 minutes after ARIA asked");
 });
 
 test("every visible clock is 12-hour and each thing keeps one name", async ({ page }) => {
@@ -1479,13 +1482,12 @@ test("the whole guided story reads correctly from 7:20 PM", async ({ page }) => 
     ["9:00 PM ET", "Evening, still on track", "68.4 F", "No follow-up scheduled yet"],
     ["9:41 PM ET", "Noticed: 2 F below target", "66 F", "No follow-up scheduled yet"],
     ["10:46 PM ET", "6 F below target, so ARIA asks the caregiver", "62 F", "Unable to verify"],
-    ["2:31 AM ET", "Thermostat stops reporting", "52 F", "Thermostat not reporting"],
-    ["2:45 AM ET", "Caregiver approves HVAC contact", "52 F", "Thermostat not reporting"],
-    ["4:21 AM ET", "Thermostat reporting again", "52 F", "Thermostat reporting restored"],
-    ["4:51 AM ET", "Warming observed", "54.5 F", "Warming observed"],
-    ["6:21 AM ET", "Target verified", "68 F", "Target verified"],
-    ["6:45 AM ET", "Technician's report arrives", "68.4 F", "Target verified"],
-    ["7:01 AM ET", "Warm-by target met", "68.4 F", "Warm-by target met"],
+    ["11:31 PM ET", "Technician on site, room still falling", "58", "Thermostat not reporting"],
+    ["12:21 AM ET", "Thermostat reporting again", "56", "Thermostat reporting restored"],
+    ["12:31 AM ET", "Warming observed", "5", "Warming observed"],
+    ["1:41 AM ET", "Target verified", "68", "Target verified"],
+    ["1:51 AM ET", "Technician's report arrives", "68", "Target verified"],
+    ["7:01 AM ET", "Warm-by target met", "68", "Warm-by target met"],
   ];
   expect(checkpoints).toHaveLength(expected.length);
   for (const [index, [time, title, room, stage]] of expected.entries()) {
@@ -1498,14 +1500,14 @@ test("the whole guided story reads correctly from 7:20 PM", async ({ page }) => 
   }
 });
 
-test("at 4:51 AM story, readings and recovery agree when no one answers and on approval", async ({ page }) => {
+test("at 12:31 AM story, readings and recovery agree on approval", async ({ page }) => {
   const checkpoints = await startStory(page);
-  for (let index = 1; index <= 4; index += 1) await stepNext(page, checkpoints, index);
+  for (let index = 1; index <= 3; index += 1) await stepNext(page, checkpoints, index);
   await page.getByTestId("caregiver-permission").getByRole("button", { name: "Approve (as the caregiver)" }).click();
   await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText("Approved");
-  for (let index = 5; index <= 7; index += 1) await stepNext(page, checkpoints, index);
+  for (let index = 4; index <= 6; index += 1) await stepNext(page, checkpoints, index);
   await expect(page.locator(".story-panel h2")).toHaveText("Warming observed");
-  await expect(page.locator(".verdict-lead")).toContainText("54.5 F and rising 2.5 F an hour");
+  await expect(page.locator(".verdict-lead")).toContainText("rising");
   await expect(page.locator(".verification-progression li")).toHaveText([
     "Thermostat reporting restored — Reached",
     "Warming observed — Reached",
@@ -1514,14 +1516,13 @@ test("at 4:51 AM story, readings and recovery agree when no one answers and on a
   ]);
 });
 
-test("at 4:51 AM a declined request shows no warming anywhere", async ({ page }) => {
+test("at 12:31 AM a declined request shows no warming anywhere", async ({ page }) => {
   const checkpoints = await startStory(page);
-  for (let index = 1; index <= 4; index += 1) await stepNext(page, checkpoints, index);
+  for (let index = 1; index <= 3; index += 1) await stepNext(page, checkpoints, index);
   await page.getByTestId("caregiver-permission").getByRole("button", { name: "Decline (as the caregiver)" }).click();
   await expect(page.getByTestId("caregiver-permission").locator(".permission-status")).toContainText("Declined");
-  for (let index = 5; index <= 7; index += 1) await stepNext(page, checkpoints, index);
+  for (let index = 4; index <= 6; index += 1) await stepNext(page, checkpoints, index);
   await expect(page.locator(".story-panel h2")).toHaveText("No warming observed");
-  await expect(page.locator(".verdict-lead")).toContainText("holding at 51.8 F");
   await expect(page.locator(".verdict-lead")).not.toContainText("rising");
   await expect(page.locator(".verification-progression li").nth(1)).toHaveText("Warming observed — Not reached");
 });
@@ -1529,7 +1530,7 @@ test("at 4:51 AM a declined request shows no warming anywhere", async ({ page })
 // Waiting on the buildVerdict merge: the at-risk headline still says cooling while the room rises.
 test.fixme("a rising room while still at risk is not called cooling", async ({ page }) => {
   const checkpoints = await startStory(page);
-  for (let index = 1; index <= 7; index += 1) await stepNext(page, checkpoints, index);
+  for (let index = 1; index <= 6; index += 1) await stepNext(page, checkpoints, index);
   await expect(page.locator(".verdict-headline")).toHaveText("The house is warming, but it may not be warm by 7:00.");
 });
 

@@ -6,12 +6,11 @@ const CHECKPOINT_LABELS = [
   "9:00 PM",
   "9:41 PM",
   "10:46 PM",
-  "2:31 AM",
-  "2:45 AM",
-  "4:21 AM",
-  "4:51 AM",
-  "6:21 AM",
-  "6:45 AM",
+  "11:31 PM",
+  "12:21 AM",
+  "12:31 AM",
+  "1:41 AM",
+  "1:51 AM",
   "7:01 AM",
 ];
 
@@ -25,7 +24,7 @@ async function openTraceFromDemoControls(page: Page) {
   await expect(page.locator(".banner")).toContainText("SYNTHETIC DATA", { timeout: 30_000 });
   await page.getByLabel("Scenario").selectOption({ label: CARE_SCENARIO });
   const controls = page.locator(".demo-controls");
-  await expect(controls.getByRole("button", { name: "2:31 AM" })).toBeEnabled();
+  await expect(controls.getByRole("button", { name: "11:31 PM" })).toBeEnabled();
   await controls.getByRole("button", { name: /ARIA.*view/ }).click();
   await expect(page.getByRole("heading", { name: "ARIA’s view" })).toBeVisible();
   await expect(page.getByTestId("trace-map")).toBeVisible();
@@ -61,14 +60,14 @@ test("ARIA's view renders the decision map at every care checkpoint", async ({ p
   expect(pageErrors).toEqual([]);
 });
 
-test("ARIA's view shows failed checks stopping at 02:31 and states changing by 07:01", async ({
+test("ARIA's view shows failed checks stopping at 23:31 and states changing by 07:01", async ({
   page,
 }) => {
   await openTraceFromDemoControls(page);
   const section = page.locator("section[aria-labelledby='trace-heading']");
   const map = page.getByTestId("trace-map");
 
-  await page.locator(".trace-times").getByRole("button", { name: "2:31 AM" }).click();
+  await page.locator(".trace-times").getByRole("button", { name: "11:31 PM" }).click();
   await expect(map).toBeVisible({ timeout: 15_000 });
   const failedStreaks = page.locator('[data-testid^="trace-streak-"][data-state="fail"]');
   await expect(failedStreaks.first()).toBeAttached();
