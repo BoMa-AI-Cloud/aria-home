@@ -1,0 +1,21 @@
+{
+  "transcripts": [
+    {
+      "scenario_id": "care_home_v1",
+      "model_id": "muse-voice-transcribe-1.0",
+      "provider": "Meta Model API POST /v1/asr/transcribe",
+      "recorded_at": "2026-11-02T15:50:38Z",
+      "audio_fixture": "backend/fixtures/voice/technician-note-synthetic.wav (synthetic, Kokoro voice am_michael; script in technician-note-script.txt)",
+      "transcript": "This is is the service technician at the demo house. The furnace igniter was replaced and the system restarted at about 12 15. Heat is running. Please confirm the house temperature with your sensors.",
+      "audio_duration_ms": 14240,
+      "validation": {
+        "passed": true,
+        "reasons": []
+      },
+      "approved_by": "Brad 2026-11-02, 1 call (re-record so the restart time matches the story's 23:30-00:15 visit)",
+      "session_id": "voyager/transcribe/7C58C1A6EA0D4640ABCA63607E118210",
+      "supersedes": "backend/eval/superseded/transcripts-20261031.json (said 'about 4 15', from the earlier repair time)",
+      "turns": []
+    }
+  ]
+}
