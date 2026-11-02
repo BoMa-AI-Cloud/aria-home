@@ -44,7 +44,7 @@ Ask Q1-Q5 and write down their exact words:
 - Q2. What should you do next?
 - Q3. What does approving HVAC contact authorize?
 - Q4. Does the technician's report prove the home is warm?
-- Q5. What does "goal verified" actually mean?
+- Q5. What does "target verified" actually mean?
 
 Score the baseline after they answer. Do not correct them.
 
