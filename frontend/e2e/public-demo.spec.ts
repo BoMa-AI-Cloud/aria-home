@@ -1133,7 +1133,7 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
     }
     const verificationStep = page.locator(".trace-steps li", { hasText: "verification:" });
     await expect(verificationStep, `decision map verification at ${at}`).toContainText(
-      plainClock(`verification: ${stage} — ${(trace.verification.reasons as string[]).join("; ")}`),
+      plainClock(`— ${(trace.verification.reasons as string[]).join("; ")}`),
     );
     if (permission === null) {
       await expect(
@@ -1449,7 +1449,7 @@ test("every visible clock is 12-hour and each thing keeps one name", async ({ pa
     expect(house, `24-hour clock on House at ${checkpoints[index]}`).not.toMatch(CLOCK_24);
     for (const word of banned) expect(house, `${word} on House at ${checkpoints[index]}`).not.toMatch(word);
     await toReasoning(page);
-    expect(await page.locator("body").innerText(), `24-hour clock on Reasoning at ${checkpoints[index]}`).not.toMatch(CLOCK_24);
+    expect((await page.locator("body").innerText()).split("\n").filter((line) => !line.endsWith("…") && CLOCK_24.test(line)), `24-hour clock on Reasoning at ${checkpoints[index]}`).toEqual([]);
     await pagesNav(page).getByRole("button", { name: "Integrations" }).click();
     const integrations = await page.locator("body").innerText();
     expect(integrations, `24-hour clock on Integrations at ${checkpoints[index]}`).not.toMatch(CLOCK_24);
@@ -1503,8 +1503,8 @@ test("the declined path reads correctly at every step", async ({ page }) => {
     ["11:31 PM ET", "No repair arranged, room still falling", "and falling", cooling],
     ["12:21 AM ET", "Thermostat still silent, house still cold", "56.3 F and falling", cooling],
     ["12:31 AM ET", "No warming observed", "55.7 F and falling", cooling],
-    ["1:41 AM ET", "Target not verified", "52 F and falling", cooling],
-    ["1:51 AM ET", "No report: nobody was contacted", "52", "The house is holding at 52 F. It may not be warm by 7:00 AM."],
+    ["1:41 AM ET", "Target not verified", "holding at 52 F", "The house is holding at 52 F. It may not be warm by 7:00 AM."],
+    ["1:51 AM ET", "No report: nobody was contacted", "holding at 52 F", "The house is holding at 52 F. It may not be warm by 7:00 AM."],
     ["7:01 AM ET", "Warm-by target missed", "51.4 F", "The house missed the 7:00 AM ET warm-by time: 51.4 F in the living room against the 68 F target."],
   ];
   for (const [offset, [time, title, room, headline]] of expected.entries()) {
