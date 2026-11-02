@@ -45,7 +45,7 @@ Code decides readiness, verification and who is told. The models explain, review
 | Model id | Job | Mode | Evidence | Limitation |
 |---|---|---|---|---|
 | muse-spark-1.3 | explains the code's readiness and verification in plain words, citing evidence ids that code checks | recorded for the care checkpoints; live calls are operator-only | `backend/eval/recorded/`; claim checks in `backend/aria_home/investigator.py` | readiness agreement is enforced, so agreement is not independent accuracy; its published scoring used prompt inv-v3 with the earlier trip-home vocabulary; the current recordings use inv-v6, which was not re-scored, so those scores do not validate it ([model-value evaluation](docs/model-value-eval.md)) |
-| muse-spark-1.3 (watcher) | looks for anomalies at each story step, with cited evidence; a failed first attempt gets one revision | recorded at all 10 steps on watch-v2: 8 confirmed, with observations at 21:41, 22:46 and 23:31; 2 rejected | `backend/eval/watchers-care-2026-11-02-3.json`; no verified correction on this night: at 12:21 and 12:31 AM the model was caught and nothing it said was accepted | on 12 unseen simulated scenarios, run as one batch, first answers failed code checks in 9 of 12 (all 9 revisions verified); measured on the earlier prompt inv-v3, not re-scored on the current inv-v6 and watch-v2 |
+| muse-spark-1.3 (watcher) | looks for anomalies at each story step, with cited evidence; a failed first attempt gets one revision | recorded at all 10 steps on watch-v2: 8 confirmed, with observations at 21:41, 22:46 and 23:31; 2 rejected | `backend/eval/watchers-care-2026-11-02-3.json`; no verified correction on this night: at 12:21 and 12:31 AM the model was caught and nothing it said was accepted | on 12 unseen simulated scenarios, run as one batch, first answers failed code checks in 9 of 12 (all 9 revisions verified: 7 as recorded, 2 more after a validator bug was fixed and the saved claims re-checked); measured on the earlier prompt inv-v3, not re-scored on the current inv-v6 and watch-v2 |
 | muse-wonder-1.0 | second review of each recorded answer for unsupported claims | recorded, bound to the exact answer by digest | review recordings; 12 of 12 planted false claims caught, 0 of 12 false alarms | planted claims used four fixed templates; measured on the earlier prompt inv-v3, not re-scored on the current inv-v6 and watch-v2 |
 | muse-voice-transcribe-1.0 | turns the technician's voice note into a human report | recorded once | `backend/eval/transcripts-20261102.json` | a report, never a measurement |
 | sam-3.1 | segments the mechanical-room camera frames | recorded over synthetic images | visual recordings | it missed the frost; no detection is never an all-clear |
@@ -99,7 +99,7 @@ Four things stay separate here. **Synthetic regression results** show that code 
 | Condition | Readiness correct (of 22) | Target at arrival (scored) | Verification (scored) | Fully correct (of 22) |
 |---|---|---|---|---|
 | Combined (all sources) | 22 | 7 (7) | 10 (10) | 22 |
-| Thermostat only | 16 | 7 (7) | 2 (10) | 12 |
+| Thermostat only | 18 | 7 (7) | 2 (10) | 12 |
 | Room sensor only | 17 | 2 (7) | 2 (10) | 4 |
 | Electrical only | 9 | 0 (7) | 2 (10) | 2 |
 | Calendar only | 9 | 0 (7) | 2 (10) | 2 |
@@ -224,6 +224,10 @@ From the day handoffs and the [feature freeze](docs/freeze.md) (initial freeze 2
 Day-by-day record: [Day 1 handoff](docs/day1-handoff.md) · [Day 2 handoff](docs/day2-handoff.md) · [Day 3 handoff](docs/day3-handoff.md) · [Day 4 handoff](docs/day4-handoff.md) · [Day 5 handoff](docs/day5-handoff.md) · [Day 6 handoff](docs/day6-handoff.md) · [Timeline](docs/timeline.md) · [User-test kit](docs/usability.md) · [Feature freeze](docs/freeze.md)
 
 Submission: [Submission checklist and write-up](docs/submission.md)
+
+## Video assets
+
+The video uses screen recordings of the live app, a labelled segment of the author's own furnace and panel, AI-generated scenes labelled as dramatizations, Meta AI music, and synthetic narration from Kokoro-82M. Its assembly scripts and media are not in this repository.
 
 ## License
 

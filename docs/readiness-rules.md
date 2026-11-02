@@ -1,5 +1,7 @@
 # Readiness rules
 
+> Note 2026-11-02: two rules changed after this file was written. In the verification stage, warming now counts as a rise of at least `min_rise_f` from the lowest room reading since the follow-up opened, so a room that fell further and is climbing back counts. In the care story, a caregiver request is raised at 6 F below target, or when at risk within 2 hours of the warm-by time; at 2 F below ARIA records a notice and asks nobody (`caregiver_alert_level` in `backend/aria_home/notifications.py`). Readiness statuses are unchanged. The `outcomes.py` status order described below is separate from that verification stage. Times naming the care story below are from earlier versions of the night.
+
 Readiness is decided by deterministic code in `backend/aria_home/readiness.py`
 (`compute_readiness(pack, now, flags=None)`), not by the model. The investigator
 puts the result in the evidence pack (`readiness` and `computed_readiness`),

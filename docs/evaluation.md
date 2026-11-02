@@ -357,5 +357,5 @@ then this section stays a placeholder.
 
 ## Watcher runs on the current night (2026-11-02)
 
-First batch on commit 2e6d701, one pass per checkpoint: 9 of 10 confirmed on the first attempt, and 04:51 was rejected for invalid JSON, then confirmed on a retry. A second 23:30 pass, run on purpose to look for a correction, cited stale evidence, failed the code's checks, revised once and verified. Both 23:30 passes are in `backend/eval/`, and the app shows the newer verified one, so the correction on screen is a selected take and not a typical rate. Comparison C in [the model-value evaluation](model-value-eval.md) measures first attempts on 12 unseen simulated scenarios, run as one batch.
+Final recordings on watch-v2, one pass per checkpoint: 8 of 10 confirmed. At 00:21 and 00:31 the watcher invented a `temperature_rise` category, then revised to `temperature_drop` while the room was rising. Code rejected both answers in both tries, and the screen shows the rejection. There is no verified watcher correction on this night. Correction records from earlier versions of the night stay in `backend/eval/` and are not shown in the current story. Comparison C in [the model-value evaluation](model-value-eval.md) measures first attempts on 12 unseen simulated scenarios, run as one batch, on the earlier prompt.
 

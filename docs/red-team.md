@@ -1,6 +1,6 @@
 # Red-team notes (illustrative unless a recorded run backs it)
 
-> Note 2026-11-02: the night now has 11 steps: notice at 21:41, ask at 22:46. The 23:30 step in the next note no longer exists.
+> Note 2026-11-02: this file was written against earlier versions of the night, so the times below are historical. The night now has 10 steps: 19:20, 21:00, 21:41, 22:46, 23:31, 00:21, 00:31, 01:41, 01:51, 07:01. ARIA notices at 21:41 and asks at 22:46 (62 F); approval is at 22:47; the technician is on site 23:30 to 00:15. The rules tested here are unchanged.
 
 > Note 2026-11-01: the care story was restructured after this was written. Evening checkpoints are now 19:20, 21:00, 23:30 (snapshots while readiness is on track; the caregiver request is raised at 23:30, frozen as 60 F, 8 F below goal, idle since 16:00); 19:03 and 19:15 are no longer checkpoints. Story times below predate the restructure and are kept as history.
 

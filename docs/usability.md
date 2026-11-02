@@ -1,5 +1,7 @@
 # ARIA Home user-test kit (facilitator: Brad)
 
+> Note 2026-11-02: superseded by [the 15-minute session kit](user-sessions.md). No user testing has been done with this kit.
+
 Run by Brad with 3 to 5 people (homeowners, renters or property managers; no
 minors; no personal data recorded). Five sessions maximum (P1..P5). Mock mode
 only, synthetic data only.
