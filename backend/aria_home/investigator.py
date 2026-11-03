@@ -851,6 +851,18 @@ def _responder_wording_reasons(parsed, pack):
         reasons.append("the room is rising over the last 15 minutes: model-written prose must not describe it as falling or cooling")
     return reasons
 
+def validate_with_laws(output, pack) -> list[str]:
+    """The one validation every answer passes, live or replayed: the contract, then the active laws."""
+    reasons = validate(output, pack)
+    parsed, _ = _parse_output(output)
+    if parsed is not None:
+        from .laws import check_output
+
+        for violation in check_output(parsed, pack):
+            reasons.append(f"law {violation['law']}: {violation['reason']}")
+    return reasons
+
+
 def validate(output, pack) -> list[str]:
     parsed, err = _parse_output(output)
     if err:
@@ -956,13 +968,7 @@ def investigate(scenario, at, provider=None, max_tokens=None) -> Investigation:
         else:
             reason = "provider error: no text returned"
         return Investigation(status="unavailable", reasons=[reason, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)
-    reasons = validate(text, pack)
-    parsed_for_laws, _ = _parse_output(text)
-    if parsed_for_laws is not None:
-        from .laws import check_output as _check_laws
-
-        for violation in _check_laws(parsed_for_laws, pack):
-            reasons.append(f"law {violation['law']}: {violation['reason']}")
+    reasons = validate_with_laws(text, pack)
     non_timing_reasons = [r for r in reasons if not _is_follow_up_timing_reason(r)]
     if non_timing_reasons:
         return Investigation(status="rejected", reasons=[*non_timing_reasons, *notes], model_id=model_id, prompt_version=PROMPT_VERSION, provider_mode=provider_mode, latency_ms=latency, input_tokens=itok, output_tokens=otok, token_usage=token_usage, summary=summary, evidence_pack=pack, max_tokens_used=limit)

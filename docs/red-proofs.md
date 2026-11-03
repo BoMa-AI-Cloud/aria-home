@@ -20,3 +20,10 @@ regression test run (red), the fix restored exactly, and the test re-run
 Tests strengthened: none. Every safeguard failed without its fix and passed with it.
 
 Coverage: audit-4 row 1, audit-4 row 2, audit-4 row 3, audit-4 row 4, audit-4 row 5, audit-4 row 6, audit-4 row 7, audit-4 row 8, audit-4 row 9, audit-4 row 10.
+
+## Final audit, two validation gaps (2026-11-03, Claude as operator)
+
+- Watcher sentence check (`verify_claim_sentence` in `backend/aria_home/watcher.py`). Removed: `test_recorded_right_value_under_a_wrong_sentence_is_never_confirmed` failed all 4 cases, for example `assert [{'claim': 'T...'}] == []`. Restored: passed.
+- Laws on replayed answers (`validate_with_laws` in `backend/aria_home/recorded.py`). Removed: `test_recorded_answer_breaking_a_law_is_refused_like_a_live_one` failed with `assert 'ok' == 'unavailable'`. Restored: passed.
+
+The sentence check is bounded: it covers temperatures, watts, clock times and the room's direction, and is not a semantic verifier of arbitrary prose.

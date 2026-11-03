@@ -283,3 +283,46 @@ def test_load_recorded_watchers_aggregates_repeat_identities(tmp_path):
     entries = load_recorded_watchers(tmp_path)
     assert len(entries) == 2
     assert find_recorded_watcher(entries, *_find_args(identity))["entry"] == readable
+
+
+def _with_claim(entries, scenario, at, claim):
+    import copy
+
+    identity = watcher_identity(scenario, at)
+    changed = copy.deepcopy(entries)
+    count = 0
+    for record in changed:
+        entry = record["entry"]
+        if (entry.get("scenario_id"), entry.get("evaluated_at_utc"), entry.get("input_revision")) == (identity["scenario_id"], identity["evaluated_at_utc"], identity["input_revision"]):
+            output = entry["output"]
+            parsed = json.loads(output) if isinstance(output, str) else output
+            for obs in parsed["observations"]:
+                obs["claim"] = claim
+                count += 1
+            entry["output"] = json.dumps(parsed) if isinstance(output, str) else parsed
+    assert count, "no recorded observation at this step"
+    return changed
+
+
+@pytest.mark.parametrize("claim", [
+    "The room temperature is 99 F.",
+    "Room temp 66.0F at 03:15",
+    "Blower circuit drawing 900W",
+    "The room is rising and warming",
+])
+def test_recorded_right_value_under_a_wrong_sentence_is_never_confirmed(claim):
+    scn = _care()
+    at = datetime.fromisoformat("2026-01-16T21:41:00-05:00")
+    assert public_watcher(scn, at)["model_observations"], "the step must have shipped observations"
+    result = public_watcher(scn, at, _with_claim(load_recorded_watchers(), scn, at, claim))
+    assert result["model_observations"] == []
+    assert result["provenance"]["validation"]["passed"] is False
+    assert any("observation sentence" in reason for reason in result["provenance"]["validation"]["reasons"])
+
+
+def test_every_shipped_care_sentence_still_passes():
+    scn = _care()
+    counts = {}
+    for stamp in ("2026-01-16T21:41:00-05:00", "2026-01-16T22:46:00-05:00", "2026-01-16T23:31:00-05:00"):
+        counts[stamp] = len(public_watcher(scn, datetime.fromisoformat(stamp))["model_observations"])
+    assert list(counts.values()) == [2, 2, 2]

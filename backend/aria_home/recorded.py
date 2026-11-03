@@ -30,7 +30,7 @@ from .investigator import (
     build_evidence_pack,
     inference_identity,
     render_verified_facts,
-    validate,
+    validate_with_laws,
 )
 from .provider import ALLOWED_MODEL_IDS
 from .readiness import READINESS_POLICY_VERSION
@@ -174,7 +174,7 @@ def public_investigation(scenario, at, entries=None):
     )
     if match is None:
         return _fallback(summary, pack), None
-    reasons = validate(match["answer"].get("output"), pack)
+    reasons = validate_with_laws(match["answer"].get("output"), pack)
     provenance = provenance_for(match, reasons)
     if reasons:
         return _fallback(summary, pack), None
@@ -209,7 +209,7 @@ def annotate_public_result(scenario, at, result, entries=None):
     )
     if match is None:
         return None
-    return provenance_for(match, validate(match["answer"].get("output"), pack))
+    return provenance_for(match, validate_with_laws(match["answer"].get("output"), pack))
 
 
 def _fallback(summary, pack):

@@ -435,3 +435,31 @@ def test_disk_bound_env_enforced_at_admission(monkeypatch, tmp_path):
     admitted = public_demo.admit_session(directory, None)
     assert admitted == {"session_id": None, "path": None, "new": False, "busy": True}
     assert len(list(directory.glob("sess-*.db"))) == 1
+
+
+def test_recorded_answer_breaking_a_law_is_refused_like_a_live_one():
+    import copy
+    from pathlib import Path
+
+    from aria_home.investigator import build_evidence_pack, inference_identity, validate, validate_with_laws
+    from aria_home.recorded import load_recorded_answers
+
+    scn = load_scenario(Path(__file__).resolve().parent.parent / "scenarios" / "care_home_v1")
+    at = datetime.fromisoformat("2026-01-16T23:31:00-05:00")
+    entries = load_recorded_answers()
+    assert public_investigation(scn, at, entries)[0].status == "ok"
+    identity = inference_identity(scn, at)
+    changed = copy.deepcopy(entries)
+    output = None
+    for entry in changed:
+        answer = entry["answer"]
+        if answer.get("evaluated_at_utc") == identity["evaluated_at_utc"] and answer.get("input_revision") == identity["input_revision"]:
+            answer["output"]["interpretation"] = "The caregiver acknowledgement resolved the issue."
+            output = answer["output"]
+    assert output is not None
+    pack = build_evidence_pack(scn, at)
+    assert validate(output, pack) == []
+    assert any("ack-is-not-resolution" in reason for reason in validate_with_laws(output, pack))
+    result, provenance = public_investigation(scn, at, changed)
+    assert result.status == "unavailable"
+    assert result.reasons == [NO_RECORDED_LABEL]

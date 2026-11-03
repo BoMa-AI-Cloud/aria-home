@@ -28,6 +28,7 @@ file, input revision, laws version).
 
 import json
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -267,6 +268,61 @@ def _conflicted_ids(pack, at):
     return out
 
 
+_CLAIM_READING = re.compile(r"(?<![\d.:])(\d+(?:\.\d+)?)\s*(?:°\s*)?(F|W|degrees|watts)\b")
+_CLAIM_CLOCK = re.compile(r"(?<![\d:])(\d{1,2}):(\d{2})(?![\d:])\s*([AaPp][Mm])?")
+_CLAIM_FALLING = ("falling", "dropping", "cooling")
+_CLAIM_RISING = ("rising", "warming")
+
+
+def _claim_clocks(obs, by_id, at):
+    """Clock times the sentence may name: the observation's, its cited evidence's, and the evaluation's."""
+    stamps = [obs["values"].get("at")]
+    for evidence_id in obs["evidence_ids"]:
+        item = by_id.get(evidence_id) or {}
+        data = item.get("data") if isinstance(item.get("data"), dict) else {}
+        stamps += [item.get("observed_at"), data.get("last_observed_at"), data.get("latest_observed_at"), data.get("newest_observed_at")]
+    times = [t for t in (laws_module._parse_time(s) for s in stamps if s) if t is not None] + [at]
+    zones = {t.tzinfo for t in times if t.tzinfo is not None}
+    return {t.astimezone(zone).strftime("%H:%M") for t in times for zone in zones}
+
+
+def verify_claim_sentence(obs, pack, by_id, at):
+    """Bind the sentence a reader sees to the checked values: a right value under a wrong sentence must not read as confirmed.
+
+    This covers temperatures, watts, clock times and the room's direction. It is a bounded check, not a semantic verifier of arbitrary prose.
+    """
+    claim = obs.get("claim")
+    if not isinstance(claim, str):
+        return []
+    reasons = []
+    values = obs["values"]
+    known = [values.get("value")]
+    for evidence_id in obs["evidence_ids"]:
+        item = by_id.get(evidence_id) or {}
+        known.append(item.get("value"))
+        known.extend(_metric_numbers(item))
+    known = [n for n in known if isinstance(n, (int, float)) and not isinstance(n, bool)]
+    targets = [n for key in ("metric:target_gap", "confirmation:current") for n in [((by_id.get(key) or {}).get("data") or {}).get("target_temp")] if isinstance(n, (int, float))]
+    allowed = known + targets + [abs(target - n) for target in targets for n in known]
+    for number, unit in _CLAIM_READING.findall(claim):
+        if not any(_numbers_match(float(number), candidate) for candidate in allowed):
+            reasons.append(f"observation sentence says {number} {unit}, which matches none of its checked values")
+    clocks = _claim_clocks(obs, by_id, at)
+    for hour, minute, half in _CLAIM_CLOCK.findall(claim):
+        hour = int(hour)
+        if half:
+            hour = hour % 12 + (12 if half.lower() == "pm" else 0)
+        if f"{hour:02d}:{minute}" not in clocks:
+            reasons.append(f"observation sentence names {hour:02d}:{minute}, which matches none of its checked times")
+    direction = (pack.get("room_direction") or {}).get("direction") if isinstance(pack.get("room_direction"), dict) else None
+    lowered = claim.lower()
+    if direction == "rising" and any(word in lowered for word in _CLAIM_FALLING) and obs.get("kind") != "temperature_drop":
+        reasons.append("observation sentence says the room is falling while it is rising")
+    if direction == "falling" and any(word in lowered for word in _CLAIM_RISING):
+        reasons.append("observation sentence says the room is rising while it is falling")
+    return reasons
+
+
 def verify_observation(obs, pack, at):
     from .eligibility import freshness_limit_s, is_fresh
 
@@ -318,6 +374,7 @@ def verify_observation(obs, pack, at):
     clashing = [i for i in obs["evidence_ids"] if i in conflicted]
     if clashing:
         reasons.append(f"observation cites contradictory readings {sorted(clashing)}: unresolved conflicts block the claim")
+    reasons.extend(verify_claim_sentence(obs, pack, by_id, at))
     return reasons
 
 
