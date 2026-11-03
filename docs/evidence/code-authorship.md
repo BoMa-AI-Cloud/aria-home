@@ -2,14 +2,14 @@
 
 Measured with `python backend/scripts/measure_code_authorship.py <ref>`, which uses `git blame` to trace each line of code to the commit that wrote it. Commits after 8a94f53 that do not say a Muse model wrote them count as Claude's. Everything else counts as Meta's models (Muse models and the Meta AI web chat).
 
-Measured on the merged code before the final page and test edits:
+Measured on commit 5a2d1b2:
 
 | Code | Lines | Meta's models | Claude |
 |---|---:|---:|---:|
-| Application (`backend/aria_home`, `frontend/src`) | 20,744 | 96.2% | 3.8% |
-| Tests (`backend/tests`, `frontend/e2e`) | 18,075 | 92.2% | 7.8% |
-| Scripts (`backend/scripts`) | 1,800 | 99.8% | 0.2% |
-| All code | 40,619 | 94.6% | 5.4% |
+| Application (`backend/aria_home`, `frontend/src`) | 20,760 | 96.1% | 3.9% |
+| Tests (`backend/tests`, `frontend/e2e`) | 18,114 | 92.0% | 8.0% |
+| Scripts (`backend/scripts`) | 1,851 | 97.1% | 2.9% |
+| All code | 40,725 | 94.3% | 5.7% |
 
 Limits:
 

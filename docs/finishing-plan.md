@@ -1,5 +1,7 @@
 # ARIA Home finishing plan
 
+> Note 2026-11-03: kept as history. The video parts below were replaced by a dramatized film; the README's "Video assets" section is what is true of the submitted video.
+
 Received from Brad 2026-10-31; this is now the authoritative plan for the remaining work. It supersedes the remaining
 items in [public-demo-plan.md](public-demo-plan.md), which stays as the history of what already landed. Nothing in this
 file is a result: every status names its evidence, and an item without evidence is open. AI-generated suggestions,

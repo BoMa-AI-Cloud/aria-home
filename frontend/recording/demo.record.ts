@@ -40,7 +40,7 @@ test("c1-opening", async ({ page }) => {
   await page.goto("/cards.html#opening");
   await expect(
     page.getByText(
-      "ARIA is my existing assistant project; its name, notes and ARIA Home designs came first. All ARIA Home code was built this week with Meta's models. Story scenes and music: Meta AI.",
+      "All ARIA Home code was built this week, about 95% by Meta's models and at least 5% by Claude.",
     ),
   ).toBeVisible();
   await expect(page.getByText("Synthetic demo data")).toBeVisible();

@@ -4,7 +4,7 @@ Generated from git history for commit c22f366 and later docs. Every tracked file
 
 Who wrote the code is measured separately in [code authorship](evidence/code-authorship.md).
 
-812 tracked files, grouped by folder. The table counts 810 of them: two recordings moved to `backend/eval/superseded/` show their earlier path in git history, first added 2026-10-29 and 2026-10-31:
+810 tracked files, grouped by folder. The table counts 808 of them: two recordings moved to `backend/eval/superseded/` show their earlier path in git history, first added 2026-10-29 and 2026-10-31:
 
 | Folder | Files | First added | Latest added |
 |---|---:|---|---|
@@ -18,7 +18,7 @@ Who wrote the code is measured separately in [code authorship](evidence/code-aut
 | `backend/scenarios` | 157 | 2026-10-26 | 2026-10-31 |
 | `backend/scripts` | 15 | 2026-10-29 | 2026-11-02 |
 | `backend/tests` | 84 | 2026-10-26 | 2026-11-02 |
-| `docs` | 37 | 2026-10-26 | 2026-10-31 |
+| `docs` | 35 | 2026-10-26 | 2026-10-31 |
 | `docs/build-log` | 377 | 2026-10-26 | 2026-11-02 |
 | `docs/evidence` | 13 | 2026-10-30 | 2026-11-02 |
 | `frontend` | 11 | 2026-10-26 | 2026-10-29 |
