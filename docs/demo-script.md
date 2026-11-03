@@ -1,3 +1,5 @@
+> Note 2026-11-03: this plan is history. Brad replaced the screen-recorded cut with a dramatized film (scenes from Meta AI, no app footage, no real-equipment segment, no Kokoro narration of the app). The README's "Video assets" section is what is true of the submitted video.
+>
 > Note 2026-11-02: the story's times changed. The night has 10 steps: 19:20, 21:00, 21:41, 22:46, 23:31, 00:21, 00:31, 01:41, 01:51, 07:01. ARIA notices at 21:41 (2 F below the target, room 66.0 F, asks nobody) and asks the family caregiver at 22:46 (6 F below, room 62.0 F). A backstop still asks when the house is at risk within 2 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. The demo checks at set story times. Older shot lists (A2, A) are historical.
 >
 > Timing: the caregiver approves at 22:47, the HVAC request goes out at 22:50, the thermostat is silent 23:00–00:20, and a technician is on site 23:30–00:15, 44 minutes after the ask. The room falls to 56.6 F at 00:15, then rises at once, reaches 68 F at 01:10 and is verified at the 01:41 step, under 3 hours after the ask. Report and voice note appear at the 01:51 step.

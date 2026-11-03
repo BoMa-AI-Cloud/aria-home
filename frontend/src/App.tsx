@@ -239,6 +239,7 @@ const PAYLOAD_LABELS: Record<string, string> = {
   stage_in_words: "Stage summary",
   verified_facts: "Verified facts",
   what_was_done: "What was done",
+  visit_message: "Message",
   evaluated_at: "Evaluated at",
   planned_arrival: "Warm-by time",
   property_label: "House",
@@ -286,6 +287,7 @@ const VALUE_LABELS: Record<string, string> = {
   family_caregiver: "Family caregiver",
   hvac_company: "HVAC company",
   investigation_update: "Update",
+  visit_notice: "Technician visit notice",
   manager_alert: "Manager alert",
   caregiver_alert: "Caregiver alert",
   caregiver_update_hvac_contacted: "Caregiver update: HVAC contacted",
@@ -3853,7 +3855,7 @@ export default function App() {
             <h1>Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?</h1>
             <p>ARIA Home replays a synthetic winter night and shows how it gets the right person moving when something looks wrong.</p>
             <div className="household-card">
-              <p>Built during the Hackathon. {AUTHORSHIP_LINE} Pre-existing: only the name ARIA and planning notes.</p>
+              <p>Built during the Hackathon. {AUTHORSHIP_LINE}</p>
               <p>muse-spark-1.3 explains, muse-wonder-1.0 reviews, muse-voice-transcribe-1.0 transcribes, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames. Code decides; models never do.</p>
             </div>
             <blockquote className="brad-hook">{BRAD_HOOK}</blockquote>

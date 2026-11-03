@@ -62,6 +62,34 @@ def test_decline_blocks_hvac_even_after_the_scripted_approval_time(tmp_path, mon
     assert later["status"]
 
 
+def _visit_notices(client, inv_id):
+    rows = client.get(f"/api/notifications?investigation_id={inv_id}").get_json()["notifications"]
+    return [r for r in rows if r["kind"] == "visit_notice"]
+
+
+def test_approve_tells_the_resident_a_technician_may_knock(tmp_path, monkeypatch):
+    client = _client(tmp_path, monkeypatch)
+    inv_id, body = _start(client)
+    assert _visit_notices(client, inv_id) == []
+    _decide(client, body["caregiver_permission"]["notification_id"], "approve", T2246)
+    client.get(f"/api/follow-ups/{inv_id}?at={T2246}")
+    client.get(f"/api/follow-ups/{inv_id}?at={T2252}")
+    notices = _visit_notices(client, inv_id)
+    assert len(notices) == 1
+    assert notices[0]["audience"] == "homeowner"
+    assert notices[0]["state"] == "simulated_delivered"
+    assert "technician may knock" in notices[0]["payload"]["visit_message"]
+    assert set(notices[0]["payload"]) <= ALLOWLISTS["homeowner"]
+
+
+def test_decline_sends_the_resident_no_visit_notice(tmp_path, monkeypatch):
+    client = _client(tmp_path, monkeypatch)
+    inv_id, body = _start(client)
+    _decide(client, body["caregiver_permission"]["notification_id"], "decline", T2246)
+    client.get(f"/api/follow-ups/{inv_id}?at={T2252}")
+    assert _visit_notices(client, inv_id) == []
+
+
 def test_decision_is_once_only(tmp_path, monkeypatch):
     client = _client(tmp_path, monkeypatch)
     _, body = _start(client)

@@ -1,5 +1,7 @@
 # Recording checklist (care_home_v1, mock/replay mode)
 
+> Note 2026-11-03: the submitted video no longer uses these recordings; it is a dramatized film (see the README's "Video assets"). This still describes how to replay the app.
+
 Replay the `care_home_v1` scenario on a fresh temporary database in default
 mock/replay mode (`ARIA_HOME_MODEL_ENABLED=0`, no live keys, no paid paths).
 `npm run record:demo` does exactly this (fresh DB under the OS temp dir).

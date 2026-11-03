@@ -35,6 +35,7 @@
     "stage",
     "stage_in_words",
     "verified_facts",
+    "visit_message",
     "what_was_done"
   ],
   "refused_notifications": [

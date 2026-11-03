@@ -51,7 +51,8 @@ Meta's models, mainly muse-spark-1.3 and muse-wonder-1.0, wrote about 95% of the
 - A small, builder-labelled evaluation.
 - Fixed thresholds, configured 2 F and 6 F alert settings and a linear projection; allowlists reviewed by hand.
 - Optional real paths (WhatsApp to the owner's own number, a read-only Emporia energy panel, an owner-only Nest camera snapshot) are off in the hosted demo.
-- The demo video also shows one labelled segment of the owner's own furnace and electrical panel, apart from the synthetic story, where sam-3.1 missed a visible red indicator light.
+- In a separate test on the owner's own furnace, apart from the synthetic story, sam-3.1 missed a visible red indicator light.
+- The demo video is a labelled dramatization made with Meta AI, with no app footage or real equipment; the live demo shows the product.
 - Not a medical or emergency service.
 
 Code, build log, tests and audit records: https://github.com/BoMa-AI-Cloud/aria-home

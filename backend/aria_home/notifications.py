@@ -11,7 +11,7 @@ from .scheduling import compute_follow_up_schedule
 AUDIENCES = ("homeowner", "property_manager", "family_caregiver", "hvac_company")
 
 ALLOWLISTS = {
-    "homeowner": {"audience", "kind", "readiness", "readiness_in_words", "stage", "stage_in_words", "verified_facts", "what_was_done", "evaluated_at", "planned_arrival"},
+    "homeowner": {"audience", "kind", "readiness", "readiness_in_words", "stage", "stage_in_words", "verified_facts", "what_was_done", "evaluated_at", "planned_arrival", "visit_message"},
     "property_manager": {"audience", "kind", "property_label", "verified_facts", "readiness", "requested_action", "access_note"},
     "family_caregiver": {"audience", "kind", "property_label", "verified_facts", "readiness", "requested_action", "access_note"},
     "hvac_company": {"audience", "kind", "property_label", "access_note", "manager_contact_label", "relevant_observations"},
@@ -49,6 +49,7 @@ MANAGER_REQUESTED_ACTION = "Please review the verified facts and decide whether 
 CAREGIVER_REQUESTED_ACTION = "Please review the home status and observations and decide whether to contact the HVAC company on file."
 DEFAULT_ACCESS_NOTE = "Access arranged through the property manager (synthetic label)"
 DEFAULT_MANAGER_CONTACT_LABEL = "property manager on file (synthetic label)"
+VISIT_MESSAGE = "Your family caregiver approved a visit from the heating company. A technician may knock at your door. You do not need to do anything else."
 DEFAULT_CAREGIVER_ACCESS_NOTE = "Access arranged through the family caregiver (synthetic label)"
 DEFAULT_CAREGIVER_CONTACT_LABEL = "family caregiver on file (synthetic label)"
 
@@ -431,7 +432,16 @@ def create_hvac_notification(store, scenario, investigation_id, investigation, r
             # The notice carries the time the story says the request went out, not the next scheduled check.
             request_time = next((_get(e, "event_time") for e in events if _get(e, "kind") == "hvac_request"), None)
             created_at = request_time if request_time is not None else created_at
-    return _persist_decisions(store, investigation_id, [decision], created_at)[0]
+    decisions = [decision]
+    # The resident hears who is coming, so a late knock is not a surprise. Only once a request is really going out.
+    if decision["allowed"] and _uses_caregiver(scenario) and homeowner_is_authorized(context):
+        decisions.append(_decision("homeowner", "visit_notice", True, None, validate_payload("homeowner", {
+            "audience": "homeowner",
+            "kind": "visit_notice",
+            "visit_message": VISIT_MESSAGE,
+            "evaluated_at": _iso(created_at),
+        }), investigation_id))
+    return _persist_decisions(store, investigation_id, decisions, created_at)[0]
 
 
 def _latest_visible(scenario, at, source, quantity=None):

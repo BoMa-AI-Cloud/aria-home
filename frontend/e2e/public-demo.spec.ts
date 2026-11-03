@@ -1395,7 +1395,9 @@ test("the first alert explains its empty follow-up and the resident row is true"
   await expect(residentRow.locator(".know-row-meta").first()).toHaveText("Told at this step, 10:46 PM ET.");
   await expect(residentRow.locator('article[aria-label="Resident notification"]')).toHaveCount(1);
   await stepNext(page, checkpoints, 4);
-  await expect(residentRow.locator(".know-row-meta").first()).toHaveText("Told earlier, at 10:46 PM ET. No new update at this step.");
+  // Approved by now, so the resident has also been told a technician may knock.
+  await expect(residentRow.locator(".know-row-meta").first()).toHaveText("Told earlier, at 10:50 PM ET. No new update at this step.");
+  await expect(residentRow).toContainText("A technician may knock at your door.");
   await expect(page.locator("body")).not.toContainText("No homeowner update");
 });
 

@@ -9,7 +9,7 @@ I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws
 It is a solo entry in the Meta Global AI Developer Hackathon (Indie Developer track, theme "Build for Your World").
 
 ## At a glance
-- **Built during the Hackathon:** all code in this repository. **Pre-existing:** only the name ARIA and private planning notes and designs.
+- **Built during the Hackathon:** all code in this repository.
 - **Meta models:** muse-spark-1.3 explains and looks for anomalies at set story times, muse-wonder-1.0 reviews each answer, muse-voice-transcribe-1.0 transcribes the technician, sam-3.1 reads camera frames, muse-image-1.0 made the synthetic frames.
 - **Who wrote the code:** Meta's models wrote about 95% of the code; Claude (Anthropic) wrote at least 5%, under Brad's direction. Measured from git history: docs/evidence/code-authorship.md.
 - **See the models get caught:** code rejects the watcher's first answer in 9 of 12 unseen simulated scenarios, run as one batch, muse-wonder-1.0 caught 12 of 12 planted false claims (four fixed templates), and sam-3.1 misses are shown as misses. These scores were measured on the earlier prompt inv-v3, not re-scored on the current inv-v6.
@@ -29,14 +29,14 @@ To run it locally, see Try it in 5 minutes below.
 
 **When it asks.** ARIA records a notice at 2 F below the target and asks the family caregiver at 6 F below. A backstop still asks when the house is at risk within 2 hours of the warm-by time. 2 F and 6 F are configured settings, not safety limits. The demo checks at set story times; it does not monitor continuously.
 
-## Built during the hackathon vs pre-existing
+## Built during the hackathon
 
-As the demo video opens: "ARIA Home was built this week, on synthetic data. Meta's models wrote about 95% of the code. Claude wrote the rest." The on-screen card adds: "Pre-existing: the name ARIA and planning notes. Built this week: all ARIA Home code. Meta's models wrote about 95% of it and Claude (Anthropic) at least 5%, including the 2 F and 6 F alert rule and the final wording."
+As the demo video opens, an on-screen card says: "A simulated night. A real app. Dramatized with Meta AI. Built this week, during the Meta Global AI Developer Hackathon: all of ARIA Home's code, about 95% by Meta's models and at least 5% by Claude." The narration says it again near the end. Claude's share includes the 2 F and 6 F alert rule, the resident's technician-visit notice and the final wording.
 
 In short:
 
 - **Built during the hackathon:** all code in this repository — backend, frontend, tests, synthetic scenarios and fixtures, and these docs. Meta's models wrote about 95% of the code and Claude at least 5%, measured from git history ([method](docs/evidence/code-authorship.md)); Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction, recorded in the [operator log](docs/build-log/operator-log.md). No code, data, fixtures or assets from any earlier project are in this repository. The full file-by-file list is in [Existing vs new](docs/existing-vs-new.md).
-- **Pre-existing:** the name "ARIA" and private pre-event planning notes and ARIA Home designs (designs, no code). This repository itself contains no code from any earlier project.
+- This repository contains no code from any earlier project; git history shows every tracked file first added during the event.
 
 ## How Meta models are used
 
@@ -223,11 +223,9 @@ From the day handoffs and the [feature freeze](docs/freeze.md) (initial freeze 2
 
 Day-by-day record: [Day 1 handoff](docs/day1-handoff.md) · [Day 2 handoff](docs/day2-handoff.md) · [Day 3 handoff](docs/day3-handoff.md) · [Day 4 handoff](docs/day4-handoff.md) · [Day 5 handoff](docs/day5-handoff.md) · [Day 6 handoff](docs/day6-handoff.md) · [Timeline](docs/timeline.md) · [User-test kit](docs/usability.md) · [Feature freeze](docs/freeze.md)
 
-Submission: [Submission checklist and write-up](docs/submission.md)
-
 ## Video assets
 
-The video uses screen recordings of the live app, a labelled segment of the author's own furnace and panel, AI-generated scenes labelled as dramatizations, Meta AI music, and synthetic narration from Kokoro-82M. Its assembly scripts and media are not in this repository.
+The video is a dramatization of the app's simulated story, labelled as one on screen. Its scenes are AI-generated with Meta AI, and its music and effects were made with the author's own production scripts. It contains no screen recordings of the app and no real equipment; to see the product itself, open the live demo. Some details are dramatized and are not in the app's data, including the time of night, the order of some events, the daughter's concert in Honolulu and the new igniter. The story's real steps and numbers are on the site. The voice-over is not part of the app. The video's assembly scripts and media are not in this repository.
 
 ## License
 

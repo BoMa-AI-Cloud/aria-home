@@ -26,6 +26,3 @@ Who wrote the code is measured separately in [code authorship](evidence/code-aut
 | `frontend/recording` | 4 | 2026-10-27 | 2026-10-29 |
 | `frontend/src` | 5 | 2026-10-26 | 2026-10-27 |
 
-## Pre-existing
-
-- The name "ARIA" and private planning notes (designs, no code).
