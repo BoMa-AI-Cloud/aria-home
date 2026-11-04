@@ -2,7 +2,7 @@
 Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?
 
 **Demo:** https://aria-home-demo.onrender.com (synthetic data, no sign-in)
-**Video:** linked from the hackathon submission
+**Video:** https://youtu.be/ZqxiowDCa0g
 
 I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical or emergency service.
 
