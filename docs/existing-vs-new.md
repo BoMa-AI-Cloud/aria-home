@@ -1,6 +1,6 @@
 # Existing vs new
 
-Generated from git history for commit c22f366 and later docs. Every tracked file was first added to this repository during the event, and the first commit is `f333d48 2026-10-26 Start ARIA Home after the hackathon kickoff: README and .gitignore`. No code, data, fixtures or assets from any earlier project are in this repository. To check it yourself: `git log --reverse --diff-filter=A --name-only --format=%h`.
+Generated from git history for commit c22f366, with later changes through d8344eb counted. Every tracked file was first added to this repository during the event, and the first commit is `f333d48 2026-10-26 Start ARIA Home after the hackathon kickoff: README and .gitignore`. No code, data, fixtures or assets from any earlier project are in this repository. To check it yourself: `git log --reverse --diff-filter=A --name-only --format=%h`.
 
 Who wrote the code is measured separately in [code authorship](evidence/code-authorship.md).
 

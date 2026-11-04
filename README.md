@@ -2,7 +2,7 @@
 Will an older adult's home be warm by morning, and if something looks wrong overnight, who should respond?
 
 **Demo:** https://aria-home-demo.onrender.com (synthetic data, no sign-in)
-**Video:** <video link> [CONFIRM: add the link once the video exists]
+**Video:** linked from the hackathon submission
 
 I live in Petoskey, Michigan, where the winters are long and cold. As my in-laws get older, I've started wondering what happens when they can't fix something, or can't tell that something is wrong, and nobody is around to help. As an electrician, I've worked on houses with major damage from a fault that nobody caught in time. ARIA Home is built to notice sooner and get the right person moving. It does not repair or control anything, and it is not a medical or emergency service.
 
@@ -225,7 +225,7 @@ Day-by-day record: [Day 1 handoff](docs/day1-handoff.md) · [Day 2 handoff](docs
 
 ## Video assets
 
-The video is a dramatization of the app's simulated story, labelled as one on screen. Its scenes are AI-generated with Meta AI, and its music and effects were made with the author's own production scripts. It contains no screen recordings of the app and no real equipment; to see the product itself, open the live demo. Some details are dramatized and are not in the app's data, including the time of night, the order of some events, the daughter's concert in Honolulu and the new igniter. The story's real steps and numbers are on the site. The voice-over is not part of the app. The video's assembly scripts and media are not in this repository.
+The video is a dramatization of the app's simulated story, labelled as one on screen. Its scenes are AI-generated with Meta AI, and its music and effects were made with the author's own production scripts. It contains no screen recordings of the app and no real equipment; to see the product itself, open the live demo. Some details are dramatized and are not in the app's data, including the time of night, the order of some events, the daughter's concert in Honolulu and the new igniter. The story's real steps and numbers are on the site. The narration, including the lines in Brad's first person, is a synthetic voice from Kokoro-82M, an open-weight model used only to make the video; the app never calls it. The video's assembly scripts and media are not in this repository.
 
 ## License
 
