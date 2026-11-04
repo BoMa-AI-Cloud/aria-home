@@ -1287,7 +1287,13 @@ def create_app():
                         return jsonify({"error": "request body must be valid JSON", "data_mode": "synthetic"}), 400
             if request.path == "/api/health":
                 return None
-            admitted = public_demo.admit_session(public_demo.sessions_dir(), request.cookies.get(public_demo.SESSION_COOKIE), max_bytes=public_demo.max_session_bytes())
+            cookie = request.cookies.get(public_demo.SESSION_COOKIE)
+            if not request.path.startswith("/api/"):
+                if not public_demo.issued_session_id(cookie):
+                    g.public_session_new = True
+                    g.public_session_id = public_demo.new_session_id()
+                return None
+            admitted = public_demo.admit_session(public_demo.sessions_dir(), cookie, max_bytes=public_demo.max_session_bytes(), client=public_demo.client_key(request.headers.get(public_demo.CLIENT_HEADER)))
             if admitted["busy"]:
                 return jsonify({"error": "demo is at capacity; try again in a few minutes", "data_mode": "synthetic"}), 503
             if admitted["new"]:

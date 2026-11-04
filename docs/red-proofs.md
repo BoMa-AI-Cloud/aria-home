@@ -29,3 +29,5 @@ Coverage: audit-4 row 1, audit-4 row 2, audit-4 row 3, audit-4 row 4, audit-4 ro
 The sentence check is bounded: it covers temperatures, watts, clock times and the room's direction, and is not a semantic verifier of arbitrary prose.
 
 The sentence check was then tightened after a second audit: temperatures, watts and bare numbers are bound to the quantity they name, including case, sign and unit.
+
+Session admission (`admit_session` in `backend/aria_home/public_demo.py`, `_public_guard` in `backend/aria_home/app.py`). Each break failed its test in `backend/tests/test_audit5_sessions_admission.py`: page loads taking a session failed `test_page_loads_use_no_session_even_at_full_cap`; not reusing the signed id failed `test_page_cookie_is_the_one_session_for_parallel_first_calls`; removing the address limit failed `test_one_address_cannot_fill_the_demo`; accepting any signature failed `test_tampered_signed_id_allocates_nothing`; counting a reset as a new session failed `test_reset_does_not_spend_the_address_limit`; a shared bucket when the header is missing failed `test_no_client_header_means_no_shared_bucket`.

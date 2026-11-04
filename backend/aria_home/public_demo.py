@@ -8,6 +8,8 @@ demo flag (fail closed).
 """
 
 import hashlib
+import hmac
+import ipaddress
 import os
 import re
 import secrets
@@ -44,7 +46,16 @@ MAX_SESSIONS = 500
 DEFAULT_MAX_SESSION_BYTES = 512 * 1024 * 1024
 MAX_SESSION_BYTES = DEFAULT_MAX_SESSION_BYTES
 
+# New sessions one address may start per hour. Only the proxy's own client
+# header counts; without it there is no limit, because every visitor would then
+# share the proxy's address and one bucket.
+CLIENT_HEADER = "CF-Connecting-IP"
+MAX_NEW_SESSIONS_PER_CLIENT = 30
+CLIENT_WINDOW_S = 60 * 60
+
 _admission_lock = threading.Lock()
+_token_key = secrets.token_bytes(32)
+_client_sessions = {}
 
 _SESSION_ID_RE = re.compile(r"[A-Za-z0-9_-]{32,128}\Z")
 
@@ -135,12 +146,53 @@ def max_session_bytes(env=None):
     return value
 
 
+def _token_signature(token):
+    return hmac.new(_token_key, token.encode("utf-8"), hashlib.sha256).hexdigest()[:32]
+
+
 def new_session_id():
-    return secrets.token_urlsafe(32)
+    token = secrets.token_urlsafe(32)
+    return token + _token_signature(token)
 
 
 def valid_session_id(value):
     return bool(value) and bool(_SESSION_ID_RE.fullmatch(value))
+
+
+def issued_session_id(value):
+    """True only for an id this process signed, so a page load can hand out a
+    cookie with no file behind it while a forged id still allocates nothing."""
+    if not valid_session_id(value) or len(value) <= 32:
+        return False
+    return hmac.compare_digest(value[-32:], _token_signature(value[:-32]))
+
+
+def client_key(raw):
+    """One bucket per IPv4 address or IPv6 /64; None when there is no usable address."""
+    try:
+        address = ipaddress.ip_address(str(raw).strip())
+    except ValueError:
+        return None
+    if address.version == 6:
+        return str(ipaddress.ip_network(f"{address}/64", strict=False))
+    return str(address)
+
+
+def _client_may_start(key, session_id, now):
+    cutoff = now - CLIENT_WINDOW_S
+    for known in list(_client_sessions):
+        kept = {sid: at for sid, at in _client_sessions[known].items() if at > cutoff}
+        if kept:
+            _client_sessions[known] = kept
+        else:
+            del _client_sessions[known]
+    seen = _client_sessions.get(key, {})
+    if session_id in seen:
+        return True
+    if len(seen) >= MAX_NEW_SESSIONS_PER_CLIENT:
+        return False
+    _client_sessions[key] = {**seen, session_id: now}
+    return True
 
 
 def session_db_path(directory, session_id):
@@ -214,12 +266,15 @@ def admit_session(
     max_sessions=MAX_SESSIONS,
     max_bytes=None,
     now=None,
+    client=None,
 ):
     """Admit one visitor, returning {"session_id", "path", "new", "busy"}.
 
-    A cookie the server did not issue has no store file, so it is treated as
-    absent: a new id is issued and nothing is ever created under the client's
-    chosen id. Expiry is checked before any touch. A new id is admitted only
+    A cookie the server did not issue is treated as absent: a new id is issued
+    and nothing is ever created under the client's chosen id. An id signed at
+    page load gets its store on its first API call, so page loads and link
+    previews use no session. `client` limits new stores per address. Expiry is
+    checked before any touch. A new id is admitted only
     after sweeping expired (2-hour idle) sessions; past the session cap or
     disk budget the visitor is turned away busy with nothing allocated — idle
     sessions are never evicted, so a visitor who paused keeps their session.
@@ -230,6 +285,7 @@ def admit_session(
         max_bytes = max_session_bytes()
     current = time.time() if now is None else now
     with _admission_lock:
+        issued = None
         if valid_session_id(session_id):
             path = session_db_path(directory, session_id)
             if path.is_file():
@@ -241,6 +297,8 @@ def admit_session(
                     touch_session(path)
                     return {"session_id": session_id, "path": path, "new": False, "busy": False}
                 destroy_session(path)
+            elif issued_session_id(session_id):
+                issued = session_id
         sweep_sessions(directory, idle_seconds=idle_seconds, max_sessions=max_sessions, now=current)
         entries = []
         for candidate in directory.glob("sess-*.db"):
@@ -253,14 +311,16 @@ def admit_session(
         total = _disk_bytes(directory)
         if len(entries) >= max_sessions or total >= max_bytes:
             return {"session_id": None, "path": None, "new": False, "busy": True}
-        fresh_id = new_session_id()
+        fresh_id = issued or new_session_id()
+        if client is not None and not _client_may_start(client, fresh_id, current):
+            return {"session_id": None, "path": None, "new": False, "busy": True}
         fresh_path = session_db_path(directory, fresh_id)
         try:
             fresh_path.touch(exist_ok=False)
             os.utime(fresh_path, (current, current))
         except OSError:
             pass
-        return {"session_id": fresh_id, "path": fresh_path, "new": True, "busy": False}
+        return {"session_id": fresh_id, "path": fresh_path, "new": issued is None, "busy": False}
 
 
 def parsed_checkpoints(scenario_id):

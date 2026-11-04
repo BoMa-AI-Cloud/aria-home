@@ -306,3 +306,108 @@ def test_ack_mistyped_bodies_are_400(private_client):
     for body in ([], "x", 5, None):
         resp = private_client.post(f"/api/notifications/{notification_id}/ack", json=body)
         assert resp.status_code == 400, repr(body)
+
+
+def _api(client, address=None):
+    headers = {public_demo.CLIENT_HEADER: address} if address else {}
+    return client.get("/api/notifications", query_string={"investigation_id": "inv-none"}, headers=headers)
+
+
+@pytest.fixture
+def clean_clients(monkeypatch):
+    monkeypatch.setattr(public_demo, "_client_sessions", {})
+
+
+def test_page_loads_use_no_session_even_at_full_cap(public_env):
+    app = create_app()
+    for _ in range(public_demo.MAX_SESSIONS + 20):
+        app.test_client().get("/")
+    assert _session_files(public_env) == []
+    assert _api(app.test_client()).status_code == 200
+    assert len(_session_files(public_env)) == 1
+
+
+def test_page_cookie_is_the_one_session_for_parallel_first_calls(public_env):
+    app = create_app()
+    page = app.test_client().get("/")
+    issued = _cookie_value(page)
+    assert public_demo.issued_session_id(issued)
+    results = []
+
+    def _first_call():
+        visitor = app.test_client()
+        visitor.set_cookie(public_demo.SESSION_COOKIE, issued)
+        results.append(_api(visitor).status_code)
+
+    threads = [threading.Thread(target=_first_call) for _ in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert results == [200] * 6
+    assert [path.name for path in _session_files(public_env)] == [public_demo.session_db_path(public_env, issued).name]
+
+
+def test_tampered_signed_id_allocates_nothing(public_env):
+    app = create_app()
+    issued = public_demo.new_session_id()
+    tampered = issued[:-1] + ("0" if issued[-1] != "0" else "1")
+    visitor = app.test_client()
+    visitor.set_cookie(public_demo.SESSION_COOKIE, tampered)
+    resp = _api(visitor)
+    assert resp.status_code == 200
+    assert not public_demo.session_db_path(public_env, tampered).exists()
+    assert _cookie_value(resp) != tampered
+
+
+def test_one_address_cannot_fill_the_demo(public_env, clean_clients):
+    app = create_app()
+    kept = app.test_client()
+    assert _api(kept, "203.0.113.9").status_code == 200
+    for _ in range(public_demo.MAX_NEW_SESSIONS_PER_CLIENT - 1):
+        assert _api(app.test_client(), "203.0.113.9").status_code == 200
+    refused = _api(app.test_client(), "203.0.113.9")
+    assert refused.status_code == 503
+    assert "capacity" in refused.get_json()["error"].lower()
+    assert len(_session_files(public_env)) == public_demo.MAX_NEW_SESSIONS_PER_CLIENT
+    assert _api(app.test_client(), "203.0.113.10").status_code == 200
+    assert _api(kept, "203.0.113.9").status_code == 200
+
+
+def test_client_limit_window_expires(public_env, clean_clients):
+    now = time.time()
+    for _ in range(public_demo.MAX_NEW_SESSIONS_PER_CLIENT):
+        assert public_demo.admit_session(public_env, None, now=now, client="k")["busy"] is False
+    assert public_demo.admit_session(public_env, None, now=now, client="k")["busy"] is True
+    later = now + public_demo.CLIENT_WINDOW_S + 1
+    assert public_demo.admit_session(public_env, None, now=later, client="k")["busy"] is False
+
+
+def test_reset_does_not_spend_the_address_limit(public_env, clean_clients):
+    app = create_app()
+    visitor = app.test_client()
+    headers = {public_demo.CLIENT_HEADER: "203.0.113.11"}
+    visitor.get("/")
+    assert _api(visitor, "203.0.113.11").status_code == 200
+    for _ in range(public_demo.MAX_NEW_SESSIONS_PER_CLIENT - 1):
+        assert _api(app.test_client(), "203.0.113.11").status_code == 200
+    assert _api(app.test_client(), "203.0.113.11").status_code == 503
+    assert visitor.post("/api/session/reset", headers=headers).status_code == 200
+    assert _api(visitor, "203.0.113.11").status_code == 200
+
+
+def test_no_client_header_means_no_shared_bucket(public_env, clean_clients):
+    app = create_app()
+    for _ in range(public_demo.MAX_NEW_SESSIONS_PER_CLIENT + 5):
+        assert _api(app.test_client()).status_code == 200
+    for _ in range(public_demo.MAX_NEW_SESSIONS_PER_CLIENT + 5):
+        assert _api(app.test_client(), "not-an-address").status_code == 200
+    assert public_demo._client_sessions == {}
+
+
+def test_client_key_groups_ipv6_by_network():
+    assert public_demo.client_key("2001:db8:1:2:aaaa::1") == public_demo.client_key("2001:db8:1:2:bbbb::2")
+    assert public_demo.client_key("2001:db8:1:3::1") != public_demo.client_key("2001:db8:1:2::1")
+    assert public_demo.client_key(" 203.0.113.9 ") == "203.0.113.9"
+    assert public_demo.client_key(None) is None
+    assert public_demo.client_key("") is None
