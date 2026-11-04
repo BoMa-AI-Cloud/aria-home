@@ -2,6 +2,8 @@
 
 Every task in this project was given to a Claude Code session running a Meta model (muse-wonder-1.0 or muse-spark-1.3). Each pair of files here is the exact prompt that session received and its final answer, copied with private paths, account names, key names and email addresses replaced by placeholders such as <private-notes>. Files are named <UTC time>-<task>.
 
+Prompts and answers are kept word for word, so a relative link inside an old prompt may point somewhere that was right for that session and does not resolve from here.
+
 ## Operator
 
 The operator is Claude Code running Anthropic's Claude model, directed by Brad Wentzel. The operator wrote these prompts, reviewed each change against the project's rules, ran tests, builds and the approved live smoke tests, ran `npm install` and `npm install -D @playwright/test` after Brad approved them, made the commits, and corrected docs/timeline.md to exact git commit times on Day 1. Meta's models wrote about 95% of the code, mainly in the sessions listed below, and Claude at least 5%, measured from git history ([method](../evidence/code-authorship.md)). Claude (Anthropic) wrote the 2 F and 6 F alert rule and the final wording pass under Brad's direction; that work is recorded in [operator-log.md](operator-log.md), not in the table below. Steps the operator took directly since 2026-10-27 are listed in [operator-log.md](operator-log.md).

@@ -268,7 +268,9 @@ def _conflicted_ids(pack, at):
     return out
 
 
-_CLAIM_READING = re.compile(r"(?<![\d.:])(\d+(?:\.\d+)?)\s*(?:°\s*)?(F|W|degrees|watts)\b")
+_CLAIM_READING = re.compile(r"(?<![\w.:])(-?\d+(?:\.\d+)?)\s*(?:°\s*)?(fahrenheit|degrees?|f|kilowatts?|kw|watts?|w)\b(?:\s+(below|above|under|over|target))?", re.IGNORECASE)
+_CLAIM_NUMBER = re.compile(r"(?<![\w.:])(-?\d+(?:\.\d+)?)(?![\w.:]*\d)\s*(min|mins|minutes?|hours?|hrs?|h|sec|secs|seconds?|s|%)?\b", re.IGNORECASE)
+_CLAIM_CHANGE_WORDS = ("down", "up", "fell", "fallen", "dropped", "drop", "rose", "risen", "rise", "by", "change", "changed")
 _CLAIM_CLOCK = re.compile(r"(?<![\d:])(\d{1,2}):(\d{2})(?![\d:])\s*([AaPp][Mm])?")
 _CLAIM_FALLING = ("falling", "dropping", "cooling")
 _CLAIM_RISING = ("rising", "warming")
@@ -296,17 +298,48 @@ def verify_claim_sentence(obs, pack, by_id, at):
         return []
     reasons = []
     values = obs["values"]
-    known = [values.get("value")]
-    for evidence_id in obs["evidence_ids"]:
-        item = by_id.get(evidence_id) or {}
-        known.append(item.get("value"))
-        known.extend(_metric_numbers(item))
-    known = [n for n in known if isinstance(n, (int, float)) and not isinstance(n, bool)]
-    targets = [n for key in ("metric:target_gap", "confirmation:current") for n in [((by_id.get(key) or {}).get("data") or {}).get("target_temp")] if isinstance(n, (int, float))]
-    allowed = known + targets + [abs(target - n) for target in targets for n in known]
-    for number, unit in _CLAIM_READING.findall(claim):
-        if not any(_numbers_match(float(number), candidate) for candidate in allowed):
-            reasons.append(f"observation sentence says {number} {unit}, which matches none of its checked values")
+
+    def is_number(n):
+        return isinstance(n, (int, float)) and not isinstance(n, bool)
+
+    def matches(number, pool):
+        return any(_numbers_match(number, candidate) for candidate in pool)
+
+    cited = [by_id.get(evidence_id) or {} for evidence_id in obs["evidence_ids"]]
+    readings = {"F": [], "W": []}
+    if is_number(values.get("value")) and values.get("unit") in readings:
+        readings[values["unit"]].append(values["value"])
+    for item in cited:
+        if is_number(item.get("value")) and item.get("unit") in readings:
+            readings[item["unit"]].append(item["value"])
+    metrics = [n for item in cited for n in _metric_numbers(item)]
+    targets = [n for key in ("metric:target_gap", "confirmation:current") for n in [((by_id.get(key) or {}).get("data") or {}).get("target_temp")] if is_number(n)]
+    gaps = [abs(target - n) for target in targets for n in readings["F"]]
+    remainder = claim
+    for match in _CLAIM_READING.finditer(claim):
+        number, unit, after = float(match.group(1)), match.group(2).lower(), (match.group(3) or "").lower()
+        before = claim[:match.start()].lower().split()[-3:]
+        if unit in ("kw", "kilowatt", "kilowatts"):
+            pool = [n / 1000 for n in readings["W"]]
+        elif unit in ("w", "watt", "watts"):
+            pool = readings["W"]
+        elif after == "target" or "target" in before:
+            pool = targets
+        elif after in ("below", "above", "under", "over"):
+            pool = gaps + metrics
+        elif any(word in _CLAIM_CHANGE_WORDS for word in before):
+            pool = metrics + gaps
+        else:
+            pool = readings["F"]
+        if not matches(number, pool):
+            reasons.append(f"observation sentence says {match.group(1)} {match.group(2)}, which matches none of its checked values for that quantity")
+        remainder = remainder.replace(match.group(0), " ", 1)
+    remainder = _CLAIM_CLOCK.sub(" ", remainder)
+    for number, time_word in _CLAIM_NUMBER.findall(remainder):
+        if time_word:
+            continue
+        if not matches(float(number), readings["F"] + readings["W"] + metrics + targets + gaps):
+            reasons.append(f"observation sentence says {number}, which matches none of its checked values")
     clocks = _claim_clocks(obs, by_id, at)
     for hour, minute, half in _CLAIM_CLOCK.findall(claim):
         hour = int(hour)

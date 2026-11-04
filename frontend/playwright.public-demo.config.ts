@@ -37,7 +37,8 @@ export default defineConfig({
       env: {
         ARIA_HOME_PUBLIC_DEMO: "1",
         ARIA_HOME_PUBLIC_DEMO_DIR: sessionsDir,
-        ARIA_HOME_RECORDED_DIR: recordedDir,
+        // Empty by default; point this at backend/eval/recorded to run against the shipped recordings.
+        ARIA_HOME_RECORDED_DIR: process.env.PLAYWRIGHT_RECORDED_DIR || recordedDir,
         ARIA_HOME_NEST_LIVE: "",
       },
     },

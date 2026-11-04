@@ -306,6 +306,12 @@ def _with_claim(entries, scenario, at, claim):
 
 @pytest.mark.parametrize("claim", [
     "The room temperature is 99 F.",
+    "The room temperature is 99 f.",
+    "The room temperature is 99 Fahrenheit.",
+    "The room temperature is 68 F.",
+    "The room temperature is -66 F.",
+    "The room temperature is 66 W.",
+    "The room temperature is 99.",
     "Room temp 66.0F at 03:15",
     "Blower circuit drawing 900W",
     "The room is rising and warming",

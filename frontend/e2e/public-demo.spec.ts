@@ -941,6 +941,7 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
   const checkpoints = await startStory(page);
   expect(checkpoints).toHaveLength(10);
   const frozen: Array<{ text: string; requestedAt: string }> = [];
+  let sawRecordedAnswer = false;
 
   for (let index = 0; index < checkpoints.length; index += 1) {
     if (index > 0) await stepNext(page, checkpoints, index);
@@ -1124,8 +1125,17 @@ async function runConsistencyBranch(page: Page, branch: Branch): Promise<void> {
           plainClock(followups.recorded_investigation.output.interpretation).slice(0, 40),
         );
       }
-    } else {
+      sawRecordedAnswer = true;
+    } else if (!sawRecordedAnswer) {
       await expect(page.getByTestId("earlier-explanations"), `no history without recordings at ${at}`).toHaveCount(0);
+    } else {
+      // This step has no recording of its own, but earlier steps do: they stay as dated history, never current.
+      const earlierTimes = await page.getByTestId("earlier-explanations").locator("time").evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute("datetime")),
+      );
+      for (const earlierTime of earlierTimes) {
+        expect(earlierTime ? Date.parse(earlierTime) : NaN, `earlier time before ${at}`).toBeLessThan(Date.parse(at));
+      }
     }
     const stepsDetails = page.locator(".trace-steps-details");
     if ((await stepsDetails.getAttribute("open")) === null) {
@@ -1561,3 +1571,22 @@ test("story completion points to the Reasoning proof", async ({ page }) => {
   await expect(page.getByTestId("trace-map")).toBeVisible();
 });
 
+test("a step still loading never shows the other branch's outcome", async ({ page }) => {
+  const checkpoints = await startStory(page);
+  for (let index = 1; index <= 3; index += 1) {
+    await stepNext(page, checkpoints, index);
+  }
+  await page.getByRole("button", { name: /^Decline/ }).click();
+  await expect(page.getByRole("button", { name: /^Decline/ })).toHaveCount(0);
+  await page.route("**/api/**", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await route.continue();
+  });
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  const heading = page.locator("#story-heading");
+  await expect(heading).toContainText("Loading this step...");
+  await expect(heading).not.toContainText(/technician|repair/i);
+  await page.unroute("**/api/**");
+  await expect(page.locator(".story-nav")).toHaveAttribute("data-story-waiting", "false", { timeout: 30000 });
+  await expect(heading).not.toContainText("Loading this step...");
+});

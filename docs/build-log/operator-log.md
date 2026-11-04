@@ -16,7 +16,7 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
 
 ## 2026-10-28
 
-- Edited [../submission.md](../submission.md) directly (commit d883778): the write-up now quotes the
+- Edited docs/submission.md (moved out of the repository on 2026-11-03) directly (commit d883778): the write-up now quotes the
   current-code live result (8 of 12 valid on muse-spark-1.3) instead of the earlier pre-repair 24-call result,
   and the checklist quotes the then-current opening line.
 - Video scenes: tried Gemini (stopped at its video limit; no clip produced) and Grok Imagine (four clips
@@ -183,3 +183,4 @@ code. Times are local (ET). Earlier operator steps are summarised in the README'
 - 2026-11-03: released d8344eb to the public demo at Brad's request. CI run 41735405668 succeeded on it; local backend 861 passed, public-demo e2e 100 passed, 2 skipped. /api/health reports d8344eb, the footer shows it, /cards.html no longer carries the old claim, the resident row shows the technician notice, and the 9:41 PM watcher sentence still shows as confirmed. The overnight check was not done. Brad kept the video's synthetic narration (Kokoro-82M), disclosed on its end card and in the README; the app never calls that model. Code share re-measured at d8344eb: Meta's models 94.0%, Claude 6.0%.
 - 2026-11-03: the final film went public on YouTube at Brad's request: https://youtu.be/ZqxiowDCa0g, marked as AI-generated. It is Brad's 4K Clipchamp upscale with the end-card narration line added.
 - 2026-11-03: the final docs commit was deployed at Brad's request, so the demo's version line matches the repository. It changes no application code.
+- 2026-11-03: a final audit by Codex at 5ba0c7b found more defects, all reproduced, and Claude (Anthropic), not a Muse model, fixed them directly at Brad's request. The watcher sentence check matched numbers against a pool, so "68 F", "-66 F" and "66 W" passed against a 66 F reading; each number is now bound to the quantity it names, and all 30 recorded care sentences still pass. On the decline path the story headline briefly showed approved-branch text while a step loaded; it now shows a neutral loading line. The decline consistency test failed against the shipped recordings because it assumed no history; it is corrected and can run against them. Blanket claims that the app never makes a live visual call now name the owner-only Nest exception, and the README's WhatsApp and live-integration lines are corrected. The audit's claim about the recording checklist's final reading was checked and was wrong: 68.0 F at 06:55 is the last reading received by the 07:00 warm-by time. Video feedback from the audit was not acted on: Brad chose a dramatized film with no app footage.

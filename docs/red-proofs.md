@@ -27,3 +27,5 @@ Coverage: audit-4 row 1, audit-4 row 2, audit-4 row 3, audit-4 row 4, audit-4 ro
 - Laws on replayed answers (`validate_with_laws` in `backend/aria_home/recorded.py`). Removed: `test_recorded_answer_breaking_a_law_is_refused_like_a_live_one` failed with `assert 'ok' == 'unavailable'`. Restored: passed.
 
 The sentence check is bounded: it covers temperatures, watts, clock times and the room's direction, and is not a semantic verifier of arbitrary prose.
+
+The sentence check was then tightened after a second audit: temperatures, watts and bare numbers are bound to the quantity they name, including case, sign and unit.

@@ -3678,12 +3678,17 @@ export default function App() {
       : "no reading";
   const visitorApproved =
     caregiverPermission?.status === "approved" && caregiverPermission.source?.includes("recorded story") !== true;
-  const storyTitle = declinedAtThisStep && storyIdx >= 3
+  // The permission is cleared while a step loads; a branch-specific line here could contradict the decision.
+  const storyTitle = storyWaiting
+    ? "Loading this step..."
+    : declinedAtThisStep && storyIdx >= 3
     ? (DECLINED_STORY_STEP_TITLES[storyIdx] ?? STORY_STEP_TITLES[storyIdx] ?? "")
     : storyIdx === 3 && caregiverPermission?.status === "approved"
       ? "Caregiver approves HVAC contact"
       : (STORY_STEP_TITLES[storyIdx] ?? "");
-  const storyGuidance = declinedAtThisStep && storyIdx >= 3
+  const storyGuidance = storyWaiting
+    ? ""
+    : declinedAtThisStep && storyIdx >= 3
     ? storyIdx === 9
       ? `The 7:00 AM warm-by time passes with the living room at ${storyRoomLabel}. Nobody was contacted, so no visit or report exists.`
       : (DECLINED_STORY_STEP_GUIDANCE[storyIdx] ?? STORY_STEP_GUIDANCE[storyIdx] ?? "")

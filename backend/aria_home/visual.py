@@ -14,13 +14,11 @@ Policy (enforced in ``readiness.py``, documented in
 ``warming_observed``, ``goal_verified`` or ``arrival_met``. A water/frost
 detection plus a low or unknown indoor temperature can support ``at_risk``
 with a citing reason; zero objects is "no detection", never an all-clear.
-The running app is replay-only: it never constructs ``SamLiveProvider``
-and never sends images anywhere; notification payloads may carry only the
-observation line. ``SamLiveProvider`` below is an unintegrated reference
-adapter — kept for documentation, constructed nowhere in the app — and it
-would POST image bytes to the model API if anyone ever wired it in, so
-"images are never sent anywhere" describes the replay-only app, not that
-adapter.
+The synthetic story and the public demo are replay-only: they never construct
+``SamLiveProvider`` and never send images anywhere; notification payloads may
+carry only the observation line. ``SamLiveProvider`` below has one caller, the
+owner-only Nest snapshot route, which is off in the public demo and uploads
+that one real frame to the model API, saying so in its response.
 """
 
 import json

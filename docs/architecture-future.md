@@ -50,14 +50,14 @@ temperature goal, not a proven repair cause.
   segmentation over synthetic muse-image-1.0 fixtures enters as a visual
   observation with observed/received times, provenance, and as-of
   visibility (`GET /api/visual`, `GET /api/visual/image`), shown in the
-  frontend with boxes overlaid and the code's verdict. The app is
-  replay-only: it never constructs the `SamLiveProvider` reference
-  adapter, so setting `ARIA_HOME_VISUAL_LIVE=1` changes nothing. Exactly as the former future item required: visual
+  frontend with boxes overlaid and the code's verdict. The synthetic story is
+  replay-only: it never uses the `SamLiveProvider` adapter, whose one caller is the owner-only
+  Nest snapshot route, so setting `ARIA_HOME_VISUAL_LIVE=1` changes nothing. Exactly as the former future item required: visual
   evidence never by itself sets readiness, an outcome, or a verification
   stage — it never yields `on_track`, `warming_observed`,
   `goal_verified` or `arrival_met` — and zero detected objects is no
   detection, never an all-clear (the recorded frost-pipe miss stays
-  `at_risk`). Images are never sent anywhere; HVAC payloads may carry
+  `at_risk`). Synthetic images are never sent anywhere; HVAC payloads may carry
   only the observation line. See `backend/aria_home/visual.py` and
   `docs/readiness-rules.md`.
 
